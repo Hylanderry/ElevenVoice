@@ -1,0 +1,9 @@
+{
+  "productName": "ElevenVoice",
+  "appId": "com.elevenvoice.desktop",
+  "ports": {
+    "backend": 3900,
+    "web": 3901,
+    "electronDev": 3902
+  }
+}
