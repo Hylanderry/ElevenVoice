@@ -5,8 +5,8 @@ import config, { distributionPackaging } from '../electron-builder.config.mjs';
 import metadata from '../../store/metadata.json' with { type: 'json' };
 
 test('names direct downloads VoiceStudio-<version>-<os>-<arch> without an Electron label', () => {
-  assert.equal(config.artifactName, 'VoiceStudio-${version}-${os}-${arch}.${ext}');
-  assert.equal(config.linux.artifactName, 'VoiceStudio-${version}-linux-x64.${ext}');
+  assert.equal(config.artifactName, 'ElevenVoice-${version}-${os}-${arch}.${ext}');
+  assert.equal(config.linux.artifactName, 'ElevenVoice-${version}-linux-x64.${ext}');
 });
 
 test('keeps direct Linux packaging and its updater unchanged', () => {

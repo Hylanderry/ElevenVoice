@@ -104,8 +104,8 @@ assert.equal(hashes.sha512, fileSha, 'Update metadata SHA-512 matches artifact b
 const osToken = platform === 'win32' ? 'win' : platform === 'darwin' ? 'mac' : 'linux';
 const artifactBrand =
   process.env.VOICESTUDIO_DISTRIBUTION === 'microsoft-store'
-    ? 'VoiceStudio-MicrosoftStore'
-    : 'VoiceStudio';
+    ? 'ElevenVoice-MicrosoftStore'
+    : 'ElevenVoice';
 assert(
   fileUrl.startsWith(`${artifactBrand}-${expectedVersion}-${osToken}-${arch}.`),
   'Update artifact preserves the branded version/platform/architecture name',
