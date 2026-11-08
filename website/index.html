@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>ElevenVoice — Free, local AI voice studio. Fuck-off ElevenLabs, and Pay Services.</title>
     <meta
       name="description"
@@ -13,9 +13,10 @@
       content="ElevenLabs alternative, free text to speech, voice cloning, AI dubbing, local TTS, offline voice AI, open source voice studio, audiobook generator, speech to text, Whisper"
     />
     <link rel="canonical" href="https://elevenvoice-eta.vercel.app/" />
-    <meta name="theme-color" content="#141416" />
+    <meta name="theme-color" content="#f6f5f1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="ElevenVoice" />
@@ -47,7 +48,7 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "license": "https://www.gnu.org/licenses/agpl-3.0.html",
         "url": "https://elevenvoice-eta.vercel.app/",
-        "downloadUrl": "https://github.com/Hylanderry/ElevenVoice",
+        "downloadUrl": "https://github.com/Hylanderry/ElevenVoice/releases/latest",
         "author": { "@type": "Person", "name": "Hylander", "url": "https://github.com/Hylanderry" }
       }
     </script>
@@ -58,21 +59,37 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preload" href="/assets/home.webp" as="image" type="image/webp" />
+    <link rel="stylesheet" href="/vendor/lenis-1.3.27.css" />
+    <link rel="stylesheet" href="/styles.css?v=3" />
+    <script>
+      // The intro plays once per visit; reduced motion skips it entirely.
+      try {
+        if (sessionStorage.getItem('ev-intro') || matchMedia('(prefers-reduced-motion: reduce)').matches)
+          document.documentElement.classList.add('skip-intro');
+      } catch (e) {}
+      document.documentElement.classList.add('js');
+    </script>
   </head>
   <body>
+    <div class="loader" aria-hidden="true">
+      <div class="loader-mark"><span></span><span></span><span></span><span class="peak"></span><span></span></div>
+      <span class="loader-count" data-count>00</span>
+    </div>
+
     <a class="skip" href="#main">Skip to content</a>
 
-    <header class="nav">
-      <a class="brand" href="/" aria-label="ElevenVoice home">
-        <img src="/assets/logo.svg" alt="" width="28" height="28" />
+    <header class="nav" data-nav>
+      <a class="brand" href="#top" aria-label="ElevenVoice home">
+        <img src="/assets/logo.svg" alt="" width="30" height="30" />
         <span>ElevenVoice</span>
       </a>
       <nav aria-label="Main">
+        <a href="#story">Studio</a>
         <a href="#features">Features</a>
+        <a href="#pro">Pro tools</a>
         <a href="#compare">Compare</a>
-        <a href="#install">Install</a>
-        <a href="#faq">FAQ</a>
+        <a href="#download">Download</a>
       </nav>
       <a class="star" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.3.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.8-3.6 4 .3.3.6.8.6 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 .2Z"/></svg>
@@ -82,54 +99,95 @@
     </header>
 
     <main id="main">
-      <section class="hero">
-        <div class="hero-copy">
-          <a class="pill" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">
-            <span class="pill-dot" aria-hidden="true"></span>Open source · AGPL-3.0
+      <section class="hero" id="top">
+        <div class="hero-meter" aria-hidden="true" data-meter></div>
+        <div class="hero-inner">
+          <a class="pill" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener" data-rise>
+            <span class="pill-dot" aria-hidden="true"></span>Open source · AGPL-3.0 · v0.5.7
           </a>
-          <h1>Fuck-off ElevenLabs,<br />and Pay Services.</h1>
-          <p class="hero-lede">
-            The AI voice studio that runs on your computer. Voice cloning, voice design, video
-            dubbing, dictation, transcription and audiobooks in 646 languages. No account, no
-            subscription, no credits.
+          <h1 data-split>Fuck-off ElevenLabs, and Pay&nbsp;Services.</h1>
+          <p class="hero-lede" data-rise>
+            The voice studio that runs on your own computer. Clone, design, dub, dictate, transcribe
+            and narrate in 646 languages. No account. No subscription. No credits.
           </p>
-          <div class="install-card">
-            <span class="os-icon" aria-hidden="true" data-os-icon></span>
-            <div class="install-card-text">
-              <strong data-os-name>Windows</strong>
-              <span>Free · Runs locally</span>
-            </div>
-            <a class="button primary" href="#install">Install</a>
+          <div class="hero-actions" data-rise>
+            <a class="button dark" href="#download" data-download-primary>
+              <span class="os-icon" aria-hidden="true" data-os-icon></span>
+              <span>Download for <b data-os-name>Windows</b></span>
+            </a>
+            <a class="button ghost" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">View on GitHub</a>
           </div>
-          <p class="platforms">Windows · macOS (Apple Silicon) · Linux</p>
-          <dl class="stats">
+          <dl class="stats" data-rise>
             <div><dt>GitHub stars</dt><dd data-stars>—</dd></div>
-            <div><dt>Latest release</dt><dd>v0.5.7</dd></div>
             <div><dt>Speech languages</dt><dd>646</dd></div>
+            <div><dt>Runs</dt><dd>Offline</dd></div>
             <div><dt>Price</dt><dd>$0</dd></div>
           </dl>
         </div>
-        <figure class="meter" aria-hidden="true">
-          <div class="meter-bars" data-meter></div>
-          <figcaption>Rendering on this computer, offline</figcaption>
-        </figure>
       </section>
 
-      <section class="showcase" aria-label="ElevenVoice app">
-        <div class="window">
-          <div class="window-bar"><span></span><span></span><span></span></div>
+      <section class="stage" aria-label="ElevenVoice app">
+        <div class="stage-frame" data-stage>
+          <div class="window-bar"><span></span><span></span><span></span><em>ElevenVoice</em></div>
           <img
             src="/assets/home.webp"
             width="1600"
             height="1000"
             alt="ElevenVoice home screen with voice cloning, design, dubbing, stories, audiobook, gallery, transcription, workflows and tools"
+            fetchpriority="high"
           />
         </div>
+        <div class="stage-chip chip-a" data-float="-0.18"><span class="dot"></span>Clone ready · 12 s sample</div>
+        <div class="stage-chip chip-b" data-float="0.14">PT-BR · ES · JA · 646 languages</div>
+      </section>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" data-marquee>
+          <span>English</span><span>Português</span><span>Español</span><span>日本語</span>
+          <span>Deutsch</span><span>Français</span><span>हिन्दी</span><span>한국어</span>
+          <span>Italiano</span><span>Русский</span><span>العربية</span><span>中文</span>
+          <span>Türkçe</span><span>Polski</span><span>Nederlands</span><span>Tiếng Việt</span>
+        </div>
+      </div>
+
+      <section class="story" id="story">
+        <div class="story-media">
+          <div class="story-frame">
+            <img class="is-active" data-shot="0" src="/assets/clone.webp" width="1600" height="1000" alt="Voice cloning screen" />
+            <img data-shot="1" src="/assets/gallery.webp" width="1600" height="1000" loading="lazy" alt="Voice gallery with ready-made voices" />
+            <img data-shot="2" src="/assets/batch.webp" width="1600" height="1000" loading="lazy" alt="Batch dubbing with saved rules" />
+            <img data-shot="3" src="/assets/workflows.webp" width="1600" height="1000" loading="lazy" alt="Visual workflow editor" />
+          </div>
+          <div class="story-progress" aria-hidden="true"><span data-progress></span></div>
+        </div>
+        <ol class="story-steps">
+          <li data-step="0">
+            <span class="step-index">01</span>
+            <h2>Clone a voice from seconds of speech.</h2>
+            <p>Record or drop five to fifteen seconds of clean audio. ElevenVoice turns it into a voice you can use in any of 646 languages.</p>
+          </li>
+          <li data-step="1">
+            <span class="step-index">02</span>
+            <h2>Or start from hundreds of voices.</h2>
+            <p>Pick a ready-made voice from the gallery, or describe a new one in words and design it.</p>
+          </li>
+          <li data-step="2">
+            <span class="step-index">03</span>
+            <h2>Dub whole folders at once.</h2>
+            <p>Queue videos, choose their languages, save the setup as a rule and let a watched folder do the rest.</p>
+          </li>
+          <li data-step="3">
+            <span class="step-index">04</span>
+            <h2>Chain it into workflows.</h2>
+            <p>Transcribe, translate, speak and export in one visual flow, or drive everything from the local API.</p>
+          </li>
+        </ol>
       </section>
 
       <section id="features" class="section">
-        <h2>Clone. Design. Dub. All of it, free.</h2>
-        <div class="tiles">
+        <p class="eyebrow" data-reveal>Everything in the box</p>
+        <h2 class="section-title" data-reveal>Clone. Design. Dub.<br />All of it, free.</h2>
+        <div class="tiles" data-tiles>
           <article class="tile">
             <div class="mock">
               <div class="mock-row"><span class="avatar">MV</span><span>My voice<small>12 s sample</small></span></div>
@@ -211,37 +269,41 @@
         </div>
       </section>
 
-      <section class="section pro">
-        <div class="pro-copy">
-          <h2>The "Pro" tools, free.</h2>
-          <p>Other studios lock production tools behind a plan. In ElevenVoice they are just features.</p>
-          <dl>
-            <div>
-              <dt>Version review</dt>
-              <dd>Approve the take you sign off on, keep revision notes and compare two takes side by side.</dd>
-            </div>
-            <div>
-              <dt>Batch rules &amp; reports</dt>
-              <dd>Save languages, voice and background as a rule, watch a folder, export a CSV of every job.</dd>
-            </div>
-            <div>
-              <dt>Pre-delivery check</dt>
-              <dd>Untranslated lines, missing tracks, silent or clipping audio, tracks longer than the source — flagged before the client sees them.</dd>
-            </div>
-            <div>
-              <dt>Client delivery package</dt>
-              <dd>One zip per project: dubbed audio, SRT and VTT subtitles and the timed script for every language.</dd>
-            </div>
-          </dl>
-        </div>
-        <div class="pro-shots">
-          <img src="/assets/batch.webp" width="1600" height="1000" loading="lazy" alt="Batch dubbing with saved rules" />
-          <img src="/assets/workflows.webp" width="1600" height="1000" loading="lazy" alt="Visual workflow editor" />
+      <section id="pro" class="pro">
+        <div class="pro-inner">
+          <div class="pro-copy">
+            <p class="eyebrow" data-reveal>No plan required</p>
+            <h2 class="section-title" data-reveal>The "Pro" tools, free.</h2>
+            <p class="pro-lede" data-reveal>Other studios lock production tools behind a plan. In ElevenVoice they are just features.</p>
+            <dl data-pro-list>
+              <div>
+                <dt>Version review</dt>
+                <dd>Approve the take you sign off on, keep revision notes and compare two takes side by side.</dd>
+              </div>
+              <div>
+                <dt>Batch rules &amp; reports</dt>
+                <dd>Save languages, voice and background as a rule, watch a folder, export a CSV of every job.</dd>
+              </div>
+              <div>
+                <dt>Pre-delivery check</dt>
+                <dd>Untranslated lines, missing tracks, silent or clipping audio and tracks longer than the source, flagged before the client sees them.</dd>
+              </div>
+              <div>
+                <dt>Client delivery package</dt>
+                <dd>One zip per project: dubbed audio, SRT and VTT subtitles and the timed script for every language.</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="pro-shots">
+            <img data-depth="0.12" src="/assets/settings.webp" width="1600" height="1000" loading="lazy" alt="Appearance settings with the Studio theme" />
+            <img data-depth="-0.16" src="/assets/batch.webp" width="1600" height="1000" loading="lazy" alt="Batch dubbing with saved rules" />
+          </div>
         </div>
       </section>
 
       <section id="compare" class="section">
-        <h2>ElevenVoice and ElevenLabs, row by row.</h2>
+        <p class="eyebrow" data-reveal>Side by side</p>
+        <h2 class="section-title" data-reveal>ElevenVoice and ElevenLabs,<br />row by row.</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -251,7 +313,7 @@
                 <th scope="col">ElevenLabs</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody data-rows>
               <tr><th scope="row">Runs on</th><td>Your computer</td><td>Their cloud</td></tr>
               <tr><th scope="row">Cost</th><td>$0, forever</td><td>Free tier, then paid credit plans</td></tr>
               <tr><th scope="row">Account</th><td>None</td><td>Required</td></tr>
@@ -266,31 +328,53 @@
         <p class="table-note">Based on ElevenLabs' public pricing page. ElevenVoice is not affiliated with ElevenLabs.</p>
       </section>
 
-      <section id="install" class="section install">
-        <h2>Install in one command.</h2>
-        <p>The installer downloads ElevenVoice, sets up Bun and uv if you don't have them, picks the right engine for your GPU and opens the app.</p>
-        <div class="tabs" role="tablist" aria-label="Operating system">
-          <button role="tab" id="tab-win" aria-controls="panel-win" aria-selected="true">Windows</button>
-          <button role="tab" id="tab-unix" aria-controls="panel-unix" aria-selected="false" tabindex="-1">macOS &amp; Linux</button>
+      <section id="download" class="download">
+        <div class="download-inner">
+          <p class="eyebrow" data-reveal>Get it</p>
+          <h2 class="section-title" data-reveal>Download ElevenVoice.</h2>
+          <p class="download-lede" data-reveal>The Windows installer sets everything up on first launch. Prefer the terminal? One command installs and opens the app on any system.</p>
+
+          <div class="download-grid">
+            <a class="dl-card is-main" href="https://github.com/Hylanderry/ElevenVoice/releases/latest" rel="noopener" data-dl="win">
+              <span class="dl-os">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 2.3 6.5 1.4v6.2H0zm7.3-1 8.7-1.3v7.6H7.3zM0 8.4h6.5v6.2L0 13.7zm7.3 0H16V16l-8.7-1.2z"/></svg>
+                Windows 10 / 11
+              </span>
+              <strong>Download the installer</strong>
+              <span class="dl-meta" data-dl-meta>.exe · 64-bit</span>
+              <span class="dl-arrow" aria-hidden="true">↓</span>
+            </a>
+            <a class="dl-card" href="https://github.com/Hylanderry/ElevenVoice/releases/latest" rel="noopener">
+              <span class="dl-os">macOS · Linux</span>
+              <strong>All releases</strong>
+              <span class="dl-meta">Builds and changelog on GitHub</span>
+              <span class="dl-arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="Operating system">
+            <button role="tab" id="tab-win" aria-controls="panel-win" aria-selected="true">Windows</button>
+            <button role="tab" id="tab-unix" aria-controls="panel-unix" aria-selected="false" tabindex="-1">macOS &amp; Linux</button>
+          </div>
+          <div class="terminal" role="tabpanel" id="panel-win" aria-labelledby="tab-win">
+            <span class="prompt">PS&gt;</span>
+            <code>irm https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.ps1 | iex</code>
+            <button class="copy" type="button" data-copy>Copy</button>
+          </div>
+          <div class="terminal" role="tabpanel" id="panel-unix" aria-labelledby="tab-unix" hidden>
+            <span class="prompt">$</span>
+            <code>curl -fsSL https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.sh | sh</code>
+            <button class="copy" type="button" data-copy>Copy</button>
+          </div>
+          <p class="install-note">
+            Prefer to do it by hand? <a href="https://github.com/Hylanderry/ElevenVoice#manually" rel="noopener">Manual steps on GitHub</a>.
+          </p>
         </div>
-        <div class="terminal" role="tabpanel" id="panel-win" aria-labelledby="tab-win">
-          <span class="prompt">PS&gt;</span>
-          <code>irm https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.ps1 | iex</code>
-          <button class="copy" type="button" data-copy>Copy</button>
-        </div>
-        <div class="terminal" role="tabpanel" id="panel-unix" aria-labelledby="tab-unix" hidden>
-          <span class="prompt">$</span>
-          <code>curl -fsSL https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.sh | sh</code>
-          <button class="copy" type="button" data-copy>Copy</button>
-        </div>
-        <p class="install-note">
-          Prefer to do it by hand? <a href="https://github.com/Hylanderry/ElevenVoice#manually" rel="noopener">Manual steps on GitHub</a>.
-          Desktop installers are on the way.
-        </p>
       </section>
 
       <section id="faq" class="section faq">
-        <h2>Questions.</h2>
+        <p class="eyebrow" data-reveal>FAQ</p>
+        <h2 class="section-title" data-reveal>Questions.</h2>
         <details>
           <summary>Is it really free?</summary>
           <p>Yes. There are no plans, credits or sign-in. The code is open source under the AGPL-3.0.</p>
@@ -307,11 +391,15 @@
           <summary>Does anything leave my computer?</summary>
           <p>No. Models download once from Hugging Face; after that everything runs offline. Online translators are optional and only used if you add your own keys.</p>
         </details>
+        <details>
+          <summary>Windows says the installer is from an unknown publisher.</summary>
+          <p>The installer is not code-signed yet. Click "More info" and then "Run anyway", or install from the terminal command above, which builds from the public source.</p>
+        </details>
       </section>
 
-      <section class="section cta">
-        <h2>If it saves you a subscription, give it a star.</h2>
-        <a class="button primary" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">Star ElevenVoice on GitHub</a>
+      <section class="cta">
+        <h2 class="cta-title" data-split-cta>If it saves you a subscription, give it a star.</h2>
+        <a class="button dark big" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">Star ElevenVoice on GitHub</a>
       </section>
     </main>
 
@@ -327,6 +415,6 @@
       </p>
     </footer>
 
-    <script src="/script.js" defer></script>
+    <script type="module" src="/main.js?v=3"></script>
   </body>
 </html>
