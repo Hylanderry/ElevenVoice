@@ -1,8 +1,8 @@
 // Keeps the site on the device for 30 days: pages are fetched fresh when online
 // (falling back to the copy), static files are served from the copy.
-const VERSION = 'ev-v6';
+const VERSION = 'ev-v8';
 const MAX_AGE = 30 * 24 * 3600 * 1000;
-const CORE = ['/', '/styles.css?v=6', '/main.js?v=6', '/vendor/anime-4.5.0.esm.min.js', '/vendor/lenis-1.3.27.mjs', '/vendor/lenis-1.3.27.css', '/assets/logo.svg', '/assets/home.webp'];
+const CORE = ['/', '/offline', '/styles.css?v=8', '/main.js?v=8', '/vendor/anime-4.5.0.esm.min.js', '/vendor/lenis-1.3.27.mjs', '/vendor/lenis-1.3.27.css', '/assets/logo.svg', '/assets/home.webp'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -28,8 +28,9 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
+  if (/^\/(api|_vercel|download)\//.test(url.pathname)) return;
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then((res) => put(req, res)).catch(() => caches.match(req).then((r) => r || caches.match('/'))));
+    e.respondWith(fetch(req).then((res) => put(req, res)).catch(() => caches.match(req).then((r) => r || caches.match('/offline'))));
     return;
   }
   e.respondWith(

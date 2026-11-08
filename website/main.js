@@ -315,7 +315,6 @@ async function github(path, key) {
     const exe = (release.assets || []).find((a) => /\.exe$/i.test(a.name) && !/blockmap/i.test(a.name));
     if (!exe) return localStorage.removeItem('ev-release');
     const mb = Math.round(exe.size / 1048576);
-    $$('[data-exe]').forEach((a) => a.getAttribute('href').startsWith('http') && (a.href = exe.browser_download_url));
     $('[data-dl-meta]').textContent = `${release.tag_name} · .exe · ${mb} MB`;
   } catch {}
 })();
@@ -339,12 +338,137 @@ async function github(path, key) {
   }
   $$('[data-exe]').forEach((a) =>
     a.addEventListener('click', () => {
-      if (!a.href.endsWith('.exe') || !toast) return;
+      if (a.getAttribute('href') !== '/download/windows' || !toast) return;
       toast.hidden = false;
       clearTimeout(timer);
       timer = setTimeout(hide, 9000);
     }),
   );
+})();
+
+/* ───────── Quick translation: device language first, then the visitor's country ───────── */
+const LANGS = [
+  ['en', 'English'], ['pt', 'Português'], ['es', 'Español'], ['fr', 'Français'], ['de', 'Deutsch'],
+  ['it', 'Italiano'], ['nl', 'Nederlands'], ['pl', 'Polski'], ['ru', 'Русский'], ['uk', 'Українська'],
+  ['tr', 'Türkçe'], ['ar', 'العربية'], ['fa', 'فارسی'], ['iw', 'עברית'], ['hi', 'हिन्दी'],
+  ['bn', 'বাংলা'], ['ur', 'اردو'], ['id', 'Bahasa Indonesia'], ['ms', 'Bahasa Melayu'], ['vi', 'Tiếng Việt'],
+  ['th', 'ไทย'], ['tl', 'Filipino'], ['ja', '日本語'], ['ko', '한국어'], ['zh-CN', '简体中文'],
+  ['zh-TW', '繁體中文'], ['sv', 'Svenska'], ['no', 'Norsk'], ['da', 'Dansk'], ['fi', 'Suomi'],
+  ['el', 'Ελληνικά'], ['cs', 'Čeština'], ['sk', 'Slovenčina'], ['ro', 'Română'], ['hu', 'Magyar'],
+  ['bg', 'Български'], ['hr', 'Hrvatski'], ['sr', 'Српски'], ['ca', 'Català'], ['sw', 'Kiswahili'],
+  ['af', 'Afrikaans'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'], ['mr', 'मराठी'], ['gu', 'ગુજરાતી'],
+];
+const COUNTRY_LANG = {
+  pt: 'BR PT AO MZ CV GW ST TL',
+  es: 'ES MX AR CO CL PE VE EC GT CU BO DO HN PY SV NI CR PA UY PR GQ',
+  fr: 'FR BE LU MC SN CI CM ML BF NE TG BJ GA CG CD MG HT',
+  de: 'DE AT LI', it: 'IT SM', nl: 'NL SR', pl: 'PL', ru: 'RU BY KZ KG', uk: 'UA', tr: 'TR',
+  ar: 'SA AE EG MA DZ TN IQ JO SY LB KW QA BH OM YE LY SD', fa: 'IR', iw: 'IL', hi: 'IN',
+  bn: 'BD', ur: 'PK', id: 'ID', ms: 'MY', vi: 'VN', th: 'TH', tl: 'PH', ja: 'JP', ko: 'KR',
+  'zh-CN': 'CN SG', 'zh-TW': 'TW HK MO', sv: 'SE', no: 'NO', da: 'DK', fi: 'FI', el: 'GR CY',
+  cs: 'CZ', sk: 'SK', ro: 'RO MD', hu: 'HU', bg: 'BG', hr: 'HR', sr: 'RS', sw: 'KE TZ',
+};
+const known = new Set(LANGS.map(([c]) => c));
+function normalizeLang(tag) {
+  if (!tag) return null;
+  const t = tag.toLowerCase();
+  if (t.startsWith('zh')) return /tw|hk|mo|hant/.test(t) ? 'zh-TW' : 'zh-CN';
+  const base = { he: 'iw', nb: 'no', nn: 'no', fil: 'tl' }[t.split('-')[0]] ?? t.split('-')[0];
+  return known.has(base) ? base : null;
+}
+function readCookieLang() {
+  const m = document.cookie.match(/(?:^|;\s*)googtrans=\/en\/([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function writeCookieLang(code) {
+  const parts = location.hostname.split('.');
+  const domains = ['', location.hostname, parts.length > 2 ? '.' + parts.slice(-2).join('.') : ''];
+  for (const d of domains) {
+    const domain = d ? `;domain=${d}` : '';
+    document.cookie = code === 'en'
+      ? `googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/${domain}`
+      : `googtrans=/en/${code};max-age=2592000;path=/${domain}`;
+  }
+}
+function loadTranslator() {
+  if (window.google?.translate || $('#gt-script')) return;
+  const host = document.createElement('div');
+  host.id = 'gt-host';
+  host.hidden = true;
+  document.body.append(host);
+  window.evTranslateInit = () =>
+    new google.translate.TranslateElement({ pageLanguage: 'en', autoDisplay: false }, 'gt-host');
+  const script = document.createElement('script');
+  script.id = 'gt-script';
+  script.src = 'https://translate.google.com/translate_a/element.js?cb=evTranslateInit';
+  script.async = true;
+  document.head.append(script);
+}
+async function detectLang() {
+  const saved = store.get('ev-lang');
+  if (saved) return saved;
+  for (const tag of navigator.languages || [navigator.language]) {
+    const code = normalizeLang(tag);
+    if (code && code !== 'en') return code;
+    if (code === 'en') break;
+  }
+  try {
+    const cached = store.get('ev-geo', sessionStorage);
+    const country = cached ?? (await (await fetch('/api/geo')).json()).country;
+    store.set('ev-geo', country, sessionStorage);
+    for (const [code, list] of Object.entries(COUNTRY_LANG)) if (country && list.split(' ').includes(country)) return code;
+  } catch {}
+  return 'en';
+}
+(() => {
+  const box = $('[data-lang]');
+  if (!box) return;
+  const button = $('[data-lang-button]');
+  const panel = $('[data-lang-panel]');
+  const list = $('[data-lang-list]');
+  const search = $('[data-lang-search]');
+  const codeLabel = $('[data-lang-code]');
+  const label = (c) => (c === 'zh-CN' ? 'ZH' : c === 'zh-TW' ? 'ZH' : c === 'iw' ? 'HE' : c.toUpperCase());
+  let current = readCookieLang() || 'en';
+  codeLabel.textContent = label(current);
+  list.innerHTML = LANGS.map(([c, n]) =>
+    `<li role="option" tabindex="-1" data-code="${c}" aria-selected="${c === current}">${n}<small>${label(c)}</small></li>`).join('');
+  const open = (on) => {
+    panel.hidden = !on;
+    button.setAttribute('aria-expanded', String(on));
+    if (on) { search.value = ''; filter(''); setTimeout(() => search.focus(), 30); }
+  };
+  const filter = (q) => {
+    q = q.trim().toLowerCase();
+    for (const li of list.children) li.hidden = !!q && !li.textContent.toLowerCase().includes(q) && !li.dataset.code.includes(q);
+  };
+  const choose = (code) => {
+    store.set('ev-lang', code);
+    if (code === current) return open(false);
+    writeCookieLang(code);
+    location.reload();
+  };
+  button.addEventListener('click', () => open(panel.hidden));
+  search.addEventListener('input', () => filter(search.value));
+  search.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { const first = [...list.children].find((li) => !li.hidden); if (first) choose(first.dataset.code); }
+    if (e.key === 'Escape') open(false);
+  });
+  list.addEventListener('click', (e) => { const li = e.target.closest('li'); if (li) choose(li.dataset.code); });
+  document.addEventListener('click', (e) => { if (!box.contains(e.target)) open(false); });
+
+  if (current !== 'en') loadTranslator();
+  else if (!store.get('ev-lang')) {
+    // First visit: translate automatically when the device or the country points to another language.
+    detectLang().then((code) => {
+      if (code === 'en') return;
+      writeCookieLang(code);
+      current = code;
+      codeLabel.textContent = label(code);
+      for (const li of list.children) li.setAttribute("aria-selected", String(li.dataset.code === code));
+      loadTranslator();
+    });
+  }
 })();
 
 /* ───────── Boot ───────── */

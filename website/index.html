@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>ElevenVoice — Free, local AI voice studio. Fuck-off ElevenLabs, and Pay Services.</title>
+    <title>ElevenVoice — Free ElevenLabs Alternative · Local AI Voice Studio</title>
     <meta
       name="description"
       content="ElevenVoice is a free, open-source AI voice studio that runs on your computer: voice cloning, voice design, video dubbing, text-to-speech, transcription and audiobooks in 646 languages. No account, no subscription, no credits."
@@ -13,6 +13,9 @@
       content="ElevenLabs alternative, free text to speech, voice cloning, AI dubbing, local TTS, offline voice AI, open source voice studio, audiobook generator, speech to text, Whisper"
     />
     <link rel="canonical" href="https://elevenvoice-eta.vercel.app/" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Hylander" />
+    <meta name="application-name" content="ElevenVoice" />
     <meta name="theme-color" content="#f6f5f1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -20,6 +23,8 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="ElevenVoice" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:alt" content="ElevenVoice, the free local AI voice studio" />
     <meta property="og:title" content="ElevenVoice — Fuck-off ElevenLabs, and Pay Services." />
     <meta
       property="og:description"
@@ -38,21 +43,118 @@
     <meta name="twitter:image" content="https://elevenvoice-eta.vercel.app/og.png" />
 
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "ElevenVoice",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "Windows, macOS, Linux",
-        "description": "Free, open-source AI voice studio: voice cloning, voice design, video dubbing, text-to-speech, transcription and audiobooks in 646 languages, running locally.",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "license": "https://www.gnu.org/licenses/agpl-3.0.html",
-        "url": "https://elevenvoice-eta.vercel.app/",
-        "downloadUrl": "https://github.com/Hylanderry/ElevenVoice/releases/latest",
-        "author": { "@type": "Person", "name": "Hylander", "url": "https://github.com/Hylanderry" }
-      }
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://elevenvoice-eta.vercel.app/#app",
+      "name": "ElevenVoice",
+      "alternateName": "Eleven Voice",
+      "applicationCategory": "MultimediaApplication",
+      "applicationSubCategory": "Text-to-speech and voice cloning",
+      "operatingSystem": "Windows 10, Windows 11, macOS, Linux",
+      "softwareVersion": "1.0.0",
+      "description": "Free, open-source AI voice studio and ElevenLabs alternative: voice cloning, voice design, video dubbing, text-to-speech, transcription and audiobooks in 646 languages, running locally on your computer.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "isAccessibleForFree": true,
+      "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "url": "https://elevenvoice-eta.vercel.app/",
+      "downloadUrl": "https://elevenvoice-eta.vercel.app/download/windows",
+      "installUrl": "https://elevenvoice-eta.vercel.app/#download",
+      "screenshot": "https://elevenvoice-eta.vercel.app/assets/home.webp",
+      "image": "https://elevenvoice-eta.vercel.app/og.png",
+      "featureList": [
+        "Voice cloning",
+        "Voice design",
+        "Video dubbing",
+        "Dictation",
+        "Transcription (Whisper)",
+        "Multi-voice stories",
+        "Audiobooks",
+        "Batch dubbing",
+        "Local REST API and MCP server"
+      ],
+      "author": {
+        "@id": "https://elevenvoice-eta.vercel.app/#author"
+      },
+      "sameAs": [
+        "https://github.com/Hylanderry/ElevenVoice"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://elevenvoice-eta.vercel.app/#author",
+      "name": "Hylander",
+      "url": "https://github.com/Hylanderry"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://elevenvoice-eta.vercel.app/#site",
+      "url": "https://elevenvoice-eta.vercel.app/",
+      "name": "ElevenVoice",
+      "inLanguage": "en"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://elevenvoice-eta.vercel.app/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is it really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. There are no plans, credits or sign-in. The code is open source under the AGPL-3.0."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What computer do I need?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Windows 10/11, macOS on Apple Silicon or a 64-bit Linux, with 16 GB of RAM recommended. The default voice engine wants a GPU with about 6 GB of memory; lighter engines run on any computer."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use the voices commercially?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The app is free for any use, but each voice model has its own licence. The default engine (OmniVoice) is for personal and research use. Check every model's notice in Settings → Models before paid work, and only clone voices you have permission to use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does anything leave my computer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Models download once from Hugging Face; after that everything runs offline. Online translators are optional and only used if you add your own keys."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Windows says the installer is from an unknown publisher.",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The installer is not code-signed yet. Click \"More info\" and then \"Run anyway\", or install from the terminal command above, which builds from the public source."
+          }
+        }
+      ]
+    }
+  ]
+}
     </script>
 
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -61,7 +163,7 @@
     />
     <link rel="preload" href="/assets/home.webp" as="image" type="image/webp" />
     <link rel="stylesheet" href="/vendor/lenis-1.3.27.css" />
-    <link rel="stylesheet" href="/styles.css?v=6" />
+    <link rel="stylesheet" href="/styles.css?v=8" />
     <script>
       // The intro plays once per visit; reduced motion skips it entirely.
       try {
@@ -80,7 +182,7 @@
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="nav" data-nav>
-      <a class="brand" href="#top" aria-label="ElevenVoice home">
+      <a class="brand notranslate" translate="no" href="#top" aria-label="ElevenVoice home">
         <img src="/assets/logo.svg" alt="" width="30" height="30" />
         <span>ElevenVoice</span>
       </a>
@@ -89,8 +191,19 @@
         <a href="#features">Features</a>
         <a href="#pro">Pro tools</a>
         <a href="#compare">Compare</a>
+        <a href="#download">Download</a>
       </nav>
-      <a class="nav-download" href="https://github.com/Hylanderry/ElevenVoice/releases/download/v1.0.0/ElevenVoice-1.0.0-win-x64.exe" data-exe data-exe-nav><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 14h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Download</span></a>
+      <div class="lang notranslate" translate="no" data-lang>
+        <button class="lang-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" data-lang-button>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 0c1.9 1.8 2.9 4.2 2.9 7S9.9 13.2 8 15M8 1C6.1 2.8 5.1 5.2 5.1 8s1 5.2 2.9 7M1.3 6h13.4M1.3 10h13.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span data-lang-code>EN</span>
+        </button>
+        <div class="lang-panel" hidden data-lang-panel>
+          <input type="search" placeholder="Search language" aria-label="Search language" data-lang-search />
+          <ul role="listbox" aria-label="Languages" data-lang-list></ul>
+        </div>
+      </div>
+      <a class="nav-download" aria-label="Install ElevenVoice for Windows" href="/download/windows" download data-exe data-exe-nav><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 14h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Install</span></a>
       <a class="star" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.3.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.8-3.6 4 .3.3.6.8.6 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 .2Z"/></svg>
         <span>Star</span>
@@ -108,17 +221,17 @@
           <a class="pill" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener" data-rise>
             <span class="pill-dot" aria-hidden="true"></span>Open source · AGPL-3.0 · v1.0
           </a>
-          <h1 data-split>Fuck-off ElevenLabs, and Pay&nbsp;Services.</h1>
+          <h1 class="notranslate" translate="no" data-split>Fuck-off ElevenLabs, and Pay&nbsp;Services.</h1>
           <p class="hero-lede" data-rise>
             The voice studio that runs on your own computer. Clone, design, dub, dictate, transcribe
             and narrate in 646 languages. No account. No subscription. No credits.
           </p>
           <div class="hero-actions" data-rise>
-            <a class="button dark" href="https://github.com/Hylanderry/ElevenVoice/releases/download/v1.0.0/ElevenVoice-1.0.0-win-x64.exe" data-exe data-download-primary>
+            <a class="button dark" href="/download/windows" download data-exe data-download-primary>
               <span class="os-icon" aria-hidden="true" data-os-icon></span>
               <span>Download for <b data-os-name>Windows</b></span>
             </a>
-            <a class="button ghost" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">View on GitHub</a>
+            <a class="button ghost" href="#download">All download options</a>
           </div>
           <dl class="stats" data-rise>
             <div><dt>GitHub stars</dt><dd data-stars>—</dd></div>
@@ -328,7 +441,7 @@
           <p class="download-lede" data-reveal>The Windows installer sets everything up on first launch. Prefer the terminal? One command installs and opens the app on any system.</p>
 
           <div class="download-grid">
-            <a class="dl-card is-main" href="https://github.com/Hylanderry/ElevenVoice/releases/download/v1.0.0/ElevenVoice-1.0.0-win-x64.exe" data-exe data-dl="win">
+            <a class="dl-card is-main" href="/download/windows" download data-exe data-dl="win">
               <span class="dl-os">
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 2.3 6.5 1.4v6.2H0zm7.3-1 8.7-1.3v7.6H7.3zM0 8.4h6.5v6.2L0 13.7zm7.3 0H16V16l-8.7-1.2z"/></svg>
                 Windows 10 / 11
@@ -349,12 +462,12 @@
             <button role="tab" id="tab-win" aria-controls="panel-win" aria-selected="true">Windows</button>
             <button role="tab" id="tab-unix" aria-controls="panel-unix" aria-selected="false" tabindex="-1">macOS &amp; Linux</button>
           </div>
-          <div class="terminal" role="tabpanel" id="panel-win" aria-labelledby="tab-win">
+          <div class="terminal notranslate" translate="no" role="tabpanel" id="panel-win" aria-labelledby="tab-win">
             <span class="prompt">PS&gt;</span>
             <code>irm https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.ps1 | iex</code>
             <button class="copy" type="button" data-copy>Copy</button>
           </div>
-          <div class="terminal" role="tabpanel" id="panel-unix" aria-labelledby="tab-unix" hidden>
+          <div class="terminal notranslate" translate="no" role="tabpanel" id="panel-unix" aria-labelledby="tab-unix" hidden>
             <span class="prompt">$</span>
             <code>curl -fsSL https://raw.githubusercontent.com/Hylanderry/ElevenVoice/main/install.sh | sh</code>
             <button class="copy" type="button" data-copy>Copy</button>
@@ -401,6 +514,9 @@
         <a href="https://github.com/Hylanderry/ElevenVoice" rel="noopener">GitHub</a> ·
         <a href="https://github.com/Hylanderry/ElevenVoice/blob/main/LICENSE" rel="noopener">AGPL-3.0</a>
       </p>
+      <p class="legal-links">
+        <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/cookies">Cookies</a>
+      </p>
       <p class="credit">
         Based on <a href="https://github.com/debpalash/VoiceStudio" rel="noopener">VoiceStudio</a>.
         Not affiliated with ElevenLabs.
@@ -413,6 +529,6 @@
       <button type="button" aria-label="Close" data-toast-close>×</button>
     </div>
 
-    <script type="module" src="/main.js?v=6"></script>
+    <script type="module" src="/main.js?v=8"></script>
   </body>
 </html>

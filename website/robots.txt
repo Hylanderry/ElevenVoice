@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /download/
 
 Sitemap: https://elevenvoice-eta.vercel.app/sitemap.xml
