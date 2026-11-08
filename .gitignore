@@ -13,6 +13,11 @@ __pycache__/
 .ruff_cache/
 dist/
 build/
+!electron/build/
+electron/build/uv/
+electron/build/omnivoice-tts/
+electron/build/python-runtime/
+electron/build/media-tools/
 .playwright-mcp
 
 # ─────────────────────────────────────────────────────────────────────────
