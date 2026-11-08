@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /download/
 
-Sitemap: https://elevenvoice-eta.vercel.app/sitemap.xml
+Sitemap: https://elevenvoice.sbs/sitemap.xml

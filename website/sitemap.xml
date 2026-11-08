@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://elevenvoice-eta.vercel.app/</loc>
+    <loc>https://elevenvoice.sbs/</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/home.webp</image:loc></image:image>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/clone.webp</image:loc></image:image>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/gallery.webp</image:loc></image:image>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/batch.webp</image:loc></image:image>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/workflows.webp</image:loc></image:image>
-    <image:image><image:loc>https://elevenvoice-eta.vercel.app/assets/settings.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/home.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/clone.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/gallery.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/batch.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/workflows.webp</image:loc></image:image>
+    <image:image><image:loc>https://elevenvoice.sbs/assets/settings.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://elevenvoice-eta.vercel.app/terms</loc>
+    <loc>https://elevenvoice.sbs/terms</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://elevenvoice-eta.vercel.app/privacy</loc>
+    <loc>https://elevenvoice.sbs/privacy</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://elevenvoice-eta.vercel.app/cookies</loc>
+    <loc>https://elevenvoice.sbs/cookies</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
