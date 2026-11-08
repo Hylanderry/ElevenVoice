@@ -1,0 +1,76 @@
+name: Windows installer
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ElevenVoice Setup (.exe)
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      VOICESTUDIO_UPDATE_CHANNEL: electron-stable-win32-x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native/desktop-bridge -> target
+
+      - name: Bundle uv (sets up the Python runtime on first launch)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force electron/build/uv | Out-Null
+          Invoke-WebRequest https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-pc-windows-msvc.zip -OutFile uv.zip
+          Expand-Archive uv.zip -DestinationPath uv-dl -Force
+          Copy-Item uv-dl/uv.exe electron/build/uv/uv-x86_64-pc-windows-msvc.exe
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build installer
+        run: bun run dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElevenVoice-windows-x64
+          if-no-files-found: error
+          path: |
+            electron/release/*.exe
+            electron/release/*.blockmap
+            electron/release/*.yml
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ElevenVoice ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            electron/release/*.exe
+            electron/release/*.blockmap
+            electron/release/*.yml

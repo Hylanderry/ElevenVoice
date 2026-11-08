@@ -126,7 +126,7 @@ export function prepareMacDevElectron({
     const infoPlist = join(stagingBundle, 'Contents', 'Info.plist');
     replacePlistValue(infoPlist, 'CFBundleDisplayName', APP_NAME, runCommand);
     replacePlistValue(infoPlist, 'CFBundleName', APP_NAME, runCommand);
-    replacePlistValue(infoPlist, 'CFBundleIdentifier', 'com.voicestudio.desktop.dev', runCommand);
+    replacePlistValue(infoPlist, 'CFBundleIdentifier', 'com.elevenvoice.desktop.dev', runCommand);
     replacePlistValue(infoPlist, 'CFBundleIconFile', `${APP_NAME}.icns`, runCommand);
     replacePlistValue(infoPlist, 'CFBundleShortVersionString', appVersion, runCommand);
     replacePlistValue(infoPlist, 'CFBundleVersion', appVersion, runCommand);

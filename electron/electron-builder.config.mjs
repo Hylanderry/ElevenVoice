@@ -231,6 +231,19 @@ export default {
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     perMachine: false,
+    // Branded installer: graphite sidebar on the welcome/finish pages, logo in
+    // the page header (scripts/generate_installer_art.py).
+    installerIcon: 'build/icons/icon.ico',
+    uninstallerIcon: 'build/icons/icon.ico',
+    installerHeaderIcon: 'build/icons/icon.ico',
+    installerSidebar: 'build/installer/sidebar.bmp',
+    uninstallerSidebar: 'build/installer/sidebar.bmp',
+    installerHeader: 'build/installer/header.bmp',
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: PRODUCT_NAME,
+    runAfterFinish: true,
+    deleteAppDataOnUninstall: false,
   },
   mac: {
     icon: 'build/icons/icon.icns',

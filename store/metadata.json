@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "identity": {
     "productName": "VoiceStudio",
-    "applicationId": "com.voicestudio.desktop",
+    "applicationId": "com.elevenvoice.desktop",
     "macAppStore": {
       "applicationId": "sh.voicestudio.pro",
       "appStoreConnectId": "6829361961"

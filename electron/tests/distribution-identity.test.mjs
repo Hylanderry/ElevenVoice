@@ -22,7 +22,7 @@ for (const distribution of ['direct', 'microsoft-store', 'snap-store', 'mac-app-
     ).trim();
     assert.equal(
       applicationId,
-      distribution === 'mac-app-store' ? 'sh.voicestudio.pro' : 'com.voicestudio.desktop',
+      distribution === 'mac-app-store' ? 'sh.voicestudio.pro' : 'com.elevenvoice.desktop',
     );
   });
 }
