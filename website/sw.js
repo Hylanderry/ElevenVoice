@@ -1,8 +1,8 @@
 // Keeps the site on the device for 30 days: pages are fetched fresh when online
 // (falling back to the copy), static files are served from the copy.
-const VERSION = 'ev-v5';
+const VERSION = 'ev-v6';
 const MAX_AGE = 30 * 24 * 3600 * 1000;
-const CORE = ['/', '/styles.css?v=5', '/main.js?v=5', '/vendor/anime-4.5.0.esm.min.js', '/vendor/lenis-1.3.27.mjs', '/vendor/lenis-1.3.27.css', '/assets/logo.svg', '/assets/home.webp'];
+const CORE = ['/', '/styles.css?v=6', '/main.js?v=6', '/vendor/anime-4.5.0.esm.min.js', '/vendor/lenis-1.3.27.mjs', '/vendor/lenis-1.3.27.css', '/assets/logo.svg', '/assets/home.webp'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));

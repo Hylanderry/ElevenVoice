@@ -313,13 +313,38 @@ async function github(path, key) {
   try {
     const release = await github('/releases/latest', 'ev-release');
     const exe = (release.assets || []).find((a) => /\.exe$/i.test(a.name) && !/blockmap/i.test(a.name));
-    if (!exe) return;
+    if (!exe) return localStorage.removeItem('ev-release');
     const mb = Math.round(exe.size / 1048576);
-    const card = $('[data-dl="win"]');
-    card.href = exe.browser_download_url;
+    $$('[data-exe]').forEach((a) => a.getAttribute('href').startsWith('http') && (a.href = exe.browser_download_url));
     $('[data-dl-meta]').textContent = `${release.tag_name} · .exe · ${mb} MB`;
-    if (root.dataset.os === 'Windows') $('[data-download-primary]').href = exe.browser_download_url;
   } catch {}
+})();
+
+/* ───────── Direct download: the .exe starts downloading right here ───────── */
+(() => {
+  const toast = $('[data-toast]');
+  let timer;
+  const hide = () => toast && (toast.hidden = true);
+  $('[data-toast-close]')?.addEventListener('click', hide);
+  if (root.dataset.os !== 'Windows') {
+    // Not on Windows: these buttons lead to the install command instead.
+    $$('[data-exe-nav], [data-download-primary]').forEach((a) => {
+      a.href = '#download';
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (lenis) lenis.scrollTo($('#download'), { offset: -80, duration: 1.4 });
+        else $('#download').scrollIntoView();
+      });
+    });
+  }
+  $$('[data-exe]').forEach((a) =>
+    a.addEventListener('click', () => {
+      if (!a.href.endsWith('.exe') || !toast) return;
+      toast.hidden = false;
+      clearTimeout(timer);
+      timer = setTimeout(hide, 9000);
+    }),
+  );
 })();
 
 /* ───────── Boot ───────── */
