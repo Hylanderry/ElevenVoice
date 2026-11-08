@@ -61,7 +61,7 @@
     />
     <link rel="preload" href="/assets/home.webp" as="image" type="image/webp" />
     <link rel="stylesheet" href="/vendor/lenis-1.3.27.css" />
-    <link rel="stylesheet" href="/styles.css?v=3" />
+    <link rel="stylesheet" href="/styles.css?v=5" />
     <script>
       // The intro plays once per visit; reduced motion skips it entirely.
       try {
@@ -84,7 +84,7 @@
         <img src="/assets/logo.svg" alt="" width="30" height="30" />
         <span>ElevenVoice</span>
       </a>
-      <nav aria-label="Main">
+      <nav aria-label="Main" id="site-menu">
         <a href="#story">Studio</a>
         <a href="#features">Features</a>
         <a href="#pro">Pro tools</a>
@@ -96,6 +96,9 @@
         <span>Star</span>
         <span class="star-count" data-stars>—</span>
       </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu" data-menu>
+        <span></span><span></span>
+      </button>
     </header>
 
     <main id="main">
@@ -103,7 +106,7 @@
         <div class="hero-meter" aria-hidden="true" data-meter></div>
         <div class="hero-inner">
           <a class="pill" href="https://github.com/Hylanderry/ElevenVoice" rel="noopener" data-rise>
-            <span class="pill-dot" aria-hidden="true"></span>Open source · AGPL-3.0 · v0.5.7
+            <span class="pill-dot" aria-hidden="true"></span>Open source · AGPL-3.0 · v1.0
           </a>
           <h1 data-split>Fuck-off ElevenLabs, and Pay&nbsp;Services.</h1>
           <p class="hero-lede" data-rise>
@@ -137,8 +140,6 @@
             fetchpriority="high"
           />
         </div>
-        <div class="stage-chip chip-a" data-float="-0.18"><span class="dot"></span>Clone ready · 12 s sample</div>
-        <div class="stage-chip chip-b" data-float="0.14">PT-BR · ES · JA · 646 languages</div>
       </section>
 
       <div class="marquee" aria-hidden="true">
@@ -162,22 +163,18 @@
         </div>
         <ol class="story-steps">
           <li data-step="0">
-            <span class="step-index">01</span>
             <h2>Clone a voice from seconds of speech.</h2>
             <p>Record or drop five to fifteen seconds of clean audio. ElevenVoice turns it into a voice you can use in any of 646 languages.</p>
           </li>
           <li data-step="1">
-            <span class="step-index">02</span>
             <h2>Or start from hundreds of voices.</h2>
             <p>Pick a ready-made voice from the gallery, or describe a new one in words and design it.</p>
           </li>
           <li data-step="2">
-            <span class="step-index">03</span>
             <h2>Dub whole folders at once.</h2>
             <p>Queue videos, choose their languages, save the setup as a rule and let a watched folder do the rest.</p>
           </li>
           <li data-step="3">
-            <span class="step-index">04</span>
             <h2>Chain it into workflows.</h2>
             <p>Transcribe, translate, speak and export in one visual flow, or drive everything from the local API.</p>
           </li>
@@ -185,7 +182,6 @@
       </section>
 
       <section id="features" class="section">
-        <p class="eyebrow" data-reveal>Everything in the box</p>
         <h2 class="section-title" data-reveal>Clone. Design. Dub.<br />All of it, free.</h2>
         <div class="tiles" data-tiles>
           <article class="tile">
@@ -272,7 +268,6 @@
       <section id="pro" class="pro">
         <div class="pro-inner">
           <div class="pro-copy">
-            <p class="eyebrow" data-reveal>No plan required</p>
             <h2 class="section-title" data-reveal>The "Pro" tools, free.</h2>
             <p class="pro-lede" data-reveal>Other studios lock production tools behind a plan. In ElevenVoice they are just features.</p>
             <dl data-pro-list>
@@ -302,7 +297,6 @@
       </section>
 
       <section id="compare" class="section">
-        <p class="eyebrow" data-reveal>Side by side</p>
         <h2 class="section-title" data-reveal>ElevenVoice and ElevenLabs,<br />row by row.</h2>
         <div class="table-wrap">
           <table>
@@ -330,7 +324,6 @@
 
       <section id="download" class="download">
         <div class="download-inner">
-          <p class="eyebrow" data-reveal>Get it</p>
           <h2 class="section-title" data-reveal>Download ElevenVoice.</h2>
           <p class="download-lede" data-reveal>The Windows installer sets everything up on first launch. Prefer the terminal? One command installs and opens the app on any system.</p>
 
@@ -373,7 +366,6 @@
       </section>
 
       <section id="faq" class="section faq">
-        <p class="eyebrow" data-reveal>FAQ</p>
         <h2 class="section-title" data-reveal>Questions.</h2>
         <details>
           <summary>Is it really free?</summary>
@@ -415,6 +407,6 @@
       </p>
     </footer>
 
-    <script type="module" src="/main.js?v=3"></script>
+    <script type="module" src="/main.js?v=5"></script>
   </body>
 </html>

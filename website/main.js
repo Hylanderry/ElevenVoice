@@ -64,11 +64,23 @@ $$('a[href^="#"]').forEach((a) => {
   });
 });
 
-/* ───────── Nav hides on scroll down, returns on scroll up ───────── */
 const nav = $('[data-nav]');
+/* ───────── Mobile menu ───────── */
+const menuButton = $('[data-menu]');
+const setMenu = (open) => {
+  if (!nav || !menuButton) return;
+  nav.classList.toggle('is-open', open);
+  menuButton.setAttribute('aria-expanded', String(open));
+  menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+};
+menuButton?.addEventListener('click', () => setMenu(!nav.classList.contains('is-open')));
+$$('#site-menu a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
+/* ───────── Nav hides on scroll down, returns on scroll up ───────── */
 let lastY = scrollY;
 const onScrollNav = (y) => {
-  if (nav) nav.classList.toggle('is-hidden', y > 400 && y > lastY + 2);
+  if (nav && !nav.classList.contains('is-open')) nav.classList.toggle('is-hidden', y > 400 && y > lastY + 2);
   if (y < lastY - 2 && nav) nav.classList.remove('is-hidden');
   lastY = y;
 };
