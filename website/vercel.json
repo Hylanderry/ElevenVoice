@@ -67,6 +67,17 @@
   ],
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "elevenvoice-eta.vercel.app"
+        }
+      ],
+      "destination": "https://elevenvoice.sbs/:path*",
+      "permanent": true
+    },
+    {
       "source": "/download/windows",
       "destination": "https://github.com/Hylanderry/ElevenVoice/releases/latest/download/ElevenVoice-1.0.0-win-x64.exe",
       "permanent": false
