@@ -1531,7 +1531,15 @@
     "usage_empty": "아직 생성한 항목이 없습니다. 무언가 만들면 여기에 표시됩니다.",
     "usage_since": "{{date}}부터",
     "usage_starred": "별표 표시한 테이크",
-    "usage_takes": "생성한 테이크"
+    "usage_takes": "생성한 테이크",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice 갤러리",

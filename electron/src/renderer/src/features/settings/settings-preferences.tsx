@@ -25,6 +25,8 @@ import { setWorkspace, useWorkspace } from '@/lib/store/workspace';
 import i18n, { APP_LANGUAGE_ITEMS, APP_LANGUAGES, setAppLanguage, type AppLocale } from '@/i18n';
 import { PalettePicker } from './palette-picker';
 import { SettingsRow, SettingsSection } from './settings-layout';
+import { useEffect, useState } from 'react';
+import type { BackgroundSettings } from '../../../../preload/index.d';
 
 /** Settings → Appearance. */
 export function AppearanceSettings() {
@@ -116,8 +118,74 @@ export function AppearanceSettings() {
             </Button>
           ))}
         </SettingsRow>
+        <BackgroundRows />
       </>
     </SettingsSection>
+  );
+}
+
+/** Tray, start with Windows and start minimized (desktop app only). */
+function BackgroundRows() {
+  const { t } = useTranslation();
+  const bridge = typeof window !== 'undefined' ? window.elevenvoice?.app?.background : undefined;
+  const [prefs, setPrefs] = useState<BackgroundSettings | null>(null);
+  useEffect(() => {
+    let live = true;
+    bridge
+      ?.get()
+      .then((value) => live && setPrefs(value))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [bridge]);
+  if (!bridge || !prefs) return null;
+  const update = (changes: Partial<Omit<BackgroundSettings, 'canStartWithSystem'>>) => {
+    setPrefs({ ...prefs, ...changes });
+    void bridge
+      .set(changes)
+      .then((value) => value && setPrefs(value))
+      .catch(() => {});
+  };
+  const installedOnly = prefs.canStartWithSystem ? undefined : t('settings.background_installed_only');
+  return (
+    <>
+      <SettingsRow
+        id="background-run-label"
+        title={t('settings.background_run')}
+        description={t('settings.background_run_desc')}
+      >
+        <Switch
+          aria-labelledby="background-run-label"
+          checked={prefs.runInBackground}
+          onCheckedChange={(runInBackground) => update({ runInBackground })}
+        />
+      </SettingsRow>
+      <SettingsRow
+        id="background-login-label"
+        title={t('settings.background_login')}
+        description={installedOnly ?? t('settings.background_login_desc')}
+      >
+        <Switch
+          aria-labelledby="background-login-label"
+          checked={prefs.openAtLogin}
+          disabled={!prefs.canStartWithSystem}
+          onCheckedChange={(openAtLogin) => update({ openAtLogin })}
+        />
+      </SettingsRow>
+      <SettingsRow
+        id="background-minimized-label"
+        title={t('settings.background_minimized')}
+        description={installedOnly ?? t('settings.background_minimized_desc')}
+      >
+        <Switch
+          aria-labelledby="background-minimized-label"
+          checked={prefs.startMinimized}
+          disabled={!prefs.canStartWithSystem || !prefs.openAtLogin}
+          onCheckedChange={(startMinimized) => update({ startMinimized })}
+        />
+      </SettingsRow>
+    </>
   );
 }
 

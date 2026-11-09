@@ -16,19 +16,20 @@ const dir = () => mkdtempSync(join(tmpdir(), 'ev-bg-'));
 
 describe('background mode', () => {
   it('runs in the background by default and does not start with the system', () => {
-    expect(readBackgroundPrefs(dir())).toEqual({ runInBackground: true, openAtLogin: false });
+    expect(readBackgroundPrefs(dir())).toEqual({ runInBackground: true, openAtLogin: false, startMinimized: true });
   });
 
   it('remembers the user choices', () => {
     const d = dir();
-    writeBackgroundPrefs(d, { runInBackground: false, openAtLogin: true });
-    expect(readBackgroundPrefs(d)).toEqual({ runInBackground: false, openAtLogin: true });
+    writeBackgroundPrefs(d, { runInBackground: false, openAtLogin: true, startMinimized: false });
+    expect(readBackgroundPrefs(d)).toEqual({ runInBackground: false, openAtLogin: true, startMinimized: false });
   });
 
   it('starts hidden when launched with the system', () => {
     expect(launchedInBackground(['app.exe', BACKGROUND_ARG])).toBe(true);
     expect(launchedInBackground(['app.exe'])).toBe(false);
     expect(loginItemSettings(true, 'C:/app.exe')).toMatchObject({ openAtLogin: true, args: [BACKGROUND_ARG] });
+    expect(loginItemSettings(true, 'C:/app.exe', false)).toMatchObject({ openAsHidden: false, args: [] });
   });
 
   it('records the first-launch agreement once', () => {

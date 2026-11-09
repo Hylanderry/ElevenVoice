@@ -148,7 +148,8 @@ ipcMain.handle(
   (event) => BrowserWindow.fromWebContents(event.sender)?.isFullScreen() ?? false,
 );
 
-let backgroundPrefs: BackgroundPrefs = { runInBackground: true, openAtLogin: false };
+let backgroundPrefs: BackgroundPrefs = { runInBackground: true, openAtLogin: false, startMinimized: true };
+let refreshTrayMenu: () => void = () => {};
 let hiddenToTrayNotice = false;
 
 /** First launch: agreement to the terms and to every model licence, asked once. */
@@ -178,10 +179,35 @@ async function confirmFirstRunConsent(): Promise<boolean> {
   }
 }
 
+const canStartWithSystem = () => app.isPackaged && process.platform !== 'linux';
+
 function applyLoginItem(): void {
-  if (!app.isPackaged || process.platform === 'linux') return;
-  app.setLoginItemSettings(loginItemSettings(backgroundPrefs.openAtLogin, process.execPath));
+  if (!canStartWithSystem()) return;
+  app.setLoginItemSettings(
+    loginItemSettings(backgroundPrefs.openAtLogin, process.execPath, backgroundPrefs.startMinimized),
+  );
 }
+
+function saveBackgroundPrefs(next: BackgroundPrefs): void {
+  backgroundPrefs = next;
+  writeBackgroundPrefs(app.getPath('userData'), next);
+  applyLoginItem();
+  refreshTrayMenu();
+}
+
+ipcMain.handle('app:background:get', (event) => {
+  if (!isTrustedRenderer(event.senderFrame?.url ?? '', process.env.ELECTRON_RENDERER_URL)) return null;
+  return { ...backgroundPrefs, canStartWithSystem: canStartWithSystem() };
+});
+ipcMain.handle('app:background:set', (event, changes: Partial<BackgroundPrefs>) => {
+  if (!isTrustedRenderer(event.senderFrame?.url ?? '', process.env.ELECTRON_RENDERER_URL)) return null;
+  const next = { ...backgroundPrefs };
+  for (const key of ['runInBackground', 'openAtLogin', 'startMinimized'] as const) {
+    if (typeof changes?.[key] === 'boolean') next[key] = changes[key];
+  }
+  saveBackgroundPrefs(next);
+  return { ...backgroundPrefs, canStartWithSystem: canStartWithSystem() };
+});
 
 function createWindow(): BrowserWindow {
   const appUrl =
@@ -395,7 +421,7 @@ if (process.env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
         clearInterval(periodicUpdateCheck);
         closeUpdateIpc();
       };
-      if (!launchedInBackground(process.argv)) mainWindow = createWindow();
+      if (!(launchedInBackground(process.argv) && backgroundPrefs.startMinimized)) mainWindow = createWindow();
       closeWatch = installWatchFolders(
         () => mainWindow,
         () => backend.baseUrl,
@@ -409,11 +435,6 @@ if (process.env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
         if (!isLiveWindow(mainWindow)) mainWindow = createWindow();
         return mainWindow;
       };
-      const saveBackgroundPrefs = (next: BackgroundPrefs) => {
-        backgroundPrefs = next;
-        writeBackgroundPrefs(app.getPath('userData'), next);
-        applyLoginItem();
-      };
       const capture = installNativeCapture(PRELOAD_PATH, tray, () => mainWindow, {
         openMain,
         extraItems: () => [
@@ -423,7 +444,7 @@ if (process.env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
             checked: backgroundPrefs.runInBackground,
             click: (item) => saveBackgroundPrefs({ ...backgroundPrefs, runInBackground: item.checked }),
           },
-          ...(app.isPackaged && process.platform !== 'linux'
+          ...(canStartWithSystem()
             ? [
                 {
                   label: 'Start with the system',
@@ -437,6 +458,7 @@ if (process.env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
         ],
       });
       closeCapture = capture.close;
+      refreshTrayMenu = capture.refreshTray;
       capture.refreshTray();
       tray.on('click', () => activateLiveWindow(openMain()));
       observeMainProcessTask(backend.start(), mainErrors, 'Backend startup');

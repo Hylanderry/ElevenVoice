@@ -1531,7 +1531,15 @@
     "gpu_report_engine_no_family_path": "CPU：沒有適用於你的 GPU 類型的路徑",
     "gpu_report_engine_no_gpu": "CPU：沒有可用的 GPU",
     "gpu_report_engine_needs_accelerator": "需要這台電腦沒有的 GPU（{{needs}}）",
-    "models_dir_desc": "下載的模型存放在這裡。如果此磁碟空間不足，請選擇剩餘空間更多的磁碟。"
+    "models_dir_desc": "下載的模型存放在這裡。如果此磁碟空間不足，請選擇剩餘空間更多的磁碟。",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice 畫廊",

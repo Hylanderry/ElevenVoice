@@ -1714,7 +1714,15 @@
     "gpu_report_engine_no_family_path": "CPU: no path for your GPU type",
     "gpu_report_engine_no_gpu": "CPU: no GPU available",
     "gpu_report_engine_needs_accelerator": "Needs a GPU ({{needs}}) this machine does not have",
-    "models_dir_desc": "Downloaded models are stored here. Choose a drive with more free space if this one fills up."
+    "models_dir_desc": "Downloaded models are stored here. Choose a drive with more free space if this one fills up.",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice Gallery",

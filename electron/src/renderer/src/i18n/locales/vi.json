@@ -1531,7 +1531,15 @@
     "gpu_report_engine_no_family_path": "CPU: không có đường chạy cho loại GPU của bạn",
     "gpu_report_engine_no_gpu": "CPU: không có GPU",
     "gpu_report_engine_needs_accelerator": "Cần GPU ({{needs}}) mà máy này không có",
-    "models_dir_desc": "Các mô hình đã tải được lưu ở đây. Hãy chọn ổ có nhiều dung lượng trống hơn nếu ổ này đầy."
+    "models_dir_desc": "Các mô hình đã tải được lưu ở đây. Hãy chọn ổ có nhiều dung lượng trống hơn nếu ổ này đầy.",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice Thư viện ảnh",

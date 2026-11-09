@@ -19,6 +19,13 @@ export type BackendStage =
   | 'port_in_use' // backend exited 78 (EX_CONFIG): another process holds the port
   | 'failed'; // could not start within the budget / spawn error
 
+export interface BackgroundSettings {
+  runInBackground: boolean;
+  openAtLogin: boolean;
+  startMinimized: boolean;
+  canStartWithSystem: boolean;
+}
+
 export interface NativeCrashRecord {
   timestamp: number;
   version: string;
@@ -431,6 +438,11 @@ export interface ElevenVoiceBridge {
     onNavigate(callback: (path: string) => void): () => void;
     /** Native fullscreen state (macOS hides the traffic lights there); the callback fires on every change. */
     isFullScreen(): Promise<boolean>;
+    /** Tray, start-with-system and start-minimized choices; null outside the app. */
+    background: {
+      get(): Promise<BackgroundSettings | null>;
+      set(changes: Partial<Omit<BackgroundSettings, 'canStartWithSystem'>>): Promise<BackgroundSettings | null>;
+    };
     onFullScreen(callback: (fullscreen: boolean) => void): () => void;
     onPersistenceFlush(callback: () => void | Promise<void>): () => void;
   };

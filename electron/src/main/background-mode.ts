@@ -10,11 +10,13 @@ export const TERMS_URL = 'https://elevenvoice.sbs/terms';
 export interface BackgroundPrefs {
   /** Closing the window hides it to the tray; the engine keeps running. */
   runInBackground: boolean;
-  /** Start with the system, hidden in the tray. */
+  /** Start with the system. */
   openAtLogin: boolean;
+  /** When starting with the system, stay in the tray instead of opening the window. */
+  startMinimized: boolean;
 }
 
-const DEFAULTS: BackgroundPrefs = { runInBackground: true, openAtLogin: false };
+const DEFAULTS: BackgroundPrefs = { runInBackground: true, openAtLogin: false, startMinimized: true };
 
 function readJson<T>(path: string): Partial<T> | null {
   try {
@@ -39,6 +41,8 @@ export function readBackgroundPrefs(userData: string): BackgroundPrefs {
     runInBackground:
       typeof saved.runInBackground === 'boolean' ? saved.runInBackground : DEFAULTS.runInBackground,
     openAtLogin: typeof saved.openAtLogin === 'boolean' ? saved.openAtLogin : DEFAULTS.openAtLogin,
+    startMinimized:
+      typeof saved.startMinimized === 'boolean' ? saved.startMinimized : DEFAULTS.startMinimized,
   };
 }
 
@@ -51,8 +55,13 @@ export function launchedInBackground(argv: readonly string[]): boolean {
 }
 
 /** Login-item settings for the current platform (Windows/macOS). */
-export function loginItemSettings(openAtLogin: boolean, execPath: string) {
-  return { openAtLogin, openAsHidden: true, path: execPath, args: [BACKGROUND_ARG] };
+export function loginItemSettings(openAtLogin: boolean, execPath: string, startMinimized = true) {
+  return {
+    openAtLogin,
+    openAsHidden: startMinimized,
+    path: execPath,
+    args: startMinimized ? [BACKGROUND_ARG] : [],
+  };
 }
 
 export function consentPath(userData: string): string {

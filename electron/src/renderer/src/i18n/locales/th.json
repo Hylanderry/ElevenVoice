@@ -1531,7 +1531,15 @@
     "gpu_report_engine_no_family_path": "CPU: ไม่มีเส้นทางสำหรับ GPU ประเภทของคุณ",
     "gpu_report_engine_no_gpu": "CPU: ไม่มี GPU ให้ใช้",
     "gpu_report_engine_needs_accelerator": "ต้องใช้ GPU ({{needs}}) ซึ่งเครื่องนี้ไม่มี",
-    "models_dir_desc": "โมเดลที่ดาวน์โหลดจะเก็บไว้ที่นี่ หากไดรฟ์นี้เต็ม ให้เลือกไดรฟ์ที่มีพื้นที่ว่างมากกว่า"
+    "models_dir_desc": "โมเดลที่ดาวน์โหลดจะเก็บไว้ที่นี่ หากไดรฟ์นี้เต็ม ให้เลือกไดรฟ์ที่มีพื้นที่ว่างมากกว่า",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice แกลเลอรี่",

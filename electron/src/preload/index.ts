@@ -69,6 +69,10 @@ const bridge: ElevenVoiceBridge = {
     isDev: process.env.NODE_ENV === 'development' || !!process.env.ELECTRON_RENDERER_URL,
     onNavigate: (callback) => subscribe<string>('app:navigate', callback),
     isFullScreen: () => ipcRenderer.invoke('app:is-fullscreen'),
+    background: {
+      get: () => ipcRenderer.invoke('app:background:get'),
+      set: (changes) => ipcRenderer.invoke('app:background:set', changes),
+    },
     onFullScreen: (callback) => subscribe<boolean>('app:fullscreen', callback),
     onPersistenceFlush: (callback) => {
       const listener = (_event: IpcRendererEvent, token: string) => {

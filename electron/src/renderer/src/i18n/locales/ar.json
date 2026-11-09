@@ -1559,7 +1559,15 @@
     "gpu_report_engine_no_family_path": "CPU: لا يوجد مسار لنوع GPU لديك",
     "gpu_report_engine_no_gpu": "CPU: لا يتوفر GPU",
     "gpu_report_engine_needs_accelerator": "يحتاج إلى GPU ({{needs}}) غير موجود في هذا الجهاز",
-    "models_dir_desc": "تُخزَّن النماذج المنزّلة هنا. اختر قرصًا به مساحة أكبر إذا امتلأ هذا القرص."
+    "models_dir_desc": "تُخزَّن النماذج المنزّلة هنا. اختر قرصًا به مساحة أكبر إذا امتلأ هذا القرص.",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice معرض",

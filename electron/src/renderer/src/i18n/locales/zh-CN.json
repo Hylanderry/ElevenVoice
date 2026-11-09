@@ -1531,7 +1531,15 @@
     "review_mode": "审核模式",
     "review_mode_off": "直接执行到底",
     "translate_cinematic": "影视级",
-    "translate_quality_desc": "快速模式直译且速度快；影视级模式使用 LLM 生成自然表达。"
+    "translate_quality_desc": "快速模式直译且速度快；影视级模式使用 LLM 生成自然表达。",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice 音色库",

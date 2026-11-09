@@ -1531,7 +1531,15 @@
     "gpu_report_engine_no_family_path": "CPU: geen pad voor uw GPU-type",
     "gpu_report_engine_no_gpu": "CPU: geen GPU beschikbaar",
     "gpu_report_engine_needs_accelerator": "Heeft een GPU ({{needs}}) nodig die deze computer niet heeft",
-    "models_dir_desc": "Gedownloade modellen worden hier opgeslagen. Kies een schijf met meer vrije ruimte als deze volraakt."
+    "models_dir_desc": "Gedownloade modellen worden hier opgeslagen. Kies een schijf met meer vrije ruimte als deze volraakt.",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice Galerij",

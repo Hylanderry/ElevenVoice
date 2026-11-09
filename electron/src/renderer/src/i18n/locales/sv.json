@@ -1531,7 +1531,15 @@
     "gpu_report_engine_no_family_path": "CPU: ingen väg för din GPU-typ",
     "gpu_report_engine_no_gpu": "CPU: ingen GPU tillgänglig",
     "gpu_report_engine_needs_accelerator": "Kräver en GPU ({{needs}}) som den här datorn inte har",
-    "models_dir_desc": "Nedladdade modeller lagras här. Välj en enhet med mer ledigt utrymme om den här blir full."
+    "models_dir_desc": "Nedladdade modeller lagras här. Välj en enhet med mer ledigt utrymme om den här blir full.",
+    "background_title": "Background and startup",
+    "background_run": "Keep running when the window is closed",
+    "background_run_desc": "ElevenVoice and its voice engine stay in the tray, ready for you and your agents.",
+    "background_login": "Start with Windows",
+    "background_login_desc": "Opens ElevenVoice when you sign in to the computer.",
+    "background_minimized": "Start minimized",
+    "background_minimized_desc": "When it starts with Windows, stay in the tray instead of opening the window.",
+    "background_installed_only": "Available in the installed app."
   },
   "gallery": {
     "title": "ElevenVoice Galleri",
