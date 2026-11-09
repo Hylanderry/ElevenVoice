@@ -200,6 +200,8 @@ def _pick_gpu_workers() -> int:
 
     Designed to fail safe — any exception → 1 worker, never propagated.
     """
+    from core import power_guard
+    power_guard.apply()  # light hardware: one GPU job, capped threads and VRAM
     override = os.environ.get("ELEVENVOICE_GPU_WORKERS")
     if override:
         try:
@@ -834,7 +836,8 @@ async def run_on_gpu_pool_guarded(fn, *, what: str = "GPU job",
     queue_timeout = GPU_QUEUE_TIMEOUT_S if queue_timeout is None else float(queue_timeout)
 
     started = asyncio.Event()
-    _inner = contain_system_exit(fn, what)
+    from core import power_guard
+    _inner = contain_system_exit(power_guard.guarded(fn), what)
     # The worker thread's ident, published by _job so the waiter can read this
     # job's model-load heartbeats (#1367). A dict, not a nonlocal: the closure
     # runs on a pool thread while the waiter reads from the event loop.

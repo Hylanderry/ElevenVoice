@@ -1,6 +1,7 @@
 import importlib.abc
 import os as _os_licences
 _os_licences.environ.setdefault("ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT", "0")  # tests exercise the per-model gate
+_os_licences.environ.setdefault("ELEVENVOICE_POWER_MODE", "full")  # no rest between jobs in timing tests
 import importlib.machinery
 import os
 import sys

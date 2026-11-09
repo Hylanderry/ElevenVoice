@@ -7,6 +7,7 @@ collection time**: pytest imports test modules while collecting, so in any
 mixed invocation (``pytest tests/... backend/tests/...``) every *later* lazy
 import os as _os_licences
 _os_licences.environ.setdefault("ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT", "0")  # tests exercise the per-model gate
+_os_licences.environ.setdefault("ELEVENVOICE_POWER_MODE", "full")  # no rest between jobs in timing tests
 import of ``core.config`` resolved the stub instead of the real module —
 ``tests/test_router_smoke.py``'s ``from main import app`` died with
 ImportError (missing config attrs), and
