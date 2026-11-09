@@ -13,16 +13,22 @@ the load below that edge:
 
 Profiles (percentages of the hardware the engine may use):
 
-==========  ==========  ====  ==========================================
-profile     GPU memory  CPU   active time (rest = the remaining share)
-==========  ==========  ====  ==========================================
-safe        70 %        50 %  60 %   GPUs up to 6 GB (default there)
-balanced    85 %        75 %  85 %   GPUs up to 10 GB and CPU-only computers
-full        100 %       100 % 100 %  larger GPUs
-==========  ==========  ====  ==========================================
+===========  ==========  ====  ==========================================
+profile      GPU memory  CPU   active time (rest = the remaining share)
+===========  ==========  ====  ==========================================
+safe         70 %        50 %  60 %   GPUs up to 6 GB
+balanced     85 %        75 %  85 %   GPUs up to 10 GB and CPU-only computers
+performance  90 %        90 %  95 %   larger GPUs (default there)
+full         100 %       100 % 100 %  only when asked for explicitly
+===========  ==========  ====  ==========================================
+
+Whatever the profile, on NVIDIA cards every job also reads the GPU temperature
+and power draw (``nvidia-smi``) and rests longer when the card runs hot or near
+its power limit — a strong card on a weak power supply restarts a computer
+just as easily as a small one.
 
 ``ELEVENVOICE_POWER_MODE`` (or the ``power_mode`` preference) picks one of
-``safe``, ``balanced``, ``full`` or ``auto`` (default). Never raises.
+``safe``, ``balanced``, ``performance``, ``full`` or ``auto`` (default). Never raises.
 """
 from __future__ import annotations
 
@@ -37,9 +43,13 @@ logger = logging.getLogger("elevenvoice.power_guard")
 PROFILES: dict[str, dict[str, float]] = {
     "safe": {"gpu_memory": 0.70, "cpu": 0.50, "duty": 0.60},
     "balanced": {"gpu_memory": 0.85, "cpu": 0.75, "duty": 0.85},
+    "performance": {"gpu_memory": 0.90, "cpu": 0.90, "duty": 0.95},
     "full": {"gpu_memory": 1.00, "cpu": 1.00, "duty": 1.00},
 }
 MAX_REST_SECONDS = 30.0
+HOT_C = 78          # rest as long as the job ran
+CRITICAL_C = 84     # long rest
+POWER_NEAR_LIMIT = 0.92
 _lock = threading.Lock()
 _applied: dict | None = None
 
@@ -64,7 +74,7 @@ def mode_for_hardware(gpu_total_gb: float | None) -> str:
         return "safe"
     if gpu_total_gb <= 10.5:
         return "balanced"
-    return "full"
+    return "performance"
 
 
 def _gpu_total_gb(torch) -> float | None:
@@ -98,7 +108,7 @@ def apply(torch=None) -> dict:
         if _applied is not None:
             return dict(_applied)
         profile = resolve(torch)
-        if profile["mode"] != "full":
+        if profile["mode"] in ("safe", "balanced"):
             # One job on the GPU at a time unless the user explicitly asked for more.
             os.environ.setdefault("ELEVENVOICE_GPU_WORKERS", "1")
         try:
@@ -140,6 +150,43 @@ def rest_seconds(busy_seconds: float, duty: float) -> float:
     return min(MAX_REST_SECONDS, busy_seconds * (1.0 - duty) / max(duty, 0.05))
 
 
+def gpu_vitals() -> tuple[float, float] | None:
+    """(temperature °C, power draw / power limit) of the hottest NVIDIA GPU, or None."""
+    import shutil
+    import subprocess
+
+    exe = shutil.which("nvidia-smi")
+    if not exe:
+        return None
+    try:
+        out = subprocess.run(
+            [exe, "--query-gpu=temperature.gpu,power.draw,power.limit", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=3,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        ).stdout
+        worst = None
+        for line in out.strip().splitlines():
+            temp, draw, limit = (part.strip() for part in line.split(","))
+            ratio = float(draw) / float(limit) if limit not in ("", "[N/A]") and float(limit) > 0 else 0.0
+            reading = (float(temp), ratio)
+            worst = reading if worst is None or reading > worst else worst
+        return worst
+    except Exception:  # noqa: BLE001 — no reading never blocks generation
+        return None
+
+
+def thermal_rest(busy_seconds: float, vitals: tuple[float, float] | None) -> float:
+    """Extra rest when the GPU is hot or close to its power limit."""
+    if not vitals:
+        return 0.0
+    temp, power = vitals
+    if temp >= CRITICAL_C:
+        return MAX_REST_SECONDS
+    if temp >= HOT_C or power >= POWER_NEAR_LIMIT:
+        return min(MAX_REST_SECONDS, max(busy_seconds, 3.0))
+    return 0.0
+
+
 def guarded(fn):
     """Wrap a blocking GPU/CPU job so it rests afterwards per the profile."""
 
@@ -149,7 +196,10 @@ def guarded(fn):
         try:
             return fn()
         finally:
-            pause = rest_seconds(time.monotonic() - start, profile["duty"])
+            busy = time.monotonic() - start
+            pause = rest_seconds(busy, profile["duty"])
+            if profile["mode"] != "full":
+                pause = max(pause, thermal_rest(busy, gpu_vitals()))
             if pause > 0:
                 time.sleep(pause)
 
