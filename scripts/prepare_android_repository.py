@@ -40,7 +40,7 @@ def release_asset(release: dict, repository: str) -> dict:
     origin = f'https://github.com/{repository}'
     if release.get('html_url') != f'{origin}/releases/tag/{tag}':
         raise ValueError('Unexpected release source')
-    name = f'VoiceStudio-{tag[1:]}-android.apk'
+    name = f'ElevenVoice-{tag[1:]}-android.apk'
     assets = [item for item in release.get('assets', []) if item.get('name') == name]
     if len(assets) != 1:
         raise ValueError('Release must contain exactly one Android APK')
@@ -150,7 +150,7 @@ def build(apk: Path, release: dict, output: Path, keystore: Path, alias: str,
     if output.exists():
         raise ValueError('Output already exists; use a fresh staging directory')
     # Private files live outside the Pages artifact, even if fdroid update fails.
-    with tempfile.TemporaryDirectory(prefix='voicestudio-fdroid-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='elevenvoice-fdroid-') as temporary:
         work = Path(temporary)
         repo = work / 'repo'
         repo.mkdir()
@@ -158,8 +158,8 @@ def build(apk: Path, release: dict, output: Path, keystore: Path, alias: str,
         shutil.copyfile(apk, destination)
         config = {
             'repo_url': settings['repositoryUrl'],
-            'repo_name': 'VoiceStudio' + (' preview (not published)' if preview else ''),
-            'repo_description': 'Android releases published by VoiceStudio. Models download only when requested.',
+            'repo_name': 'ElevenVoice' + (' preview (not published)' if preview else ''),
+            'repo_description': 'Android releases published by ElevenVoice. Models download only when requested.',
             'repo_icon': 'icon.png', 'archive_older': 0,
             'keystore': str(keystore), 'repo_keyalias': alias,
             'keystorepass': {'env': 'FDROID_KEYSTORE_PASSWORD'},
@@ -171,7 +171,7 @@ def build(apk: Path, release: dict, output: Path, keystore: Path, alias: str,
         (repo / 'icons').mkdir()
         shutil.copyfile(ROOT / 'store/google-play/icon-512.png', repo / 'icons/icon.png')
         app_metadata = {
-            'Name': 'VoiceStudio', 'Categories': ['Multimedia'], 'License': 'AGPL-3.0-only',
+            'Name': 'ElevenVoice', 'Categories': ['Multimedia'], 'License': 'AGPL-3.0-only',
             'WebSite': 'https://voicestudio.sh', 'SourceCode': f'https://github.com/{settings["sourceRepository"]}',
             'IssueTracker': f'https://github.com/{settings["sourceRepository"]}/issues',
             'Summary': 'Offline speech, voice cloning, dubbing and transcription',
@@ -187,7 +187,7 @@ def build(apk: Path, release: dict, output: Path, keystore: Path, alias: str,
         shutil.copytree(ROOT / 'fastlane/metadata/android/en-US', locale)
         (locale / 'changelogs').mkdir(exist_ok=True)
         (locale / 'changelogs' / f'{metadata["versionCode"]}.txt').write_text(
-            f'VoiceStudio {metadata["versionName"]}: signed Android release. Release notes: {release["html_url"]}\n')
+            f'ElevenVoice {metadata["versionName"]}: signed Android release. Release notes: {release["html_url"]}\n')
         # Keep the tool log private: only repo/ is copied into the public tree.
         with (work / 'fdroid-update.log').open('wb') as log:
             completed = subprocess.run([str(Path(sys.executable).with_name('fdroid')), 'update', '--pretty'],
@@ -211,8 +211,8 @@ def build(apk: Path, release: dict, output: Path, keystore: Path, alias: str,
     (output / 'distribution.json').write_text(json.dumps(proof, indent=2) + '\n')
     repo_href = 'fdroid/repo/?fingerprint=' + fingerprint.upper()
     (output / 'index.html').write_text(
-        '<!doctype html><meta charset="utf-8"><title>VoiceStudio Android</title>'
-        '<h1>VoiceStudio Android</h1><p>Publisher-operated Android release repository.</p>'
+        '<!doctype html><meta charset="utf-8"><title>ElevenVoice Android</title>'
+        '<h1>ElevenVoice Android</h1><p>Publisher-operated Android release repository.</p>'
         f'<p><a href="{html.escape(repo_href)}">F-Droid repository</a> · '
         f'<a href="{html.escape(obtainium_link(obtainium))}">Add to Obtainium</a></p>'
         '<p>Use the repository URL and fingerprint to add it in an F-Droid client. '
@@ -229,7 +229,7 @@ def main() -> None:
     parser.add_argument('--release-json', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--keystore', type=Path, required=True)
-    parser.add_argument('--alias', default='voicestudio')
+    parser.add_argument('--alias', default='elevenvoice')
     parser.add_argument('--apksigner', required=True)
     parser.add_argument('--preview', action='store_true', help='Use an ephemeral test key; never deploy this output')
     args = parser.parse_args()

@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 function renderSettings() {
-  mock.api.mockResolvedValue({ data_dir: 'C:\\VoiceStudio-old' });
+  mock.api.mockResolvedValue({ data_dir: 'C:\\ElevenVoice-old' });
   render(
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
@@ -53,26 +53,26 @@ function renderSettings() {
 it('shows the verified move plan and sends only its one-shot authorization', async () => {
   mock.choose.mockResolvedValue({
     authorization: 'move-token',
-    source: 'C:\\VoiceStudio-old',
-    target: 'D:\\VoiceStudio',
+    source: 'C:\\ElevenVoice-old',
+    target: 'D:\\ElevenVoice',
     size_bytes: 2048,
     file_count: 7,
   });
   mock.relocate.mockResolvedValue({
-    path: 'D:\\VoiceStudio',
+    path: 'D:\\ElevenVoice',
     size_bytes: 2048,
     file_count: 7,
     removed_source: true,
   });
   renderSettings();
 
-  await screen.findByText('C:\\VoiceStudio-old');
+  await screen.findByText('C:\\ElevenVoice-old');
   fireEvent.click(screen.getByRole('button', { name: 'settings.data_move_choose' }));
-  await screen.findByText('D:\\VoiceStudio');
+  await screen.findByText('D:\\ElevenVoice');
   fireEvent.click(screen.getByRole('button', { name: 'settings.data_move_confirm' }));
 
   await waitFor(() => expect(mock.relocate).toHaveBeenCalledWith('move-token'));
-  expect(mock.relocate).not.toHaveBeenCalledWith(expect.stringContaining('VoiceStudio'));
+  expect(mock.relocate).not.toHaveBeenCalledWith(expect.stringContaining('ElevenVoice'));
   await waitFor(() => expect(mock.toastSuccess).toHaveBeenCalled());
 });
 

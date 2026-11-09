@@ -9,7 +9,7 @@
  * default). Those users' first contact with the fact was a 300s wait ending in
  * "this job was too heavy": #1240, #1246, #1248, #1277, #1283, #1284.
  *
- * The generate response already carries `X-OmniVoice-Routing`, but a response
+ * The generate response already carries `X-ElevenVoice-Routing`, but a response
  * header arrives when the job ends — five minutes too late to be a warning.
  * So the check runs at the chokepoint every synth path shares, before the POST.
  *

@@ -1,4 +1,4 @@
-"""The FlashInfer opt-in (OMNIVOICE_FLASHINFER, upstream k2-fsa port).
+"""The FlashInfer opt-in (ELEVENVOICE_FLASHINFER, upstream k2-fsa port).
 
 An optimization must never be a point of failure (#278 contract, same as
 torch.compile): the env knob is CUDA-only, off by default, refuses with a
@@ -26,7 +26,7 @@ def _mm():
 @pytest.fixture(autouse=True)
 def _reset_latch(monkeypatch):
     monkeypatch.setattr(_ee(), "_flashinfer_runtime_failure", None)
-    monkeypatch.delenv("OMNIVOICE_FLASHINFER", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FLASHINFER", raising=False)
 
 
 # ── the env knob ────────────────────────────────────────────────────────────
@@ -43,18 +43,18 @@ def _reset_latch(monkeypatch):
 )
 def test_flashinfer_mode_parsing(monkeypatch, value, expected):
     if value:
-        monkeypatch.setenv("OMNIVOICE_FLASHINFER", value)
+        monkeypatch.setenv("ELEVENVOICE_FLASHINFER", value)
     assert _ee().flashinfer_mode() == expected
 
 
 def test_should_flashinfer_refuses_non_cuda(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_FLASHINFER", "1")
+    monkeypatch.setenv("ELEVENVOICE_FLASHINFER", "1")
     assert _ee().should_flashinfer("cpu") == "off"
     assert _ee().should_flashinfer("mps") == "off"
 
 
 def test_should_flashinfer_refuses_without_the_package(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_FLASHINFER", "1")
+    monkeypatch.setenv("ELEVENVOICE_FLASHINFER", "1")
     ee = _ee()
     monkeypatch.setattr(ee.importlib.util, "find_spec", lambda name: None)
     assert ee.should_flashinfer("cuda") == "off"
@@ -92,7 +92,7 @@ def test_sanitizer_failure_never_latches_the_raw_reason(monkeypatch):
 
 
 def test_runtime_failure_latches_the_session_off(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_FLASHINFER", "graph")
+    monkeypatch.setenv("ELEVENVOICE_FLASHINFER", "graph")
     ee = _ee()
     monkeypatch.setattr(ee.importlib.util, "find_spec", lambda name: object())
     assert ee.should_flashinfer("cuda") == "graph"

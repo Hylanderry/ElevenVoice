@@ -133,11 +133,11 @@ describe('ActionBar', () => {
     expect(screen.getByText('install-stt')).toBeInTheDocument();
     // Typing the transcript is the other fix; the button opens and focuses it.
     const focus = vi.fn();
-    window.addEventListener('voicestudio:focus-clone-transcript', focus);
+    window.addEventListener('elevenvoice:focus-clone-transcript', focus);
     fireEvent.click(
       screen.getByRole('button', { name: /add transcript|failureAction.add_transcript/i }),
     );
-    window.removeEventListener('voicestudio:focus-clone-transcript', focus);
+    window.removeEventListener('elevenvoice:focus-clone-transcript', focus);
     expect(focus).toHaveBeenCalledOnce();
   });
   it('keeps synthesis available while the latest take is playing', () => {

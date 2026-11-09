@@ -104,7 +104,7 @@ def test_sample_rate_lockstep_with_backend_default(sc):
 
 def test_clone_dir_inserted_at_sys_path_front(sc, monkeypatch):
     import sys as _sys
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", "/clone")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "/clone")
     monkeypatch.setattr(_sys, "path", ["existing"])
     sc._ensure_clone_on_sys_path()
     assert _sys.path[0] == "/clone"
@@ -114,7 +114,7 @@ def test_clone_dir_inserted_at_sys_path_front(sc, monkeypatch):
 
 def test_no_sys_path_change_without_clone_dir(sc, monkeypatch):
     import sys as _sys
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", raising=False)
     monkeypatch.setattr(_sys, "path", ["existing"])
     sc._ensure_clone_on_sys_path()
     assert _sys.path == ["existing"]
@@ -123,13 +123,13 @@ def test_no_sys_path_change_without_clone_dir(sc, monkeypatch):
 # ── Config path resolution ────────────────────────────────────────────────
 
 def test_config_path_explicit_override(sc, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_CONFIG", "/x/custom.yaml")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_CONFIG", "/x/custom.yaml")
     assert sc._config_path() == "/x/custom.yaml"
 
 
 def test_config_path_from_clone_dir(sc, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_CONFIG", raising=False)
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", "/clone")
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_CONFIG", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "/clone")
     assert sc._config_path() == os.path.join("/clone", "config", "inference_config.yaml")
 
 
@@ -241,7 +241,7 @@ def test_chdir_anchors_cwd_to_clone_dir(sc, monkeypatch, tmp_path):
     paths; without chdir they resolve against the parent process and the
     sidecar crashes with FileNotFoundError on the weights (#2099).
     """
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", str(tmp_path))
     original = os.getcwd()
     try:
         sc._chdir_to_clone_if_available()
@@ -252,7 +252,7 @@ def test_chdir_anchors_cwd_to_clone_dir(sc, monkeypatch, tmp_path):
 
 def test_chdir_noop_without_clone_dir(sc, monkeypatch):
     """When the user has not configured a clone, cwd must be left alone."""
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", raising=False)
     original = os.getcwd()
     sc._chdir_to_clone_if_available()
     assert os.getcwd() == original
@@ -261,7 +261,7 @@ def test_chdir_noop_without_clone_dir(sc, monkeypatch):
 def test_chdir_noop_when_clone_dir_missing(sc, monkeypatch, tmp_path):
     """A bogus clone path must not raise — the model load will fail loudly
     on its own with a clearer error than 'cwd does not exist'."""
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", str(tmp_path / "does-not-exist"))
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", str(tmp_path / "does-not-exist"))
     original = os.getcwd()
     sc._chdir_to_clone_if_available()
     assert os.getcwd() == original
@@ -296,8 +296,8 @@ def test_relative_clone_and_config_remain_stable_after_chdir(monkeypatch, tmp_pa
     clone = tmp_path / "engine"
     clone.mkdir()
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", "engine")
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_CONFIG", "custom.yaml")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "engine")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_CONFIG", "custom.yaml")
     monkeypatch.setattr(sys, "path", list(sys.path))
     sc._chdir_to_clone_if_available()
     sc._ensure_clone_on_sys_path()
@@ -305,7 +305,7 @@ def test_relative_clone_and_config_remain_stable_after_chdir(monkeypatch, tmp_pa
     assert Path(sc._config_path()) == tmp_path / "custom.yaml"
     sc._chdir_to_clone_if_available()
     assert Path.cwd() == clone
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_CONFIG")
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_CONFIG")
     assert Path(sc._config_path()) == clone / "config" / "inference_config.yaml"
 
 
@@ -319,7 +319,7 @@ def test_relative_cache_setting_keeps_existing_weights(monkeypatch, tmp_path, na
     cache.mkdir()
     (cache / "weight.bin").write_bytes(b"existing model")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", str(clone))
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", str(clone))
     monkeypatch.setenv(name, "existing-cache")
     sc._chdir_to_clone_if_available()
     assert Path(os.environ[name]).resolve() == cache
@@ -343,7 +343,7 @@ def test_home_relative_cache_survives_chdir(monkeypatch, tmp_path):
     clone = tmp_path / 'engine'
     clone.mkdir()
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv('OMNIVOICE_CONFUCIUS4_TTS_DIR', str(clone))
+    monkeypatch.setenv('ELEVENVOICE_CONFUCIUS4_TTS_DIR', str(clone))
     monkeypatch.setenv('XDG_CACHE_HOME', '~/xdg')
     expected = os.path.expanduser('~/xdg')
     sc._chdir_to_clone_if_available()
@@ -366,9 +366,9 @@ def test_home_relative_clone_is_expanded_before_chdir(monkeypatch, tmp_path):
     clone.mkdir(parents=True)
     monkeypatch.setenv("HOME", str(clone.parent))
     monkeypatch.setenv("USERPROFILE", str(clone.parent))
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", "~/Confucius4-TTS")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "~/Confucius4-TTS")
     monkeypatch.chdir(tmp_path)
     sc._chdir_to_clone_if_available()
     assert Path.cwd() == clone
     assert Path(sc._config_path()) == clone / "config" / "inference_config.yaml"
-    assert os.environ["OMNIVOICE_CONFUCIUS4_TTS_DIR"] == str(clone)
+    assert os.environ["ELEVENVOICE_CONFUCIUS4_TTS_DIR"] == str(clone)

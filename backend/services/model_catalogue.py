@@ -10,7 +10,7 @@ import logging
 import os
 from pathlib import Path
 
-logger = logging.getLogger("omnivoice.setup.models")
+logger = logging.getLogger("elevenvoice.setup.models")
 
 _YAML_PATH = Path(__file__).resolve().parents[1] / "config" / "models.yaml"
 
@@ -89,7 +89,7 @@ def _hub_cache_roots() -> list[str]:
     HF stores repos under ``$HF_HUB_CACHE`` (== ``$HF_HOME/hub`` by default). When
     only ``HF_HOME`` (or the ``~/.cache/huggingface`` default) is known, the repos
     live under the ``hub`` subdir — so we probe both ``<dir>`` (the
-    ``HF_HUB_CACHE``-is-set case, e.g. VoiceStudio's Windows short cache) and
+    ``HF_HUB_CACHE``-is-set case, e.g. ElevenVoice's Windows short cache) and
     ``<dir>/hub`` (the ``HF_HOME``-only case). Without this the WinError-448
     fallback would look one level too high and miss the cache (CodeRabbit #137).
     """

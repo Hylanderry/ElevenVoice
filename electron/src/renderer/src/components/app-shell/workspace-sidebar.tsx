@@ -29,7 +29,7 @@ export function WorkspaceSidebar() {
   const { compact, compactViewport, forceExpanded, secondaryWorkspace, setOpen } =
     useWorkspaceSidebarState();
   const sidebarResize = usePaneResize({
-    storageKey: 'voicestudio.nav-width',
+    storageKey: 'elevenvoice.nav-width',
     side: 'left',
     minimum: 196,
     initial: 216,

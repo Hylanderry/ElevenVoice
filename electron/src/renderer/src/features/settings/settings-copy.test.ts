@@ -11,7 +11,7 @@ it('names Settings pages as they appear in the app', () => {
   // The phone app's strings are generated into mobile/contract and change there.
   const desktop = Object.fromEntries(Object.entries(en).filter(([key]) => key !== 'mobile'));
   const stale = [...strings(desktop)].filter(([, text]) =>
-    /Model Catalogue|Settings → Engines|LLM_DEFAULT_PROVIDER|OMNIVOICE_LLM_BACKEND/.test(text),
+    /Model Catalogue|Settings → Engines|LLM_DEFAULT_PROVIDER|ELEVENVOICE_LLM_BACKEND/.test(text),
   );
   expect(stale).toEqual([]);
 });

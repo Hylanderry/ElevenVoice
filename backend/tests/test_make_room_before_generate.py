@@ -37,21 +37,21 @@ def _ram(monkeypatch, gb):
 
 
 def test_never_mode_frees_nothing(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", "never")
+    monkeypatch.setenv("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", "never")
     calls = _count(monkeypatch)
     make_room_before_generate()
     assert calls == {"free_vram": 0, "side_caches": 0, "capture_asr": 0}
 
 
 def test_always_mode_frees_all(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", "always")
+    monkeypatch.setenv("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", "always")
     calls = _count(monkeypatch)
     make_room_before_generate()
     assert calls["free_vram"] == 1 and calls["side_caches"] == 1 and calls["capture_asr"] == 1
 
 
 def test_auto_skips_on_roomy_machine(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
     _ram(monkeypatch, 999.0)  # ample RAM -> a roomy machine pays nothing
     calls = _count(monkeypatch)
     make_room_before_generate()
@@ -59,7 +59,7 @@ def test_auto_skips_on_roomy_machine(monkeypatch):
 
 
 def test_auto_frees_on_tight_ram(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
     _ram(monkeypatch, 0.5)  # below the 6.0 GB unified headroom
     calls = _count(monkeypatch)
     make_room_before_generate()
@@ -68,7 +68,7 @@ def test_auto_frees_on_tight_ram(monkeypatch):
 
 def test_default_mode_is_auto(monkeypatch):
     # No env set at all must behave as auto (tight RAM triggers).
-    monkeypatch.delenv("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", raising=False)
     _ram(monkeypatch, 0.5)
     calls = _count(monkeypatch)
     make_room_before_generate()

@@ -34,7 +34,7 @@ import re
 
 from services.text_polish import polish_text
 
-logger = logging.getLogger("omnivoice.dictation_cleanup")
+logger = logging.getLogger("elevenvoice.dictation_cleanup")
 
 # Private-use markers: "capitalize the next letter" (a sentence starts here),
 # and "this separator was spoken on purpose" (keep it at the very end).

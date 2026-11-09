@@ -12,7 +12,7 @@ def tts():
     ('confucius4-tts', 'french', 'polish'),
 ])
 def test_finite_language_options_without_loading_models(engine, allowed, rejected, monkeypatch, tts):
-    monkeypatch.delenv('OMNIVOICE_INDEXTTS_DIR', raising=False)
+    monkeypatch.delenv('ELEVENVOICE_INDEXTTS_DIR', raising=False)
     options = tts.language_options(engine)
     assert allowed in options
     assert rejected not in options
@@ -81,7 +81,7 @@ def test_active_kokoro_inventory_limits_picker_languages(monkeypatch, tts):
     from api.routers import engines
     monkeypatch.setattr(tts, 'active_backend_id', lambda: 'mlx-audio')
     monkeypatch.setattr(tts, 'list_backends', lambda: [{'id': 'mlx-audio', 'available': True}])
-    monkeypatch.setenv('OMNIVOICE_MLX_AUDIO_MODEL', 'kokoro')
+    monkeypatch.setenv('ELEVENVOICE_MLX_AUDIO_MODEL', 'kokoro')
     names = engines._family_payload('tts', tts)['backends'][0]['supported_language_names']
     assert 'english' in names and 'bengali' not in names
 
@@ -144,7 +144,7 @@ def test_metadata_releases_temporary_sidecar_exit_handlers(monkeypatch, engine, 
     ('voxcpm2', 'thai', 'bengali'),
 ])
 def test_curated_mlx_models_declare_documented_languages(model, allowed, rejected, monkeypatch, tts):
-    monkeypatch.setenv('OMNIVOICE_MLX_AUDIO_MODEL', model)
+    monkeypatch.setenv('ELEVENVOICE_MLX_AUDIO_MODEL', model)
     options = tts.language_options('mlx-audio')
     assert allowed in options and rejected not in options
     backend = tts.MLXAudioBackend()
@@ -158,13 +158,13 @@ def test_every_curated_mlx_model_has_a_language_declaration(tts):
 
 
 def test_custom_mlx_repo_stays_open_ended(monkeypatch, tts):
-    monkeypatch.setenv('OMNIVOICE_MLX_AUDIO_MODEL', 'someone/custom-tts')
+    monkeypatch.setenv('ELEVENVOICE_MLX_AUDIO_MODEL', 'someone/custom-tts')
     assert tts.language_options('mlx-audio') is None
     assert tts.MLXAudioBackend()._check_language('bengali') is None
 
 
 def test_kokoro_guard_uses_installed_labels(monkeypatch, tts):
-    monkeypatch.setenv('OMNIVOICE_MLX_AUDIO_MODEL', 'kokoro')
+    monkeypatch.setenv('ELEVENVOICE_MLX_AUDIO_MODEL', 'kokoro')
     calls = []
     monkeypatch.setattr(tts, 'resolve_kokoro_lang_code', lambda language: calls.append(language) or 'b')
     backend = tts.MLXAudioBackend()

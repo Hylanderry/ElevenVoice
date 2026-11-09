@@ -11,7 +11,7 @@ from services import settings_store
 @pytest.fixture
 def seen(tmp_path, monkeypatch):
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)
@@ -42,7 +42,7 @@ def test_writes_applied_from_sync_are_silent(seen):
     with change_hooks.from_sync():
         prefs.set_("generation_history_cap", 10)
         settings_store.set_text("llm.active_provider", "openai")
-        change_hooks.notify("local", "voicestudio.locale")
+        change_hooks.notify("local", "elevenvoice.locale")
     assert seen == []
     prefs.set_("generation_history_cap", 11)
     assert seen == [("prefs", "generation_history_cap")]

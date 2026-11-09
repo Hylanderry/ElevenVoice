@@ -3,7 +3,7 @@
  * the backend first answers: after that the backend is the authority for good,
  * so a later Settings change can never be undone by this copy.
  */
-export const SETUP_ANALYTICS_KEY = 'voicestudio.setup.analytics-consent.v1';
+export const SETUP_ANALYTICS_KEY = 'elevenvoice.setup.analytics-consent.v1';
 
 export interface SetupAnalyticsChoice {
   enabled: boolean;
@@ -44,7 +44,7 @@ export function setupAnalyticsAllowed(
   return Boolean(choice?.enabled && !choice.settled && !killSwitched);
 }
 
-const BACKEND_FIRST_READY_KEY = 'voicestudio.setup.backend-first-ready.v1';
+const BACKEND_FIRST_READY_KEY = 'elevenvoice.setup.backend-first-ready.v1';
 
 export interface FunnelStatus {
   stage: string;

@@ -21,7 +21,7 @@ WAVs under tmp_path):
 from __future__ import annotations
 
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import json

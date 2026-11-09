@@ -40,7 +40,7 @@ from services.ffmpeg_utils import find_ffmpeg, run_ffmpeg
 # /system/info, /system/logs, /system/logs/tauri, /system/logs/stream.
 # Native Tauri/dev callers remain loopback and need no credential.
 router = APIRouter(dependencies=[Depends(require_admin)])
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 # Cache device checks at module load — they don't change at runtime
 _is_mac = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
@@ -252,16 +252,16 @@ def _nvidia_live_stats() -> tuple[float, float, float] | None:
 def _ui_port() -> int | None:
     """The browser UI dev-server port, or None when there is no such server.
 
-    Shares core.csrf's resolver (OMNIVOICE_UI_PORT, alias VOICESTUDIO_UI_PORT)
+    Shares core.csrf's resolver (ELEVENVOICE_UI_PORT, alias ELEVENVOICE_UI_PORT)
     so Settings → Sharing reports the port the CORS/CSRF allow-list trusts.
-    The packaged desktop app serves its UI from app://voicestudio, so with no
+    The packaged desktop app serves its UI from app://elevenvoice, so with no
     UI port configured a desktop-contained backend has none to report; the
     Electron dev shell passes its renderer port explicitly.
     """
     from core.csrf import configured_ui_port, ui_port
 
     configured = configured_ui_port()
-    if configured is None and os.environ.get("OMNIVOICE_DESKTOP_CONTAINED") == "1":
+    if configured is None and os.environ.get("ELEVENVOICE_DESKTOP_CONTAINED") == "1":
         return None
     return configured or ui_port()
 
@@ -396,10 +396,10 @@ def system_info():
             # present) — the Settings panel must say so rather than promise a
             # restart will apply a value that never will.
             "generate_timeout_shadowed": _prefs_mod.is_env_shadowed(
-                "OMNIVOICE_GENERATE_TIMEOUT_S"),
+                "ELEVENVOICE_GENERATE_TIMEOUT_S"),
             "cpu_generate_timeout_shadowed": _prefs_mod.is_env_shadowed(
-                "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"),
-            "code_fingerprint": os.environ.get("OMNIVOICE_BUILD_FINGERPRINT", ""),
+                "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"),
+            "code_fingerprint": os.environ.get("ELEVENVOICE_BUILD_FINGERPRINT", ""),
             "data_dir": DATA_DIR,
             "outputs_dir": OUTPUTS_DIR,
             "crash_log_path": CRASH_LOG_PATH,
@@ -440,7 +440,7 @@ def system_info():
             "cpu_generate_timeout_s": 600.0,
             "generate_timeout_shadowed": False,
             "cpu_generate_timeout_shadowed": False,
-            "code_fingerprint": os.environ.get("OMNIVOICE_BUILD_FINGERPRINT", ""),
+            "code_fingerprint": os.environ.get("ELEVENVOICE_BUILD_FINGERPRINT", ""),
             "data_dir": DATA_DIR,
             "outputs_dir": OUTPUTS_DIR,
             "crash_log_path": str(CRASH_LOG_PATH),
@@ -480,7 +480,7 @@ def _tail_file(path: str, tail: int):
 
 
 # Must track main.py's _WindowsSafeRotatingFileHandler(backupCount=3). The
-# handler rolls omnivoice.log at 2 MB into .1/.2/.3, so up to 6 MB of history
+# handler rolls elevenvoice.log at 2 MB into .1/.2/.3, so up to 6 MB of history
 # lives in files this module used to ignore entirely.
 _LOG_BACKUP_COUNT = 3
 
@@ -493,9 +493,9 @@ def _rotated_log_paths(base: str) -> list[str]:
 def _tail_rolling(base: str, tail: int):
     """Tail `base`, reaching into its rotated siblings when it runs short.
 
-    A rollover leaves omnivoice.log nearly empty, and the Backend tab then
+    A rollover leaves elevenvoice.log nearly empty, and the Backend tab then
     showed a handful of lines — or none — while the failure the user was asked
-    to copy sat in omnivoice.log.1. Reading the current file first keeps the
+    to copy sat in elevenvoice.log.1. Reading the current file first keeps the
     common case at one file read; the backups are only touched when they are
     the only place the requested lines can come from.
 
@@ -554,11 +554,11 @@ def _tauri_plugin_log_candidates():
     :func:`clear_tauri_logs`.
     """
     home = os.path.expanduser("~")
-    bid = "com.debpalash.omnivoice-studio"
+    bid = "com.hylanderry.elevenvoice"
     if sys.platform == "darwin":
         return [
             os.path.join(home, "Library/Logs", bid, "tauri.log"),
-            os.path.join(home, "Library/Logs", bid, "VoiceStudio.log"),
+            os.path.join(home, "Library/Logs", bid, "ElevenVoice.log"),
         ]
     if sys.platform.startswith("linux"):
         data_dir = os.environ.get("XDG_DATA_HOME") or os.path.join(home, ".local/share")
@@ -589,13 +589,13 @@ def _backend_redirect_log_candidates():
     nothing to the Python log by construction, so this file is the only record
     of it.
 
-    `OMNIVOICE_LOG_DIR` is honoured first, in the same precedence
+    `ELEVENVOICE_LOG_DIR` is honoured first, in the same precedence
     `backend_log_path()` uses. The backend is a child of the shell, so an
     ambient override reaches both — and a resolver that ignored it would look
     in the per-OS default while the writer wrote somewhere else, which is the
     divergence class this file already has one of (see #1782).
     """
-    override = (os.environ.get("OMNIVOICE_LOG_DIR") or "").strip()
+    override = (os.environ.get("ELEVENVOICE_LOG_DIR") or "").strip()
     if override:
         return [
             os.path.join(override, "backend.log"),
@@ -603,13 +603,13 @@ def _backend_redirect_log_candidates():
         ]
     home = os.path.expanduser("~")
     if sys.platform == "darwin":
-        base = os.path.join(home, "Library/Logs/OmniVoice")
+        base = os.path.join(home, "Library/Logs/ElevenVoice")
     elif sys.platform.startswith("linux"):
         state_dir = os.environ.get("XDG_STATE_HOME") or os.path.join(home, ".local/state")
-        base = os.path.join(state_dir, "OmniVoice")
+        base = os.path.join(state_dir, "ElevenVoice")
     elif sys.platform.startswith("win"):
         localappdata = os.environ.get("LOCALAPPDATA") or os.path.join(home, "AppData", "Local")
-        base = os.path.join(localappdata, "OmniVoice", "Logs")
+        base = os.path.join(localappdata, "ElevenVoice", "Logs")
     else:
         return []
     return [os.path.join(base, "backend.log"), os.path.join(base, "backend_err.log")]
@@ -623,12 +623,12 @@ def _tauri_log_candidates():
     - `tauri-plugin-log` writes `tauri.log` to the app log dir
       (`~/Library/Logs/<bundle_id>` on macOS, `$XDG_DATA_HOME/<bundle_id>/logs`
       on Linux, `%LOCALAPPDATA%\\<bundle_id>\\logs` on Windows). Bundle id is
-      `com.debpalash.omnivoice-studio` (frontend/src-tauri/tauri.conf.json).
+      `com.hylanderry.elevenvoice` (frontend/src-tauri/tauri.conf.json).
     - backend.rs::backend_log_path() redirects the spawned backend's
       stdout/stderr to `backend.log` / `backend_err.log` under
-      `~/Library/Logs/OmniVoice` (macOS), `$XDG_STATE_HOME/OmniVoice` falling
-      back to `~/.local/state/OmniVoice` (Linux), and
-      `%LOCALAPPDATA%\\OmniVoice\\Logs` (Windows). This is where uvicorn
+      `~/Library/Logs/ElevenVoice` (macOS), `$XDG_STATE_HOME/ElevenVoice` falling
+      back to `~/.local/state/ElevenVoice` (Linux), and
+      `%LOCALAPPDATA%\\ElevenVoice\\Logs` (Windows). This is where uvicorn
       startup banners and hard-crash tracebacks land — keep all three OS
       shapes listed or sidecar crashes become invisible off-macOS.
     """
@@ -774,7 +774,7 @@ def _read_from_pos(path: str, pos: int) -> list[str]:
 async def clear_system_logs():
     """Truncate the rolling runtime log and the crash log (what the Backend tab reads).
 
-    Includes the rotated siblings. Truncating only omnivoice.log left up to
+    Includes the rotated siblings. Truncating only elevenvoice.log left up to
     6 MB in .1/.2/.3, so Clear freed almost nothing and — now that the tail
     reaches into those files — would have looked like it did nothing at all.
     """
@@ -1061,7 +1061,7 @@ def system_notifications():
                 "id": "disk-low",
                 "level": "warn",
                 "title": f"Low disk space ({free_gb:.1f} GB free)",
-                "message": "VoiceStudio needs disk space for models, audio, and temp files.",
+                "message": "ElevenVoice needs disk space for models, audio, and temp files.",
                 "action": {"type": "settings-tab", "target": "storage"},
             })
     except Exception:
@@ -1220,22 +1220,22 @@ PERSISTENT_KEYS = {
     "MICROSOFT_API_KEY", "MICROSOFT_BASE_URL",
     "GOOGLE_TRANSLATE_API_KEY", "MICROSOFT_REGION", "AWS_PROFILE", "AWS_REGION",
     # The LAN-share port is the only persisted port: the backend binds that
-    # listener itself. OMNIVOICE_PORT and OMNIVOICE_UI_PORT are deliberately
+    # listener itself. ELEVENVOICE_PORT and ELEVENVOICE_UI_PORT are deliberately
     # NOT persisted — the process that binds them (the desktop shell, the dev
     # script, Docker, Vite) reads its own environment, never prefs.json, so a
     # saved value only made the backend misreport the ports it was given.
     # core.prefs.restore_env ignores values saved by older versions.
-    "OMNIVOICE_SHARE_PORT",
+    "ELEVENVOICE_SHARE_PORT",
     # Per-job compute-time budgets (#1787). Both are captured at import time
     # by services/model_manager.py (GPU_JOB_TIMEOUT_S / CPU_JOB_TIMEOUT_S), so
     # a value saved here takes effect on the NEXT backend restart. Restored into os.environ during the
     # "env_prefs" startup step (main.py), which runs before model_manager is
     # first imported ("ml_imports"), so the restored value is what the module
     # captures. The Settings UI must say so (RestartBadge).
-    "OMNIVOICE_GENERATE_TIMEOUT_S", "OMNIVOICE_CPU_GENERATE_TIMEOUT_S",
+    "ELEVENVOICE_GENERATE_TIMEOUT_S", "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S",
 }
 
-# Sidecar-engine install dirs (OMNIVOICE_INDEXTTS_DIR, …). The one-click
+# Sidecar-engine install dirs (ELEVENVOICE_INDEXTTS_DIR, …). The one-click
 # installer persists these via prefs.json `env.*` (restored at startup in
 # main.py); merging them here lets users inspect/clear them from the same
 # Settings env panel as every other persisted var. Single-sourced from the
@@ -1255,7 +1255,7 @@ except Exception:  # pragma: no cover — defensive: env panel > installer wirin
 
 # Keys whose value must be a valid TCP port (1024–65535). Validated before
 # being set so a bad value never reaches uvicorn / the share listener.
-_PORT_KEYS = {"OMNIVOICE_SHARE_PORT"}
+_PORT_KEYS = {"ELEVENVOICE_SHARE_PORT"}
 
 # Keys whose value is a wall-clock compute-time budget in seconds (#1787).
 # Validated the same way as _PORT_KEYS: reject anything that isn't a
@@ -1264,7 +1264,7 @@ _PORT_KEYS = {"OMNIVOICE_SHARE_PORT"}
 # render is never blocked — but still bounded, so a fat-fingered extra digit
 # (300 -> 3000000) can't turn a wedged job into one that silently occupies a
 # worker for days before the guard ever fires.
-_TIMEOUT_KEYS = {"OMNIVOICE_GENERATE_TIMEOUT_S", "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"}
+_TIMEOUT_KEYS = {"ELEVENVOICE_GENERATE_TIMEOUT_S", "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"}
 _MAX_GENERATE_TIMEOUT_S = 21600.0  # 6 hours
 
 
@@ -1587,7 +1587,7 @@ async def network_state(request: Request):
     # long API-key gate. The boolean lets headless dashboards remain useful.
     host = request.client.host if request.client else None
     may_reveal_pin = is_loopback(host) or bool(
-        os.environ.get("OMNIVOICE_API_KEY", "").strip()
+        os.environ.get("ELEVENVOICE_API_KEY", "").strip()
     )
     return {
         "enabled": st.enabled,

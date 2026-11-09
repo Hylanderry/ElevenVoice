@@ -1,4 +1,4 @@
-"""Discovery contract for VoiceStudio's local speech platform.
+"""Discovery contract for ElevenVoice's local speech platform.
 
 Interfaces should discover this document instead of hard-coding whichever
 dictation route the desktop happens to use.  Endpoint URLs are relative so the
@@ -15,7 +15,7 @@ from core.version import APP_VERSION
 
 router = APIRouter(tags=["Speech Platform"])
 
-SPEECH_PROTOCOL = "voicestudio.speech.v1"
+SPEECH_PROTOCOL = "elevenvoice.speech.v1"
 STREAM_PATH = "/v1/audio/transcriptions/stream"
 
 
@@ -55,20 +55,20 @@ class SpeechFeatureCapabilities(BaseModel):
 class SpeechAuthCapabilities(BaseModel):
     loopback: Literal["none"] = "none"
     remote: Literal["bearer"] = "bearer"
-    header: str = "Authorization: Bearer <OMNIVOICE_API_KEY>"
+    header: str = "Authorization: Bearer <ELEVENVOICE_API_KEY>"
     browser_session_endpoint: str = "/api/auth/session"
     websocket_ticket_endpoint: str = "/api/auth/ws-ticket"
     websocket_ticket_query_parameter: Literal["ws_ticket"] = "ws_ticket"
 
 
 class SpeechCapabilities(BaseModel):
-    schema_: Literal["voicestudio.speech-capabilities"] = Field(
-        default="voicestudio.speech-capabilities",
+    schema_: Literal["elevenvoice.speech-capabilities"] = Field(
+        default="elevenvoice.speech-capabilities",
         serialization_alias="schema",
     )
-    protocol: Literal["voicestudio.speech.v1"] = SPEECH_PROTOCOL
+    protocol: Literal["elevenvoice.speech.v1"] = SPEECH_PROTOCOL
     protocol_version: Literal["1.0"] = "1.0"
-    service: str = "VoiceStudio"
+    service: str = "ElevenVoice"
     service_version: str = APP_VERSION
     local_first: bool = True
     endpoints: dict[str, EndpointCapability]
@@ -82,7 +82,7 @@ def speech_capabilities() -> SpeechCapabilities:
     """Return the stable, side-effect-free integration contract."""
     endpoints = {
         "capabilities": EndpointCapability(
-            path="/.well-known/voicestudio-speech",
+            path="/.well-known/elevenvoice-speech",
             transport="http",
             method="GET",
         ),
@@ -131,7 +131,7 @@ def speech_capabilities() -> SpeechCapabilities:
 
 
 @router.get(
-    "/.well-known/voicestudio-speech",
+    "/.well-known/elevenvoice-speech",
     response_model=SpeechCapabilities,
     response_model_by_alias=True,
 )

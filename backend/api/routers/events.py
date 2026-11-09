@@ -19,7 +19,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from core import event_bus
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.events")
+logger = logging.getLogger("elevenvoice.events")
 
 
 @router.websocket("/ws/events")

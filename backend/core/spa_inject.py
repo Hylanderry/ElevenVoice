@@ -1,8 +1,8 @@
 """Runtime API-base injection for the served SPA (Docker / reverse-proxy).
 
 `VITE_*` vars are inlined at build time, so a prebuilt image cannot take an
-API-base override from `docker run -e`. When `OMNIVOICE_PUBLIC_API_BASE` is set,
-the backend injects it into `index.html` as `window.__OMNIVOICE_API_BASE__`,
+API-base override from `docker run -e`. When `ELEVENVOICE_PUBLIC_API_BASE` is set,
+the backend injects it into `index.html` as `window.__ELEVENVOICE_API_BASE__`,
 which the SPA's API resolver reads first. These helpers are pure so they can be
 unit-tested without booting the app.
 """
@@ -20,13 +20,13 @@ from urllib.parse import urlsplit
 #: Absolute path of the web UI build to serve at "/". The packaged desktop app
 #: sets it to the build inside its own resources, so the UI a LAN device gets
 #: always matches the running app version (#2599). Unset → beside the backend.
-FRONTEND_DIST_ENV = "OMNIVOICE_FRONTEND_DIST"
+FRONTEND_DIST_ENV = "ELEVENVOICE_FRONTEND_DIST"
 
 
 def frontend_dist_dir() -> str:
     """The built SPA served at "/" (desktop, Docker, source builds).
 
-    ``OMNIVOICE_FRONTEND_DIST`` wins; otherwise resolved relative to the
+    ``ELEVENVOICE_FRONTEND_DIST`` wins; otherwise resolved relative to the
     backend package root. One seam so tests can serve a real SPA mount
     without building it.
     """
@@ -51,7 +51,7 @@ def dev_ui_redirect(client_host: str | None, host_header: str, ui_port: int) -> 
     Only a browser on this machine that addressed the backend by a loopback
     name is sent to the local dev UI. Anyone else (a LAN device, or a remote
     client relayed through a loopback proxy such as ``tailscale serve``) would
-    be sent to *their own* localhost, which is never VoiceStudio (#2599).
+    be sent to *their own* localhost, which is never ElevenVoice (#2599).
     """
     if client_host not in _LOOPBACK_NAMES:
         return None
@@ -65,8 +65,8 @@ def dev_ui_redirect(client_host: str | None, host_header: str, ui_port: int) -> 
 
 
 WEB_UI_MISSING = (
-    "VoiceStudio is running, but this installation has no web interface to "
-    "serve to other devices. Update the VoiceStudio desktop app to the latest "
+    "ElevenVoice is running, but this installation has no web interface to "
+    "serve to other devices. Update the ElevenVoice desktop app to the latest "
     "version; in a source checkout run `bun run build:web` and restart the "
     "backend. The API itself is available."
 )
@@ -79,7 +79,7 @@ def web_ui_missing_body(accept: str) -> tuple[str, str]:
         return "text/html", (
             '<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
-            "<title>VoiceStudio web interface unavailable</title></head>"
+            "<title>ElevenVoice web interface unavailable</title></head>"
             "<body><h1>Web interface unavailable</h1>"
             f"<p>{message}</p></body></html>"
         )
@@ -97,13 +97,13 @@ def is_valid_public_api_base(value: str) -> bool:
 
 
 def inject_api_base(html_doc: str, api_base: str) -> str:
-    """Insert `window.__OMNIVOICE_API_BASE__` right after the SPA's <head>.
+    """Insert `window.__ELEVENVOICE_API_BASE__` right after the SPA's <head>.
 
     `api_base` is JSON-encoded (neutralising quotes); the caller is expected to
     have validated it via `is_valid_public_api_base` first. Falls back to
     prepending the snippet if the document has no <head>.
     """
-    script = f"window.__OMNIVOICE_API_BASE__={json.dumps(api_base)};"
+    script = f"window.__ELEVENVOICE_API_BASE__={json.dumps(api_base)};"
     snippet = f"<script>{script}</script>"
     # The Electron renderer ships a strict CSP. Authorize only this exact,
     # backend-generated assignment instead of weakening script-src globally.

@@ -69,7 +69,7 @@ from .quant_cache import resolve_installed_pair
 if TYPE_CHECKING:
     from core.device_caps import HostCaps
 
-logger = logging.getLogger("omnivoice.gguf")
+logger = logging.getLogger("elevenvoice.gguf")
 
 #: Path to the ``backend/engines/omnivoice_gguf/`` directory. Used as the
 #: anchor for ``quant_map.json`` and the ``bin/`` directory which sits a
@@ -134,13 +134,13 @@ def _binary_path(slug: Optional[str] = None) -> Path:
 def _generate_timeout_s() -> float:
     """Hard per-spawn timeout for the C++ binary, read from the env at call time.
 
-    ``OMNIVOICE_GGUF_GENERATE_TIMEOUT_S`` overrides; the default sits ABOVE
-    the GPU-pool generate budget (``OMNIVOICE_GENERATE_TIMEOUT_S``, 300s
+    ``ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S`` overrides; the default sits ABOVE
+    the GPU-pool generate budget (``ELEVENVOICE_GENERATE_TIMEOUT_S``, 300s
     floor) on purpose — the pool guard is the real, well-diagnosed deadline,
     and this one only reaps a truly wedged C++ process. The old hardcoded
     120s killed legitimate CPU-only generates mid-synthesis (#1348).
     """
-    raw = os.environ.get("OMNIVOICE_GGUF_GENERATE_TIMEOUT_S")
+    raw = os.environ.get("ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S")
     if raw:
         try:
             val = float(raw)
@@ -150,7 +150,7 @@ def _generate_timeout_s() -> float:
         if val is not None and math.isfinite(val):
             return max(1.0, val)
         logger.warning(
-            "Ignoring invalid OMNIVOICE_GGUF_GENERATE_TIMEOUT_S=%r", raw
+            "Ignoring invalid ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S=%r", raw
         )
     return 600.0
 
@@ -233,7 +233,7 @@ def _cpu_incompatible_reason(bin_path: Path) -> str:
         f"GGUF binary {bin_path.name} stopped with an illegal instruction: it "
         f"was built for CPU features this processor does not have. Rebuild it "
         f"with `scripts/build-omnivoice-tts.sh --platform {_platform_slug()}` "
-        f"(portable x86-64 build), reinstall VoiceStudio, or use the default "
+        f"(portable x86-64 build), reinstall ElevenVoice, or use the default "
         f"in-process OmniVoice engine (Model Catalogue)."
     )
 
@@ -265,7 +265,7 @@ def _binary_repair_hint() -> str:
     return (
         f"the bundled GGUF runtime is not usable on this machine — build it "
         f"with `scripts/build-omnivoice-tts.sh --platform {_platform_slug()}`, "
-        f"reinstall VoiceStudio, or switch to the default in-process "
+        f"reinstall ElevenVoice, or switch to the default in-process "
         f"OmniVoice engine (Model Catalogue)"
     )
 
@@ -340,11 +340,11 @@ def _allowed_quant_filenames(quant_map: Optional[dict] = None) -> set[str]:
 
 #: Env pin for the quant: ``auto`` or a tag (``Q4_K_M``, ``Q8_0``, ``BF16``,
 #: ``F32``), or a base filename from quant_map.json.
-QUANT_ENV = "OMNIVOICE_GGUF_QUANT"
+QUANT_ENV = "ELEVENVOICE_GGUF_QUANT"
 
 
 def env_quant_override() -> Optional[str]:
-    """The base filename ``OMNIVOICE_GGUF_QUANT`` names, or None when unset /
+    """The base filename ``ELEVENVOICE_GGUF_QUANT`` names, or None when unset /
     ``auto``. An unknown value is returned as-is so generation reports it
     (a typo must not silently fall back to another precision)."""
     raw = os.environ.get(QUANT_ENV, "").strip()
@@ -611,7 +611,7 @@ def _make_backend_class():
                         f"zero-byte placeholders until a real binary is "
                         f"built — run `scripts/build-omnivoice-tts.sh "
                         f"--platform {_platform_slug()}`, reinstall "
-                        f"VoiceStudio, or use the default in-process "
+                        f"ElevenVoice, or use the default in-process "
                         f"OmniVoice engine (Model Catalogue)."
                     )
                 known_bad = _CPU_INCOMPATIBLE.get(str(bin_path))
@@ -625,7 +625,7 @@ def _make_backend_class():
                 except ChecksumManifestError as exc:
                     return False, (
                         f"GGUF binary {bin_path.name} could not be verified: "
-                        f"{exc}. Reinstall VoiceStudio or use the default "
+                        f"{exc}. Reinstall ElevenVoice or use the default "
                         f"in-process OmniVoice engine."
                     )
                 expected = manifest.get(bin_path.name)
@@ -645,7 +645,7 @@ def _make_backend_class():
                             f"GGUF runtime library checksum mismatch for "
                             f"{bad_lib} — the runtime would load a library "
                             f"other than the one that was built. Reinstall "
-                            f"VoiceStudio or rebuild with "
+                            f"ElevenVoice or rebuild with "
                             f"`scripts/build-omnivoice-tts.sh`."
                         )
                 # macOS Gatekeeper quarantine detection (Pitfall 3).
@@ -653,7 +653,7 @@ def _make_backend_class():
                     return False, (
                         f"GGUF binary {bin_path.name} is quarantined by "
                         f"macOS Gatekeeper. Run:\n\n"
-                        f"    xattr -cr '/Applications/VoiceStudio.app'\n\n"
+                        f"    xattr -cr '/Applications/ElevenVoice.app'\n\n"
                         f"This clears the quarantine on the .app and its "
                         f"bundled binaries. See docs/install/macos.md."
                     )
@@ -734,7 +734,7 @@ def _make_backend_class():
         def _explicit_override(self) -> str | None:
             """The quant filename the user pinned, if any.
 
-            Constructor argument > ``OMNIVOICE_GGUF_QUANT`` > the Settings
+            Constructor argument > ``ELEVENVOICE_GGUF_QUANT`` > the Settings
             choice. Env wins over Settings, like every engine choice, so a
             power-user pin is never silently undone by the UI. Before the
             Settings read existed the registry (which constructs this class
@@ -1040,7 +1040,7 @@ def _make_backend_class():
                 raise RuntimeError(
                     f"GGUF subprocess timed out after "
                     f"{timeout_s:.0f}s (T-04-06; raise "
-                    f"OMNIVOICE_GGUF_GENERATE_TIMEOUT_S if this host is "
+                    f"ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S if this host is "
                     f"genuinely that slow)"
                 ) from exc
             except OSError as exc:

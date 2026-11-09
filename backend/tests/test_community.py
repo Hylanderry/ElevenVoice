@@ -13,7 +13,7 @@ import wave
 
 import pytest
 
-# conftest.py puts `backend/` on sys.path and points OMNIVOICE_DATA_DIR at a
+# conftest.py puts `backend/` on sys.path and points ELEVENVOICE_DATA_DIR at a
 # throwaway tmpdir before this module imports the REAL core.config (the old
 # sys.modules stub leaked at collection time and broke mixed runs).
 from fastapi import FastAPI, HTTPException, Response  # noqa: E402
@@ -344,7 +344,7 @@ def test_noncanonical_preset_preview_renders_once(client, tmp_path, monkeypatch)
     second = client.get("/community/items/p1/preview")
     assert first.status_code == second.status_code == 200
     assert first.content == _wav_bytes()
-    assert first.headers["x-omnivoice-preview-source"] == "community"
+    assert first.headers["x-elevenvoice-preview-source"] == "community"
     assert len(calls) == 1
 
     community._preset_preview_path(item).write_bytes(b"not audio")

@@ -1,7 +1,7 @@
-"""Alembic environment for VoiceStudio.
+"""Alembic environment for ElevenVoice.
 
 DB URL is computed from `core.config.DB_PATH` at runtime so Alembic honours
-the same `OMNIVOICE_DATA_DIR` override the app does. We use SQLite, so both
+the same `ELEVENVOICE_DATA_DIR` override the app does. We use SQLite, so both
 offline (SQL-scripted) and online (live-connection) paths are supported.
 
 We do NOT use SQLAlchemy models — the schema lives in `core/db.py`'s
@@ -20,7 +20,7 @@ if config.config_file_name is not None and config.attributes.get("configure_logg
     # `disable_existing_loggers=False` is deliberate: this env runs *inside* the
     # live app (startup `alembic upgrade head`), so the default (True) would
     # disable every already-created application logger — e.g. silence
-    # `omnivoice.db.backup`'s "Skipping pre-migration DB backup" line and the
+    # `elevenvoice.db.backup`'s "Skipping pre-migration DB backup" line and the
     # rest of the app's logging for the remainder of the process. A migration
     # must never mute the app (or leak that mute across a test session).
     #
@@ -28,7 +28,7 @@ if config.config_file_name is not None and config.attributes.get("configure_logg
     # even with disable_existing_loggers=False, fileConfig() REPLACES the root
     # logger's handlers with alembic.ini's console handler and applies its
     # `[logger_root] level=WARN` — so any boot that actually ran migrations
-    # (every FIRST RUN, every upgrade) lost the rolling omnivoice.log file
+    # (every FIRST RUN, every upgrade) lost the rolling elevenvoice.log file
     # handler and every subsequent INFO line for the rest of the process,
     # including the entire graceful-shutdown trace: a SIGTERM'd clean quit
     # looked like a silent crash. The in-app runner (core/db.py
@@ -39,7 +39,7 @@ if config.config_file_name is not None and config.attributes.get("configure_logg
 # SQLite file URL. Honour an externally-set URL (tests pass one via
 # `cfg.set_main_option("sqlalchemy.url", ...)` to point at a fixture DB),
 # otherwise resolve from `core.config.DB_PATH` so production runs respect
-# the `OMNIVOICE_DATA_DIR` override.
+# the `ELEVENVOICE_DATA_DIR` override.
 if not config.get_main_option("sqlalchemy.url"):
     config.set_main_option("sqlalchemy.url", f"sqlite:///{DB_PATH}")
 

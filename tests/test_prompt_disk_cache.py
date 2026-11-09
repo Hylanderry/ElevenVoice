@@ -54,7 +54,7 @@ class _StubModel:
 def _isolated(tmp_path, monkeypatch):
     """Point the disk layer at a per-test dir and start with empty caches."""
     monkeypatch.setattr("core.config.DATA_DIR", tmp_path / "data")
-    monkeypatch.delenv("OMNIVOICE_PROMPT_DISK_CACHE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PROMPT_DISK_CACHE", raising=False)
     _tb().clear_clone_prompt_cache()
     yield
     _tb().clear_clone_prompt_cache()
@@ -160,7 +160,7 @@ def test_single_use_refs_never_touch_disk(tmp_path, ref_wav):
 
 
 def test_env_kill_switch_disables_the_layer(tmp_path, ref_wav, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_PROMPT_DISK_CACHE", "0")
+    monkeypatch.setenv("ELEVENVOICE_PROMPT_DISK_CACHE", "0")
     tb = _tb()
     model = _StubModel()
     tb._get_clone_prompt(model, ref_wav, "hello", True)

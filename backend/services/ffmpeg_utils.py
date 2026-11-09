@@ -13,7 +13,7 @@ import sys
 from services.proc_registry import register_proc, unregister_proc
 from core.path_security import UnsafePath, resolve_within
 
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 # Cap concurrent ffmpeg jobs so macOS posix_spawn can't hit EAGAIN under load.
 _FFMPEG_SEMAPHORE: "asyncio.Semaphore | None" = None
@@ -158,7 +158,7 @@ def _media_tool_kind(exe) -> "str | None":
     target = os.path.normcase(os.path.abspath(str(exe)))
     for kind, keys in (
         ("ffmpeg", ("FFMPEG_PATH",)),
-        ("ffprobe", ("OMNIVOICE_FFPROBE_PATH", "FFPROBE_PATH")),
+        ("ffprobe", ("ELEVENVOICE_FFPROBE_PATH", "FFPROBE_PATH")),
     ):
         for key in keys:
             value = os.environ.get(key)
@@ -282,7 +282,7 @@ def find_ffmpeg():
       1. ``FFMPEG_PATH`` env var (set by Tauri when a sidecar is bundled, or
          by the user's Settings → Audio tools override via prefs).
       2. ``imageio-ffmpeg`` pip package (ships a static binary per platform).
-      3. VoiceStudio-acquired static bundle (``services.media_tools``) — the
+      3. ElevenVoice-acquired static bundle (``services.media_tools``) — the
          checksummed build the app downloads itself when nothing else
          resolves; the only bundled tier that also ships ffprobe.
       4. Common system paths / ``PATH``.
@@ -304,7 +304,7 @@ def find_ffmpeg():
         logger.debug("imageio_ffmpeg binary not usable at %s", candidate)
     except Exception as e:
         logger.debug("imageio_ffmpeg unavailable: %s", e)
-    # 3. VoiceStudio-acquired bundled static binary (never downloads here —
+    # 3. ElevenVoice-acquired bundled static binary (never downloads here —
     # acquisition is media_tools' background job; this only picks up an
     # already-installed build).
     candidate = _acquired_bundled("ffmpeg")
@@ -345,13 +345,13 @@ def resolve_ffprobe() -> str | None:
     """Resolve an ffprobe binary path.
 
     Resolution order (per issue #76 and 01-03-PLAN.md must_haves):
-      1. ``OMNIVOICE_FFPROBE_PATH`` env var — the canonical, namespaced path
+      1. ``ELEVENVOICE_FFPROBE_PATH`` env var — the canonical, namespaced path
          injected by Tauri pointing at the bundled sidecar (e.g.
-         ``/usr/lib/omnivoice-studio/bin/ffprobe`` on .deb installs).
+         ``/usr/lib/elevenvoice/bin/ffprobe`` on .deb installs).
       2. ``FFPROBE_PATH`` env var — legacy alias kept for backward
          compatibility with older Tauri shells / dev environments; also the
          key Settings → Audio tools persists a user override under.
-      3. VoiceStudio-acquired static bundle (``services.media_tools``) —
+      3. ElevenVoice-acquired static bundle (``services.media_tools``) —
          imageio-ffmpeg ships no ffprobe, so this is the bundled tier that
          closes the source-install gap.
       4. ``shutil.which("ffprobe")`` — system ``PATH`` fallback.
@@ -359,7 +359,7 @@ def resolve_ffprobe() -> str | None:
     Returns the resolved path string, or ``None`` if nothing found. Callers
     that need a hard failure should use :func:`find_ffprobe` instead.
     """
-    for env_key in ("OMNIVOICE_FFPROBE_PATH", "FFPROBE_PATH"):
+    for env_key in ("ELEVENVOICE_FFPROBE_PATH", "FFPROBE_PATH"):
         path = os.environ.get(env_key)
         if not path:
             continue
@@ -457,12 +457,12 @@ def _bare_name_shim(real: str, tool: str) -> "str | None":
 def ensure_media_tools_on_path() -> list[str]:
     """Put the resolved ffmpeg/ffprobe on ``PATH`` for third-party code (#1256).
 
-    VoiceStudio's own call sites always resolve an explicit path, so a bundled
+    ElevenVoice's own call sites always resolve an explicit path, so a bundled
     sidecar that was never on ``PATH`` works fine for us. Our dependencies do
     not get that courtesy: a library that shells out to ``ffprobe`` by bare
     name dies with ``FileNotFoundError: [Errno 2] No such file or directory:
     'ffprobe'``. The reporter of #1256 hit that mid-synthesis and was told the
-    engine had "stopped with an error VoiceStudio doesn't recognize", on a Mac
+    engine had "stopped with an error ElevenVoice doesn't recognize", on a Mac
     where the app's OWN ffprobe was sitting on disk, resolvable, the whole
     time.
 

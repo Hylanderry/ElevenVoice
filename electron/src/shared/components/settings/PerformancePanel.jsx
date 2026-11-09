@@ -96,14 +96,14 @@ export default function PerformancePanel() {
               // Trans injects the link text ("#65") from the translation string.
               issueLink: (
                 <a
-                  href="https://github.com/debpalash/VoiceStudio/issues/65"
+                  href="https://github.com/Hylanderry/ElevenVoice/issues/65"
                   target="_blank"
                   rel="noopener noreferrer"
                 />
               ),
               crashLink: (
                 <a
-                  href="https://github.com/debpalash/VoiceStudio/issues/2135"
+                  href="https://github.com/Hylanderry/ElevenVoice/issues/2135"
                   target="_blank"
                   rel="noopener noreferrer"
                 />

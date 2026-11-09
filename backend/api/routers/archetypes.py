@@ -45,7 +45,7 @@ from services import gallery
 from services.model_acceptance import ModelLicenceNotAccepted
 from core.browser_guard import reject_cross_site_get
 
-logger = logging.getLogger("omnivoice.archetypes")
+logger = logging.getLogger("elevenvoice.archetypes")
 
 router = APIRouter()
 
@@ -556,7 +556,7 @@ async def preview_archetype(
             str(gallery_path),
             media_type="audio/mpeg",
             headers={"Cache-Control": "no-cache",
-                     "X-OmniVoice-Preview-Source": "gallery"},
+                     "X-ElevenVoice-Preview-Source": "gallery"},
         )
 
     cache_path = _PREVIEW_DIR / f"{key}.wav"
@@ -592,7 +592,7 @@ async def preview_archetype(
         str(cache_path),
         media_type="audio/wav",
         headers={"Cache-Control": "no-cache",
-                 "X-OmniVoice-Preview-Source": "local"},
+                 "X-ElevenVoice-Preview-Source": "local"},
     )
 
 

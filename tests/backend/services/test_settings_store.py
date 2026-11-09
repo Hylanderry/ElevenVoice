@@ -38,7 +38,7 @@ def isolated_db(monkeypatch, tmp_path):
     so `from core.config import DB_PATH` would resolve to the stale value.
     """
     # Make sure core.config picks up the override before any consumer imports it.
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
 
     # Drop any cached modules that captured the old DB_PATH.
     for mod in list(sys.modules):
@@ -49,7 +49,7 @@ def isolated_db(monkeypatch, tmp_path):
 
     from core import db as _db
     _db.init_db()  # Apply _BASE_SCHEMA (now includes settings table)
-    yield tmp_path / "omnivoice.db"
+    yield tmp_path / "elevenvoice.db"
 
 
 def test_round_trip_token(isolated_db):
@@ -135,7 +135,7 @@ def test_get_returns_none_when_unset(isolated_db):
 
 def test_invalid_token_returns_none_with_warning(isolated_db, caplog):
     """If the encrypted blob can't be decrypted (e.g. machine-id changed
-    because the user migrated omnivoice_data/ across machines), get_hf_token
+    because the user migrated elevenvoice_data/ across machines), get_hf_token
     must return None and the resolver falls through to env / HF-CLI naturally."""
     from services import settings_store
 
@@ -333,7 +333,7 @@ def _run_alembic(direction: str, db_path: str, target: str = "head"):
     assert os.path.isfile(os.path.join(root, "alembic.ini")), "alembic.ini not found"
     cfg = Config(os.path.join(root, "alembic.ini"))
     # Override the URL so the migration runs against the fixture DB, not
-    # the developer's actual omnivoice_data/.
+    # the developer's actual elevenvoice_data/.
     cfg.set_main_option("sqlalchemy.url", f"sqlite:///{db_path}")
     if direction == "upgrade":
         command.upgrade(cfg, target)
@@ -361,7 +361,7 @@ def test_alembic_upgrade_on_v027_db_preserves_existing_tables(tmp_path, monkeypa
         )
         conn.commit()
 
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     # Re-import core.config so DB_PATH picks up the new env var, then run
     # the alembic upgrade.
     for mod in ["core.config", "core.db"]:
@@ -405,7 +405,7 @@ def test_alembic_downgrade_drops_settings_only(tmp_path, monkeypatch):
         conn.executescript(V027_SCHEMA)
         conn.commit()
 
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in ["core.config", "core.db"]:
         if mod in sys.modules:
             del sys.modules[mod]
@@ -484,7 +484,7 @@ def test_quant_override_rejects_non_string(isolated_db):
 
 def test_reads_before_the_store_exists_are_unset_not_errors(monkeypatch, tmp_path, caplog):
     """Startup restores prefs before init_db; a fresh install has no table yet."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in list(sys.modules):
         if mod in ("core", "services") or mod.startswith(("core.", "services.")):
             del sys.modules[mod]

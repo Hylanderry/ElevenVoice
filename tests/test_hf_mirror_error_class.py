@@ -155,8 +155,8 @@ def test_repair_records_why_it_failed(model_manager, monkeypatch):
         raise OSError(_TRANSFORMERS_874)
 
     monkeypatch.setattr(huggingface_hub, "snapshot_download", boom)
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "1")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "1")
     assert model_manager._repair_model_cache("test/checkpoint") is False
     assert "hf-mirror.com" in model_manager._last_repair_error
 

@@ -42,7 +42,7 @@ The SDK exposes no CUDA / MPS path. The sidecar never queries
 reporting is baked in: there is nothing to mis-claim.
 
 Self-test mode (``--selftest``): import the SDK, resolve the pinned SHA
-via ``snapshot_download``, then exit 0. Gated by ``OMNIVOICE_SMOKE=1``
+via ``snapshot_download``, then exit 0. Gated by ``ELEVENVOICE_SMOKE=1``
 upstream because the snapshot is ~400 MB. Useful for release-prep CI to
 verify a wheel + the pinned SHA still resolve as expected.
 
@@ -330,7 +330,7 @@ def _run_selftest() -> int:
 
     Used by release-prep CI to verify the wheel + pinned SHA still
     resolve. The 400 MB download means this is gated by
-    ``OMNIVOICE_SMOKE=1`` upstream ‑‑ this function itself just runs the
+    ``ELEVENVOICE_SMOKE=1`` upstream ‑‑ this function itself just runs the
     full path and returns its exit code.
     """
     try:

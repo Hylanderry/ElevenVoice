@@ -1344,7 +1344,7 @@
     "compute_device_auto": "تلقائي (مستحسن)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "جهاز الحوسبة",
-    "compute_device_env_pinned": "مثبّت بواسطة متغيّر البيئة OMNIVOICE_DEVICE",
+    "compute_device_env_pinned": "مثبّت بواسطة متغيّر البيئة ELEVENVOICE_DEVICE",
     "perf_title": "الأداء",
     "generate_timeout_cpu_note": "تُستخدم عند تشغيل التوليد على المعالج المركزي (CPU). بمجرد حفظها هنا، تحكم دائمًا في توليد فئة المعالج المركزي — بمعزل عن ميزانية المسرَّع أعلاه.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1510,7 +1510,7 @@
     "llmskills_route_for": "مزود ل{{skill}}",
     "audio_tools_version_unknown": "الإصدار غير معروف",
     "audio_tools_bundle_done": "محرك الوسائط المجمعة جاهز.",
-    "remote_backend_hint": "ابدأ الواجهة الخلفية على الجهاز الآخر باستخدام <1>OMNIVOICE_API_KEY</1> اضبطه، وقم بالوصول إليه عبر الشبكة الخلفية الخاصة بك، ثم قم بتوجيه هذا التطبيق إليه.",
+    "remote_backend_hint": "ابدأ الواجهة الخلفية على الجهاز الآخر باستخدام <1>ELEVENVOICE_API_KEY</1> اضبطه، وقم بالوصول إليه عبر الشبكة الخلفية الخاصة بك، ثم قم بتوجيه هذا التطبيق إليه.",
     "remote_backend_confirm_unverified": "لم يجتاز عنوان URL الخلفي هذا اختبار الاتصال. حفظه وإعادة تحميله على أي حال؟ إذا كان الأمر خاطئًا، فلن يتمكن التطبيق من الوصول إلى أي واجهة خلفية حتى تقوم بتغييره مرة أخرى هنا.",
     "review_mode": "وضع المراجعة",
     "review_mode_desc": "توقف مؤقتًا بين مراحل التدفق حتى تتمكن من مراجعة مخرجات ASR/الترجمة.",
@@ -1543,8 +1543,8 @@
     "gpu_report_state_kernels_missing": "عُثر على {{gpu}}، لكن نسخة PyTorch هذه ({{torch}}) لا تحتوي على أنوية (kernels) لبنية الحوسبة الخاصة بها، لذا تعمل المحركات على CPU.",
     "gpu_report_state_unknown": "تعذّر تحديد حالة GPU.",
     "gpu_report_option_vulkan_engines": "استخدم محركًا له بيئة تشغيل GPU خاصة: يعمل audio.cpp على وحدات AMD Radeon عبر Vulkan (الإعدادات ← النماذج ← تثبيت بيئة التشغيل).",
-    "gpu_report_option_rocm_windows_manual": "على أجهزة AMD المدعومة بنظام Windows 11 x64، فعّل تثبيت ROCm 7.2.1 في ElevenVoice باستخدام OMNIVOICE_TORCH_VARIANT=rocm. إذا كان مثبتًا بالفعل، فأعد تشغيل الإعداد وتحقق من جدول توافق برامج التشغيل والأجهزة لدى AMD. للمحركات الاختيارية قيود منفصلة؛ راجع دليل التثبيت على Windows.",
-    "gpu_report_option_rocm_variant_linux": "عيّن OMNIVOICE_TORCH_VARIANT=rocm وشغّل الإعداد مجددًا لتثبيت إصدار ROCm من PyTorch.",
+    "gpu_report_option_rocm_windows_manual": "على أجهزة AMD المدعومة بنظام Windows 11 x64، فعّل تثبيت ROCm 7.2.1 في ElevenVoice باستخدام ELEVENVOICE_TORCH_VARIANT=rocm. إذا كان مثبتًا بالفعل، فأعد تشغيل الإعداد وتحقق من جدول توافق برامج التشغيل والأجهزة لدى AMD. للمحركات الاختيارية قيود منفصلة؛ راجع دليل التثبيت على Windows.",
+    "gpu_report_option_rocm_variant_linux": "عيّن ELEVENVOICE_TORCH_VARIANT=rocm وشغّل الإعداد مجددًا لتثبيت إصدار ROCm من PyTorch.",
     "gpu_report_option_rocm_device_access": "تحقق من تحميل برنامج التشغيل amdgpu ومن قدرة المستخدم على فتح /dev/kfd (المجموعتان render وvideo).",
     "gpu_report_option_reinstall_cuda_torch": "أعد تثبيت بيئة التشغيل ليثبّت إصدار CUDA من PyTorch.",
     "gpu_report_option_update_nvidia_driver": "حدّث برنامج تشغيل NVIDIA (R525 أو أحدث على Linux، وR528.33 أو أحدث على Windows) ثم أعد تشغيل ElevenVoice.",
@@ -2290,7 +2290,7 @@
     "failed": "تعذر بدء المحرك المحلي.",
     "idle": "في انتظار المحرك المحلي…",
     "log_label": "سجل المحرك",
-    "port_in_use": "المنفذ {{port}} مستخدم بالفعل من برنامج آخر. أغلقه أو اضبط OMNIVOICE_PORT على منفذ متاح، ثم أعد المحاولة.",
+    "port_in_use": "المنفذ {{port}} مستخدم بالفعل من برنامج آخر. أغلقه أو اضبط ELEVENVOICE_PORT على منفذ متاح، ثم أعد المحاولة.",
     "elapsed": "انقضت {{seconds}} ثانية",
     "first_run_hint": "قد يستغرق التشغيل الأول عدة دقائق أثناء إعداد بيئة Python.",
     "port_in_use_short": "المنفذ {{port}} مستخدم",
@@ -3273,7 +3273,7 @@
     "sourceRejected": {
       "installed_app": "هذا هو التطبيق المثبّت ولا يمكن تعديله. اختر نسخة git clone بدلًا منه.",
       "not_git": "هذا المجلد ليس نسخة git clone. تنزيل ZIP لا يكفي؛ استخدم git clone.",
-      "not_voicestudio": "لم يُعثر على نسخة ElevenVoice في هذا المجلد.",
+      "not_elevenvoice": "لم يُعثر على نسخة ElevenVoice في هذا المجلد.",
       "read_only": "لا يستطيع ElevenVoice الكتابة في هذا المجلد. اختر مجلدًا تملكه."
     },
     "chooseFailed": "تعذّر استخدام هذا المجلد. حاول مرة أخرى أو اختر مجلدًا آخر.",
@@ -3363,10 +3363,10 @@
       "workflow": "سير عمل n8n",
       "dockerRunPowerShell": "تشغيل الحاوية (Windows PowerShell)"
     },
-    "apiBearerHint": "هذه الواجهة الخلفية بعيدة: اضبط OMNIVOICE_API_KEY في الصدفة على مفتاح API الخاص بها. تقرأ الأمثلة المفتاح من هناك ولا تتضمنه أبدًا.",
+    "apiBearerHint": "هذه الواجهة الخلفية بعيدة: اضبط ELEVENVOICE_API_KEY في الصدفة على مفتاح API الخاص بها. تقرأ الأمثلة المفتاح من هناك ولا تتضمنه أبدًا.",
     "apiInsecureHint": "تتطلب مفاتيح API استخدام https:// مع واجهة خلفية بعيدة. ضع هذه الواجهة خلف https (مثل Tailscale Serve) قبل استخدام مفتاح.",
     "dockerGpuHint": "GPU: تحتاج NVIDIA إلى --gpus all (في Compose حجز جهاز GPU). تستخدم AMD الوسم :stable-rocm مع /dev/kfd و/dev/dri. راجع دليل تثبيت Docker.",
-    "openaiAgentsHint": "وجّه مسار الصوت في OpenAI Agents SDK إلى ElevenVoice لتحويل الكلام إلى نص والنص إلى كلام. أبقِ ElevenVoice قيد التشغيل. للخادم البعيد، اضبط OMNIVOICE_API_KEY قبل التشغيل. اضبط AGENT_LLM_BASE_URL وAGENT_LLM_MODEL على خادم نموذج اللغة الذي يجب أن يستخدمه الوكيل.",
+    "openaiAgentsHint": "وجّه مسار الصوت في OpenAI Agents SDK إلى ElevenVoice لتحويل الكلام إلى نص والنص إلى كلام. أبقِ ElevenVoice قيد التشغيل. للخادم البعيد، اضبط ELEVENVOICE_API_KEY قبل التشغيل. اضبط AGENT_LLM_BASE_URL وAGENT_LLM_MODEL على خادم نموذج اللغة الذي يجب أن يستخدمه الوكيل.",
     "category": {
       "all": "الكل",
       "comms": "الاتصال والوكلاء الصوتيون",
@@ -3832,7 +3832,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "رمز PIN للوصول",
       "api_key_label": "مفتاح API (اختياري)",
-      "api_key_help": "مطلوب فقط عندما يضبط الخادم OMNIVOICE_API_KEY. يُستبدل المفتاح بجلسة ولا يتم حفظه.",
+      "api_key_help": "مطلوب فقط عندما يضبط الخادم ELEVENVOICE_API_KEY. يُستبدل المفتاح بجلسة ولا يتم حفظه.",
       "connect": "اتصال",
       "connecting": "جارٍ الاتصال…",
       "connected_to": "متصل بـ {{host}}",
@@ -3841,9 +3841,9 @@
       "last_seen": "آخر ظهور {{time}}",
       "forget": "نسيان",
       "error_unreachable": "تعذّر الوصول إلى {{host}}. تأكد من أن ElevenVoice يعمل وأن مشاركة الشبكة مفعّلة وأن هذا الهاتف على الشبكة نفسها أو على Tailscale.",
-      "error_not_voicestudio": "ردّ {{host}} لكنه ليس خادم ElevenVoice. تحقق من العنوان والمنفذ.",
+      "error_not_elevenvoice": "ردّ {{host}} لكنه ليس خادم ElevenVoice. تحقق من العنوان والمنفذ.",
       "error_pin": "تم رفض رمز PIN. تنشئ المشاركة رمز PIN جديدًا في كل مرة يتم تشغيلها — امسح رمز QR مرة أخرى.",
-      "error_api_key": "تم رفض مفتاح API. تحقق من المفتاح المضبوط في OMNIVOICE_API_KEY على الخادم.",
+      "error_api_key": "تم رفض مفتاح API. تحقق من المفتاح المضبوط في ELEVENVOICE_API_KEY على الخادم.",
       "error_session_expired": "انتهت صلاحية جلستك. أدخل مفتاح API مرة أخرى لإعادة الاتصال.",
       "error_insecure": "لا يُسمح بـ http:// العادي إلا للعناوين الموجودة على شبكتك المحلية أو Tailscale. استخدم https:// للخوادم الأخرى.",
       "error_invalid_url": "لا يبدو هذا عنوان خادم. مثال: http://192.168.1.20:3900",
@@ -4606,5 +4606,15 @@
     "clipping_issue": "{{percent}}% من الصوت مشوّه",
     "duration_ok": "يناسب المدة الأصلية",
     "duration_issue": "{{track_seconds}} ث، أطول من الأصل {{source_seconds}} ث"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

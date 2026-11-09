@@ -13,7 +13,7 @@ import uuid
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 # (seconds, SRT form). 2.3 / 4.1 / 70.7 are the binary-inexact values an SRT
 # import produces; 59.9996 must carry into the next second, never ",1000".

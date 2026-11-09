@@ -7,8 +7,8 @@ import test from 'node:test';
 import { createMicrosoftStoreHandoff } from '../../scripts/create_microsoft_store_handoff.mjs';
 
 test('creates a Partner Center handoff only from validated signed packages', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'voicestudio-microsoft-store-handoff-'));
-  const file = 'VoiceStudio-MicrosoftStore-0.5.7-win-x64.exe';
+  const dir = mkdtempSync(join(tmpdir(), 'elevenvoice-microsoft-store-handoff-'));
+  const file = 'ElevenVoice-MicrosoftStore-0.5.7-win-x64.exe';
   const packagePath = join(dir, file);
   writeFileSync(packagePath, 'signed installer fixture');
   const updateManifest = 'electron-microsoft-store-stable-win32-x64.yml';
@@ -52,7 +52,7 @@ test('creates a Partner Center handoff only from validated signed packages', () 
 });
 
 test('rejects unsigned or non-versioned handoffs', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'voicestudio-microsoft-store-reject-'));
+  const dir = mkdtempSync(join(tmpdir(), 'elevenvoice-microsoft-store-reject-'));
   assert.throws(
     () =>
       createMicrosoftStoreHandoff({

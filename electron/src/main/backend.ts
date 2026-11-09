@@ -88,7 +88,7 @@ import { DEFAULT_BACKEND_PORT } from '../../../config/app-config.mjs';
 
 const DEFAULT_BUDGET_S = 300;
 const READY_POLL_MS = 500;
-/** Allow another VoiceStudio shell to take ownership without showing a false crash. */
+/** Allow another ElevenVoice shell to take ownership without showing a false crash. */
 const REPLACEMENT_ATTACH_GRACE_MS = 10_000;
 const SUPERVISE_POLL_MS = 2000;
 const PROBE_TIMEOUT_MS = 1500;
@@ -136,7 +136,7 @@ export function bindFailureFromLog(text: string): 'in_use' | 'denied' | null {
   return null;
 }
 const POSIX_SIGKILL_AFTER_MS = 2000;
-const TAURI_APP_ID = 'com.debpalash.omnivoice-studio';
+const TAURI_APP_ID = 'com.hylanderry.elevenvoice';
 const RUNTIME_LOCATION_FILE = 'runtime-location.json';
 const RUNTIME_PREFERENCES_FILE = 'runtime-preferences.json';
 const RUNTIME_REGIONS = new Set<RuntimeRegion>(['auto', 'global', 'china', 'russia', 'restricted']);
@@ -177,7 +177,7 @@ const UVICORN_ARGS = ['uvicorn', 'main:app', '--app-dir', 'backend', '--host', '
 export type StatusListener = (status: BackendStatus) => void;
 
 export function resolvePort(): number {
-  const raw = Number(process.env.OMNIVOICE_PORT);
+  const raw = Number(process.env.ELEVENVOICE_PORT);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_BACKEND_PORT;
 }
 
@@ -194,7 +194,7 @@ const MAX_BUDGET_EXTENSIONS = 3;
  * after an install is the slowest: antivirus scans the freshly written native
  * libraries while a handful of cores import torch and the whole backend. That
  * is slow, not broken, so it must not be failed at the budget sized for a
- * workstation. An explicit `OMNIVOICE_STARTUP_BUDGET_S` always wins. This only
+ * workstation. An explicit `ELEVENVOICE_STARTUP_BUDGET_S` always wins. This only
  * stretches a timeout - it never changes what a feature does - so it is not a
  * cross-platform behavior difference.
  */
@@ -204,7 +204,7 @@ export function defaultStartupBudgetS(cores = cpus().length, memoryBytes = total
 }
 
 function startupBudgetMs(): number {
-  const raw = Number(process.env.OMNIVOICE_STARTUP_BUDGET_S);
+  const raw = Number(process.env.ELEVENVOICE_STARTUP_BUDGET_S);
   return (Number.isFinite(raw) && raw >= 0 ? raw : defaultStartupBudgetS()) * 1000;
 }
 
@@ -227,7 +227,7 @@ export function readinessDeadline(
 }
 
 /**
- * `OMNIVOICE_BACKEND_CMD` override, mirroring the Tauri shell: a JSON array when
+ * `ELEVENVOICE_BACKEND_CMD` override, mirroring the Tauri shell: a JSON array when
  * it starts with `[` (paths with spaces survive), else whitespace-split.
  */
 export function parseBackendCmdOverride(raw: string | undefined): string[] | null {
@@ -454,9 +454,9 @@ function scopedRuntimeRoot(): string | null {
 
 function selectedRuntimeRoot(parent: string): string {
   const selected = resolve(parent);
-  return basename(selected).toLocaleLowerCase('en-US') === 'voicestudio'
+  return basename(selected).toLocaleLowerCase('en-US') === 'elevenvoice'
     ? selected
-    : join(selected, 'VoiceStudio');
+    : join(selected, 'ElevenVoice');
 }
 
 /** File-manager metadata a new folder can hold; it is not another installation's data. */
@@ -507,8 +507,8 @@ export async function resolveSpawnPlan(
     if (hostIssue === 'unsupported_platform' || hostIssue === 'wrong_architecture') {
       return {
         error:
-          'This Intel Mac cannot run the local VoiceStudio backend: PyTorch no longer publishes ' +
-          'Intel-Mac wheels. Connect the app to a VoiceStudio backend on another computer, or ' +
+          'This Intel Mac cannot run the local ElevenVoice backend: PyTorch no longer publishes ' +
+          'Intel-Mac wheels. Connect the app to a ElevenVoice backend on another computer, or ' +
           'use the Apple Silicon build on an Apple Silicon Mac.',
         setupIssue: 'unsupported_platform',
       };
@@ -518,7 +518,7 @@ export async function resolveSpawnPlan(
       cwd: root,
     };
   }
-  const override = parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD);
+  const override = parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD);
   if (override) return { argv: override, cwd: root };
   if (app.isPackaged) {
     const project = packagedProject ?? join(defaultRuntimeRoot(), 'project');
@@ -538,9 +538,9 @@ export async function resolveSpawnPlan(
   if (hostIssue === 'unsupported_platform') {
     return {
       error:
-        'This Intel Mac cannot run the local VoiceStudio backend: PyTorch no longer publishes ' +
+        'This Intel Mac cannot run the local ElevenVoice backend: PyTorch no longer publishes ' +
         'Intel-Mac wheels, so `bun run setup:api` cannot install it. Connect the app to a ' +
-        'VoiceStudio backend on another computer, or run the backend on an Apple Silicon Mac, ' +
+        'ElevenVoice backend on another computer, or run the backend on an Apple Silicon Mac, ' +
         'Windows or Linux.',
       setupIssue: 'unsupported_platform',
     };
@@ -564,8 +564,8 @@ export async function resolveSpawnPlan(
     if (!existsSync(join(root, 'pyproject.toml'))) {
       return {
         error:
-          `The Python environment in ${root} is missing (no ${relative(root, python)}), and this is not a VoiceStudio source checkout. ` +
-          'Install VoiceStudio from the release installer, or clone the repository and run `bun run setup:api` inside it.',
+          `The Python environment in ${root} is missing (no ${relative(root, python)}), and this is not a ElevenVoice source checkout. ` +
+          'Install ElevenVoice from the release installer, or clone the repository and run `bun run setup:api` inside it.',
       };
     }
     return {
@@ -629,29 +629,29 @@ function childEnv(
   }
   if (packagedHost && !env.POSTHOG_HOST) env.POSTHOG_HOST = packagedHost;
   // The backend reports the same build commit as the app in bug reports.
-  if (!env.OMNIVOICE_BUILD_COMMIT && __BUILD_COMMIT__ !== 'unknown') {
-    env.OMNIVOICE_BUILD_COMMIT = __BUILD_COMMIT__;
+  if (!env.ELEVENVOICE_BUILD_COMMIT && __BUILD_COMMIT__ !== 'unknown') {
+    env.ELEVENVOICE_BUILD_COMMIT = __BUILD_COMMIT__;
   }
   delete env.PYTHONHOME;
   delete env.PYTHONPATH;
   env.PYTHONUNBUFFERED = '1';
   env.PYTHONUTF8 = '1';
   if (app.isPackaged && !runtimeSetupSupported()) {
-    const selectedData = env.OMNIVOICE_DATA_DIR;
+    const selectedData = env.ELEVENVOICE_DATA_DIR;
     Object.assign(env, bundledRuntimeEnv(backendRoot(), app.getPath('userData')));
     // Keep an explicit data pointer even when its bookmark is stale/malformed.
     // Access must fail visibly; never redirect existing data to an empty default.
-    if (selectedData) env.OMNIVOICE_DATA_DIR = selectedData;
+    if (selectedData) env.ELEVENVOICE_DATA_DIR = selectedData;
   }
   // Arms backend/core/parent_liveness.py: stdin EOF == "the shell is gone".
-  env.OMNIVOICE_DESKTOP_CONTAINED = '1';
-  env.OMNIVOICE_PORT = String(port);
+  env.ELEVENVOICE_DESKTOP_CONTAINED = '1';
+  env.ELEVENVOICE_PORT = String(port);
   // The dev renderer is served by Vite on a real port; tell the backend so
   // Settings -> Sharing reports it. Packaged builds serve app:// (no port).
   const rendererPort = devRendererPort(env.ELECTRON_RENDERER_URL);
-  if (rendererPort && !env.OMNIVOICE_UI_PORT?.trim() && !env.VOICESTUDIO_UI_PORT?.trim())
-    env.OMNIVOICE_UI_PORT = rendererPort;
-  // #2215: the backend resolves uv as OMNIVOICE_BUNDLED_UV first and
+  if (rendererPort && !env.ELEVENVOICE_UI_PORT?.trim() && !env.ELEVENVOICE_UI_PORT?.trim())
+    env.ELEVENVOICE_UI_PORT = rendererPort;
+  // #2215: the backend resolves uv as ELEVENVOICE_BUNDLED_UV first and
   // `shutil.which("uv")` second. The packaged uv lives in resources/tools,
   // which is on nobody's PATH, and a GUI launch does not inherit the shell's
   // PATH either — so `which` missed a uv the shell had already located, and
@@ -662,14 +662,14 @@ function childEnv(
   const uv =
     app.isPackaged && !runtimeSetupSupported()
       ? undefined
-      : bundledUvEnv(env.OMNIVOICE_BUNDLED_UV, findUv);
-  if (uv) env.OMNIVOICE_BUNDLED_UV = uv;
-  else delete env.OMNIVOICE_BUNDLED_UV;
+      : bundledUvEnv(env.ELEVENVOICE_BUNDLED_UV, findUv);
+  if (uv) env.ELEVENVOICE_BUNDLED_UV = uv;
+  else delete env.ELEVENVOICE_BUNDLED_UV;
   // #2599: LAN devices load the web UI from this backend. Serve the build
   // shipped inside this app version's resources, never a copy beside the
   // runtime project (absent on updated installs, stale after an update).
-  if (app.isPackaged && process.resourcesPath && !env.OMNIVOICE_FRONTEND_DIST?.trim()) {
-    env.OMNIVOICE_FRONTEND_DIST = bundledWebUiPath();
+  if (app.isPackaged && process.resourcesPath && !env.ELEVENVOICE_FRONTEND_DIST?.trim()) {
+    env.ELEVENVOICE_FRONTEND_DIST = bundledWebUiPath();
   }
   // Region defaults must leave HF_ENDPOINT unset so the backend can probe and
   // fail over. Only an explicit user endpoint may disable automatic selection.
@@ -704,7 +704,7 @@ export function managedBackendSpawnOptions(
 ): { env: NodeJS.ProcessEnv; stdio: StdioOptions; drainFd: number | null } {
   const drainFd = platform === 'win32' ? null : 3;
   const env = { ...childEnv(port, region, platform), ...backendOnlyEnv };
-  if (drainFd !== null) env.OMNIVOICE_DESKTOP_DRAIN_FD = String(drainFd);
+  if (drainFd !== null) env.ELEVENVOICE_DESKTOP_DRAIN_FD = String(drainFd);
   return {
     env,
     stdio: drainFd === null ? ['pipe', 'pipe', 'pipe'] : ['pipe', 'pipe', 'pipe', 'pipe'],
@@ -761,7 +761,7 @@ function readSmartAppControl(platform = process.platform): SmartAppControl {
 
 /** A failed spawn names the program, not just the OS error. Windows denies a
  *  blocked executable with a bare `spawn UNKNOWN`; missing runtime-owned programs
- *  point at their install, while custom `OMNIVOICE_BACKEND_CMD` launches point
+ *  point at their install, while custom `ELEVENVOICE_BACKEND_CMD` launches point
  *  at their own executable instead (#2440). When Smart App
  *  Control is on, it is named: it has no per-app exceptions, so the usual
  *  antivirus-exclusion advice cannot help (#3224). */
@@ -787,7 +787,7 @@ export function spawnFailureMessage(
   // adds its localized permission/security hint to this diagnostic.
   if (runtimeOwned && code !== 'ENOENT') return `Could not start ${command}: ${detail}`;
   return runtimeOwned
-    ? `Could not start ${command}: ${detail}. Install or repair the local runtime, then restart VoiceStudio.`
+    ? `Could not start ${command}: ${detail}. Install or repair the local runtime, then restart ElevenVoice.`
     : `Could not start ${command}: ${detail}. Check that the program exists and can be launched, then try again.`;
 }
 
@@ -832,11 +832,11 @@ export function startupTimeoutMessage(
 ): string {
   const base =
     `Backend did not answer on port ${port} within ${Math.round(budgetMs / 1000)} s ` +
-    '(OMNIVOICE_STARTUP_BUDGET_S).';
+    '(ELEVENVOICE_STARTUP_BUDGET_S).';
   if (!owned) return `${base} Nothing was spawned for this attempt.`;
   const advice =
     ' Slow disks and antivirus scanning of the runtime folder are the usual cause: click Retry, ' +
-    'exclude the VoiceStudio runtime folder from real-time scanning, or raise OMNIVOICE_STARTUP_BUDGET_S ' +
+    'exclude the ElevenVoice runtime folder from real-time scanning, or raise ELEVENVOICE_STARTUP_BUDGET_S ' +
     '(for example 900).';
   return lastOutput
     ? `${base} Last output: ${lastOutput}${advice}`
@@ -934,7 +934,7 @@ export class BackendSupervisor extends EventEmitter<{
   async getSetupDiagnostics(): Promise<string> {
     return scrubSetupText(
       [
-        `VoiceStudio ${__APP_VERSION__} (build ${__BUILD_COMMIT__}) setup diagnostics`,
+        `ElevenVoice ${__APP_VERSION__} (build ${__BUILD_COMMIT__}) setup diagnostics`,
         `Exported: ${new Date().toISOString()}`,
         `OS: ${process.platform} ${release()} (${process.arch})`,
         `Stage: ${this.stage}; phase: ${this.setupPhase}; region: ${this.runtimeRegion}`,
@@ -1026,7 +1026,7 @@ export class BackendSupervisor extends EventEmitter<{
     // backend transport gates can recognize the desktop. Chromium forbids
     // overriding Origin itself in net.fetch.
     return {
-      'X-VoiceStudio-Desktop-Origin': APP_ORIGIN,
+      'X-ElevenVoice-Desktop-Origin': APP_ORIGIN,
       ...(session ? { Authorization: `Bearer ${session.token}` } : {}),
     };
   }
@@ -1080,7 +1080,7 @@ export class BackendSupervisor extends EventEmitter<{
       if (['on', 'evaluation'].includes(this.setupSmartAppControl))
         status.smartAppControlWarning = true;
     }
-    if (/^(1|true|yes|on)$/i.test((process.env.OMNIVOICE_ANALYTICS_DISABLED ?? '').trim()))
+    if (/^(1|true|yes|on)$/i.test((process.env.ELEVENVOICE_ANALYTICS_DISABLED ?? '').trim()))
       status.analyticsDisabled = true;
     if (this.diagnosis) status.diagnosis = this.diagnosis;
     if (this.exitCode !== undefined) status.exitCode = this.exitCode;
@@ -1136,9 +1136,9 @@ export class BackendSupervisor extends EventEmitter<{
         return;
       }
 
-      if (process.env.VOICESTUDIO_SKIP_BACKEND === '1') {
+      if (process.env.ELEVENVOICE_SKIP_BACKEND === '1') {
         this.setStage('attaching', {
-          message: `VOICESTUDIO_SKIP_BACKEND=1 — waiting for an external backend on port ${this.port}`,
+          message: `ELEVENVOICE_SKIP_BACKEND=1 — waiting for an external backend on port ${this.port}`,
         });
         void this.waitUntilReady(gen, Number.POSITIVE_INFINITY);
         return;
@@ -1160,7 +1160,7 @@ export class BackendSupervisor extends EventEmitter<{
       if (
         app.isPackaged &&
         runtimeSetupSupported() &&
-        !parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD)
+        !parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD)
       ) {
         const { project, ready } = await this.resolveRuntimeProject();
         if (!ready) {
@@ -1204,8 +1204,8 @@ export class BackendSupervisor extends EventEmitter<{
       // Explicit ports/custom commands are contracts with external callers. Only
       // the default managed launch may move away from an OS-reserved port.
       if (
-        !process.env.OMNIVOICE_PORT?.trim() &&
-        !parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD)
+        !process.env.ELEVENVOICE_PORT?.trim() &&
+        !parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD)
       ) {
         let identifiedBackend = false;
         const port = await availableBackendPort(this.port, async (candidate) => {
@@ -1285,7 +1285,7 @@ export class BackendSupervisor extends EventEmitter<{
     this.setupPhase = 'checking';
     this.setupProgress.reset();
     this.setupLog.append(
-      `Setup attempt: VoiceStudio ${__APP_VERSION__}; ${process.platform}/${process.arch}; region: ${this.runtimeRegion}`,
+      `Setup attempt: ElevenVoice ${__APP_VERSION__}; ${process.platform}/${process.arch}; region: ${this.runtimeRegion}`,
     );
     this.setStage('installing', { message: undefined });
     const stopWatching = this.watchSetupDownloads(gen, controller.signal);
@@ -1766,7 +1766,7 @@ export class BackendSupervisor extends EventEmitter<{
       launchRefused(this.message) ||
       /Windows refused to load/.test(this.message ?? '') ||
       windowsLoadBlock(this.childErrorLog) !== null;
-    const custom = Boolean(parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD));
+    const custom = Boolean(parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD));
     const build = (trust: TrustFacts = {}): InstallFailure => ({
       code: classifyInstallFailure({
         stage: this.stage,
@@ -1932,7 +1932,7 @@ export class BackendSupervisor extends EventEmitter<{
     const [command, ...args] = plan.argv;
     // A custom command bypasses the managed runtime; its own executable is the
     // only thing that can be repaired.
-    const runtimeOwned = !parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD);
+    const runtimeOwned = !parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD);
     if (!command) {
       this.setStage('failed', { message: 'Empty backend command' });
       return;
@@ -1999,7 +1999,7 @@ export class BackendSupervisor extends EventEmitter<{
     code: number | null,
     signal: NodeJS.Signals | null,
   ): Promise<void> {
-    // A second VoiceStudio shell can deliberately replace this child between
+    // A second ElevenVoice shell can deliberately replace this child between
     // process exit and its own listener becoming ready. Treat that handoff as
     // attachment, not a crash, and keep renderer requests paused meanwhile.
     this.setStage('attaching', { managed: false, message: undefined });
@@ -2009,7 +2009,7 @@ export class BackendSupervisor extends EventEmitter<{
         if (gen !== this.generation || this.shuttingDown) return;
         this.exitCode = undefined;
         this.exitSignal = undefined;
-        this.pushLog('out', 'Attached to the replacement VoiceStudio backend.');
+        this.pushLog('out', 'Attached to the replacement ElevenVoice backend.');
         await this.markReady(gen, { managed: false, message: undefined }, true);
         return;
       }
@@ -2028,7 +2028,7 @@ export class BackendSupervisor extends EventEmitter<{
       code === EXIT_PORT_IN_USE ? 'in_use' : bindFailureFromLog(this.childLog.join('\n'));
     if (bindFailure === 'in_use') {
       this.setStage('port_in_use', {
-        message: `Port ${this.port} is already in use by another process. Stop it or set OMNIVOICE_PORT.`,
+        message: `Port ${this.port} is already in use by another process. Stop it or set ELEVENVOICE_PORT.`,
       });
       return;
     }
@@ -2037,7 +2037,7 @@ export class BackendSupervisor extends EventEmitter<{
         message:
           `Windows or another program refused access to port ${this.port}. It is often in a reserved ` +
           'port range (Hyper-V, WSL, Docker) - run "netsh interface ipv4 show excludedportrange protocol=tcp" ' +
-          'to check - or held exclusively. Set OMNIVOICE_PORT to a free port and restart.',
+          'to check - or held exclusively. Set ELEVENVOICE_PORT to a free port and restart.',
       });
       return;
     }
@@ -2121,7 +2121,7 @@ export class BackendSupervisor extends EventEmitter<{
     return (
       app.isPackaged &&
       runtimeSetupSupported() &&
-      !parseBackendCmdOverride(process.env.OMNIVOICE_BACKEND_CMD) &&
+      !parseBackendCmdOverride(process.env.ELEVENVOICE_BACKEND_CMD) &&
       !isUnsupportedPlatform() &&
       this.ownsRuntimeProject() &&
       !this.repairAttempted &&
@@ -2147,7 +2147,7 @@ export class BackendSupervisor extends EventEmitter<{
       // redirect renderer content to another service; an unmarked listener
       // is left alone and the launch reports the port as in use instead.
       // Remote backends were chosen explicitly and may predate the marker.
-      const marked = Boolean(res.headers.get('x-omnivoice-backend'));
+      const marked = Boolean(res.headers.get('x-elevenvoice-backend'));
       if (identityOnly) return marked;
       if (!this.remoteUrl && !marked) {
         this.lastProbeOutcome = 'refused';
@@ -2257,7 +2257,7 @@ export class BackendSupervisor extends EventEmitter<{
 
   /** Poll /health until ready, retiring the launch when the budget expires. */
   private async waitUntilReady(gen: number, budgetMs: number): Promise<void> {
-    // `OMNIVOICE_STARTUP_BUDGET_S` bounds how long the *backend* may take to
+    // `ELEVENVOICE_STARTUP_BUDGET_S` bounds how long the *backend* may take to
     // answer, so it is measured from the moment this poll loop begins — which
     // is right after the process was spawned. Anchoring it to `startedAt`
     // charged the launch against the backend's window (#2445), and everything

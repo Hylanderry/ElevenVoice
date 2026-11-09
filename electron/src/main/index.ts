@@ -6,7 +6,17 @@ import { isTrustedRenderer } from './trusted-renderer';
 import { dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, session, shell, Tray } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, session, shell, Tray } from 'electron';
+import {
+  type BackgroundPrefs,
+  hasConsent,
+  launchedInBackground,
+  loginItemSettings,
+  readBackgroundPrefs,
+  recordConsent,
+  TERMS_URL,
+  writeBackgroundPrefs,
+} from './background-mode';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { BackendSupervisor, backendRoot } from './backend';
 import { registerIpc, wireWindowMaximizeEvents } from './ipc';
@@ -138,6 +148,41 @@ ipcMain.handle(
   (event) => BrowserWindow.fromWebContents(event.sender)?.isFullScreen() ?? false,
 );
 
+let backgroundPrefs: BackgroundPrefs = { runInBackground: true, openAtLogin: false };
+let hiddenToTrayNotice = false;
+
+/** First launch: agreement to the terms and to every model licence, asked once. */
+async function confirmFirstRunConsent(): Promise<boolean> {
+  const userData = app.getPath('userData');
+  if (hasConsent(userData)) return true;
+  for (;;) {
+    const { response } = await dialog.showMessageBox({
+      type: 'info',
+      title: PRODUCT_NAME,
+      message: `Welcome to ${PRODUCT_NAME}`,
+      detail:
+        `To continue, confirm that you agree to the ${PRODUCT_NAME} Terms of Use and to the licences ` +
+        'of the AI models the app downloads and runs. This is saved and not asked again. ' +
+        'You can withdraw a model licence at any time in Settings → Models.',
+      buttons: ['I agree', 'Read the terms', 'Quit'],
+      defaultId: 0,
+      cancelId: 2,
+      noLink: true,
+    });
+    if (response === 0) {
+      recordConsent(userData, __APP_VERSION__);
+      return true;
+    }
+    if (response === 2) return false;
+    await shell.openExternal(TERMS_URL);
+  }
+}
+
+function applyLoginItem(): void {
+  if (!app.isPackaged || process.platform === 'linux') return;
+  app.setLoginItemSettings(loginItemSettings(backgroundPrefs.openAtLogin, process.execPath));
+}
+
 function createWindow(): BrowserWindow {
   const appUrl =
     is.dev && process.env.ELECTRON_RENDERER_URL
@@ -178,6 +223,18 @@ function createWindow(): BrowserWindow {
         mainErrors,
         'Window persistence flush',
       );
+      return;
+    }
+    if (backgroundPrefs.runInBackground && tray && !tray.isDestroyed()) {
+      win.hide();
+      if (!hiddenToTrayNotice && process.platform === 'win32') {
+        hiddenToTrayNotice = true;
+        tray.displayBalloon({
+          title: PRODUCT_NAME,
+          content: 'Still running in the background. Use the tray icon to open or quit.',
+          noSound: true,
+        });
+      }
       return;
     }
     observeMainProcessTask(beginOrderlyQuit(), mainErrors, 'Orderly quit');
@@ -241,10 +298,11 @@ async function openOutside(url: string): Promise<void> {
   }
 }
 
-if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSingleInstanceLock()) {
+if (process.env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on('second-instance', () => {
+    if (!isLiveWindow(mainWindow)) mainWindow = createWindow();
     activateLiveWindow(mainWindow);
   });
 
@@ -252,6 +310,12 @@ if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
     .whenReady()
     .then(async () => {
       electronApp.setAppUserModelId(APP_ID);
+      backgroundPrefs = readBackgroundPrefs(app.getPath('userData'));
+      applyLoginItem();
+      if (!(await confirmFirstRunConsent())) {
+        app.exit(0);
+        return;
+      }
       if (process.platform === 'darwin') installMacApplicationMenu(app, Menu, __APP_VERSION__);
       installRendererPermissions(session.defaultSession, process.env.ELECTRON_RENDERER_URL);
       app.on('browser-window-created', (_event, window) => optimizer.watchWindowShortcuts(window));
@@ -301,7 +365,7 @@ if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
         const proxy = await startDevBackendProxy(
           () => backend.baseUrl,
           () => backend.requestHeaders(),
-          electronProxyPort(process.env.VOICESTUDIO_ELECTRON_PROXY_PORT),
+          electronProxyPort(process.env.ELEVENVOICE_ELECTRON_PROXY_PORT),
           process.env.ELECTRON_RENDERER_URL
             ? [new URL(process.env.ELECTRON_RENDERER_URL).origin]
             : [],
@@ -331,7 +395,7 @@ if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
         clearInterval(periodicUpdateCheck);
         closeUpdateIpc();
       };
-      mainWindow = createWindow();
+      if (!launchedInBackground(process.argv)) mainWindow = createWindow();
       closeWatch = installWatchFolders(
         () => mainWindow,
         () => backend.baseUrl,
@@ -341,11 +405,40 @@ if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
       if (process.platform === 'darwin') app.dock?.setIcon(icon);
       tray = new Tray(createTrayIcon(brandIconPath('32x32.png')));
       tray.setToolTip(PRODUCT_NAME);
-      closeCapture = installNativeCapture(PRELOAD_PATH, tray, () => mainWindow);
-      tray.on('click', () => {
+      const openMain = () => {
         if (!isLiveWindow(mainWindow)) mainWindow = createWindow();
-        activateLiveWindow(mainWindow);
+        return mainWindow;
+      };
+      const saveBackgroundPrefs = (next: BackgroundPrefs) => {
+        backgroundPrefs = next;
+        writeBackgroundPrefs(app.getPath('userData'), next);
+        applyLoginItem();
+      };
+      const capture = installNativeCapture(PRELOAD_PATH, tray, () => mainWindow, {
+        openMain,
+        extraItems: () => [
+          {
+            label: 'Keep running when the window is closed',
+            type: 'checkbox',
+            checked: backgroundPrefs.runInBackground,
+            click: (item) => saveBackgroundPrefs({ ...backgroundPrefs, runInBackground: item.checked }),
+          },
+          ...(app.isPackaged && process.platform !== 'linux'
+            ? [
+                {
+                  label: 'Start with the system',
+                  type: 'checkbox' as const,
+                  checked: backgroundPrefs.openAtLogin,
+                  click: (item: Electron.MenuItem) =>
+                    saveBackgroundPrefs({ ...backgroundPrefs, openAtLogin: item.checked }),
+                },
+              ]
+            : []),
+        ],
       });
+      closeCapture = capture.close;
+      capture.refreshTray();
+      tray.on('click', () => activateLiveWindow(openMain()));
       observeMainProcessTask(backend.start(), mainErrors, 'Backend startup');
 
       app.on('activate', () => {
@@ -361,7 +454,7 @@ if (process.env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES !== '1' && !app.requestSing
     });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin' && !backgroundPrefs.runInBackground) app.quit();
   });
 
   // The first pass gives renderer persistence a bounded chance to settle, then

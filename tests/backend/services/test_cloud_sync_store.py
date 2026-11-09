@@ -47,7 +47,7 @@ def _columns(db_path: str, table: str) -> list[tuple]:
 
 @pytest.fixture
 def store(tmp_path, monkeypatch):
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)
@@ -115,11 +115,11 @@ def test_page_items_and_cursor_are_saved_together(store):
 
 
 def test_renderer_mirror_reports_only_values_applied_from_sync(store):
-    store.set_local("voicestudio.locale", "en", origin="renderer")
+    store.set_local("elevenvoice.locale", "en", origin="renderer")
     seq = store.local_seq()
-    store.set_local("voicestudio.locale", "de", origin="sync")
-    assert store.get_local("voicestudio.locale") == "de"
-    assert store.local_since(seq) == [(seq + 1, "voicestudio.locale", "de")]
+    store.set_local("elevenvoice.locale", "de", origin="sync")
+    assert store.get_local("elevenvoice.locale") == "de"
+    assert store.local_since(seq) == [(seq + 1, "elevenvoice.locale", "de")]
     assert store.local_since(seq + 1) == []
 
 

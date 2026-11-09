@@ -3,7 +3,7 @@
 Hermetic by design: every test exercises pure builders, env-driven
 resolution, or registry wiring. No binary, no network, no model download —
 ``resolve_server_binary`` is only asserted on its failure message, and the
-host env is scrubbed of ``OMNIVOICE_AUDIOCPP_*`` overrides per test.
+host env is scrubbed of ``ELEVENVOICE_AUDIOCPP_*`` overrides per test.
 """
 from __future__ import annotations
 
@@ -40,14 +40,14 @@ def app_modules():
 @pytest.fixture(autouse=True)
 def scrub_audiocpp_env(monkeypatch):
     for var in (
-        "OMNIVOICE_AUDIOCPP_BIN",
-        "OMNIVOICE_AUDIOCPP_DIR",
-        "OMNIVOICE_AUDIOCPP_MODEL",
-        "OMNIVOICE_AUDIOCPP_PACKAGE",
-        "OMNIVOICE_AUDIOCPP_BACKEND",
-        "OMNIVOICE_AUDIOCPP_DEVICE",
-        "OMNIVOICE_AUDIOCPP_PORT",
-        "OMNIVOICE_AUDIOCPP_ASSET",
+        "ELEVENVOICE_AUDIOCPP_BIN",
+        "ELEVENVOICE_AUDIOCPP_DIR",
+        "ELEVENVOICE_AUDIOCPP_MODEL",
+        "ELEVENVOICE_AUDIOCPP_PACKAGE",
+        "ELEVENVOICE_AUDIOCPP_BACKEND",
+        "ELEVENVOICE_AUDIOCPP_DEVICE",
+        "ELEVENVOICE_AUDIOCPP_PORT",
+        "ELEVENVOICE_AUDIOCPP_ASSET",
     ):
         monkeypatch.delenv(var, raising=False)
 
@@ -339,7 +339,7 @@ def test_engine_override_keeps_low_vram_caveat_when_global_device_is_cpu(
         'Vulkan:0 "NVIDIA GTX 1650" [GPU]\nCPU:0 "CPU" [CPU]'
     )
     monkeypatch.setattr(app_modules.bootstrap, "probe_devices", lambda: devices)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_BACKEND", "vulkan")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BACKEND", "vulkan")
     caps = HostCaps(
         family="cpu",
         available_families=("cuda", "cpu"),
@@ -497,16 +497,16 @@ def test_model_catalog_and_backend_share_immutable_revision(app_modules):
 def test_server_port_default_and_overrides(monkeypatch, app_modules):
     bootstrap = app_modules.bootstrap
     assert bootstrap.server_port() == bootstrap.DEFAULT_PORT
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_PORT", "18081")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_PORT", "18081")
     assert bootstrap.server_port() == 18081
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_PORT", "bogus")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_PORT", "bogus")
     assert bootstrap.server_port() == bootstrap.DEFAULT_PORT
 
 
 def test_package_filename_default_and_override(monkeypatch, app_modules):
     bootstrap = app_modules.bootstrap
     assert bootstrap.package_filename() == bootstrap.DEFAULT_PACKAGE
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_PACKAGE", "breeze-tts-2-bf16.gguf")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_PACKAGE", "breeze-tts-2-bf16.gguf")
     assert bootstrap.package_filename() == "breeze-tts-2-bf16.gguf"
 
 
@@ -595,7 +595,7 @@ def test_file_override_materializes_hf_style_symlink(
     blob.write_bytes(b"GGUF test payload")
     model = tmp_path / "custom.gguf"
     symlink_or_skip(model, blob)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_MODEL", str(model))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_MODEL", str(model))
 
     resolved = bootstrap.resolve_model_file()
 
@@ -614,7 +614,7 @@ def test_directory_override_materializes_hf_style_symlink(
     model_dir.mkdir()
     model = model_dir / bootstrap.DEFAULT_PACKAGE
     symlink_or_skip(model, blob)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_MODEL", str(model_dir))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_MODEL", str(model_dir))
 
     resolved = bootstrap.resolve_model_file()
 
@@ -668,8 +668,8 @@ def test_resolve_server_binary_missing_gives_install_hint(
     bootstrap = app_modules.bootstrap
     # Point both env probes at nothing; the package bin/ is unpopulated in
     # a source checkout, so this must fail with guidance, not a bare error.
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_BIN", str(tmp_path / "nope"))
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_DIR", str(tmp_path / "nodir"))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BIN", str(tmp_path / "nope"))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_DIR", str(tmp_path / "nodir"))
     with pytest.raises(RuntimeError, match="docs/engines/audio-cpp.md") as exc:
         bootstrap.resolve_server_binary()
     assert bootstrap.default_asset()[1] in str(exc.value)
@@ -681,7 +681,7 @@ def test_resolve_server_binary_prefers_env_bin(tmp_path, monkeypatch, app_module
     fake.write_bytes(b"#!/bin/sh\n")
     if os.name != "nt":
         fake.chmod(0o755)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_BIN", str(fake))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BIN", str(fake))
     assert bootstrap.resolve_server_binary() == fake
 
 
@@ -694,7 +694,7 @@ def test_resolve_server_binary_rejects_non_executable_posix(
     fake = tmp_path / "audiocpp_server"
     fake.write_bytes(b"binary")
     fake.chmod(0o644)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_BIN", str(fake))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BIN", str(fake))
 
     with pytest.raises(RuntimeError, match=r"chmod \+x audiocpp_server"):
         bootstrap.resolve_server_binary()
@@ -717,8 +717,8 @@ def test_non_executable_explicit_binary_does_not_fall_through(
     fallback = fallback_dir / "audiocpp_server"
     fallback.write_bytes(b"#!/bin/sh\n")
     fallback.chmod(0o755)
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_BIN", str(explicit))
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_DIR", str(fallback_dir))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BIN", str(explicit))
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_DIR", str(fallback_dir))
 
     with pytest.raises(RuntimeError, match=r"chmod \+x audiocpp_server"):
         bootstrap.resolve_server_binary()
@@ -1010,8 +1010,8 @@ def test_auto_probe_failure_surfaces_cpu_fallback_through_async_profile(
 @pytest.mark.parametrize(
     ("env_name", "env_value"),
     [
-        ("OMNIVOICE_AUDIOCPP_BACKEND", "cpu"),
-        ("OMNIVOICE_AUDIOCPP_DEVICE", "0"),
+        ("ELEVENVOICE_AUDIOCPP_BACKEND", "cpu"),
+        ("ELEVENVOICE_AUDIOCPP_DEVICE", "0"),
     ],
 )
 def test_explicit_compute_override_keeps_probe_failure_fatal(

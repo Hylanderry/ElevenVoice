@@ -1,15 +1,15 @@
 """HF mirror (HF_ENDPOINT) setting — Wave 4.3. Pure, prefs stubbed."""
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 
 import pytest
 
 
-_ENDPOINT_ENV_KEYS = ("HF_ENDPOINT", "OMNIVOICE_HF_ENDPOINT_MODE")
+_ENDPOINT_ENV_KEYS = ("HF_ENDPOINT", "ELEVENVOICE_HF_ENDPOINT_MODE")
 
 
 @pytest.fixture(autouse=True)
@@ -114,7 +114,7 @@ def test_existing_explicit_config_never_migrated_to_auto(settings_mod, monkeypat
 
 
 def test_env_opt_out_reported(settings_mod, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_HF_ENDPOINT_MODE", "manual")
+    monkeypatch.setenv("ELEVENVOICE_HF_ENDPOINT_MODE", "manual")
     st = settings_mod.get_hf_mirror()
     assert st["mode"] == "manual"
     assert st["auto_opt_out"] is True

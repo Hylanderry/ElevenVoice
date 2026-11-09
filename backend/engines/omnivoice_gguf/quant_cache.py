@@ -24,7 +24,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-logger = logging.getLogger("omnivoice.gguf")
+logger = logging.getLogger("elevenvoice.gguf")
 
 #: Quant tags ordered by footprint, smallest first. The automatic
 #: fallback prefers the smallest installed pair, so the conservative

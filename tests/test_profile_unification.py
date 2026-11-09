@@ -1,4 +1,4 @@
-"""Unified profiles (spec: docs/specs/voice-studio-unification.md §3/§5).
+"""Unified profiles (spec: docs/specs/elevenvoice-unification.md §3/§5).
 
 Endpoint validation tests run against an isolated tmp data dir; the design
 render path is monkeypatched (no model in CI). Migration tests drive alembic
@@ -11,8 +11,8 @@ import sqlite3
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _FAKE_AUDIO = b"RIFF" + b"\x00" * 2000
 _VD = {"Gender": "female", "Age": "young adult", "Pitch": "high pitch"}
@@ -23,7 +23,7 @@ def app_client(tmp_path_factory):
     """TestClient with an isolated data dir (no lifespan — schema only)."""
     mp = pytest.MonkeyPatch()
     tmp_path = tmp_path_factory.mktemp("unified-profiles-data")
-    mp.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    mp.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
 
     import importlib
     import core.config as _cfg

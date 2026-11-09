@@ -26,7 +26,7 @@ from core.device_caps import KERNEL_RISK_MARKER, is_windows_on_arm
 from .models import KNOWN_MODELS, hf_cache_dir, is_cached, MIN_FREE_GB, INSTALL_HEADROOM_GB, disk_free_bytes
 from core.browser_guard import reject_cross_site_get
 
-logger = logging.getLogger("omnivoice.setup.wizard")
+logger = logging.getLogger("elevenvoice.setup.wizard")
 router = APIRouter()
 
 
@@ -175,7 +175,7 @@ def _amd_unusable_note(torch=None) -> str:
             f"AMD GPU detected, but this install's PyTorch is {build}, which "
             "cannot drive it, so PyTorch engines run on the CPU. On Windows 11 "
             "x64 with a GPU in AMD's ROCm 7.2.1 support matrix (including the "
-            "RX 9000 and RX 7000 series), set OMNIVOICE_TORCH_VARIANT=rocm and "
+            "RX 9000 and RX 7000 series), set ELEVENVOICE_TORCH_VARIANT=rocm and "
             "run setup again to install the native ROCm build "
             "(docs/install/windows-rocm.md). audio.cpp (Vulkan) engines can "
             "use the GPU either way - see Settings > Performance for the "
@@ -183,7 +183,7 @@ def _amd_unusable_note(torch=None) -> str:
         )
     return (
         f"AMD GPU detected, but this install's PyTorch is {build}, which "
-        "cannot drive it. Set OMNIVOICE_TORCH_VARIANT=rocm and re-run setup "
+        "cannot drive it. Set ELEVENVOICE_TORCH_VARIANT=rocm and re-run setup "
         "to install the ROCm build of PyTorch "
         "(docs/install/linux.md#amd-gpu-rocm)."
     )
@@ -540,11 +540,11 @@ def preflight():
     # ── RAM
     ram = _ram_gb()
     # Escape hatch (#1618): a preflight should inform, not brick setup —
-    # OMNIVOICE_RAM_PREFLIGHT=0 downgrades the hard block to a warning for
+    # ELEVENVOICE_RAM_PREFLIGHT=0 downgrades the hard block to a warning for
     # users who accept the OOM risk. Same opt-out shape as
-    # OMNIVOICE_ASR_VRAM_PREFLIGHT.
+    # ELEVENVOICE_ASR_VRAM_PREFLIGHT.
     ram_gate = os.environ.get(
-        "OMNIVOICE_RAM_PREFLIGHT", "1"
+        "ELEVENVOICE_RAM_PREFLIGHT", "1"
     ).strip().lower() not in ("0", "false", "no")
     if ram == 0:
         ram_status, ram_detail, ram_fix = (
@@ -557,7 +557,7 @@ def preflight():
             f"{ram:.1f} GB total (need ≥ {_RAM_FAIL_GB} GB)",
             "The app will OOM on first dub. Close other apps or upgrade RAM."
             if ram_gate else
-            "RAM check disabled via OMNIVOICE_RAM_PREFLIGHT=0 — dubbing may "
+            "RAM check disabled via ELEVENVOICE_RAM_PREFLIGHT=0 — dubbing may "
             "OOM on this machine.",
         )
     elif ram < _RAM_WARN_GB * _RAM_RESERVED_ALLOWANCE:
@@ -714,7 +714,7 @@ def preflight():
         )
         gpu_fix = (
             "Install a ROCm PyTorch build that lists this GPU's architecture "
-            "(re-run setup with OMNIVOICE_TORCH_VARIANT=rocm), or continue on "
+            "(re-run setup with ELEVENVOICE_TORCH_VARIANT=rocm), or continue on "
             "CPU (slower)."
         )
     elif gpu["vendor"] == "amd" and gpu["available"]:

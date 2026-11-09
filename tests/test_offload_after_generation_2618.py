@@ -21,8 +21,8 @@ import sys
 import threading
 import time
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -77,7 +77,7 @@ def mm(monkeypatch):
     monkeypatch.setattr(_mm, "_placement_exclusive", False)
     monkeypatch.setattr(_mm, "free_vram", lambda: None)
     monkeypatch.setattr(_mm, "_generation_jobs_active", lambda: False)
-    monkeypatch.delenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION", raising=False)
     yield _mm
     _mm._offload_timer.cancel()
 
@@ -107,7 +107,7 @@ def host(mm, monkeypatch):
 
 @pytest.fixture
 def enabled(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION", "1")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION", "1")
 
 
 def _wait_for(pred, timeout=5.0):
@@ -123,7 +123,7 @@ def _wait_for(pred, timeout=5.0):
 
 
 def test_default_is_off_and_a_drain_moves_nothing(mm, host, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "0")
     fake = host("cuda:0")
     assert mm.offload_after_generation_enabled() is False
     mm._get_gpu_pool().submit(lambda: None).result(timeout=10)
@@ -137,7 +137,7 @@ def test_saved_pref_enables_it_and_env_wins(mm, monkeypatch):
 
     prefs.set_(mm.OFFLOAD_AFTER_GENERATION_PREF, True)
     assert mm.offload_after_generation_enabled() is True
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION", "0")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION", "0")
     assert mm.offload_after_generation_enabled() is False
 
 
@@ -226,7 +226,7 @@ def test_generation_jobs_active_reads_job_store_and_batch(monkeypatch):
 
 def test_back_to_back_drains_rearm_a_single_timer(mm, host, enabled, monkeypatch):
     host("cuda:0")
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "30")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "30")
     mm._note_gpu_pool_idle()
     first = mm._offload_timer.pending
     mm._note_gpu_pool_idle()
@@ -240,7 +240,7 @@ def test_back_to_back_drains_rearm_a_single_timer(mm, host, enabled, monkeypatch
 
 
 def test_pool_drain_offloads_and_the_next_generate_restores(mm, host, enabled, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S", "0")
     fake = host("cuda:0")
     mm._get_gpu_pool().submit(lambda: "generated").result(timeout=10)
     assert _wait_for(lambda: fake.where == "cpu"), fake.moves
@@ -296,7 +296,7 @@ def test_settings_endpoint_round_trips(monkeypatch):
 
     from main import app
 
-    monkeypatch.delenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION", raising=False)
     c = TestClient(app, client=("127.0.0.1", 50000))
     url = "/api/settings/perf/offload-after-generation"
     state = c.get(url).json()
@@ -304,7 +304,7 @@ def test_settings_endpoint_round_trips(monkeypatch):
     assert isinstance(state["device"], str) and state["device"]
     assert c.put(url, json={"enabled": True}).json()["enabled"] is True
     assert c.get(url).json()["enabled"] is True
-    monkeypatch.setenv("OMNIVOICE_OFFLOAD_AFTER_GENERATION", "0")
+    monkeypatch.setenv("ELEVENVOICE_OFFLOAD_AFTER_GENERATION", "0")
     pinned = c.get(url).json()
     assert pinned["enabled"] is False and pinned["env_pinned"] is True
     assert c.put(url, json={"enabled": "nope"}).status_code == 422

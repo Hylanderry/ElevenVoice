@@ -20,7 +20,7 @@ Covers:
 from __future__ import annotations
 
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import hashlib
@@ -87,7 +87,7 @@ def test_effect_preset_change_is_still_detected():
 def test_backcompat_with_hashes_stored_by_previous_builds():
     """Old builds hashed `{field: value or ""}` with pydantic defaults
     (effect_preset="broadcast"). Stored seg_hashes in existing
-    omnivoice_data/ projects must stay valid for unchanged segments."""
+    elevenvoice_data/ projects must stay valid for unchanged segments."""
     legacy_payload = {
         "text": "Hola", "target_lang": "", "profile_id": "", "instruct": "",
         "speed": "", "direction": "", "effect_preset": "broadcast",

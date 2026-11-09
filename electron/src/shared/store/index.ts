@@ -62,7 +62,7 @@ export type AppStore = PrefsSlice &
   ReleasesSlice &
   DonationSlice;
 
-export const APP_STORE_KEY = 'omnivoice.app';
+export const APP_STORE_KEY = 'elevenvoice.app';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

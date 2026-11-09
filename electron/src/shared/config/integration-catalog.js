@@ -61,6 +61,7 @@ const groups = [
       'Anthropic Claude|https://www.anthropic.com',
       'Claude Code|https://docs.anthropic.com/en/docs/claude-code',
       'Codex CLI|https://github.com/openai/codex',
+      'Hermes Agent|https://github.com/NousResearch/hermes-agent',
       'GitHub Copilot|https://github.com/features/copilot',
       'Cursor|https://www.cursor.com',
       'Windsurf|https://windsurf.com',

@@ -13,7 +13,7 @@ from services.cloud_sync.store import SyncStore
 @pytest.fixture
 def local(tmp_path, monkeypatch):
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)
@@ -21,8 +21,8 @@ def local(tmp_path, monkeypatch):
 
 
 def test_every_item_reads_and_writes_back_what_it_read(local):
-    local.set_local("voicestudio.theme.v2", "dark", origin="renderer")
-    local.set_local("voicestudio.locale", "en", origin="renderer")
+    local.set_local("elevenvoice.theme.v2", "dark", origin="renderer")
+    local.set_local("elevenvoice.locale", "en", origin="renderer")
     prefs.set_("generation_history_cap", 40)
     prefs.set_("dictation.mode", "push")
     settings_store.set_text("llm.active_provider", "openai")
@@ -52,9 +52,9 @@ def test_every_local_source_maps_to_exactly_one_item():
         ("prefs", "hf_endpoint_mode"),
         ("settings", "secret.llm_key.openai"),
         ("settings", "hf_token"),
-        ("local", "voicestudio.workspace-layout"),
-        ("local", "voicestudio.take-settings.v1"),
-        ("local", "voicestudio.settings.last-route"),
+        ("local", "elevenvoice.workspace-layout"),
+        ("local", "elevenvoice.take-settings.v1"),
+        ("local", "elevenvoice.settings.last-route"),
     ],
 )
 def test_device_local_and_secret_keys_never_sync(source, key):
@@ -63,14 +63,14 @@ def test_device_local_and_secret_keys_never_sync(source, key):
 
 def test_generation_defaults_never_carry_the_draft_and_keep_it_on_write(local):
     local.set_local(
-        "voicestudio.clone.settings.v1",
+        "elevenvoice.clone.settings.v1",
         {"steps": 16, "speed": 1.0, "text": "draft", "refText": "r", "duration": 3, "selectedProfileId": "ab12cd34"},
         origin="renderer",
     )
     values = allowlist.read_values("settings", "generation-defaults")
     assert values == {"steps": 16, "speed": 1.0}
     allowlist.write_values("settings", "generation-defaults", {"steps": 24, "speed": 1.0})
-    assert local.get_local("voicestudio.clone.settings.v1") == {
+    assert local.get_local("elevenvoice.clone.settings.v1") == {
         "steps": 24, "speed": 1.0, "text": "draft", "refText": "r", "duration": 3, "selectedProfileId": "ab12cd34",
     }
 
@@ -85,14 +85,14 @@ def test_llm_settings_read_no_secret(local):
 
 
 def test_favorites_become_a_keyed_map_with_first_seen_times(local):
-    local.set_local("voicestudio.gallery.favorites.v1", ["arch-a", "arch-b"], origin="renderer")
+    local.set_local("elevenvoice.gallery.favorites.v1", ["arch-a", "arch-b"], origin="renderer")
     values = allowlist.read_values("favorites", "gallery")
     assert set(values) == {"arch-a", "arch-b"}
     assert all(v["added_at"].endswith("Z") for v in values.values())
     again = allowlist.read_values("favorites", "gallery")
     assert again == values  # times are stable
     allowlist.write_values("favorites", "gallery", {"arch-b": values["arch-b"], "arch-c": {"added_at": "2026-10-16T09:00:00Z"}})
-    assert sorted(local.get_local("voicestudio.gallery.favorites.v1")) == ["arch-b", "arch-c"]
+    assert sorted(local.get_local("elevenvoice.gallery.favorites.v1")) == ["arch-b", "arch-c"]
 
 
 def test_a_missing_value_removes_the_local_source(local):

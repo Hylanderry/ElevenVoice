@@ -27,7 +27,7 @@ import re
 import time
 from dataclasses import dataclass
 
-logger = logging.getLogger("omnivoice.refinement")
+logger = logging.getLogger("elevenvoice.refinement")
 
 # Hard wall-clock budget (seconds) for a single dictation refinement LLM call.
 # The dictation FINAL must never be delayed longer than this by a slow or dead
@@ -42,11 +42,11 @@ _DEFAULT_REFINE_TIMEOUT_S = 4.0
 
 
 def _refine_timeout_s() -> float:
-    """The refinement LLM budget in seconds (OMNIVOICE_REFINE_TIMEOUT_S).
+    """The refinement LLM budget in seconds (ELEVENVOICE_REFINE_TIMEOUT_S).
 
     Falls back to :data:`_DEFAULT_REFINE_TIMEOUT_S` on an unset/invalid/non-
     positive value so a bad env var can never disable the bound."""
-    raw = os.environ.get("OMNIVOICE_REFINE_TIMEOUT_S", "")
+    raw = os.environ.get("ELEVENVOICE_REFINE_TIMEOUT_S", "")
     try:
         v = float(raw)
         if v > 0:
@@ -422,7 +422,7 @@ async def maybe_refine_async(
 ) -> str | None:
     """Async, hard-time-bounded refinement for the live-dictation final path.
 
-    Runs :func:`maybe_refine` off-thread under a hard ``OMNIVOICE_REFINE_TIMEOUT_S``
+    Runs :func:`maybe_refine` off-thread under a hard ``ELEVENVOICE_REFINE_TIMEOUT_S``
     (~4s) budget so a slow or dead LLM endpoint can NEVER block the caller — and
     therefore the dictation ``final`` send — longer than the budget. On timeout
     (or any failure) it returns None and the raw, already-polished transcript
@@ -443,7 +443,7 @@ async def maybe_refine_async(
     except asyncio.TimeoutError:
         logger.warning(
             "Dictation refinement exceeded its %.1fs budget — sending the "
-            "unrefined final (set OMNIVOICE_REFINE_TIMEOUT_S to adjust).", budget,
+            "unrefined final (set ELEVENVOICE_REFINE_TIMEOUT_S to adjust).", budget,
         )
         _note_refine_status(ok=False, reason="timeout")
         return None

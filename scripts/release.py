@@ -31,7 +31,7 @@ from changelog_fragments import apply_fragments, read_fragments, remove_fragment
 
 GUARD_TESTS = [
     "tests/test_app_version.py",
-    "tests/test_voicestudio_branding.py",
+    "tests/test_elevenvoice_branding.py",
     "tests/test_changelog_style.py",
 ]
 RELEASE_FILES = [

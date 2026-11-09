@@ -45,11 +45,11 @@ const platform = option('platform', process.platform);
 const arch = option('arch', process.arch);
 const channel = option(
   'channel',
-  process.env.VOICESTUDIO_UPDATE_CHANNEL || `electron-stable-${platform}-${arch}`,
+  process.env.ELEVENVOICE_UPDATE_CHANNEL || `electron-stable-${platform}-${arch}`,
 );
 const releaseDir = resolve(electronRoot, option('release', 'release'));
 const expectedChannels =
-  process.env.VOICESTUDIO_DISTRIBUTION === 'microsoft-store'
+  process.env.ELEVENVOICE_DISTRIBUTION === 'microsoft-store'
     ? [`electron-microsoft-store-stable-${platform}-${arch}`]
     : [`electron-stable-${platform}-${arch}`, `electron-beta-${platform}-${arch}`];
 assert(expectedChannels.includes(channel), 'Distribution uses its dedicated update channel');
@@ -103,7 +103,7 @@ assert.equal(hashes.sha512, fileSha, 'Update metadata SHA-512 matches artifact b
 
 const osToken = platform === 'win32' ? 'win' : platform === 'darwin' ? 'mac' : 'linux';
 const artifactBrand =
-  process.env.VOICESTUDIO_DISTRIBUTION === 'microsoft-store'
+  process.env.ELEVENVOICE_DISTRIBUTION === 'microsoft-store'
     ? 'ElevenVoice-MicrosoftStore'
     : 'ElevenVoice';
 assert(

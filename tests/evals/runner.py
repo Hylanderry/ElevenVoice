@@ -24,7 +24,7 @@ from typing import Any, Awaitable, Callable
 from .case import EvalCase, EvalResult, EvalTurn, JudgeResult
 from .judge import LLMJudge
 
-logger = logging.getLogger("omnivoice.evals")
+logger = logging.getLogger("elevenvoice.evals")
 
 # ``turns`` cases: factory returns an async ``reply(text) -> str``.
 # ``input`` cases: factory returns an async ``run(input: dict) -> str``.

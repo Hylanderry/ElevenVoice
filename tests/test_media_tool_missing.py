@@ -194,7 +194,7 @@ def test_the_published_paths_are_not_logged(monkeypatch, tmp_path, caplog):
     monkeypatch.setattr(ffmpeg_utils, "find_ffprobe", lambda: None)
     monkeypatch.setenv("PATH", "/usr/bin")
 
-    with caplog.at_level(logging.INFO, logger="omnivoice.api"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.api"):
         ffmpeg_utils.ensure_media_tools_on_path()
 
     assert str(bin_dir) not in caplog.text

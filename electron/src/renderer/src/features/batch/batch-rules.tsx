@@ -20,7 +20,7 @@ export interface BatchRule {
   preserve: boolean;
 }
 
-export const BATCH_RULES_KEY = 'voicestudio.batch.rules.v1';
+export const BATCH_RULES_KEY = 'elevenvoice.batch.rules.v1';
 const NAME_MAX = 60;
 const NONE = '__none__';
 

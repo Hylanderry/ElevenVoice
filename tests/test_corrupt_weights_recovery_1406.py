@@ -315,7 +315,7 @@ def test_a_second_failure_does_not_re_download_again(mm, monkeypatch):
 
 
 def test_a_damaged_asr_shard_does_not_re_download_the_tts_model(mm, monkeypatch):
-    """With OMNIVOICE_PRELOAD_TTS_ASR on, `_load()` also pulls the Whisper
+    """With ELEVENVOICE_PRELOAD_TTS_ASR on, `_load()` also pulls the Whisper
     checkpoint — a different repo. Blaming (and re-downloading) the TTS model
     for its damage is gigabytes that fix nothing (CodeRabbit)."""
     calls = _drive_load(mm, monkeypatch, _SafetensorError(REPORTED))

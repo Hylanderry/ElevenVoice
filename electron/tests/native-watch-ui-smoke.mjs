@@ -4,11 +4,11 @@ import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import assert from 'node:assert/strict';
 import { startHealthBackend } from './fake-health-backend.mjs';
-const profile = mkdtempSync(join(tmpdir(), 'voicestudio-watch-ui-'));
-const folder = mkdtempSync(join(tmpdir(), 'voicestudio-watch-ui-folder-'));
+const profile = mkdtempSync(join(tmpdir(), 'elevenvoice-watch-ui-'));
+const folder = mkdtempSync(join(tmpdir(), 'elevenvoice-watch-ui-folder-'));
 writeFileSync(join(folder, 'existing.mp4'), 'existing fixture: must never enqueue');
-const wayland = process.platform === 'linux' && process.env.VOICESTUDIO_TEST_WAYLAND === '1';
-const packagedExecutable = process.env.VOICESTUDIO_PACKAGED_EXE;
+const wayland = process.platform === 'linux' && process.env.ELEVENVOICE_TEST_WAYLAND === '1';
+const packagedExecutable = process.env.ELEVENVOICE_PACKAGED_EXE;
 const extractAndRun = process.env.APPIMAGE_EXTRACT_AND_RUN === '1';
 const health = await startHealthBackend();
 const app = await electron.launch({
@@ -26,10 +26,10 @@ const app = await electron.launch({
   env: {
     ...process.env,
     ELECTRON_RENDERER_URL: '',
-    OMNIVOICE_PORT: String(health.port),
-    VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES: '1',
-    VOICESTUDIO_ELECTRON_PROXY_PORT: process.env.VOICESTUDIO_ELECTRON_PROXY_PORT || '0',
-    VOICESTUDIO_SKIP_BACKEND: '1',
+    ELEVENVOICE_PORT: String(health.port),
+    ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES: '1',
+    ELEVENVOICE_ELECTRON_PROXY_PORT: process.env.ELEVENVOICE_ELECTRON_PROXY_PORT || '0',
+    ELEVENVOICE_SKIP_BACKEND: '1',
   },
   timeout: 30000,
 });
@@ -45,8 +45,8 @@ try {
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
-  await page.waitForFunction(() => window.voicestudio?.watch);
-  await page.evaluate(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+  await page.waitForFunction(() => window.elevenvoice?.watch);
+  await page.evaluate(() => localStorage.setItem('elevenvoice.setup.complete.v1', '1'));
   await page.reload();
   await app.evaluate(({ dialog }, folder) => {
     dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [folder] });
@@ -85,7 +85,7 @@ try {
   await page.getByRole('button', { name: 'Watch folder', exact: true }).waitFor();
   const revoked = await page.evaluate(async () => {
     try {
-      await window.voicestudio.watch.scan('invented');
+      await window.elevenvoice.watch.scan('invented');
       return false;
     } catch {
       return true;

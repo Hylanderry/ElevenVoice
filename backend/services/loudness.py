@@ -21,7 +21,7 @@ from services.longform_render import (
     parse_loudnorm_measure,
 )
 
-logger = logging.getLogger("omnivoice.loudness")
+logger = logging.getLogger("elevenvoice.loudness")
 
 
 async def measure_loudness(

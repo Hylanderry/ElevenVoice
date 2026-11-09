@@ -10,7 +10,7 @@ the zombie outlives the reset.
 
 CI stays model-free: the roundtrip/hard-kill tests spawn a stub sidecar that
 speaks the wire protocol and either returns a sine wave or wedges forever
-(text == "HANG"), instead of loading the multi-GB VoiceStudio model.
+(text == "HANG"), instead of loading the multi-GB ElevenVoice model.
 """
 import struct
 import json
@@ -84,7 +84,7 @@ while True:
                 sys.executable,
                 "-c",
                 "import os,time; time.sleep(1); "
-                "open(os.environ['OMNIVOICE_TIMEOUT_MARKER'], 'w').write('bad')",
+                "open(os.environ['ELEVENVOICE_TIMEOUT_MARKER'], 'w').write('bad')",
             ])
             while True:
                 time.sleep(1)
@@ -186,7 +186,7 @@ def test_sidecar_synthesis_encodes_a_reference_once_per_sidecar(monkeypatch, tmp
     monkeypatch.setattr(sidecar, "_send", lambda *_a, **_k: None)
     monkeypatch.setattr(tts_backend, "reference_duration_s", lambda _p: 73.0)
     # A disk hit would skip create_voice_clone_prompt and falsify the count.
-    monkeypatch.setenv("OMNIVOICE_PROMPT_DISK_CACHE", "0")
+    monkeypatch.setenv("ELEVENVOICE_PROMPT_DISK_CACHE", "0")
     tts_backend.clear_clone_prompt_cache()
     try:
         for line in ("one", "two", "three"):
@@ -257,7 +257,7 @@ def test_sidecar_short_reference_without_transcript_is_encoded_once(monkeypatch,
     recognizers = ["installed-none"]
     monkeypatch.setattr(tts_backend, "_reference_asr_identity", lambda: recognizers[0])
     # A disk hit would skip create_voice_clone_prompt and falsify the count.
-    monkeypatch.setenv("OMNIVOICE_PROMPT_DISK_CACHE", "0")
+    monkeypatch.setenv("ELEVENVOICE_PROMPT_DISK_CACHE", "0")
     tts_backend.clear_clone_prompt_cache()
 
     def speak(line):
@@ -319,7 +319,7 @@ def test_sidecar_keeps_retrying_a_recognizer_that_errors(monkeypatch, tmp_path):
     monkeypatch.setattr(tts_backend, "reference_duration_s", lambda _p: 5.0)
     monkeypatch.setattr(tts_backend, "_reference_asr_identity", lambda: "installed-none")
     monkeypatch.setattr(asr_backend, "transcribe_reference", failing_transcribe)
-    monkeypatch.setenv("OMNIVOICE_PROMPT_DISK_CACHE", "0")
+    monkeypatch.setenv("ELEVENVOICE_PROMPT_DISK_CACHE", "0")
     tts_backend.clear_clone_prompt_cache()
     try:
         for line in ("one", "two", "three"):
@@ -447,7 +447,7 @@ def test_mps_startup_does_not_preload_native_model(monkeypatch):
         "core.device_caps.detect_host_caps",
         lambda: HostCaps(family="mps", available_families=("mps", "cpu")),
     )
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "omnivoice")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "omnivoice")
     monkeypatch.setattr(model_manager, "model", None)
 
     async def fail_load():
@@ -591,13 +591,13 @@ def test_spawn_uses_backend_specific_ready_timeout(monkeypatch, tmp_path):
 
 
 def test_omnivoice_subprocess_recv_timeout_env_override(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_SIDECAR_RECV_TIMEOUT_S", "120")
+    monkeypatch.setenv("ELEVENVOICE_SIDECAR_RECV_TIMEOUT_S", "120")
     assert OmniVoiceSubprocessBackend().recv_timeout_s == 120.0
 
 
 def test_omnivoice_subprocess_recv_timeout_floors_at_30s(monkeypatch):
     # A misconfigured tiny value must still leave time for a real handshake.
-    monkeypatch.setenv("OMNIVOICE_SIDECAR_RECV_TIMEOUT_S", "1")
+    monkeypatch.setenv("ELEVENVOICE_SIDECAR_RECV_TIMEOUT_S", "1")
     assert OmniVoiceSubprocessBackend().recv_timeout_s == 30.0
 
 
@@ -672,10 +672,10 @@ def test_subprocess_engine_timeout_env_overrides(monkeypatch):
     from engines.moss_tts_v15 import MossTTSV15Backend
     from engines.supertonic3.backend import Supertonic3Backend
 
-    monkeypatch.setenv("OMNIVOICE_CONFUCIUS4_RECV_TIMEOUT_S", "1200")
-    monkeypatch.setenv("OMNIVOICE_DOTS_TTS_RECV_TIMEOUT_S", "1000")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S", "1100")
-    monkeypatch.setenv("OMNIVOICE_SUPERTONIC3_RECV_TIMEOUT_S", "500")
+    monkeypatch.setenv("ELEVENVOICE_CONFUCIUS4_RECV_TIMEOUT_S", "1200")
+    monkeypatch.setenv("ELEVENVOICE_DOTS_TTS_RECV_TIMEOUT_S", "1000")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S", "1100")
+    monkeypatch.setenv("ELEVENVOICE_SUPERTONIC3_RECV_TIMEOUT_S", "500")
 
     assert Confucius4Backend().recv_timeout_s == 1200.0
     assert DotsTTSBackend().recv_timeout_s == 1000.0
@@ -684,7 +684,7 @@ def test_subprocess_engine_timeout_env_overrides(monkeypatch):
 
 
 def test_subprocess_asr_recv_timeout_env_override(monkeypatch):
-    """SubprocessASRBackend.recv_timeout_s honors OMNIVOICE_ASR_RECV_TIMEOUT_S
+    """SubprocessASRBackend.recv_timeout_s honors ELEVENVOICE_ASR_RECV_TIMEOUT_S
     and safely rejects non-finite, malformed, zero, or negative inputs (#2103)."""
     from pathlib import Path
     from services.subprocess_asr import SubprocessASRBackend
@@ -705,21 +705,21 @@ def test_subprocess_asr_recv_timeout_env_override(monkeypatch):
     assert b.recv_timeout_s == 600.0
 
     # Valid override
-    monkeypatch.setenv("OMNIVOICE_ASR_RECV_TIMEOUT_S", "750")
+    monkeypatch.setenv("ELEVENVOICE_ASR_RECV_TIMEOUT_S", "750")
     assert b.recv_timeout_s == 750.0
 
     # Malformed value falls back to default
-    monkeypatch.setenv("OMNIVOICE_ASR_RECV_TIMEOUT_S", "not-a-number")
+    monkeypatch.setenv("ELEVENVOICE_ASR_RECV_TIMEOUT_S", "not-a-number")
     assert b.recv_timeout_s == 600.0
 
     # Non-finite values fall back to default
     for invalid in ("nan", "inf", "-inf"):
-        monkeypatch.setenv("OMNIVOICE_ASR_RECV_TIMEOUT_S", invalid)
+        monkeypatch.setenv("ELEVENVOICE_ASR_RECV_TIMEOUT_S", invalid)
         assert b.recv_timeout_s == 600.0
 
     # Zero or negative values clamped to 30.0 minimum
     for low in ("0", "-10", "15"):
-        monkeypatch.setenv("OMNIVOICE_ASR_RECV_TIMEOUT_S", low)
+        monkeypatch.setenv("ELEVENVOICE_ASR_RECV_TIMEOUT_S", low)
         assert b.recv_timeout_s == 30.0
 
 
@@ -762,7 +762,7 @@ def test_subprocess_asr_timeout_error_message(monkeypatch):
     with pytest.raises(RuntimeError) as exc:
         b.transcribe("test.wav")
     assert "fake-asr ASR sidecar exceeded receive timeout" in str(exc.value)
-    assert "OMNIVOICE_ASR_RECV_TIMEOUT_S" in str(exc.value)
+    assert "ELEVENVOICE_ASR_RECV_TIMEOUT_S" in str(exc.value)
 
 
 def test_generate_timeout_s_coordinates_with_engine_recv_timeout():
@@ -866,10 +866,10 @@ def test_desktop_timeout_kills_engine_subtree_before_late_mutation(
     stub_sidecar, monkeypatch, tmp_path
 ):
     marker = tmp_path / "late-engine-mutation"
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     drain_read, drain_write = os.pipe()
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_DRAIN_FD", str(drain_write))
-    monkeypatch.setenv("OMNIVOICE_TIMEOUT_MARKER", str(marker))
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_DRAIN_FD", str(drain_write))
+    monkeypatch.setenv("ELEVENVOICE_TIMEOUT_MARKER", str(marker))
     _use_stub(monkeypatch, stub_sidecar)
     monkeypatch.setattr(
         OmniVoiceSubprocessBackend,

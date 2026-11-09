@@ -50,7 +50,7 @@ from services.speech_rate import expected_duration
 # critique-echo) — same seam speech_rate's Autofit pass uses.
 from services.translator import refine_output_ok
 
-logger = logging.getLogger("omnivoice.duration_planner")
+logger = logging.getLogger("elevenvoice.duration_planner")
 
 # LLM Skills registry id — condensation is the same "make the line fit its
 # slot" skill family as the Autofit pass, so it routes (and can be disabled)

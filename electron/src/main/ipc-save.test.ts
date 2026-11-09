@@ -41,7 +41,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 });
 
 const owner = vi.hoisted(() => {
-  const mainFrame = { url: 'app://voicestudio/index.html' };
+  const mainFrame = { url: 'app://elevenvoice/index.html' };
   const webContents = { mainFrame };
   return { webContents, isMaximized: () => false };
 });
@@ -71,7 +71,7 @@ let directory: string;
 const event = { sender: owner.webContents, senderFrame: owner.webContents.mainFrame };
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'voicestudio-save-'));
+  directory = await mkdtemp(join(tmpdir(), 'elevenvoice-save-'));
   native.savePath = join(directory, 'take.wav');
   native.failWrites = false;
   native.handlers.clear();

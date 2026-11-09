@@ -27,7 +27,7 @@ describe('dev-mode unreachable copy names the reloader (#1261)', () => {
     const { unreachableBackendMessage } = await import('../utils/backendContact');
     const msg = unreachableBackendMessage('dev');
     expect(msg).toContain('bun run dev');
-    expect(msg).toContain('omnivoice.log');
+    expect(msg).toContain('elevenvoice.log');
   });
 
   it('leaves the server-mode copy alone', async () => {

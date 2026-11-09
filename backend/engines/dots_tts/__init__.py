@@ -41,7 +41,7 @@ from services.subprocess_backend import SubprocessBackend
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.dots_tts")
+logger = logging.getLogger("elevenvoice.dots_tts")
 
 
 class DotsTTSBackend(SubprocessBackend):
@@ -57,7 +57,7 @@ class DotsTTSBackend(SubprocessBackend):
         cd dots.tts
         uv venv && uv pip install -e . -c constraints/recommended.txt
 
-    Set ``OMNIVOICE_DOTS_TTS_DIR`` to the clone root. OmniVoice creates
+    Set ``ELEVENVOICE_DOTS_TTS_DIR`` to the clone root. OmniVoice creates
     ``backend/engines/dots_tts/.venv`` lazily on first launch if no venv
     exists yet; the user's existing ``${DIR}/.venv`` is preferred if present.
 
@@ -102,15 +102,15 @@ class DotsTTSBackend(SubprocessBackend):
         )
         if not is_dots_tts_installed():
             return False, (
-                "dots.tts venv not found. Set OMNIVOICE_DOTS_TTS_DIR to your "
+                "dots.tts venv not found. Set ELEVENVOICE_DOTS_TTS_DIR to your "
                 "dots.tts clone (the directory containing pyproject.toml) and "
-                "restart VoiceStudio. CUDA or CPU only (no MPS). See "
+                "restart ElevenVoice. CUDA or CPU only (no MPS). See "
                 "docs/engines/dots-tts.md for the full install walk-through."
             )
         if not DOTS_TTS_SIDECAR_SCRIPT.exists():
             return False, (
                 "dots.tts sidecar script missing at "
-                f"{DOTS_TTS_SIDECAR_SCRIPT} — reinstall VoiceStudio."
+                f"{DOTS_TTS_SIDECAR_SCRIPT} — reinstall ElevenVoice."
             )
         return True, "ok (CUDA when present, else CPU)"
 
@@ -128,9 +128,9 @@ class DotsTTSBackend(SubprocessBackend):
     def recv_timeout_s(self) -> float:
         """Receive timeout in seconds for the dots.tts sidecar process (#2103)."""
         # dots.tts is a 2B autoregressive model; synthesis on CPU legitimately
-        # outruns the 60s class default. OMNIVOICE_DOTS_TTS_RECV_TIMEOUT_S tunes it (#2103).
+        # outruns the 60s class default. ELEVENVOICE_DOTS_TTS_RECV_TIMEOUT_S tunes it (#2103).
         try:
-            v = float(os.environ.get("OMNIVOICE_DOTS_TTS_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_DOTS_TTS_RECV_TIMEOUT_S", "900"))
         except (ValueError, TypeError):
             return 900.0
         if not math.isfinite(v):

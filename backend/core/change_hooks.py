@@ -12,7 +12,7 @@ import logging
 from contextlib import contextmanager
 from typing import Callable, Iterator
 
-logger = logging.getLogger("omnivoice.change_hooks")
+logger = logging.getLogger("elevenvoice.change_hooks")
 
 Listener = Callable[[str, str], None]
 _listeners: list[Listener] = []

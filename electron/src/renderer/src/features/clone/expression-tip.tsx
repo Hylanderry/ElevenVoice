@@ -5,7 +5,7 @@ import { useStore } from '@tanstack/react-store';
 import { Button } from '@/components/ui/button';
 import { useLatestOutput } from '@/lib/store/output';
 
-const STORAGE_KEY = 'voicestudio.clone.expression-tip.v1';
+const STORAGE_KEY = 'elevenvoice.clone.expression-tip.v1';
 
 function readSeen(): boolean {
   try {

@@ -160,7 +160,7 @@ def test_a_heavy_model_actually_reaches_the_larger_thread_count(monkeypatch, sd)
     and the 0.6B models would silently lose their threads again. Pin the actual
     value on a host with cores to spare (CodeRabbit, #1399).
     """
-    monkeypatch.delenv("OMNIVOICE_SHERPA_ASR_THREADS", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_ASR_THREADS", raising=False)
     monkeypatch.setattr(os, "cpu_count", lambda: 8)
     heavy = [m for m in sd._MODELS.values() if m.heavy]
     assert heavy, "no model is marked heavy"
@@ -183,9 +183,9 @@ def test_a_single_core_host_still_gets_the_base_default(monkeypatch, sd):
 
 
 def test_the_env_override_still_wins_for_every_model(monkeypatch, sd):
-    """`OMNIVOICE_SHERPA_ASR_THREADS` is a documented power-user override; the
+    """`ELEVENVOICE_SHERPA_ASR_THREADS` is a documented power-user override; the
     per-model policy must not quietly outrank what the user asked for."""
-    monkeypatch.setenv("OMNIVOICE_SHERPA_ASR_THREADS", "1")
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_ASR_THREADS", "1")
     for spec in sd._MODELS.values():
         assert sd._threads_for(spec) == sd._NUM_THREADS
 
@@ -208,7 +208,7 @@ def test_declared_sizes_match_the_published_repos(sd, model_id):
         f"https://huggingface.co/api/models/{spec.repo_id}"
         f"/tree/main?recursive=1"
     )
-    req = urllib.request.Request(url, headers={"User-Agent": "voicestudio-tests"})
+    req = urllib.request.Request(url, headers={"User-Agent": "elevenvoice-tests"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         entries = {e["path"]: e for e in json.load(resp) if e["type"] == "file"}
 

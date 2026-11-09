@@ -1,15 +1,15 @@
 """Optional RVC (Retrieval-based Voice Conversion) post-processing.
 
-Disabled by default. Enable by setting env var OMNIVOICE_RVC_ENABLED=1 and providing:
-  OMNIVOICE_RVC_MODEL   — path to .pth voice model
-  OMNIVOICE_RVC_INDEX   — path to .index file (optional)
+Disabled by default. Enable by setting env var ELEVENVOICE_RVC_ENABLED=1 and providing:
+  ELEVENVOICE_RVC_MODEL   — path to .pth voice model
+  ELEVENVOICE_RVC_INDEX   — path to .index file (optional)
 
 Parameters (with defaults matching voice-pro conventions):
-  OMNIVOICE_RVC_PITCH       — semitone shift, -24..+24 (default 0)
-  OMNIVOICE_RVC_INDEX_RATE  — 0..1 (default 0.7)
-  OMNIVOICE_RVC_FILTER_RAD  — 0..10 (default 3)
-  OMNIVOICE_RVC_PROTECT     — 0..0.5 (default 0.33)
-  OMNIVOICE_RVC_F0_METHOD   — rmvpe|crepe|pm|harvest (default rmvpe)
+  ELEVENVOICE_RVC_PITCH       — semitone shift, -24..+24 (default 0)
+  ELEVENVOICE_RVC_INDEX_RATE  — 0..1 (default 0.7)
+  ELEVENVOICE_RVC_FILTER_RAD  — 0..10 (default 3)
+  ELEVENVOICE_RVC_PROTECT     — 0..0.5 (default 0.33)
+  ELEVENVOICE_RVC_F0_METHOD   — rmvpe|crepe|pm|harvest (default rmvpe)
 
 The actual RVC library (rvc-python / lib-rvc) is not a hard dependency.
 Calls are no-ops unless RVC is enabled AND the library is importable.
@@ -20,25 +20,25 @@ import os
 import logging
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.rvc")
+logger = logging.getLogger("elevenvoice.rvc")
 
 
 def rvc_config() -> Optional[dict]:
     """Return RVC config dict, or None if disabled/unconfigured."""
-    if os.environ.get("OMNIVOICE_RVC_ENABLED", "").strip().lower() not in ("1", "true", "yes"):
+    if os.environ.get("ELEVENVOICE_RVC_ENABLED", "").strip().lower() not in ("1", "true", "yes"):
         return None
-    model = os.environ.get("OMNIVOICE_RVC_MODEL", "").strip()
+    model = os.environ.get("ELEVENVOICE_RVC_MODEL", "").strip()
     if not model or not os.path.exists(model):
-        logger.warning("RVC enabled but OMNIVOICE_RVC_MODEL missing or invalid: %r", model)
+        logger.warning("RVC enabled but ELEVENVOICE_RVC_MODEL missing or invalid: %r", model)
         return None
     return {
         "model_path": model,
-        "index_path": os.environ.get("OMNIVOICE_RVC_INDEX", "").strip() or None,
-        "pitch": int(os.environ.get("OMNIVOICE_RVC_PITCH", "0")),
-        "index_rate": float(os.environ.get("OMNIVOICE_RVC_INDEX_RATE", "0.7")),
-        "filter_radius": int(os.environ.get("OMNIVOICE_RVC_FILTER_RAD", "3")),
-        "protect": float(os.environ.get("OMNIVOICE_RVC_PROTECT", "0.33")),
-        "f0_method": os.environ.get("OMNIVOICE_RVC_F0_METHOD", "rmvpe"),
+        "index_path": os.environ.get("ELEVENVOICE_RVC_INDEX", "").strip() or None,
+        "pitch": int(os.environ.get("ELEVENVOICE_RVC_PITCH", "0")),
+        "index_rate": float(os.environ.get("ELEVENVOICE_RVC_INDEX_RATE", "0.7")),
+        "filter_radius": int(os.environ.get("ELEVENVOICE_RVC_FILTER_RAD", "3")),
+        "protect": float(os.environ.get("ELEVENVOICE_RVC_PROTECT", "0.33")),
+        "f0_method": os.environ.get("ELEVENVOICE_RVC_F0_METHOD", "rmvpe"),
     }
 
 

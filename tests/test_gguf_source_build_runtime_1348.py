@@ -40,16 +40,16 @@ def gguf(monkeypatch):
 
 
 def test_default_timeout_exceeds_the_pool_generate_budget(gguf, monkeypatch):
-    # The pool guard (OMNIVOICE_GENERATE_TIMEOUT_S, 300s floor) must be the
+    # The pool guard (ELEVENVOICE_GENERATE_TIMEOUT_S, 300s floor) must be the
     # deadline users actually hit — it classifies and explains. The inner
     # subprocess timeout only reaps a wedged C++ process, so it must sit
     # strictly above the pool floor or it fires first with a worse error.
-    monkeypatch.delenv("OMNIVOICE_GGUF_GENERATE_TIMEOUT_S", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S", raising=False)
     assert gguf._generate_timeout_s() > 300.0
 
 
 def test_env_override_is_read_at_call_time(gguf, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_GGUF_GENERATE_TIMEOUT_S", "45.5")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S", "45.5")
     assert gguf._generate_timeout_s() == 45.5
 
 
@@ -58,12 +58,12 @@ def test_bad_env_values_fall_back_to_the_default(gguf, monkeypatch, raw):
     # inf would disarm the wedge guard entirely (subprocess.run never times
     # out); nan poisons the max() clamp. Both parse as float, so a plain
     # ValueError guard is not enough.
-    monkeypatch.setenv("OMNIVOICE_GGUF_GENERATE_TIMEOUT_S", raw)
+    monkeypatch.setenv("ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S", raw)
     assert gguf._generate_timeout_s() == 600.0
 
 
 def test_tiny_values_are_floored_not_instant_kill(gguf, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_GGUF_GENERATE_TIMEOUT_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S", "0")
     assert gguf._generate_timeout_s() == 1.0
 
 
@@ -72,7 +72,7 @@ def test_timeout_error_names_the_env_knob():
     # error itself must carry the escape hatch now.
     src = (REPO / "backend/engines/omnivoice_gguf/backend.py").read_text()
     timed_out = src[src.index("timed out after") :]
-    assert "OMNIVOICE_GGUF_GENERATE_TIMEOUT_S" in timed_out[:300]
+    assert "ELEVENVOICE_GGUF_GENERATE_TIMEOUT_S" in timed_out[:300]
 
 
 # ── spawns carry a loader path that can see bin/'s shared libs ──────────────

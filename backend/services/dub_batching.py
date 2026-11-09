@@ -5,9 +5,9 @@ from __future__ import annotations
 import logging
 import os
 
-logger = logging.getLogger("omnivoice.dub_batching")
+logger = logging.getLogger("elevenvoice.dub_batching")
 
-BATCH_WIDTH_ENV = "OMNIVOICE_DUB_BATCH_WIDTH"
+BATCH_WIDTH_ENV = "ELEVENVOICE_DUB_BATCH_WIDTH"
 _MAX_BATCH_WIDTH = 16
 
 

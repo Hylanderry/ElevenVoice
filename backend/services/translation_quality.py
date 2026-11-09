@@ -31,7 +31,7 @@ import logging
 import os
 from typing import Iterable, Optional
 
-logger = logging.getLogger("omnivoice.translation_quality")
+logger = logging.getLogger("elevenvoice.translation_quality")
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
 # The context pass runs ONCE per (job, target language, transcript); the
@@ -122,7 +122,7 @@ def extract_context_sync(
     # Same cap as the explicit glossary auto-extract endpoint — one shared
     # knob for "how much transcript may ride a single LLM context call".
     try:
-        max_chars = int(os.environ.get("OMNIVOICE_GLOSSARY_MAX_CHARS", "12000"))
+        max_chars = int(os.environ.get("ELEVENVOICE_GLOSSARY_MAX_CHARS", "12000"))
     except ValueError:
         max_chars = 12000
     if len(text) > max_chars:

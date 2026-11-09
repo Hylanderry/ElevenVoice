@@ -10,7 +10,7 @@ clients — raised ``UnicodeDecodeError`` **inside the error handler**:
     UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 154
 
 The client got a 500 for a merely malformed request, and the escaping
-exception dumped the whole body into omnivoice.log (a 145 KB WAV wrote ~500 KB
+exception dumped the whole body into elevenvoice.log (a 145 KB WAV wrote ~500 KB
 of log — user audio on disk, in the file we invite people to paste into bug
 reports).
 

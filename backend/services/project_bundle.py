@@ -23,7 +23,7 @@ import zipfile
 from core.safe_archive import ArchiveError
 from core.path_security import safe_relative_path, safe_filename, UnsafePath
 
-FORMAT = 'voicestudio.project'
+FORMAT = 'elevenvoice.project'
 VERSION = 1
 MAX_TOTAL = 1024 * 1024 * 1024
 MAX_MEMBER = 512 * 1024 * 1024

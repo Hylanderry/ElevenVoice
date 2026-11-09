@@ -14,7 +14,7 @@ import { TranscriptionFailure, transcriptionFailureFrom } from './transcription-
 
 afterEach(cleanup);
 
-const GENERIC = 'VoiceStudio hit an internal error; check the backend log for details.';
+const GENERIC = 'ElevenVoice hit an internal error; check the backend log for details.';
 
 function show(error: unknown) {
   render(

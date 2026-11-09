@@ -4,7 +4,7 @@ Validates the glossary prompt-prefixing and the graceful "no LLM" path.
 Does NOT hit a real LLM — the client is mocked.
 """
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 from unittest.mock import MagicMock, patch
 import pytest
@@ -210,7 +210,7 @@ def test_refine_guard_ratio_env_override(monkeypatch):
     literal = "¿Cómo estás hoy, amigo mío?"
     ok, reason = tr.refine_output_ok(literal, literal * 4, "es")
     assert not ok and reason.startswith("length-ratio")
-    monkeypatch.setenv("OMNIVOICE_REFINE_RATIO_MAX", "5.0")
+    monkeypatch.setenv("ELEVENVOICE_REFINE_RATIO_MAX", "5.0")
     ok, _ = tr.refine_output_ok(literal, literal * 4, "es")
     assert ok  # ceiling raised via env, mirroring the _cinematic_budget pattern
 
@@ -224,7 +224,7 @@ def test_cinematic_budget_degrades_slow_segments_to_literal(monkeypatch):
     import time
     from concurrent.futures import ThreadPoolExecutor
 
-    monkeypatch.setenv("OMNIVOICE_CINEMATIC_BUDGET_S", "0.3")
+    monkeypatch.setenv("ELEVENVOICE_CINEMATIC_BUDGET_S", "0.3")
 
     def _slow(src, lit, **kw):
         time.sleep(3.0)  # far over the 0.3s budget
@@ -255,7 +255,7 @@ def test_cinematic_budget_disabled_runs_to_completion(monkeypatch):
     import asyncio
     from concurrent.futures import ThreadPoolExecutor
 
-    monkeypatch.setenv("OMNIVOICE_CINEMATIC_BUDGET_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_CINEMATIC_BUDGET_S", "0")
     monkeypatch.setattr(
         tr, "cinematic_refine_sync",
         lambda src, lit, **kw: {"text": f"R:{lit}", "literal": lit, "critique": ""},

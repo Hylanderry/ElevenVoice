@@ -12,10 +12,10 @@ import { inflateRawSync } from 'node:zlib';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const releaseDir = resolve(root, process.argv[2] || 'release');
 const version = JSON.parse(readFileSync(resolve(root, '../package.json'), 'utf8')).version;
-const filename = `VoiceStudio-${version}-linux-x64.AppImage`;
+const filename = `ElevenVoice-${version}-linux-x64.AppImage`;
 const image = resolve(releaseDir, filename);
 const zsync = `${image}.zsync`;
-const channel = process.env.VOICESTUDIO_UPDATE_CHANNEL || 'electron-stable-linux-x64';
+const channel = process.env.ELEVENVOICE_UPDATE_CHANNEL || 'electron-stable-linux-x64';
 assert(
   ['electron-stable-linux-x64', 'electron-beta-linux-x64'].includes(channel),
   'Known Linux updater channel',

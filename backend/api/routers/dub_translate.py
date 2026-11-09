@@ -22,7 +22,7 @@ from services.translator import (
 from api.routers.dub_core import _get_job, _save_job
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 _NLLB_REPO_ID = "facebook/nllb-200-distilled-600M"
 
@@ -242,7 +242,7 @@ def _translation_output_error(text: object) -> str | None:
 _nllb_model = None
 _nllb_tokenizer = None
 _nllb_device = None
-_NLLB_BATCH_SIZE_ENV = "OMNIVOICE_NLLB_BATCH_SIZE"
+_NLLB_BATCH_SIZE_ENV = "ELEVENVOICE_NLLB_BATCH_SIZE"
 _NLLB_MAX_BATCH_SIZE = 32
 
 
@@ -441,7 +441,7 @@ def _unload_nllb():
 
 def _should_unload_nllb() -> bool:
     """Retain a warm local translator only when the accelerator has safe headroom."""
-    override = os.environ.get("OMNIVOICE_UNLOAD_NLLB")
+    override = os.environ.get("ELEVENVOICE_UNLOAD_NLLB")
     if override is not None:
         return override.strip().lower() not in {"0", "false", "no", "off"}
     if _nllb_device != "cuda":
@@ -787,7 +787,7 @@ async def dub_translate(req: TranslateRequest):
                         res = client.chat.completions.create(
                             model=model_name,
                             temperature=0.2,  # less drift than default 1.0
-                            timeout=llm_timeout,  # bound per call (OMNIVOICE_LLM_TIMEOUT, 45s default)
+                            timeout=llm_timeout,  # bound per call (ELEVENVOICE_LLM_TIMEOUT, 45s default)
                             messages=[
                                 {"role": "system", "content": sys_for_attempt},
                                 {"role": "user", "content": seg.text},
@@ -1141,7 +1141,7 @@ async def _apply_condense_pass(rows, req, loop) -> None:
             if job:
                 calib = calibration_from_job(job, req.target_lang)
         source_by_id = {str(s.id): s.text for s in req.segments}
-        sem = asyncio.Semaphore(int(os.environ.get("OMNIVOICE_LLM_CONCURRENCY", "6")))
+        sem = asyncio.Semaphore(int(os.environ.get("ELEVENVOICE_LLM_CONCURRENCY", "6")))
 
         async def _one(row):
             async with sem:

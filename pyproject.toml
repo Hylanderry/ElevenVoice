@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "omnivoice"
-version = "1.0.0"
-description = "VoiceStudio — a private, local-first studio for voice cloning, speech generation, dubbing, transcription, and audiobooks"
+version = "2.0.0"
+description = "ElevenVoice — a private, local-first studio for voice cloning, speech generation, dubbing, transcription, and audiobooks"
 readme = "README.md"
 # Free and open-source under the GNU Affero General Public License v3 (see
 # LICENSE). A commercial license is available for proprietary/closed-source use
@@ -359,7 +359,7 @@ dev = [
 # upstream projects, each with its own test_*.py that calls sys.exit at
 # module level) and INTERNALERROR. `backend/tests/` still runs as its own CI
 # session (see ci.yml) but no longer stubs sys.modules — its conftest.py sets
-# a hermetic OMNIVOICE_DATA_DIR instead, so mixed invocations are safe too.
+# a hermetic ELEVENVOICE_DATA_DIR instead, so mixed invocations are safe too.
 testpaths = ["tests"]
 norecursedirs = [
     "research",
@@ -369,6 +369,6 @@ norecursedirs = [
     "deploy",
     ".venv",
     "node_modules",
-    "omnivoice_data",
-    "backend/omnivoice_data",
+    "elevenvoice_data",
+    "backend/elevenvoice_data",
 ]

@@ -3,13 +3,13 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { useWindowFullscreen } from './use-window-fullscreen';
 
 afterEach(() => {
-  Reflect.deleteProperty(window, 'voicestudio');
+  Reflect.deleteProperty(window, 'elevenvoice');
 });
 
 it('follows native fullscreen changes and stops listening on unmount', async () => {
   let emit: (value: boolean) => void = () => {};
   const off = vi.fn();
-  Object.defineProperty(window, 'voicestudio', {
+  Object.defineProperty(window, 'elevenvoice', {
     configurable: true,
     value: {
       app: {

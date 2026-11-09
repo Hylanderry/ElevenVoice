@@ -13,7 +13,7 @@ import pytest
 
 pytest.importorskip("mcp")
 
-HEADERS = {"Accept": "application/json, text/event-stream", "X-OmniVoice-Client-Id": "codex-cli"}
+HEADERS = {"Accept": "application/json, text/event-stream", "X-ElevenVoice-Client-Id": "codex-cli"}
 
 
 def _result(response):
@@ -33,7 +33,7 @@ def app_with_spa(monkeypatch, tmp_path):
     dist.mkdir()
     (dist / "index.html").write_text("<!doctype html><title>spa</title>")
     monkeypatch.setattr(spa_inject, "frontend_dist_dir", lambda: str(dist))
-    monkeypatch.delenv("OMNIVOICE_MCP_DISABLE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_DISABLE", raising=False)
     import main
 
     importlib.reload(main)
@@ -83,17 +83,17 @@ def test_bare_mcp_route_accepts_every_method(app_with_spa):
 
 
 def test_tools_reach_the_api_when_bound_to_a_lan_address_behind_a_key(monkeypatch, app_with_spa):
-    """A concrete OMNIVOICE_BIND_HOST plus an API key must not break the tools.
+    """A concrete ELEVENVOICE_BIND_HOST plus an API key must not break the tools.
 
     Tool calls go in-process as a loopback caller, so neither the bind address
     nor the API-key / share-PIN gates apply to them.
     """
     from starlette.testclient import TestClient
 
-    monkeypatch.setenv("OMNIVOICE_BIND_HOST", "192.0.2.10")  # not a local address
-    monkeypatch.setenv("OMNIVOICE_PORT", "1")  # nothing listens here
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "k" * 40)
-    monkeypatch.delenv("OMNIVOICE_API_URL", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_BIND_HOST", "192.0.2.10")  # not a local address
+    monkeypatch.setenv("ELEVENVOICE_PORT", "1")  # nothing listens here
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "k" * 40)
+    monkeypatch.delenv("ELEVENVOICE_API_URL", raising=False)
     with TestClient(
         app_with_spa, base_url="http://127.0.0.1:3900", follow_redirects=False,
         client=("127.0.0.1", 50000),  # the agent itself is local

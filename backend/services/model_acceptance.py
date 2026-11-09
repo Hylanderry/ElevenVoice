@@ -1,6 +1,6 @@
 """Per-model licence acceptance: a non-commercial-category model is unusable until accepted.
 
-VoiceStudio is not the licensor of any model and cannot grant model access.
+ElevenVoice is not the licensor of any model and cannot grant model access.
 Acceptance records that the user confirmed they have the rights the model's
 own licence requires (for example non-commercial use, or a separate grant
 from the rights holder). It is a local, honest-acknowledgement gate, not a
@@ -46,7 +46,7 @@ class ModelLicenceNotAccepted(RuntimeError):
             f"Licence not accepted for {names}. Review and accept it in Model Catalogue."
             if models
             else "Model licence records are unreadable, so models cannot be verified. "
-            "Reinstall or update VoiceStudio."
+            "Reinstall or update ElevenVoice."
         )
         self.reason = reason
 
@@ -226,6 +226,19 @@ def _changed_fields(before: dict | None, after: dict) -> list[str]:
     return sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
 
 
+def accepted_by_default() -> bool:
+    """Every model licence counts as accepted unless the user withdrew it.
+
+    The desktop app asks once, on first launch, for agreement to the ElevenVoice
+    terms and to the licences of every model it can download; continuing is
+    that agreement. Set ``ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT=0`` to require
+    acceptance model by model instead. A per-model withdrawal always wins.
+    """
+    import os
+
+    return os.environ.get("ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT", "1").strip().lower() not in {"0", "false", "no", "off"}
+
+
 def _evaluate(repo_id: str) -> tuple[dict, object]:
     info = _disclosure(repo_id)
     category = info.get("license_category") or "unknown"
@@ -239,10 +252,10 @@ def _evaluate(repo_id: str) -> tuple[dict, object]:
     elif record is _UNREADABLE:
         state = "not_accepted"
     elif record is None:
-        state = "accepted" if _legacy_accepted(repo_id) else "not_accepted"
+        state = "accepted" if (_legacy_accepted(repo_id) or accepted_by_default()) else "not_accepted"
     elif last["action"] == "withdrawn":
         state = "withdrawn"
-    elif last.get("fingerprint") == current:
+    elif last.get("fingerprint") == current or accepted_by_default():
         state = "accepted"
     else:
         state = "terms_updated"

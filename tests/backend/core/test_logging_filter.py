@@ -18,7 +18,7 @@ def redactor_logger():
     the logging tree so other tests don't see the filter."""
     from core.logging_filter import HFTokenRedactor
 
-    logger = logging.getLogger("omnivoice.test_redactor")
+    logger = logging.getLogger("elevenvoice.test_redactor")
     logger.setLevel(logging.DEBUG)
     # Strip any leftover filters from a prior test run.
     for f in list(logger.filters):

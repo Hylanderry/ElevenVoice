@@ -71,7 +71,7 @@ from core import prefs
 from core.fs_retry import retry_on_lock
 from services.ffmpeg_utils import _binary_runs, _BINARY_OK, windows_tool_candidates as _windows_tool_candidates
 
-logger = logging.getLogger("omnivoice.media_tools")
+logger = logging.getLogger("elevenvoice.media_tools")
 
 # ── Pinned bundled build ────────────────────────────────────────────────────
 # Immutable commit of github.com/zackees/ffmpeg_bins (the upstream the
@@ -99,7 +99,7 @@ _CHUNK = 256 * 1024
 #: tool → env keys honored by the resolution chain, in precedence order.
 _ENV_KEYS = {
     "ffmpeg": ("FFMPEG_PATH",),
-    "ffprobe": ("OMNIVOICE_FFPROBE_PATH", "FFPROBE_PATH"),
+    "ffprobe": ("ELEVENVOICE_FFPROBE_PATH", "FFPROBE_PATH"),
 }
 #: tool → the env key the *user override* is persisted under (prefs `env.<KEY>`).
 _PREF_ENV_KEY = {"ffmpeg": "FFMPEG_PATH", "ffprobe": "FFPROBE_PATH"}
@@ -206,7 +206,7 @@ def _download(url: str, dest_path: str, expected_sha256: str,
 
     if not url.startswith("https://"):
         raise ValueError("media-tools downloads must be https")
-    req = urllib.request.Request(url, headers={"User-Agent": "VoiceStudio"})
+    req = urllib.request.Request(url, headers={"User-Agent": "ElevenVoice"})
     hasher = hashlib.sha256()
     done = 0
     with urllib.request.urlopen(req, timeout=_DOWNLOAD_TIMEOUT_S) as resp:
@@ -601,7 +601,7 @@ def _fetch_pypi_ytdlp() -> tuple[str, str, str]:
     """(version, wheel_url, sha256) of the latest yt-dlp wheel on PyPI."""
     import json
     import urllib.request
-    req = urllib.request.Request(_PYPI_YTDLP_URL, headers={"User-Agent": "VoiceStudio"})
+    req = urllib.request.Request(_PYPI_YTDLP_URL, headers={"User-Agent": "ElevenVoice"})
     with urllib.request.urlopen(req, timeout=_DOWNLOAD_TIMEOUT_S) as resp:
         meta = json.load(resp)
     version = meta["info"]["version"]

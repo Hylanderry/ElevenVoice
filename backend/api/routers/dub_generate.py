@@ -48,7 +48,7 @@ from services.dub_pipeline import (
 )
 from omnivoice.utils.voice_design import heal_design_instruct
 
-logger = logging.getLogger("omnivoice.dub")
+logger = logging.getLogger("elevenvoice.dub")
 
 def _validate_render_languages(backend, req, seg_ids, regen_only):
     """Validate the final local render set, including repaired cache misses."""
@@ -147,10 +147,10 @@ def _cached_payload_intact(path: str, info) -> bool:
 
 def _underrun_min_rate() -> float:
     """Floor for the underrun fill (audio slowed toward its slot, never below
-    this rate). Default 0.85 stays natural-sounding; OMNIVOICE_UNDERRUN_MIN_RATE=1.0
+    this rate). Default 0.85 stays natural-sounding; ELEVENVOICE_UNDERRUN_MIN_RATE=1.0
     disables the fill. Clamped to atempo's per-stage sane range."""
     try:
-        v = float(os.environ.get("OMNIVOICE_UNDERRUN_MIN_RATE", "0.85"))
+        v = float(os.environ.get("ELEVENVOICE_UNDERRUN_MIN_RATE", "0.85"))
     except ValueError:
         v = 0.85
     return min(1.0, max(0.5, v))
@@ -1486,7 +1486,7 @@ async def dub_generate(job_id: str, req: DubRequest):
                 # Never publish engine exception text here: allocator errors
                 # carry process tables and arbitrary failures can carry paths,
                 # tokens, or source text. The shared helper enriches recognized
-                # classes using VoiceStudio-owned constants only.
+                # classes using ElevenVoice-owned constants only.
                 from core.public_errors import stream_generation_failure
 
                 error_detail = stream_generation_failure(e)["detail"]

@@ -58,7 +58,7 @@ def test_a_task_that_finished_before_cancel_keeps_its_result():
 
 
 def test_none_entries_are_skipped_without_error():
-    """capture_preload_task is None when OMNIVOICE_PRELOAD_CAPTURE_ASR=0 —
+    """capture_preload_task is None when ELEVENVOICE_PRELOAD_CAPTURE_ASR=0 —
     the helper must not crash on a mix of real tasks and None."""
     async def _noop():
         return None

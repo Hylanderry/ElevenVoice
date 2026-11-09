@@ -17,7 +17,7 @@ Principles (owner-set):
 - **Explicit choices are never auto-switched.** A user with an endpoint
   configured anywhere (Settings → Network, ``HF_ENDPOINT`` env, the
   ``hf_endpoint`` pref) is in manual mode; auto applies only where nothing
-  was chosen. ``OMNIVOICE_HF_ENDPOINT_MODE=manual`` is a hard env opt-out.
+  was chosen. ``ELEVENVOICE_HF_ENDPOINT_MODE=manual`` is a hard env opt-out.
 - **Sticky, canonical-first decisions.** With both endpoints reachable the
   official endpoint wins unless the mirror is *decisively* faster
   (``MIRROR_SPEEDUP_FACTOR``× on latency, confirmed by an optional small
@@ -53,12 +53,12 @@ from urllib.parse import urlsplit
 
 from services.hf_auth import CANONICAL_ENDPOINT, host_gets_auth
 
-logger = logging.getLogger("omnivoice.endpoint_race")
+logger = logging.getLogger("elevenvoice.endpoint_race")
 
 COMMUNITY_MIRROR = "https://hf-mirror.com"
 
 # Hard env opt-out: any of these values disables auto selection entirely.
-MODE_ENV = "OMNIVOICE_HF_ENDPOINT_MODE"
+MODE_ENV = "ELEVENVOICE_HF_ENDPOINT_MODE"
 _OPT_OUT_VALUES = {"manual", "off", "0", "false", "no"}
 
 # prefs keys (core.prefs conventions: env > prefs.json > default).
@@ -86,7 +86,7 @@ _FAILOVER_ATTEMPTED: set[str] = set()
 
 
 def _is_allowed_probe_endpoint(endpoint: str) -> bool:
-    """Only probe the two fixed HTTPS origins shipped by VoiceStudio."""
+    """Only probe the two fixed HTTPS origins shipped by ElevenVoice."""
     try:
         parsed = urlsplit(endpoint)
         port = parsed.port
@@ -191,7 +191,7 @@ def throughput_probe(endpoint: str, timeout: float = PROBE_TIMEOUT_S) -> Optiona
         url,
         headers={
             "Range": f"bytes=0-{_THROUGHPUT_SAMPLE_BYTES - 1}",
-            "User-Agent": "VoiceStudio-endpoint-probe",
+            "User-Agent": "ElevenVoice-endpoint-probe",
         },
     )
     deadline = time.monotonic() + timeout

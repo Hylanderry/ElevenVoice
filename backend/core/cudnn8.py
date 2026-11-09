@@ -206,7 +206,7 @@ def _compute_status() -> tuple[bool, str]:
             f"the compat libraries with "
             f"`uv pip install --target <venv>/{'Lib/site-packages' if sys.platform == 'win32' else 'lib/pythonX.Y/site-packages'}/cudnn8_compat "
             f"nvidia-cudnn-cu12==8.9.7.29`, or pin a non-CTranslate2 engine "
-            f"with OMNIVOICE_ASR_BACKEND=pytorch-whisper."
+            f"with ELEVENVOICE_ASR_BACKEND=pytorch-whisper."
         )
     return True, "cuDNN 8 loadable"
 

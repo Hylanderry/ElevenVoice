@@ -1,4 +1,4 @@
-"""Voice Studio unification: profile `kind` discriminator + design params
+"""ElevenVoice unification: profile `kind` discriminator + design params
 
 Revision ID: 0005_unified_profiles
 Revises: 0004_mcp_client_bindings
@@ -7,7 +7,7 @@ Create Date: 2026-06-13 00:00:00.000000
 Adds two additive columns to ``voice_profiles`` so a *designed* voice
 (category sliders + instruct, no user reference audio) is a first-class
 profile rather than a transient UI state
-(docs/specs/voice-studio-unification.md §3):
+(docs/specs/elevenvoice-unification.md §3):
 
   * ``kind TEXT DEFAULT 'clone'`` — ``'clone'`` (user reference audio) or
     ``'design'`` (rendered sample + stored design params). Replaces the

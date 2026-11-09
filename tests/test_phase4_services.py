@@ -1,6 +1,6 @@
 """Phase 4 services — director, speech_rate, incremental."""
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from services import director, speech_rate, incremental
@@ -11,7 +11,7 @@ from services import director, speech_rate, incremental
 
 def test_director_heuristic_picks_tokens(monkeypatch):
     # Force Off backend so the LLM path doesn't run in CI.
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     d = director.parse("make this feel urgent and surprised")
     assert d.method == "heuristic"
     assert "urgent" in d.tokens.get("energy", [])
@@ -24,14 +24,14 @@ def test_director_empty_input_returns_empty():
 
 
 def test_director_instruct_prompt_combines_dims(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     d = director.parse("warm whispered casual tone")
     out = d.instruct_prompt()
     assert "warm" in out and "whispered" in out and "casual" in out
 
 
 def test_director_rate_bias_speeds_up_for_urgent(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     fast = director.parse("urgent rushed delivery")
     slow = director.parse("calm slow delivery")
     assert fast.rate_bias() > 1.0
@@ -39,7 +39,7 @@ def test_director_rate_bias_speeds_up_for_urgent(monkeypatch):
 
 
 def test_director_ignores_unknown_tokens(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     d = director.parse("xyzzy plugh")
     assert d.is_empty()
 
@@ -50,7 +50,7 @@ def test_director_ignores_unknown_tokens(monkeypatch):
 def test_speech_rate_within_tolerance_returns_input(monkeypatch):
     # ~15 chars/s English. "Hello world" = 11 chars in 1s → ratio 0.73, low.
     # Use a fitting length instead.
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     text = "A" * 15  # 15 chars in 1s = ratio 1.0
     res = speech_rate.adjust_for_slot(text, slot_seconds=1.0, target_lang="en")
     assert res["text"] == text
@@ -59,7 +59,7 @@ def test_speech_rate_within_tolerance_returns_input(monkeypatch):
 
 
 def test_speech_rate_no_llm_returns_input_with_marker(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     text = "A" * 100  # massively over a 1s slot
     res = speech_rate.adjust_for_slot(text, slot_seconds=1.0, target_lang="en")
     assert res["text"] == text

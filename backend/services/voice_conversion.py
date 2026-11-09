@@ -23,7 +23,7 @@ from typing import Awaitable, Callable, Optional
 
 import numpy as np
 
-logger = logging.getLogger("omnivoice.voice_conversion")
+logger = logging.getLogger("elevenvoice.voice_conversion")
 
 #: Sample rate the source and reference are decoded to before conversion.
 #: CosyVoice resamples to 16 kHz for tokens and needs at least that.

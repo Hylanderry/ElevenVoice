@@ -32,7 +32,7 @@ import logging
 import os
 import struct
 
-logger = logging.getLogger("omnivoice.hf_cache_repair")
+logger = logging.getLogger("elevenvoice.hf_cache_repair")
 
 # Snapshot entries that are never legitimately zero bytes: weight formats and
 # JSON/sentencepiece config-tokenizer files (an empty file is not valid JSON /

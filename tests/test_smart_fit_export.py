@@ -31,8 +31,8 @@ from pathlib import Path
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 from services.ffmpeg_utils import find_ffmpeg, find_ffprobe
 from services.video_retime import (
@@ -534,8 +534,8 @@ class TestRetimeExecutorIntegration:
 
 @pytest.fixture
 def export_app(tmp_path, monkeypatch):
-    """App with OMNIVOICE_DATA_DIR sandboxed so /dub/download writes under tmp."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    """App with ELEVENVOICE_DATA_DIR sandboxed so /dub/download writes under tmp."""
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import core.config as _cfg
     importlib.reload(_cfg)
     import core.tasks as _tasks

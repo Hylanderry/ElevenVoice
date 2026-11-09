@@ -1,14 +1,14 @@
 /**
- * Registry of every localStorage key VoiceStudio uses, split into the
+ * Registry of every localStorage key ElevenVoice uses, split into the
  * preferences that Settings → Factory reset clears and the keys it must
  * preserve. Factory reset promises "reset ALL in-app preferences" — before
- * this registry it only removed the zustand blob ('omnivoice.app'), leaving
+ * this registry it only removed the zustand blob ('elevenvoice.app'), leaving
  * nav-rail side, capture live-typing, stories speed, dismissed-tip flags and
  * the legacy 'omni_ui' blob behind. Long-form user data now lives separately
  * in IndexedDB and is intentionally preserved by a preferences-only reset.
  *
  * Adding a new persisted preference? Pick a key under one of
- * PREF_KEY_PREFIXES (preferred: 'omnivoice.<area>.<name>') and factory reset
+ * PREF_KEY_PREFIXES (preferred: 'elevenvoice.<area>.<name>') and factory reset
  * covers it automatically. Keys that must NOT be wiped (user data,
  * connection/credentials) go in PRESERVED_KEYS with a reason.
  * utils/prefKeys.test.js scans the source tree and fails on any localStorage
@@ -17,11 +17,11 @@
 import { suspendJsonWrites } from './coalescedJsonStorage';
 import { preserveRevisionedLongformFallback } from './longformPersistence';
 
-const APPLICATION_STATE_KEY = 'omnivoice.app';
+const APPLICATION_STATE_KEY = 'elevenvoice.app';
 
 /** Prefixes owned by UI preferences — factory reset clears every match. */
 export const PREF_KEY_PREFIXES = [
-  'omnivoice.', // zustand blob ('omnivoice.app') + navRailSide, logs.*, settings.category, donate.*, recents.*, dismissed-tip flags
+  'elevenvoice.', // zustand blob ('elevenvoice.app') + navRailSide, logs.*, settings.category, donate.*, recents.*, dismissed-tip flags
   'omni_capture_', // CaptureWidget mode + live-typing
   'ov_stories_', // StoriesEditor global speed
 ];

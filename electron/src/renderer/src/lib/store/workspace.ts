@@ -8,7 +8,7 @@ type Layout = {
   /** Allow the sidebar to fold into an icon rail on its own (default on). */
   autoCollapseSidebar: boolean;
 };
-const key = 'voicestudio.workspace-layout';
+const key = 'elevenvoice.workspace-layout';
 const defaults: Layout = {
   autoCollapseSidebar: true,
   libraryOpen: true,

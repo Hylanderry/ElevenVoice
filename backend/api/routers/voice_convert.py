@@ -47,7 +47,7 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from core.path_security import upload_suffix
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.convert")
+logger = logging.getLogger("elevenvoice.convert")
 
 #: ffmpeg's atempo filter is well-behaved in [0.5, 2.0] per stage. Convert
 #: clamps to ONE stage by design: needing more than 2× either way means the
@@ -313,12 +313,12 @@ async def _convert_keeping_delivery(row, profile_id: str, source_path: str) -> d
     except GpuPoolBusyError as e:
         raise HTTPException(
             status_code=503, detail=str(e),
-            headers={"Retry-After": str(e.retry_after), "X-OmniVoice-Retryable": "true"},
+            headers={"Retry-After": str(e.retry_after), "X-ElevenVoice-Retryable": "true"},
         ) from e
     except GpuJobTimeoutError as e:
         raise HTTPException(
             status_code=503, detail=str(e),
-            headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+            headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
         ) from e
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
@@ -546,12 +546,12 @@ async def convert_speech(
             raise HTTPException(
                 status_code=503, detail=str(e),
                 headers={"Retry-After": str(e.retry_after),
-                         "X-OmniVoice-Retryable": "true"},
+                         "X-ElevenVoice-Retryable": "true"},
             ) from e
         except GpuJobTimeoutError as e:
             raise HTTPException(
                 status_code=503, detail=str(e),
-                headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+                headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
             ) from e
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e)) from e

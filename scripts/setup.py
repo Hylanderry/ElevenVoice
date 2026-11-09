@@ -11,7 +11,7 @@
 2. **CUDA: cuDNN 8 compat** — Ensures cuDNN 8 libraries are available for
    CTranslate2 (faster-whisper / WhisperX) alongside PyTorch 2.8+'s cuDNN 9.
 
-3. **ROCm torch for AMD GPUs (opt-in)** — setting `OMNIVOICE_TORCH_VARIANT=rocm`
+3. **ROCm torch for AMD GPUs (opt-in)** — setting `ELEVENVOICE_TORCH_VARIANT=rocm`
    makes this script exchange the lockfile's CUDA build of torch for ROCm
    wheels after `uv sync` (#1665). The installed desktop app does the same
    exchange, which keeps `bun run desktop` on AMD hardware off the CPU.
@@ -56,9 +56,9 @@ ROCM_TORCH_PINS = ("torch==2.8.0", "torchaudio==2.8.0", "torchvision==0.23.0")
 
 def _rocm_opt_in(environ=os.environ):
     """Wheel index to use when ROCm was requested through the environment; otherwise None."""
-    wanted = environ.get("OMNIVOICE_TORCH_VARIANT", "")
+    wanted = environ.get("ELEVENVOICE_TORCH_VARIANT", "")
     if wanted.strip().lower() == "rocm":
-        return environ.get("OMNIVOICE_TORCH_INDEX") or ROCM_TORCH_INDEX
+        return environ.get("ELEVENVOICE_TORCH_INDEX") or ROCM_TORCH_INDEX
     return None
 
 
@@ -104,16 +104,16 @@ def _ensure_rocm_torch():
     if _installed_torch_is_rocm():
         print("✓ torch in this environment already targets ROCm; nothing to swap")
         return
-    print(f"⚙ OMNIVOICE_TORCH_VARIANT=rocm set: fetching AMD wheels from {index_url} ...")
+    print(f"⚙ ELEVENVOICE_TORCH_VARIANT=rocm set: fetching AMD wheels from {index_url} ...")
     try:
         subprocess.check_call(rocm_torch_reinstall_cmd(index_url))
     except (OSError, subprocess.CalledProcessError) as err:
         print(f"⚠ Could not switch to ROCm wheels ({err}); leaving the stock torch in place")
         return
     if not _installed_torch_is_rocm():
-        # An untagged OMNIVOICE_TORCH_INDEX mirror can resolve the bare pins
+        # An untagged ELEVENVOICE_TORCH_INDEX mirror can resolve the bare pins
         # to ordinary wheels.
-        print("⚠ The installed torch has no ROCm support; check OMNIVOICE_TORCH_INDEX")
+        print("⚠ The installed torch has no ROCm support; check ELEVENVOICE_TORCH_INDEX")
         return
     print("✓ ROCm wheels are now installed")
 

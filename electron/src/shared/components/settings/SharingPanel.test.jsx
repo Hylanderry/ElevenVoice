@@ -48,8 +48,8 @@ describe('SharingPanel', () => {
     // LAN-share port is an editable input pre-filled with share_port_base.
     expect(screen.getByTestId('port-share-input')).toHaveValue(4001);
     // Env-var names are surfaced for the user.
-    expect(screen.getByText('OMNIVOICE_PORT')).toBeInTheDocument();
-    expect(screen.getByText('OMNIVOICE_SHARE_PORT')).toBeInTheDocument();
-    expect(screen.getByText('OMNIVOICE_UI_PORT')).toBeInTheDocument();
+    expect(screen.getByText('ELEVENVOICE_PORT')).toBeInTheDocument();
+    expect(screen.getByText('ELEVENVOICE_SHARE_PORT')).toBeInTheDocument();
+    expect(screen.getByText('ELEVENVOICE_UI_PORT')).toBeInTheDocument();
   });
 });

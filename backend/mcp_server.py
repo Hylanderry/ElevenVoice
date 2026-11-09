@@ -1,5 +1,5 @@
 """
-VoiceStudio MCP Server — expose voice synthesis as AI-agent tools.
+ElevenVoice MCP Server — expose voice synthesis as AI-agent tools.
 
 Run standalone:
     python -m backend.mcp_server          # stdio transport (Claude Desktop)
@@ -18,14 +18,14 @@ Resources exposed:
     voice://{profile_id}  — voice profile metadata
     history://recent      — last 20 generated audio items
 
-Output mode (OMNIVOICE_MCP_OUTPUT_MODE):
+Output mode (ELEVENVOICE_MCP_OUTPUT_MODE):
     resources — generate_speech returns the WAV as base64 inline (the original
                 contract; default)
     files     — it returns a URL to the requested format (and, with a base
                 path, a file written there); no audio enters agent context
     both      — both of the above
 
-File inputs (OMNIVOICE_MCP_BASE_PATH):
+File inputs (ELEVENVOICE_MCP_BASE_PATH):
     One directory that agents may read audio from (transcribe / clone_voice
     `*_path` arguments) and receive files in (files mode). It is the security
     boundary: with no base path configured, path-shaped inputs are refused.
@@ -41,7 +41,7 @@ import re
 import stat
 import sys
 
-logger = logging.getLogger("omnivoice.mcp")
+logger = logging.getLogger("elevenvoice.mcp")
 
 
 def _decode_ref_audio(ref_audio_base64: str) -> "bytes | None":
@@ -89,7 +89,7 @@ def _sniff_audio_ext(raw: bytes) -> str:
 # narration blows them outright. The ElevenLabs MCP settled this with an
 # OUTPUT_MODE (files / resources / both) and a BASE_PATH that doubles as the
 # security boundary for file-shaped inputs; the same two knobs here, named in
-# the OMNIVOICE_* family the rest of the server reads.
+# the ELEVENVOICE_* family the rest of the server reads.
 
 _OUTPUT_MODES = ("resources", "files", "both")
 _MAX_INPUT_BYTES = 200 * 1024 * 1024
@@ -98,17 +98,17 @@ _SPEECH_FORMATS = ("wav", "ogg", "opus")
 
 
 def _output_mode() -> str:
-    """How generate_speech hands audio back (OMNIVOICE_MCP_OUTPUT_MODE).
+    """How generate_speech hands audio back (ELEVENVOICE_MCP_OUTPUT_MODE).
 
     'resources' is the original base64-inline contract and stays the default
     so existing integrations see no change; 'files' returns a URL to the
     render (plus a file under the base path when configured); 'both'
     returns everything. Anything unrecognized falls back to 'resources' with
     a warning rather than failing the tool."""
-    mode = os.environ.get("OMNIVOICE_MCP_OUTPUT_MODE", "resources").strip().lower()
+    mode = os.environ.get("ELEVENVOICE_MCP_OUTPUT_MODE", "resources").strip().lower()
     if mode not in _OUTPUT_MODES:
         logger.warning(
-            "OMNIVOICE_MCP_OUTPUT_MODE=%r is not one of %s; using 'resources'",
+            "ELEVENVOICE_MCP_OUTPUT_MODE=%r is not one of %s; using 'resources'",
             mode, _OUTPUT_MODES,
         )
         return "resources"
@@ -117,8 +117,8 @@ def _output_mode() -> str:
 
 def _base_path() -> "str | None":
     """The one directory agents may read audio from and receive files in
-    (OMNIVOICE_MCP_BASE_PATH), realpath'd; None when unset."""
-    raw = os.environ.get("OMNIVOICE_MCP_BASE_PATH", "").strip()
+    (ELEVENVOICE_MCP_BASE_PATH), realpath'd; None when unset."""
+    raw = os.environ.get("ELEVENVOICE_MCP_BASE_PATH", "").strip()
     if not raw:
         return None
     return os.path.realpath(os.path.expanduser(raw))
@@ -134,12 +134,12 @@ def _resolve_under_base(path: str) -> str:
     base = _base_path()
     if base is None:
         raise ValueError(
-            "OMNIVOICE_MCP_BASE_PATH is not set; file paths are refused until it "
+            "ELEVENVOICE_MCP_BASE_PATH is not set; file paths are refused until it "
             "names a directory"
         )
     candidate = os.path.realpath(os.path.join(base, os.path.expanduser(path)))
     if not _path_is_under_base(base, candidate):
-        raise ValueError(f"{path!r} resolves outside OMNIVOICE_MCP_BASE_PATH")
+        raise ValueError(f"{path!r} resolves outside ELEVENVOICE_MCP_BASE_PATH")
     return candidate
 
 
@@ -170,14 +170,14 @@ def _open_under_base(path: str, flags: int, *, mode: int = 0o600) -> tuple[int, 
     base = _base_path()
     if base is None:
         raise ValueError(
-            "OMNIVOICE_MCP_BASE_PATH is not set; file paths are refused until it "
+            "ELEVENVOICE_MCP_BASE_PATH is not set; file paths are refused until it "
             "names a directory"
         )
     resolved = _resolve_under_base(path)
     relative = os.path.relpath(resolved, base)
     parts = [part for part in relative.split(os.sep) if part not in ("", ".")]
     if not parts or parts[0] == os.pardir:
-        raise ValueError(f"{path!r} resolves outside OMNIVOICE_MCP_BASE_PATH")
+        raise ValueError(f"{path!r} resolves outside ELEVENVOICE_MCP_BASE_PATH")
 
     no_follow = getattr(os, "O_NOFOLLOW", 0)
     close_on_exec = getattr(os, "O_CLOEXEC", 0)
@@ -202,7 +202,7 @@ def _open_under_base(path: str, flags: int, *, mode: int = 0o600) -> tuple[int, 
 
     if not _opened_file_is_confined(fd, resolved, base):
         os.close(fd)
-        raise ValueError(f"{path!r} resolves outside OMNIVOICE_MCP_BASE_PATH")
+        raise ValueError(f"{path!r} resolves outside ELEVENVOICE_MCP_BASE_PATH")
     return fd, resolved
 
 
@@ -226,7 +226,7 @@ def _read_input_audio(
         except ValueError as e:
             return None, str(e)
         except FileNotFoundError:
-            return None, f"no such file under OMNIVOICE_MCP_BASE_PATH: {audio_path!r}"
+            return None, f"no such file under ELEVENVOICE_MCP_BASE_PATH: {audio_path!r}"
         except OSError as e:
             return None, f"could not safely read {audio_path!r}: {e}"
         with os.fdopen(fd, "rb") as handle:
@@ -312,11 +312,11 @@ def _backend_budget_s(kind: str, text: str = "") -> float | None:
     if kind == "transcribe":
         # run_transcribe_guarded starts this clock when the job is submitted,
         # so time spent queued in the pool already counts against it.
-        return _env_seconds("OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S", 300.0)
+        return _env_seconds("ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S", 300.0)
     if kind == "generate":
         base = max(
-            _env_seconds("OMNIVOICE_GENERATE_TIMEOUT_S", 300.0),
-            _env_seconds("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", 600.0),
+            _env_seconds("ELEVENVOICE_GENERATE_TIMEOUT_S", 300.0),
+            _env_seconds("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", 600.0),
         )
         # Shared with the backend's rule (core.generate_budget): covers the
         # legacy length bonus AND the automatic CPU ceiling (the backend budgets
@@ -326,19 +326,19 @@ def _backend_budget_s(kind: str, text: str = "") -> float | None:
 
         execution = client_execution_budget_s(
             max(base, _GENERATE_SIDECAR_FLOOR_S), len(text or ""),
-            cpu_auto_possible=not os.environ.get("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "").strip(),
+            cpu_auto_possible=not os.environ.get("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "").strip(),
         ) + _GENERATE_SIDECAR_GRACE_S
         # Classic /generate sends no response until the whole render finishes.
         # Cold loading and queueing have separate clocks; fresh chunk-progress
         # heartbeats can then extend execution by up to three more budgets.
         # Waiting only for queue + execution cuts off healthy CPU renders.
-        model_load = max(30.0, _env_seconds("OMNIVOICE_MODEL_LOAD_TIMEOUT", 1200.0))
+        model_load = max(30.0, _env_seconds("ELEVENVOICE_MODEL_LOAD_TIMEOUT", 1200.0))
         extension_cap = _env_seconds(
-            "OMNIVOICE_PROGRESS_EXTENSION_CAP_S",
-            _env_seconds("OMNIVOICE_MODEL_LOAD_TIMEOUT_S", 1800.0),
+            "ELEVENVOICE_PROGRESS_EXTENSION_CAP_S",
+            _env_seconds("ELEVENVOICE_MODEL_LOAD_TIMEOUT_S", 1800.0),
         )
         extension = max(extension_cap, _GENERATE_PROGRESS_BUDGETS * execution)
-        queue = _env_seconds("OMNIVOICE_GPU_QUEUE_TIMEOUT_S", 1800.0)
+        queue = _env_seconds("ELEVENVOICE_GPU_QUEUE_TIMEOUT_S", 1800.0)
         # A clone without a cached reference transcript first runs a separate
         # guarded ASR job. That job uses generate_timeout_s("") without an
         # engine: no length bonus or sidecar grace, but its own queue and
@@ -357,13 +357,13 @@ def _backend_budget_s(kind: str, text: str = "") -> float | None:
 def _post_timeout_s(kind: str = "", text: str = "") -> float:
     """Seconds a tool waits on a backend POST.
 
-    An explicit OMNIVOICE_MCP_TIMEOUT_S wins. Otherwise the tool waits for the
+    An explicit ELEVENVOICE_MCP_TIMEOUT_S wins. Otherwise the tool waits for the
     backend's own budget for that request plus a grace period, and never less
     than 120 s. A fixed 120 s used to cut off transcriptions the backend would
     have finished (its ASR budget is 300 s) with an empty error (#2040).
     """
-    if os.environ.get("OMNIVOICE_MCP_TIMEOUT_S", "").strip():
-        return _env_seconds("OMNIVOICE_MCP_TIMEOUT_S", 120.0)
+    if os.environ.get("ELEVENVOICE_MCP_TIMEOUT_S", "").strip():
+        return _env_seconds("ELEVENVOICE_MCP_TIMEOUT_S", 120.0)
     budget = _backend_budget_s(kind, text)
     return 120.0 if budget is None else max(120.0, budget + _BACKEND_GRACE_S)
 
@@ -399,7 +399,7 @@ async def _speech_result(
         if _base_path() is not None:
             out["output_path"] = await _write_output(audio_id, raw, format)
         else:
-            out["note"] = "set OMNIVOICE_MCP_BASE_PATH to also receive the audio as a file"
+            out["note"] = "set ELEVENVOICE_MCP_BASE_PATH to also receive the audio as a file"
     if mode in ("resources", "both"):
         out["wav_base64"] = base64.b64encode(raw).decode("ascii")
     return out
@@ -437,14 +437,14 @@ def create_mcp_server(app=None):
     ``app`` is the backend ASGI app this server is mounted on. When given,
     tool calls reach the API in-process as a loopback caller — independent of
     the bind host/port and never challenged by the share-PIN / API-key gates
-    (which a concrete LAN ``OMNIVOICE_BIND_HOST`` would otherwise trigger).
+    (which a concrete LAN ``ELEVENVOICE_BIND_HOST`` would otherwise trigger).
     Standalone runs (no app) call the backend over HTTP.
     """
     FastMCP = _ensure_mcp()
     mcp = FastMCP(
-        "VoiceStudio",
+        "ElevenVoice",
         instructions=(
-            "AI-agent interface for VoiceStudio — voice cloning, "
+            "AI-agent interface for ElevenVoice — voice cloning, "
             "voice design, and video dubbing in 646 languages."
         ),
     )
@@ -461,7 +461,7 @@ def create_mcp_server(app=None):
     # Extend the MCP SDK's DNS-rebinding allowlist so agents on non-localhost
     # hosts (Docker's host.containers.internal, a LAN IP, a reverse proxy) can
     # reach the /mcp endpoint. The SDK default is localhost-only.
-    _mcp_hosts = os.environ.get("OMNIVOICE_MCP_ALLOWED_HOSTS", "")
+    _mcp_hosts = os.environ.get("ELEVENVOICE_MCP_ALLOWED_HOSTS", "")
     if _mcp_hosts.strip():
         hosts = [h.strip() for h in _mcp_hosts.split(",") if h.strip()]
         try:
@@ -474,21 +474,21 @@ def create_mcp_server(app=None):
             ]
             mcp.settings.transport_security.allowed_origins.extend(origins)
         except Exception as e:
-            logger.warning("OMNIVOICE_MCP_ALLOWED_HOSTS not applied (%s)", e)
+            logger.warning("ELEVENVOICE_MCP_ALLOWED_HOSTS not applied (%s)", e)
 
     # ── Helpers ─────────────────────────────────────────────────────────
 
     def _api_base() -> str:
-        # Follows the backend's real bind host/port (OMNIVOICE_PORT), not a
-        # hard-coded 3900 — Electron moves the port via OMNIVOICE_PORT only.
+        # Follows the backend's real bind host/port (ELEVENVOICE_PORT), not a
+        # hard-coded 3900 — Electron moves the port via ELEVENVOICE_PORT only.
         # Also the public base of the `audio_url` returned in files mode.
         from services.network_share import backend_self_url
         return backend_self_url()
 
     def _client(timeout: float):
         import httpx
-        # OMNIVOICE_API_URL is an explicit "send tool calls there" override.
-        if app is not None and not os.environ.get("OMNIVOICE_API_URL", "").strip():
+        # ELEVENVOICE_API_URL is an explicit "send tool calls there" override.
+        if app is not None and not os.environ.get("ELEVENVOICE_API_URL", "").strip():
             return httpx.AsyncClient(
                 transport=httpx.ASGITransport(app=app, client=("127.0.0.1", 0)),
                 base_url="http://127.0.0.1",
@@ -524,12 +524,12 @@ def create_mcp_server(app=None):
         return decoded
 
     def _request_failure(exc: Exception) -> str:
-        return json.dumps({"error": f"VoiceStudio backend request failed: {exc}"})
+        return json.dumps({"error": f"ElevenVoice backend request failed: {exc}"})
 
     # ── Tools ───────────────────────────────────────────────────────────
 
     def _current_client_id() -> str | None:
-        """The X-OmniVoice-Client-Id of the calling MCP client, if any.
+        """The X-ElevenVoice-Client-Id of the calling MCP client, if any.
 
         FastMCP exposes the HTTP request via its request context on the
         Streamable-HTTP transport; stdio clients (and any version where the
@@ -538,7 +538,7 @@ def create_mcp_server(app=None):
         try:
             req = mcp.get_context().request_context.request
             if req is not None:
-                return req.headers.get("x-omnivoice-client-id")
+                return req.headers.get("x-elevenvoice-client-id")
         except Exception:
             pass
         return None
@@ -570,7 +570,7 @@ def create_mcp_server(app=None):
 
         Returns:
             JSON with audio_id, generation_time_s, audio_duration_s and the
-            audio shaped by OMNIVOICE_MCP_OUTPUT_MODE: base64 WAV data
+            audio shaped by ELEVENVOICE_MCP_OUTPUT_MODE: base64 WAV data
             ('resources', the default), a URL plus an optional file ('files'),
             or both ('both'). Prefer 'files' for LLM agents.
         """
@@ -651,7 +651,7 @@ def create_mcp_server(app=None):
     async def list_languages() -> str:
         """List a sample of supported TTS languages.
 
-        VoiceStudio supports 646 languages. This returns the most popular ones
+        ElevenVoice supports 646 languages. This returns the most popular ones
         plus a note about the full count.
         """
         return (
@@ -674,7 +674,7 @@ def create_mcp_server(app=None):
 
         Args:
             audio_base64: Base64-encoded audio bytes (wav/mp3/webm/m4a).
-            audio_path: Path to an audio file under OMNIVOICE_MCP_BASE_PATH
+            audio_path: Path to an audio file under ELEVENVOICE_MCP_BASE_PATH
                 (relative to it, or absolute inside it). The base path is the
                 security boundary: with none configured, paths are refused.
                 Prefer this lane for LLM agents - the audio never enters the
@@ -702,7 +702,7 @@ def create_mcp_server(app=None):
 
     @mcp.tool()
     async def check_health() -> str:
-        """Check if the VoiceStudio backend is running and what GPU device is active."""
+        """Check if the ElevenVoice backend is running and what GPU device is active."""
         info = await _api_get("/health")
         return json.dumps(info)
 
@@ -748,7 +748,7 @@ def create_mcp_server(app=None):
             instruct: Optional style instruction (e.g. 'whisper', 'excited').
             language: Language of the reference audio (ISO code or 'Auto').
             ref_audio_path: Path to the reference audio under
-                OMNIVOICE_MCP_BASE_PATH (relative to it, or absolute inside
+                ELEVENVOICE_MCP_BASE_PATH (relative to it, or absolute inside
                 it); refused when no base path is configured. Prefer this
                 lane for LLM agents - the clip never enters the context.
 
@@ -945,7 +945,7 @@ def mount_mcp(app) -> bool:
 # ── CLI entrypoint ──────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="VoiceStudio MCP Server")
+    parser = argparse.ArgumentParser(description="ElevenVoice MCP Server")
     parser.add_argument(
         "--sse", action="store_true",
         help="Use SSE transport instead of stdio (for remote agents)",

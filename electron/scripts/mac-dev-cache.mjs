@@ -18,7 +18,7 @@ import { join } from 'node:path';
 // still launch. Canonical paths give worktrees sharing node_modules one lock.
 export function macDevLeaseDirectory(cacheRoot) {
   const key = createHash('sha256').update(realpathSync(cacheRoot)).digest('hex');
-  return join(homedir(), 'Library', 'Caches', 'VoiceStudio', 'dev-bundle-locks', key);
+  return join(homedir(), 'Library', 'Caches', 'ElevenVoice', 'dev-bundle-locks', key);
 }
 
 // /usr/bin/lockf first shipped in macOS 15; older releases lack it but always

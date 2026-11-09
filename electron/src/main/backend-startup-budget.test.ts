@@ -111,17 +111,17 @@ function stubBackend(ready: () => boolean): void {
     vi.fn(async () => {
       if (!ready()) throw new Error('not listening yet');
       return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-        headers: { 'x-omnivoice-backend': 'test' },
+        headers: { 'x-elevenvoice-backend': 'test' },
       });
     }),
   );
 }
 
 function stubEnv(): void {
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
-  vi.stubEnv('OMNIVOICE_STARTUP_BUDGET_S', BUDGET_S);
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_STARTUP_BUDGET_S', BUDGET_S);
 }
 
 beforeEach(() => {
@@ -276,7 +276,7 @@ it('blames no backend for an attach-only wait that times out', async () => {
         if (!url.includes(':4900') || ++identified > 1) throw new Error('never ready');
         return new Response(JSON.stringify({ status: 'starting' }), {
           status: 503,
-          headers: { 'x-omnivoice-backend': 'test' },
+          headers: { 'x-elevenvoice-backend': 'test' },
         });
       }),
     );

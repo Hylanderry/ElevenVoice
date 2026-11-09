@@ -19,7 +19,7 @@ import uuid
 import pytest
 from fastapi import UploadFile
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 _TEXT = "I <3 you & a < b --> c"
 _ESCAPED = "I &lt;3 you &amp; a &lt; b --&gt; c"

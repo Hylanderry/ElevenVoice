@@ -12,7 +12,7 @@ export const WINDOWS_ROCM_ABI_PROBE =
   'from backend.core.windows_rocm.recipe import validate_target; validate_target()';
 
 export function windowsRocmSelected(
-  variant = process.env.OMNIVOICE_TORCH_VARIANT?.trim().toLowerCase(),
+  variant = process.env.ELEVENVOICE_TORCH_VARIANT?.trim().toLowerCase(),
   platform = process.platform,
   arch: string = process.arch,
 ): boolean {
@@ -26,7 +26,7 @@ export function windowsRocmSelected(
  * crash: true only when ROCm was asked for on a host that can run it.
  */
 export function windowsRocmRequested(
-  variant = process.env.OMNIVOICE_TORCH_VARIANT?.trim().toLowerCase(),
+  variant = process.env.ELEVENVOICE_TORCH_VARIANT?.trim().toLowerCase(),
   platform = process.platform,
   arch: string = process.arch,
 ): boolean {

@@ -68,7 +68,7 @@ def _reference_stt_sentence() -> str:
 
 
 def test_owned_text_signatures_match_the_backend_sentences():
-    """The app recognises VoiceStudio's own sentences when they arrive as bare
+    """The app recognises ElevenVoice's own sentences when they arrive as bare
     text; each signature must still be part of the sentence the backend writes,
     and that sentence must still classify to the same class."""
     from core.failure import (

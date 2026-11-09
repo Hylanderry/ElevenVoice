@@ -38,9 +38,9 @@ def roots(tmp_path):
     _write(str(data / "voices" / "b.wav"), 50)
     _write(str(data / "outputs" / "o.wav"), 200)
     _write(str(data / "dub_jobs" / "j1" / "seg_0.wav"), 30)
-    _write(str(data / "omnivoice.db"), 400)
-    _write(str(data / "omnivoice.db-wal"), 40)
-    _write(str(data / "omnivoice.log"), 10)
+    _write(str(data / "elevenvoice.db"), 400)
+    _write(str(data / "elevenvoice.db-wal"), 40)
+    _write(str(data / "elevenvoice.log"), 10)
     _write(str(data / "crash_log.txt"), 5)
     _write(str(data / "prefs.json"), 7)  # → "other"
 
@@ -96,7 +96,7 @@ def test_category_sizes_computed(roots):
     assert child["outputs"] == 200
     assert child["dub_jobs"] == 30
     assert child["database"] == 440   # db + wal
-    assert child["logs"] == 15        # omnivoice.log + crash_log.txt
+    assert child["logs"] == 15        # elevenvoice.log + crash_log.txt
     assert child["other"] == 7        # prefs.json
     assert data["bytes"] == sum(child.values())
 
@@ -317,17 +317,17 @@ def test_endpoint_returns_report_shape(roots, monkeypatch):
 def test_clear_temp_removes_only_app_owned_entries(tmp_path):
     tmp = tmp_path / "tmp"
     _write(str(tmp / "omnivoice_frames_abc" / "f.png"), 25)
-    _write(str(tmp / "omnivoice.chunk"), 10)
+    _write(str(tmp / "elevenvoice.chunk"), 10)
     _write(str(tmp / "unrelated" / "keep.bin"), 999)
     _write(str(tmp / "keep.txt"), 7)
 
     res = storage_report.clear_temp(str(tmp))
 
-    assert sorted(res["removed"]) == ["omnivoice.chunk", "omnivoice_frames_abc"]
+    assert sorted(res["removed"]) == ["elevenvoice.chunk", "omnivoice_frames_abc"]
     assert res["freed_bytes"] == 35
     assert res["errors"] == []
     assert not (tmp / "omnivoice_frames_abc").exists()
-    assert not (tmp / "omnivoice.chunk").exists()
+    assert not (tmp / "elevenvoice.chunk").exists()
     # Anything not app-owned is never touched.
     assert (tmp / "unrelated" / "keep.bin").exists()
     assert (tmp / "keep.txt").exists()

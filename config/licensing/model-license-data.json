@@ -2564,7 +2564,7 @@
       "registry_digest": "ca729ed45035d3fc8ace59240fd3ae480d5146753fd8fd2e6b4d6c79e2c7f197",
       "license": "mit",
       "credit": "ggerganov/whisper.cpp",
-      "notes": "Model-card metadata only: the pinned card declares the MIT licence and is not gated. The GGML/GGUF weights and the whisper.cpp CLI are user-managed and are never downloaded or redistributed by VoiceStudio, so no runtime revision is pinned here and no permission review was performed. Component terms, attribution text and the per-file terms of the selected checkpoint remain under review.",
+      "notes": "Model-card metadata only: the pinned card declares the MIT licence and is not gated. The GGML/GGUF weights and the whisper.cpp CLI are user-managed and are never downloaded or redistributed by ElevenVoice, so no runtime revision is pinned here and no permission review was performed. Component terms, attribution text and the per-file terms of the selected checkpoint remain under review.",
       "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
       "evidence_url": "https://huggingface.co/ggerganov/whisper.cpp/blob/5359861c739e955e79d9a303bcbc70fb988958b1/README.md",
       "evidence_revision": "5359861c739e955e79d9a303bcbc70fb988958b1",

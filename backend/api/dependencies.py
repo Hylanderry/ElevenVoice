@@ -45,22 +45,22 @@ def _server_mode() -> bool:
     system/settings routes they need (issue #261 — incl. ``/system/info``,
     which blanks the version display).
 
-    The Docker image sets ``OMNIVOICE_SERVER_MODE=1`` to opt out of the gate.
+    The Docker image sets ``ELEVENVOICE_SERVER_MODE=1`` to opt out of the gate.
     Network exposure then rests on the operator's port mapping plus the
     optional share PIN (``NetworkAccessMiddleware`` still 401s unauthenticated
     non-loopback clients whenever a PIN is set). The desktop build never sets
     this, so its loopback boundary — including denying LAN share guests access
     to admin routes — is unchanged. Read at call time so it stays testable.
     """
-    return os.environ.get("OMNIVOICE_SERVER_MODE", "").strip().lower() in _TRUTHY
+    return os.environ.get("ELEVENVOICE_SERVER_MODE", "").strip().lower() in _TRUTHY
 
 
 def validate_server_admin_key() -> None:
     """Reject an explicitly blank key before a server-mode app starts."""
-    raw_key = os.environ.get("OMNIVOICE_API_KEY")
+    raw_key = os.environ.get("ELEVENVOICE_API_KEY")
     if _server_mode() and raw_key is not None and not raw_key.strip():
         raise RuntimeError(
-            "OMNIVOICE_API_KEY is blank; configure a non-whitespace administrator key"
+            "ELEVENVOICE_API_KEY is blank; configure a non-whitespace administrator key"
         )
 
 
@@ -156,7 +156,7 @@ def require_loopback(request: Request) -> None:
       fail closed even if a route accidentally kept this legacy dependency.
     - A credential IS configured → the request must present the **API key**.
       This keeps the two-tier privilege model intact under server mode:
-      ``OMNIVOICE_TRUSTED_NETWORKS`` is a *consumption* exemption
+      ``ELEVENVOICE_TRUSTED_NETWORKS`` is a *consumption* exemption
       (``is_local_host``) that bypasses the PIN / API-key middleware, and it must
       NEVER by itself unlock the admin surface (``/system/set-env`` — RCE-class —
       and ``/api/settings/*``). The 6-digit share PIN is a consumption credential

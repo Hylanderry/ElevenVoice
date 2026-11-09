@@ -202,8 +202,8 @@ function headerInt(headers: Headers, name: string): number | null {
 
 /** Everything `/generate` reports about a take rides in response headers. */
 export function parseGenerateHeaders(headers: Headers): Omit<GenerateResult, 'blob'> {
-  const routingStatus = headers.get('X-OmniVoice-Routing');
-  const droppedCount = headerInt(headers, 'X-OmniVoice-Dropped-Chunks');
+  const routingStatus = headers.get('X-ElevenVoice-Routing');
+  const droppedCount = headerInt(headers, 'X-ElevenVoice-Dropped-Chunks');
   return {
     id: headers.get('X-Audio-Id'),
     audioPath: headers.get('X-Audio-Path'),
@@ -211,11 +211,11 @@ export function parseGenerateHeaders(headers: Headers): Omit<GenerateResult, 'bl
     genTimeSeconds: headerFloat(headers, 'X-Gen-Time'),
     seed: headerInt(headers, 'X-Seed'),
     routing: routingStatus
-      ? { status: routingStatus, reason: headers.get('X-OmniVoice-Routing-Reason') ?? '' }
+      ? { status: routingStatus, reason: headers.get('X-ElevenVoice-Routing-Reason') ?? '' }
       : null,
     dropped:
       droppedCount !== null && droppedCount > 0
-        ? { count: droppedCount, text: headers.get('X-OmniVoice-Dropped-Text') ?? '' }
+        ? { count: droppedCount, text: headers.get('X-ElevenVoice-Dropped-Text') ?? '' }
         : null,
   };
 }

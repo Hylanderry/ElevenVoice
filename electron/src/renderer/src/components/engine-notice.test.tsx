@@ -100,7 +100,7 @@ it('hands an unexplained readiness failure to the default repair agent', async (
     })
     .mockResolvedValueOnce({ tts: { active: null, backends: [] } });
   const listener = vi.fn();
-  window.addEventListener('voicestudio:repair-agent-open', listener);
+  window.addEventListener('elevenvoice:repair-agent-open', listener);
   renderNotice();
 
   fireEvent.click(screen.getByRole('button', { name: 'engines.set_up' }));
@@ -112,7 +112,7 @@ it('hands an unexplained readiness failure to the default repair agent', async (
   }>;
   expect(event.detail.autoFix).toBe(true);
   expect(event.detail.report).toContain('ACTION_REQUEST');
-  window.removeEventListener('voicestudio:repair-agent-open', listener);
+  window.removeEventListener('elevenvoice:repair-agent-open', listener);
 });
 
 it('selects an installed compatible engine without opening Settings or an agent', async () => {
@@ -138,7 +138,7 @@ it('selects an installed compatible engine without opening Settings or an agent'
     return Promise.resolve({});
   });
   const listener = vi.fn();
-  window.addEventListener('voicestudio:repair-agent-open', listener);
+  window.addEventListener('elevenvoice:repair-agent-open', listener);
   renderNotice();
 
   fireEvent.click(screen.getByRole('button', { name: 'engines.set_up' }));
@@ -150,7 +150,7 @@ it('selects an installed compatible engine without opening Settings or an agent'
     }),
   );
   expect(listener).not.toHaveBeenCalled();
-  window.removeEventListener('voicestudio:repair-agent-open', listener);
+  window.removeEventListener('elevenvoice:repair-agent-open', listener);
 });
 
 it('joins an existing install instead of submitting the model twice', async () => {
@@ -310,7 +310,7 @@ it('switches engines instead of downloading the model of an unavailable engine',
 it('shows a full disk with its next step instead of opening the repair agent', async () => {
   mockMissingRecommendedModel();
   const listener = vi.fn();
-  window.addEventListener('voicestudio:repair-agent-open', listener);
+  window.addEventListener('elevenvoice:repair-agent-open', listener);
   const view = renderNotice();
   fireEvent.click(screen.getByRole('button', { name: 'engines.set_up' }));
   await waitFor(() => expect(mock.toast).toHaveBeenCalled());
@@ -342,5 +342,5 @@ it('shows a full disk with its next step instead of opening the repair agent', a
   expect(screen.getByRole('button', { name: 'common.retry' })).toBeEnabled();
   expect(screen.getByRole('button', { name: 'settings.storage' })).toBeInTheDocument();
   expect(listener).not.toHaveBeenCalled();
-  window.removeEventListener('voicestudio:repair-agent-open', listener);
+  window.removeEventListener('elevenvoice:repair-agent-open', listener);
 });

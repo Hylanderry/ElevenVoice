@@ -241,7 +241,7 @@ def test_faster_whisper_selection_asks_for_unaccepted_terms(store, monkeypatch):
 def test_diarisation_gates_only_the_selected_model(store, monkeypatch):
     from services import diarization_runtime as dr
 
-    monkeypatch.delenv("OMNIVOICE_DIARIZATION_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DIARIZATION_MODEL", raising=False)
     monkeypatch.setattr(dr, "selected_backend", lambda: dr.SORTFORMER)
     with pytest.raises(ma.ModelLicenceNotAccepted):
         dr.ensure_selected_accepted()
@@ -263,7 +263,7 @@ def test_native_sortformer_refuses_before_touching_the_model(store, monkeypatch)
         sys.modules, "engines.audiocpp.bootstrap",
         types.SimpleNamespace(resolve_server_binary=lambda: None),
     )
-    monkeypatch.delenv("OMNIVOICE_DIARIZATION_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DIARIZATION_MODEL", raising=False)
     touched: list[bool] = []
 
     def model_path():

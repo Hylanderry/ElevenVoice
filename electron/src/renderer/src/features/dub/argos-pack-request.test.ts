@@ -13,7 +13,7 @@ const STATUS_PATH = '/engines/translation/argos/packs/status';
 const INSTALL_PATH = '/engines/translation/argos/packs/install';
 
 afterEach(() => {
-  delete (window as Partial<Window>).voicestudio;
+  delete (window as Partial<Window>).elevenvoice;
   vi.resetAllMocks();
 });
 

@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool
 from services.model_licenses import ModelTermsError, ReviewedInstalls, load_registry
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.model_licenses")
+logger = logging.getLogger("elevenvoice.model_licenses")
 
 
 class PrepareRequest(BaseModel):

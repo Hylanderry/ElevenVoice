@@ -19,7 +19,7 @@ from typing import Optional
 import services.model_manager as mm
 from services.model_manager import get_best_device
 
-logger = logging.getLogger("omnivoice.model_lifecycle")
+logger = logging.getLogger("elevenvoice.model_lifecycle")
 
 
 def _tts_vram_mb() -> float:
@@ -161,8 +161,8 @@ def list_loaded() -> dict:
 
     # 5. In-process engine instances that hold a model (mlx-audio, cosyvoice,
     #    voxcpm2, kittentts, …). These live in the generate path's instance
-    #    cache, separate from the VoiceStudio core above — and were INVISIBLE here
-    #    until now, so a resident non-VoiceStudio engine (up to a few GB) didn't
+    #    cache, separate from the ElevenVoice core above — and were INVISIBLE here
+    #    until now, so a resident non-ElevenVoice engine (up to a few GB) didn't
     #    show in the panel at all. Report each that currently holds a model.
     #    VRAM isn't self-reported by these engines → 0 (unmeasured), same
     #    convention as a CPU/uninstrumented sidecar. Enumeration is best-effort.

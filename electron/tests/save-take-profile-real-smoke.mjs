@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge', headless: true });
 const page = await browser.newPage();
-const ui = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902';
-await page.addInitScript(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+const ui = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902';
+await page.addInitScript(() => localStorage.setItem('elevenvoice.setup.complete.v1', '1'));
 const name = 'Saved take fixture ' + Date.now();
 let takeId;
 let profileId;

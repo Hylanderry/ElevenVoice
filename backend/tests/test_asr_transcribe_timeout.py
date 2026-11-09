@@ -256,11 +256,11 @@ def test_timeout_env_name_is_parameterized():
         with pytest.raises(ASRTimeoutError) as ei:
             await run_transcribe_guarded(
                 pool, _hang_forever, what="Dub chunk 1/3", timeout=0.1,
-                timeout_env="OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S",
+                timeout_env="ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S",
             )
         msg = str(ei.value)
-        assert "OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S" in msg
-        assert "OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S" not in msg
+        assert "ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S" in msg
+        assert "ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S" not in msg
 
     asyncio.run(_go())
     pool.shutdown(wait=False)

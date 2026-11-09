@@ -9,8 +9,8 @@ gone" regressions on every PR.
 import os
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 @pytest.fixture(scope="module")
@@ -67,14 +67,14 @@ def test_system_info_reports_code_fingerprint(client, monkeypatch):
     build's fingerprint to tell "this build's code" apart from "a
     same-version backend running older code" — a plain version match isn't
     enough because `main` holds one version string for an entire release
-    cycle. Blank by default (no OMNIVOICE_BUILD_FINGERPRINT set, e.g. a
+    cycle. Blank by default (no ELEVENVOICE_BUILD_FINGERPRINT set, e.g. a
     manually started backend); echoed back verbatim when the desktop sets it.
     """
-    monkeypatch.delenv("OMNIVOICE_BUILD_FINGERPRINT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_BUILD_FINGERPRINT", raising=False)
     body = client.get("/system/info").json()
     assert body["code_fingerprint"] == ""
 
-    monkeypatch.setenv("OMNIVOICE_BUILD_FINGERPRINT", "deadbeef1234")
+    monkeypatch.setenv("ELEVENVOICE_BUILD_FINGERPRINT", "deadbeef1234")
     body = client.get("/system/info").json()
     assert body["code_fingerprint"] == "deadbeef1234"
 
@@ -84,7 +84,7 @@ def test_system_info_reports_the_build_commit(client, monkeypatch):
     from core import version
 
     version.build_commit.cache_clear()
-    monkeypatch.setenv("OMNIVOICE_BUILD_COMMIT", "0123456789abcdef")
+    monkeypatch.setenv("ELEVENVOICE_BUILD_COMMIT", "0123456789abcdef")
     assert client.get("/system/info").json()["build_commit"] == "012345678"
     version.build_commit.cache_clear()
 

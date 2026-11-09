@@ -27,7 +27,7 @@ from typing import Any, Callable, Hashable
 
 from fastapi import HTTPException
 
-logger = logging.getLogger("omnivoice.poll_guard")
+logger = logging.getLogger("elevenvoice.poll_guard")
 
 #: Longer than a healthy snapshot, shorter than the shell's own patience.
 DEFAULT_DEADLINE_S = 1.5

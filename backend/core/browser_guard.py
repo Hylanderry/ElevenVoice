@@ -24,8 +24,8 @@ are not browsers acting for another site and pass unchanged.
 Policy knobs (all optional; the defaults cover the desktop app, the dev
 servers, LAN sharing by IP address and Tailscale MagicDNS names):
 
-* ``OMNIVOICE_ALLOWED_ORIGINS`` — extra browser origins (shared with CORS).
-* ``OMNIVOICE_ALLOWED_HOSTS`` — extra host names the backend may be addressed
+* ``ELEVENVOICE_ALLOWED_ORIGINS`` — extra browser origins (shared with CORS).
+* ``ELEVENVOICE_ALLOWED_HOSTS`` — extra host names the backend may be addressed
   by (beyond the Docker/Podman host aliases), comma-separated; ``.example.com`` allows subdomains, ``*`` disables the
   host check (only behind a proxy that validates ``Host`` itself).
 """
@@ -50,8 +50,8 @@ from core.csrf import (
 )
 from core.user_env import DESKTOP_ENV_FILE_HINT
 
-ALLOWED_HOSTS_ENV = "OMNIVOICE_ALLOWED_HOSTS"
-_MCP_HOSTS_ENV = "OMNIVOICE_MCP_ALLOWED_HOSTS"
+ALLOWED_HOSTS_ENV = "ELEVENVOICE_ALLOWED_HOSTS"
+_MCP_HOSTS_ENV = "ELEVENVOICE_MCP_ALLOWED_HOSTS"
 # MagicDNS names only resolve to tailnet addresses (or Tailscale's Funnel
 # ingress), never to an address a third party chooses, so they cannot be used
 # to rebind onto this machine. Allowed by default so `tailscale serve` works.
@@ -67,15 +67,15 @@ _DEFAULT_HOSTS = frozenset({
 _CROSS_SITE_FETCH = frozenset({"cross-site", "same-site"})
 
 CROSS_SITE_DETAIL = (
-    "Request refused: it came from another website. The VoiceStudio API only "
+    "Request refused: it came from another website. The ElevenVoice API only "
     "accepts browser requests from its own interface. To use the API from "
-    "another web app, add its origin to OMNIVOICE_ALLOWED_ORIGINS."
+    "another web app, add its origin to ELEVENVOICE_ALLOWED_ORIGINS."
 )
 HOST_DETAIL = (
-    "Request refused: VoiceStudio was addressed by an unrecognized host name. "
+    "Request refused: ElevenVoice was addressed by an unrecognized host name. "
     "Open it via localhost or an IP address, send the API key, or add the "
-    f"host name to OMNIVOICE_ALLOWED_HOSTS ({DESKTOP_ENV_FILE_HINT}) and "
-    "restart VoiceStudio."
+    f"host name to ELEVENVOICE_ALLOWED_HOSTS ({DESKTOP_ENV_FILE_HINT}) and "
+    "restart ElevenVoice."
 )
 
 
@@ -148,7 +148,7 @@ def _configured_hosts() -> tuple[frozenset[str], tuple[str, ...], bool]:
     for entry in (*allowed_origin_values(), *_env_list(_MCP_HOSTS_ENV)):
         if host := _entry_hostname(entry):
             exact.add(host)
-    for name in ("OMNIVOICE_API_URL", "OMNIVOICE_PUBLIC_API_BASE", "OMNIVOICE_BIND_HOST"):
+    for name in ("ELEVENVOICE_API_URL", "ELEVENVOICE_PUBLIC_API_BASE", "ELEVENVOICE_BIND_HOST"):
         value = os.environ.get(name, "").strip()
         if value and (host := _entry_hostname(value)):
             exact.add(host)
@@ -182,7 +182,7 @@ def host_allowed(host_header: str | None) -> bool:
 
 def _origin_trusted(connection, presented) -> bool:
     """Whether an origin tuple is one this backend accepts browser requests from:
-    its own origin, ``OMNIVOICE_ALLOWED_ORIGINS``, the desktop renderer and
+    its own origin, ``ELEVENVOICE_ALLOWED_ORIGINS``, the desktop renderer and
     MCP hosts. The one allowlist for both ``Origin`` and ``Referer``."""
     if presented is None:
         return False
@@ -220,7 +220,7 @@ def is_cross_site(connection) -> bool:
     a different localhost port — unless its ``Referer`` names an allowed
     origin. Browsers send no ``Origin`` on media and download GETs
     (``<video src>``, download links), so a UI served from another allowed
-    origin (``OMNIVOICE_PUBLIC_API_BASE`` deployments) is recognised by its
+    origin (``ELEVENVOICE_PUBLIC_API_BASE`` deployments) is recognised by its
     ``Referer``; a page cannot forge that header, only omit it, and a missing
     or foreign ``Referer`` is still refused. Requests with neither header are
     not from a browser page and are never treated as cross-site.

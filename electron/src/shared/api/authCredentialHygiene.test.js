@@ -42,7 +42,7 @@ describe('administrator credential hygiene static guard', () => {
       .filter(({ source }) => PERSISTED_MASTER_RE.test(source))
       .map(({ file }) => file);
 
-    expect(violations, 'OMNIVOICE_API_KEY must never enter localStorage or sessionStorage').toEqual(
+    expect(violations, 'ELEVENVOICE_API_KEY must never enter localStorage or sessionStorage').toEqual(
       [],
     );
   });

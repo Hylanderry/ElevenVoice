@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import { createServer } from 'node:net';
 import assert from 'node:assert/strict';
-const folder = mkdtempSync(join(tmpdir(), 'voicestudio-native-persona-'));
+const folder = mkdtempSync(join(tmpdir(), 'elevenvoice-native-persona-'));
 const name = 'Native persona ' + Date.now();
-const packagedExecutable = process.env.VOICESTUDIO_PACKAGED_EXE?.trim();
+const packagedExecutable = process.env.ELEVENVOICE_PACKAGED_EXE?.trim();
 const developmentExecutable = resolve(
   'electron/node_modules/electron/dist',
   process.platform === 'win32'
@@ -15,7 +15,7 @@ const developmentExecutable = resolve(
       ? 'Electron.app/Contents/MacOS/Electron'
       : 'electron',
 );
-const profileDirectory = process.env.VOICESTUDIO_TEST_PROFILE?.trim() || join(folder, 'profile');
+const profileDirectory = process.env.ELEVENVOICE_TEST_PROFILE?.trim() || join(folder, 'profile');
 const port = await reservePort();
 let app;
 let voice;
@@ -29,7 +29,7 @@ try {
     ],
     env: {
       ...process.env,
-      OMNIVOICE_PORT: String(port),
+      ELEVENVOICE_PORT: String(port),
       ...(packagedExecutable ? {} : { ELECTRON_RENDERER_URL: '' }),
     },
     timeout: 30000,
@@ -66,7 +66,7 @@ try {
   voice = created.voiceId;
   profile = created.profileId;
   await page.evaluate(() => {
-    window.localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    window.localStorage.setItem('elevenvoice.setup.complete.v1', '1');
     window.location.hash = '#/personas';
     window.location.reload();
   });

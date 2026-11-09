@@ -106,7 +106,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
       }
       if (constraints.mutableBirthtime && info.isDirectory() && 'ctimeNs' in info)
         return Object.assign(Object.create(info), { birthtimeNs: info.ctimeNs });
-      if (constraints.zeroStagingIdentity && String(args[0]).includes('.voicestudio-moving-'))
+      if (constraints.zeroStagingIdentity && String(args[0]).includes('.elevenvoice-moving-'))
         return Object.assign(Object.create(info), { birthtimeNs: 0n });
       if (
         constraints.reuseEnabled &&
@@ -147,7 +147,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
     },
     open: async (...args: Parameters<typeof actual.open>) => {
       await constraints.beforeOpen?.(String(args[0]));
-      if (constraints.staleProbes > 0 && String(args[0]).includes('.voicestudio-identity-')) {
+      if (constraints.staleProbes > 0 && String(args[0]).includes('.elevenvoice-identity-')) {
         constraints.staleProbes--;
         constraints.staleProbeTarget = dirname(String(args[0]));
       }
@@ -226,14 +226,14 @@ afterEach(async () => {
 });
 
 async function fixture() {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'VoiceStudio-existing-target-')));
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'ElevenVoice-existing-target-')));
   created.push(root);
   const source = join(root, 'old', 'data');
   const target = join(root, 'mounted', 'data');
   await mkdir(join(source, 'voices'), { recursive: true });
   await mkdir(target, { recursive: true });
   await writeFile(join(source, 'voices', 'sample.wav'), 'voice');
-  await writeFile(join(source, 'omnivoice.db'), 'database');
+  await writeFile(join(source, 'elevenvoice.db'), 'database');
   return { root, source, target };
 }
 
@@ -249,7 +249,7 @@ it.each([true, false])(
   async (activate) => {
     const { root, source, target } = await fixture();
     const environmentPath = join(root, 'env');
-    await writeFile(environmentPath, `OMNIVOICE_DATA_DIR=${source}\n`);
+    await writeFile(environmentPath, `ELEVENVOICE_DATA_DIR=${source}\n`);
     const inode = (await lstat(target)).ino;
     constraints.target = target;
     constraints.parent = dirname(target);
@@ -291,7 +291,7 @@ it('refuses a concurrently created file and rolls back only its earlier entries'
   );
   expect(await readFile(join(target, 'voices', 'sample.wav'), 'utf8')).toBe('concurrent');
   expect(await readdir(target)).toEqual(['voices']);
-  expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+  expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
 });
 
 it('refuses a concurrently created directory without merging into it', async () => {
@@ -318,10 +318,10 @@ it('rollback keeps replacements and new files inside an owned directory', async 
   await writeFile(join(target, 'voices', 'concurrent.txt'), 'keep nested');
   const replacement = join(root, 'replacement');
   await writeFile(replacement, 'keep replacement');
-  await rename(replacement, join(target, 'omnivoice.db'));
+  await rename(replacement, join(target, 'elevenvoice.db'));
   await prepared.rollback();
-  expect(await readdir(target)).toEqual(['omnivoice.db', 'voices']);
-  expect(await readFile(join(target, 'omnivoice.db'), 'utf8')).toBe('keep replacement');
+  expect(await readdir(target)).toEqual(['elevenvoice.db', 'voices']);
+  expect(await readFile(join(target, 'elevenvoice.db'), 'utf8')).toBe('keep replacement');
   expect(await readdir(join(target, 'voices'))).toEqual(['concurrent.txt']);
   expect(existsSync(source)).toBe(true);
 });
@@ -622,7 +622,7 @@ it('keeps the original failure and the live target if stopping the failed backen
     }),
   ).rejects.toMatchObject(incomplete('backend_verification_failed'));
   expect(starts).toBe(1);
-  expect(await readFile(join(target, 'omnivoice.db'), 'utf8')).toBe('database');
+  expect(await readFile(join(target, 'elevenvoice.db'), 'utf8')).toBe('database');
   expect(existsSync(source)).toBe(true);
 });
 
@@ -685,7 +685,7 @@ it.each(['before activation', 'during verification'])(
   async (when) => {
     const { root, source, target } = await fixture();
     const environmentPath = join(root, 'env');
-    await writeFile(environmentPath, `OMNIVOICE_DATA_DIR=${source}\n`);
+    await writeFile(environmentPath, `ELEVENVOICE_DATA_DIR=${source}\n`);
     const moved = join(root, 'moved-copy');
     const replace = async () => {
       await rename(target, moved);
@@ -764,7 +764,7 @@ it.each([
     constraints.beforeOpen = async (path) => {
       if (path !== join(target, 'voices', 'sample.wav')) return;
       const name = (await readdir(target)).find((entry) =>
-        entry.startsWith('.voicestudio-moving-'),
+        entry.startsWith('.elevenvoice-moving-'),
       )!;
       const scratch = join(target, name);
       if (mutation === 'replaced directory') {
@@ -814,9 +814,9 @@ it('rejects a requested directory alias retargeted after copying', async () => {
 });
 
 it.each([
-  { parts: ['omnivoice.db'], replacement: 'intruder', birth: 0n, change: null },
+  { parts: ['elevenvoice.db'], replacement: 'intruder', birth: 0n, change: null },
   { parts: ['voices', 'sample.wav'], replacement: 'other', birth: 0n, change: null },
-  { parts: ['omnivoice.db'], replacement: 'intruder', birth: 100n, change: 200n },
+  { parts: ['elevenvoice.db'], replacement: 'intruder', birth: 100n, change: 200n },
   { parts: ['voices', 'sample.wav'], replacement: 'other', birth: 100n, change: 200n },
 ])(
   'preserves changed content when a replacement reuses all ambiguous metadata at $parts',
@@ -862,7 +862,7 @@ it('preserves a scratch record replacement when all ambiguous metadata is reused
   const { source, target } = await fixture();
   let record = '';
   constraints.beforeOpen = async (path) => {
-    if (path.endsWith('manifest.json') && path.includes('.voicestudio-moving-')) {
+    if (path.endsWith('manifest.json') && path.includes('.elevenvoice-moving-')) {
       record = path;
       constraints.reusedIdentityPath = path;
     }
@@ -881,7 +881,7 @@ it('preserves a scratch record replacement when all ambiguous metadata is reused
 });
 
 async function backendLogStartup(target: string, rotate: boolean) {
-  const log = join(target, 'omnivoice.log');
+  const log = join(target, 'elevenvoice.log');
   if (rotate) {
     await rm(log + '.3', { force: true });
     for (let index = 2; index >= 1; index -= 1)
@@ -896,9 +896,9 @@ it.each([false, true])(
   async (rotate) => {
     const { root, source, target } = await fixture();
     const original = rotate ? 'x'.repeat(2 * 1024 * 1024 - 1) + '\n' : 'startup history\n';
-    await writeFile(join(source, 'omnivoice.log'), original);
+    await writeFile(join(source, 'elevenvoice.log'), original);
     for (let index = 1; index <= 3; index += 1)
-      await writeFile(join(source, 'omnivoice.log.' + index), 'previous ' + index);
+      await writeFile(join(source, 'elevenvoice.log.' + index), 'previous ' + index);
     let starts = 0;
     await expect(
       relocateDataDirectory(source, target, {
@@ -911,10 +911,10 @@ it.each([false, true])(
         progress: () => undefined,
       }),
     ).rejects.toMatchObject(incomplete('backend_verification_failed'));
-    expect(await readFile(join(source, 'omnivoice.log'), 'utf8')).toBe(original);
-    expect(await readFile(join(target, 'omnivoice.log'), 'utf8')).toContain('backend startup');
-    if (rotate) expect(await readFile(join(target, 'omnivoice.log.1'), 'utf8')).toBe(original);
-    expect(existsSync(join(target, 'omnivoice.db'))).toBe(false);
+    expect(await readFile(join(source, 'elevenvoice.log'), 'utf8')).toBe(original);
+    expect(await readFile(join(target, 'elevenvoice.log'), 'utf8')).toContain('backend startup');
+    if (rotate) expect(await readFile(join(target, 'elevenvoice.log.1'), 'utf8')).toBe(original);
+    expect(existsSync(join(target, 'elevenvoice.db'))).toBe(false);
   },
 );
 
@@ -952,7 +952,7 @@ it.each([true, false])(
     const { root, source, target } = await fixture();
     if (!existing) await rm(target, { recursive: true });
     const environmentPath = join(root, 'env');
-    await writeFile(environmentPath, `OMNIVOICE_DATA_DIR=${source}\n`);
+    await writeFile(environmentPath, `ELEVENVOICE_DATA_DIR=${source}\n`);
     let starts = 0;
     await expect(
       relocateDataDirectory(source, target, {
@@ -973,8 +973,8 @@ it.each([true, false])(
     ).rejects.toMatchObject(incomplete('backend_verification_failed'));
     constraints.beforeReadFile = null;
     expect(await readDataDirectorySetting(environmentPath)).toBe(target);
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
-    expect(await readFile(join(target, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(target, 'elevenvoice.db'), 'utf8')).toBe('database');
     expect(starts).toBe(1);
   },
 );
@@ -988,7 +988,7 @@ it('rejects an unverifiable new destination before copying and cleans empty stag
   expect(failure).toMatchObject({ message: 'identity_unavailable' });
   expect(existsSync(target)).toBe(false);
   expect(await readdir(dirname(target))).toEqual([]);
-  expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+  expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
 });
 
 it.each([true, false])(
@@ -1002,7 +1002,7 @@ it.each([true, false])(
     expect(failure).toMatchObject({ message: 'identity_unavailable' });
     expect(existsSync(target)).toBe(existing);
     expect(await readdir(existing ? target : dirname(target))).toEqual([]);
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
   },
 );
 
@@ -1013,10 +1013,10 @@ it.each([true, false])(
     if (!existing) await rm(target, { recursive: true });
     constraints.stableBirthtime = true;
     const prepared = await prepareDataRelocation(source, target);
-    expect(await readFile(join(target, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(target, 'elevenvoice.db'), 'utf8')).toBe('database');
     expect(await prepared.rollback()).toBe(true);
     expect(await readdir(existing ? target : dirname(target))).toEqual([]);
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
   },
 );
 
@@ -1029,9 +1029,9 @@ it.each([true, false])(
     constraints.staleProbes = 1;
     const prepared = await prepareDataRelocation(source, target);
     expect(constraints.staleProbes).toBe(0);
-    expect(await readFile(join(target, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(target, 'elevenvoice.db'), 'utf8')).toBe('database');
     expect(await prepared.rollback()).toBe(true);
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
   },
 );
 
@@ -1046,7 +1046,7 @@ it.each([true, false])(
     expect(constraints.copyCalls).toBe(0);
     expect(failure).toMatchObject({ message: 'identity_unavailable' });
     expect(await readdir(existing ? target : dirname(target))).toEqual([]);
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
   },
 );
 
@@ -1065,7 +1065,7 @@ it.each(['probe', 'copy'])(
     if (phase === 'probe') {
       constraints.stableBirthtime = true;
       constraints.beforeOpen = async (path) => {
-        if (path.includes('.voicestudio-identity-')) await replace(dirname(path));
+        if (path.includes('.elevenvoice-identity-')) await replace(dirname(path));
       };
     } else {
       constraints.afterCopy = async (path) => {
@@ -1078,7 +1078,7 @@ it.each(['probe', 'copy'])(
     });
     expect(foreign).not.toBe('');
     expect(await readFile(foreign, 'utf8')).toBe('unrelated user data');
-    expect(await readFile(join(source, 'omnivoice.db'), 'utf8')).toBe('database');
+    expect(await readFile(join(source, 'elevenvoice.db'), 'utf8')).toBe('database');
     expect(existsSync(target)).toBe(false);
   },
 );

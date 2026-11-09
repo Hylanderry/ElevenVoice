@@ -51,7 +51,7 @@ def test_endpoint_preference_failure_is_fail_closed_to_manual(monkeypatch):
     endpoint_race = importlib.import_module("services.endpoint_race")
     prefs = importlib.import_module("core.prefs")
     monkeypatch.delenv("HF_ENDPOINT", raising=False)
-    monkeypatch.delenv("OMNIVOICE_HF_ENDPOINT_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_HF_ENDPOINT_MODE", raising=False)
     monkeypatch.setattr(endpoint_race, "explicit_endpoint", lambda: "")
     monkeypatch.setattr(prefs, "get", lambda *_args: (_ for _ in ()).throw(OSError("secret")))
     assert endpoint_race.mode() == "manual"

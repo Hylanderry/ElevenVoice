@@ -2,7 +2,7 @@ import { restoreExportPreferences } from './dub-export';
 import type { DubSession } from './dub-session';
 import { DUB_INPUT_ISSUES } from './dub-input-issue';
 import { LANG_CODES } from '@shared/utils/languages';
-export const DUB_DRAFT_KEY = 'voicestudio.dub.session.v1';
+export const DUB_DRAFT_KEY = 'elevenvoice.dub.session.v1';
 
 function isProviderErrorText(value: unknown): value is string {
   return (

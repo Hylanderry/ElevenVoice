@@ -9,7 +9,7 @@ const browser = await chromium.launch({
   headless: true,
 });
 const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
-const ui = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const ui = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 let changed = false;
 let currentTier = 'fast';
 let fail = false;
@@ -73,10 +73,10 @@ const profile = () => ({
 });
 try {
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
     // These checks inspect the expanded navigation, so keep it open beside the library.
     localStorage.setItem(
-      'voicestudio.workspace-layout',
+      'elevenvoice.workspace-layout',
       JSON.stringify({ autoCollapseSidebar: false }),
     );
   });

@@ -6,51 +6,51 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:net';
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const targetArch = process.env.VOICESTUDIO_RUST_TARGET?.startsWith('aarch64')
+const targetArch = process.env.ELEVENVOICE_RUST_TARGET?.startsWith('aarch64')
   ? 'arm64'
-  : process.env.VOICESTUDIO_RUST_TARGET?.startsWith('x86_64')
+  : process.env.ELEVENVOICE_RUST_TARGET?.startsWith('x86_64')
     ? 'x64'
     : process.arch;
 const defaultExecutableCandidates =
   process.platform === 'win32'
     ? targetArch === 'arm64'
       ? [
-          'electron/release/win-arm64-unpacked/VoiceStudio.exe',
-          'electron/release/win-unpacked/VoiceStudio.exe',
+          'electron/release/win-arm64-unpacked/ElevenVoice.exe',
+          'electron/release/win-unpacked/ElevenVoice.exe',
         ]
-      : ['electron/release/win-unpacked/VoiceStudio.exe']
+      : ['electron/release/win-unpacked/ElevenVoice.exe']
     : process.platform === 'darwin'
       ? targetArch === 'arm64'
         ? [
-            'electron/release/mac-arm64/VoiceStudio.app/Contents/MacOS/VoiceStudio',
-            'electron/release/mac/VoiceStudio.app/Contents/MacOS/VoiceStudio',
+            'electron/release/mac-arm64/ElevenVoice.app/Contents/MacOS/ElevenVoice',
+            'electron/release/mac/ElevenVoice.app/Contents/MacOS/ElevenVoice',
           ]
         : [
-            'electron/release/mac/VoiceStudio.app/Contents/MacOS/VoiceStudio',
-            'electron/release/mac-x64/VoiceStudio.app/Contents/MacOS/VoiceStudio',
+            'electron/release/mac/ElevenVoice.app/Contents/MacOS/ElevenVoice',
+            'electron/release/mac-x64/ElevenVoice.app/Contents/MacOS/ElevenVoice',
           ]
       : targetArch === 'arm64'
         ? [
-            'electron/release/linux-arm64-unpacked/voicestudio-electron',
-            'electron/release/linux-unpacked/voicestudio-electron',
+            'electron/release/linux-arm64-unpacked/elevenvoice-electron',
+            'electron/release/linux-unpacked/elevenvoice-electron',
           ]
-        : ['electron/release/linux-unpacked/voicestudio-electron'];
+        : ['electron/release/linux-unpacked/elevenvoice-electron'];
 const defaultExecutable =
   defaultExecutableCandidates.find((candidate) => existsSync(resolve(repoRoot, candidate))) ??
   defaultExecutableCandidates[0];
-const executablePath = resolve(repoRoot, process.env.VOICESTUDIO_PACKAGED_EXE || defaultExecutable);
-const existing = process.env.VOICESTUDIO_TEST_PROFILE;
-const profile = existing || mkdtempSync(join(tmpdir(), 'voicestudio-packaged-check-'));
-const keepProfile = process.env.VOICESTUDIO_KEEP_TEST_PROFILE === '1';
+const executablePath = resolve(repoRoot, process.env.ELEVENVOICE_PACKAGED_EXE || defaultExecutable);
+const existing = process.env.ELEVENVOICE_TEST_PROFILE;
+const profile = existing || mkdtempSync(join(tmpdir(), 'elevenvoice-packaged-check-'));
+const keepProfile = process.env.ELEVENVOICE_KEEP_TEST_PROFILE === '1';
 const setup = process.argv.includes('--setup');
 const firstSound = process.argv.includes('--first-sound');
 const quitDuringStartup = process.argv.includes('--quit-during-startup');
 const install = process.argv.includes('--install') || firstSound;
-const wayland = process.platform === 'linux' && process.env.VOICESTUDIO_TEST_WAYLAND === '1';
-const scaleFactor = Number(process.env.VOICESTUDIO_TEST_SCALE_FACTOR);
+const wayland = process.platform === 'linux' && process.env.ELEVENVOICE_TEST_WAYLAND === '1';
+const scaleFactor = Number(process.env.ELEVENVOICE_TEST_SCALE_FACTOR);
 const extractAndRun = process.env.APPIMAGE_EXTRACT_AND_RUN === '1';
 if (quitDuringStartup && !existing)
-  throw new Error('--quit-during-startup requires VOICESTUDIO_TEST_PROFILE with a managed runtime');
+  throw new Error('--quit-during-startup requires ELEVENVOICE_TEST_PROFILE with a managed runtime');
 const activate = (locator) =>
   extractAndRun || wayland ? locator.dispatchEvent('click') : locator.click();
 let env = { ...process.env };
@@ -62,18 +62,18 @@ if (setup || install || existing) {
   await new Promise((resolve) => server.close(resolve));
   env = {
     ...env,
-    OMNIVOICE_PORT: String(port),
-    OMNIVOICE_BACKEND_CMD: '',
-    VOICESTUDIO_SKIP_BACKEND: '',
+    ELEVENVOICE_PORT: String(port),
+    ELEVENVOICE_BACKEND_CMD: '',
+    ELEVENVOICE_SKIP_BACKEND: '',
     HF_HOME: join(profile, 'hf-home'),
     HF_HUB_CACHE: join(profile, 'hf-home', 'hub'),
     HF_HUB_OFFLINE: firstSound ? '0' : '1',
     TRANSFORMERS_OFFLINE: firstSound ? '0' : '1',
     UV_CACHE_DIR: join(profile, 'uv-cache'),
-    OMNIVOICE_DATA_DIR: join(profile, 'data'),
-    OMNIVOICE_PRELOAD_TTS_ASR: '0',
-    OMNIVOICE_PRELOAD_CAPTURE_ASR: '0',
-    OMNIVOICE_PRELOAD_WATERMARK: '0',
+    ELEVENVOICE_DATA_DIR: join(profile, 'data'),
+    ELEVENVOICE_PRELOAD_TTS_ASR: '0',
+    ELEVENVOICE_PRELOAD_CAPTURE_ASR: '0',
+    ELEVENVOICE_PRELOAD_WATERMARK: '0',
   };
 }
 const app = await electron.launch({
@@ -96,7 +96,7 @@ try {
       const executable = join(
         process.resourcesPath,
         'native',
-        'voicestudio-desktop-bridge' + (process.platform === 'win32' ? '.exe' : ''),
+        'elevenvoice-desktop-bridge' + (process.platform === 'win32' ? '.exe' : ''),
       );
       const child = spawn(executable, [String(process.pid)], {
         windowsHide: true,
@@ -134,12 +134,12 @@ try {
   const window = await app.firstWindow();
   const errors = [];
   window.on('pageerror', (error) => errors.push(error.message));
-  await window.waitForURL('app://voicestudio/**');
+  await window.waitForURL('app://elevenvoice/**');
   if (firstSound) {
     const resumed = await window.evaluate(() => {
-      const complete = localStorage.getItem('voicestudio.setup.complete.v1') === '1';
-      localStorage.removeItem('voicestudio.setup.complete.v1');
-      localStorage.removeItem('voicestudio.setup.in-progress.v1');
+      const complete = localStorage.getItem('elevenvoice.setup.complete.v1') === '1';
+      localStorage.removeItem('elevenvoice.setup.complete.v1');
+      localStorage.removeItem('elevenvoice.setup.in-progress.v1');
       return complete;
     });
     if (resumed) await window.reload();
@@ -153,7 +153,7 @@ try {
       'Backend did not create its run sentinel during startup',
     );
     const progress = await fetch(
-      `http://127.0.0.1:${env.OMNIVOICE_PORT}/startup/progress?ts=${Date.now()}`,
+      `http://127.0.0.1:${env.ELEVENVOICE_PORT}/startup/progress?ts=${Date.now()}`,
       { cache: 'no-store' },
     ).then((response) => response.json());
     assert.equal(
@@ -164,14 +164,14 @@ try {
     verifyManagedShutdown = true;
     console.log('PASS: packaged backend reached deferred startup before deliberate quit');
   } else if (setup) {
-    await window.getByText('VoiceStudio', { exact: true }).first().waitFor();
+    await window.getByText('ElevenVoice', { exact: true }).first().waitFor();
     await app.evaluate(({ BrowserWindow }) => {
       BrowserWindow.getAllWindows()[0]?.setSize(960, 640);
     });
     const setupLayout = await window.evaluate(() => {
       const header = document.querySelector('header.workspace-titlebar');
       const scroller = document.querySelector('[data-testid="backend-gate-scroll"]');
-      const brand = header?.textContent?.includes('VoiceStudio') ? header : null;
+      const brand = header?.textContent?.includes('ElevenVoice') ? header : null;
       const headerRect = header?.getBoundingClientRect();
       const scrollRect = scroller?.getBoundingClientRect();
       return {
@@ -210,11 +210,11 @@ try {
       await installButton.waitFor();
     }
     assert.equal(
-      await window.evaluate(() => typeof window.voicestudio.backend.cleanSetupRuntime),
+      await window.evaluate(() => typeof window.elevenvoice.backend.cleanSetupRuntime),
       'function',
     );
     const stage = await window.evaluate(
-      async () => (await window.voicestudio.backend.getStatus()).stage,
+      async () => (await window.elevenvoice.backend.getStatus()).stage,
     );
     assert.equal(stage, 'setup_required');
     assert.equal(
@@ -230,22 +230,22 @@ try {
       });
     }, customParent);
     const selected = await window.evaluate(() =>
-      window.voicestudio.backend.chooseRuntimeLocation('Choose runtime location'),
+      window.elevenvoice.backend.chooseRuntimeLocation('Choose runtime location'),
     );
     assert.deepEqual(selected, {
-      path: join(customParent, 'VoiceStudio'),
+      path: join(customParent, 'ElevenVoice'),
       custom: true,
     });
     assert.equal(
-      (await window.evaluate(() => window.voicestudio.backend.getStatus())).runtimeCustom,
+      (await window.evaluate(() => window.elevenvoice.backend.getStatus())).runtimeCustom,
       true,
     );
     const restored = await window.evaluate(() =>
-      window.voicestudio.backend.useDefaultRuntimeLocation(),
+      window.elevenvoice.backend.useDefaultRuntimeLocation(),
     );
     assert.equal(restored.custom, false);
     assert.equal(
-      (await window.evaluate(() => window.voicestudio.backend.getStatus())).runtimeCustom,
+      (await window.evaluate(() => window.elevenvoice.backend.getStatus())).runtimeCustom,
       false,
     );
     await app.evaluate(({ dialog }) => {
@@ -253,12 +253,12 @@ try {
     });
     assert.equal(
       await window.evaluate(() =>
-        window.voicestudio.backend.chooseRuntimeLocation('Choose runtime location'),
+        window.elevenvoice.backend.chooseRuntimeLocation('Choose runtime location'),
       ),
       null,
     );
     assert.equal(
-      existsSync(join(customParent, 'VoiceStudio')),
+      existsSync(join(customParent, 'ElevenVoice')),
       false,
       'Choosing a runtime location must not install before consent',
     );
@@ -282,10 +282,10 @@ try {
       }
       const deadline =
         Date.now() +
-        (Number(process.env.VOICESTUDIO_RUNTIME_TIMEOUT_MS) || (firstSound ? 1_800_000 : 600_000));
+        (Number(process.env.ELEVENVOICE_RUNTIME_TIMEOUT_MS) || (firstSound ? 1_800_000 : 600_000));
       let lastStage = '';
       for (;;) {
-        state = await window.evaluate(async () => window.voicestudio.backend.getStatus());
+        state = await window.evaluate(async () => window.elevenvoice.backend.getStatus());
         if (state.stage !== lastStage) {
           console.log('Runtime:', state.stage);
           lastStage = state.stage;
@@ -297,7 +297,7 @@ try {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
       assert.equal(
-        await window.evaluate(async () => (await window.voicestudio.backend.getStatus()).managed),
+        await window.evaluate(async () => (await window.elevenvoice.backend.getStatus()).managed),
         true,
       );
     }
@@ -335,7 +335,7 @@ try {
         await activate(download);
         await waitForSetupModels(
           window,
-          Number(process.env.VOICESTUDIO_MODEL_TIMEOUT_MS) || 3_600_000,
+          Number(process.env.ELEVENVOICE_MODEL_TIMEOUT_MS) || 3_600_000,
         );
       }
       await assertEventually(
@@ -364,7 +364,7 @@ try {
       await activate(enter);
 
       await window.getByRole('region', { name: 'Latest take', exact: true }).waitFor({
-        timeout: Number(process.env.VOICESTUDIO_FIRST_SOUND_TIMEOUT_MS) || 1_800_000,
+        timeout: Number(process.env.ELEVENVOICE_FIRST_SOUND_TIMEOUT_MS) || 1_800_000,
       });
       const proof = await window.evaluate(async () => {
         const historyResponse = await fetch('/api/history');
@@ -395,12 +395,12 @@ try {
       );
     }
     if (!firstSound) {
-      await window.getByText('VoiceStudio', { exact: true }).first().waitFor({ timeout: 120_000 });
+      await window.getByText('ElevenVoice', { exact: true }).first().waitFor({ timeout: 120_000 });
     }
     if (existing) {
       const deadline = Date.now() + 120_000;
       for (;;) {
-        const current = await window.evaluate(async () => window.voicestudio.backend.getStatus());
+        const current = await window.evaluate(async () => window.elevenvoice.backend.getStatus());
         if (current.stage === 'ready') break;
         if (['setup_required', 'failed', 'crashed', 'port_in_use'].includes(current.stage))
           throw new Error(JSON.stringify(current));
@@ -408,7 +408,7 @@ try {
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
       assert.equal(
-        await window.evaluate(async () => (await window.voicestudio.backend.getStatus()).managed),
+        await window.evaluate(async () => (await window.elevenvoice.backend.getStatus()).managed),
         true,
       );
     }
@@ -417,13 +417,13 @@ try {
       return {
         status: response.status,
         version: (await response.json()).app_version,
-        bridge: typeof window.voicestudio,
+        bridge: typeof window.elevenvoice,
       };
     });
     assert.equal(state.status, 200);
     assert.equal(state.bridge, 'object');
     assert(state.version);
-    await window.goto('app://voicestudio/#/settings/models');
+    await window.goto('app://elevenvoice/#/settings/models');
     await window.getByRole('textbox', { name: 'Custom mirror URL', exact: true }).waitFor();
     assert.deepEqual(errors, []);
     const layout = await window.evaluate(() => ({
@@ -440,8 +440,8 @@ try {
         Math.abs(layout.devicePixelRatio - scaleFactor) < 0.05,
         `Expected device scale ${scaleFactor}, received ${layout.devicePixelRatio}`,
       );
-    if (process.env.VOICESTUDIO_SCREENSHOT && !extractAndRun) {
-      await window.screenshot({ path: process.env.VOICESTUDIO_SCREENSHOT });
+    if (process.env.ELEVENVOICE_SCREENSHOT && !extractAndRun) {
+      await window.screenshot({ path: process.env.ELEVENVOICE_SCREENSHOT });
     }
     console.log(
       `PASS: packaged ${process.platform}${wayland ? ' Wayland' : ''} renderer, preload bridge and same-origin live backend connection`,
@@ -454,7 +454,7 @@ try {
   if (windows[0])
     console.error(
       await windows[0]
-        .evaluate(async () => window.voicestudio.backend.getStatus())
+        .evaluate(async () => window.elevenvoice.backend.getStatus())
         .catch(() => 'No bridge'),
     );
   throw error;
@@ -491,7 +491,7 @@ async function assertEventually(check, timeout, message) {
 async function waitForRuntimeGate(window, timeout) {
   const deadline = Date.now() + timeout;
   for (;;) {
-    const state = await window.evaluate(async () => window.voicestudio.backend.getStatus());
+    const state = await window.evaluate(async () => window.elevenvoice.backend.getStatus());
     if (state.stage === 'ready' || state.stage === 'setup_required') return state;
     if (['failed', 'crashed', 'port_in_use'].includes(state.stage)) {
       throw new Error(JSON.stringify(state));

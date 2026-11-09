@@ -9,8 +9,8 @@ export function needsLocalBackendSetup({
   platform = process.platform,
   arch = process.arch,
 } = {}) {
-  if (String(env.OMNIVOICE_BACKEND_CMD ?? "").trim()) return false;
-  if (env.VOICESTUDIO_SKIP_BACKEND === "1") return false;
+  if (String(env.ELEVENVOICE_BACKEND_CMD ?? "").trim()) return false;
+  if (env.ELEVENVOICE_SKIP_BACKEND === "1") return false;
   return platform !== "darwin" || arch !== "x64";
 }
 

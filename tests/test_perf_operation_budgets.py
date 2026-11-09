@@ -33,8 +33,8 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import importlib
@@ -98,7 +98,7 @@ def fake_stream_engine(monkeypatch):
     fake = _make_fake_stream_engine()
     fake.calls = []
     monkeypatch.setitem(tb._REGISTRY, "fake-perf-stream", fake)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     yield fake
     tb.reset_active_backend()
 
@@ -381,7 +381,7 @@ def test_interactive_dub_uses_native_batches(dub_harness, monkeypatch):
     """Four fresh rows at width two cost two native forwards and no serial ones."""
     run, model, _job, _job_dir = dub_harness
     model.use_native_batch = True
-    monkeypatch.setenv("OMNIVOICE_DUB_BATCH_WIDTH", "2")
+    monkeypatch.setenv("ELEVENVOICE_DUB_BATCH_WIDTH", "2")
     segments = [
         {"start": i * 1.0, "end": i * 1.0 + 0.8, "text": "0.5:line"}
         for i in range(4)
@@ -453,7 +453,7 @@ def test_batch_budget_exact_native_batch_calls(monkeypatch, tmp_path):
     fake.generate_calls = []
     fake.batch_calls = []
     monkeypatch.setitem(tb._REGISTRY, "fake-perf-batch", fake)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-perf-batch")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-perf-batch")
     # Pin the width: 4 segments / width 2 = exactly 2 native batches.
     monkeypatch.setenv(b.BATCH_WIDTH_ENV, "2")
 

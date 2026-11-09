@@ -37,7 +37,7 @@ import numpy as np
 
 from services.telephony.session import Clear, Mark
 
-logger = logging.getLogger("omnivoice.telephony.agent")
+logger = logging.getLogger("elevenvoice.telephony.agent")
 
 OUTCOMES = ("booked", "done", "not_done", "needs_you", "failed")
 ACTIONS = ("none", "end_call", "escalate")

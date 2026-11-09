@@ -128,7 +128,7 @@ def test_control_unwrapped_stderr_pipe_blocks():
     """Proves the test above measures the real hazard, not a trivial pass."""
     result: list[str] = []
     t = threading.Thread(
-        target=lambda: result.append(_run_child({"OMNIVOICE_BLOCKING_STDIO": "1"}, 30)),
+        target=lambda: result.append(_run_child({"ELEVENVOICE_BLOCKING_STDIO": "1"}, 30)),
         daemon=True,
     )
     t.start()
@@ -244,7 +244,7 @@ _APP_MODULE = textwrap.dedent(
     install()
 
     import logging
-    if os.environ.get("OMNIVOICE_TEST_UNBUFFERED_ACCESS_LOG") == "1":
+    if os.environ.get("ELEVENVOICE_TEST_UNBUFFERED_ACCESS_LOG") == "1":
         # The state before #3108: the access log still writes to the real
         # pipe, so a full pipe blocks the event loop.
         real = sys.__stdout__
@@ -326,7 +326,7 @@ def _start_server(tmp_path, *, unbuffered_access_log: bool = False):
     port = _free_port()
     env = dict(os.environ)
     if unbuffered_access_log:
-        env["OMNIVOICE_TEST_UNBUFFERED_ACCESS_LOG"] = "1"
+        env["ELEVENVOICE_TEST_UNBUFFERED_ACCESS_LOG"] = "1"
     stderr_path = tmp_path / "child-stderr.log"
     stderr_handle = stderr_path.open("w", encoding="utf-8")
     child = (

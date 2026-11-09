@@ -32,5 +32,5 @@ def test_silent_when_loop_is_healthy():
 
 
 def test_disabled_by_zero(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LOOP_STALL_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_LOOP_STALL_S", "0")
     assert start_loop_stall_monitor(loop=object()) is None

@@ -8,7 +8,7 @@ is encrypted with Fernet. The Fernet key is derived via scrypt from:
   - A 16-byte random salt persisted in the same `settings` table as row
     `_secret_key_salt`
 
-The key is **not** at-rest portable: copying `omnivoice.db` to another
+The key is **not** at-rest portable: copying `elevenvoice.db` to another
 machine will produce a Fernet that can't decrypt the existing token row
 (machine-id changed). `settings_store.get_hf_token()` handles this by
 logging a warning and returning None, after which the resolver falls
@@ -29,7 +29,7 @@ import sys
 import threading
 import time
 
-logger = logging.getLogger("omnivoice.secret_key")
+logger = logging.getLogger("elevenvoice.secret_key")
 
 _KEY_CACHE: bytes | None = None
 _CACHE_LOCK = threading.Lock()
@@ -103,7 +103,7 @@ def _read_machine_id() -> bytes:
     # key. The settings_store warn-log on InvalidToken covers that case.
     logger.warning(
         "Could not read OS machine-id; falling back to hostname+user. "
-        "If you migrate omnivoice_data/ across machines, the saved HF "
+        "If you migrate elevenvoice_data/ across machines, the saved HF "
         "token won't decrypt and the resolver will fall back to env/HF-CLI."
     )
     fallback = f"{socket.gethostname()}::{getpass.getuser()}"

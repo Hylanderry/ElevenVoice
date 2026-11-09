@@ -110,12 +110,12 @@ export function reloadAfterApplicationPersistence(
 export async function installDesktopPersistenceExitHandshake(
   dependencies: DesktopExitHandshakeDependencies = {},
 ): Promise<Unlisten> {
-  const desktop = dependencies.desktop ?? (typeof window !== 'undefined' && !!window.voicestudio);
+  const desktop = dependencies.desktop ?? (typeof window !== 'undefined' && !!window.elevenvoice);
   if (!desktop) return () => {};
 
   const warn = dependencies.warn ?? defaultWarn;
-  if (!dependencies.listen && !dependencies.confirm && window.voicestudio) {
-    return window.voicestudio.app.onPersistenceFlush(async () => {
+  if (!dependencies.listen && !dependencies.confirm && window.elevenvoice) {
+    return window.elevenvoice.app.onPersistenceFlush(async () => {
       try {
         await flushApplicationPersistence(dependencies);
       } catch (error) {

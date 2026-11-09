@@ -20,7 +20,7 @@ def _load_setup_script():
 def test_source_setup_never_installs_linux_rocm_wheels(platform, monkeypatch):
     setup = _load_setup_script()
     monkeypatch.setattr(setup.sys, "platform", platform)
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
 
     rocm_calls = []
     commands = []
@@ -42,7 +42,7 @@ def test_source_setup_never_installs_linux_rocm_wheels(platform, monkeypatch):
 def test_windows_sidecar_cannot_select_linux_rocm_index(family, monkeypatch):
     si = importlib.import_module("services.sidecar_install")
     monkeypatch.setattr("sys.platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     monkeypatch.setattr(si, "_host_family", lambda: family)
     assert si._rocm_index_url() is None
 

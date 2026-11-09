@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
-# VoiceStudio — Automated SEO Backlink Submission Script
+# ElevenVoice — Automated SEO Backlink Submission Script
 # Programmatically submits to every free, open endpoint that accepts URLs.
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-SITE_URL="https://github.com/debpalash/VoiceStudio"
-SITE_NAME="VoiceStudio"
+SITE_URL="https://github.com/Hylanderry/ElevenVoice"
+SITE_NAME="ElevenVoice"
 SITE_DESC="Open-source ElevenLabs alternative — cinematic audio dubbing, voice cloning & TTS in 646 languages, runs 100% locally"
-RSS_URL="https://github.com/debpalash/VoiceStudio/releases.atom"
+RSS_URL="https://github.com/Hylanderry/ElevenVoice/releases.atom"
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -60,7 +60,7 @@ ENCODED_RSS=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$RSS_UR
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  VoiceStudio — Automated Backlink Submission Engine    ║"
+echo "║  ElevenVoice — Automated Backlink Submission Engine    ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 echo "  URL:  $SITE_URL"
@@ -82,7 +82,7 @@ submit "Naver Search Ping"           "https://searchadvisor.naver.com/indexnow?u
 echo ""
 echo "${YELLOW}━━━ 2. IndexNow Protocol Submissions ━━━${NC}"
 # IndexNow is accepted by Bing, Yandex, Seznam, Naver etc.
-INDEXNOW_KEY="omnivoice-studio-indexnow-key"
+INDEXNOW_KEY="elevenvoice-indexnow-key"
 submit "IndexNow → Bing"            "https://www.bing.com/indexnow?url=${ENCODED_URL}&key=${INDEXNOW_KEY}"
 submit "IndexNow → Yandex"          "https://yandex.com/indexnow?url=${ENCODED_URL}&key=${INDEXNOW_KEY}"
 submit "IndexNow → Seznam"          "https://search.seznam.cz/indexnow?url=${ENCODED_URL}&key=${INDEXNOW_KEY}"
@@ -151,8 +151,8 @@ submit "Pearltrees Add"              "https://www.pearltrees.com/s/save?url=${EN
 # ── 7. DEVELOPER / TECH-SPECIFIC ────────────────────────────────────────────
 echo ""
 echo "${YELLOW}━━━ 7. Developer & Tech Platforms ━━━${NC}"
-submit "LibHunt Lookup"              "https://www.libhunt.com/r/VoiceStudio"
-submit "StackShare Lookup"           "https://stackshare.io/omnivoice-studio"
+submit "LibHunt Lookup"              "https://www.libhunt.com/r/ElevenVoice"
+submit "StackShare Lookup"           "https://stackshare.io/elevenvoice"
 submit "DevHunt Submit"              "https://devhunt.org/submit?url=${ENCODED_URL}"
 submit "OSS Insight Lookup"          "https://ossinsight.io/analyze/debpalash/VoiceStudio"
 submit "Star History"                "https://star-history.com/#debpalash/VoiceStudio"
@@ -160,10 +160,10 @@ submit "GitTrends"                   "https://gittrends.io/repo/debpalash/VoiceS
 submit "RepoTracker"                 "https://repo-tracker.com/r/gh/debpalash/VoiceStudio"
 submit "Snyk Advisor"                "https://snyk.io/advisor/python/omnivoice"
 submit "Libraries.io"                "https://libraries.io/github/debpalash/VoiceStudio"
-submit "OpenHub"                     "https://www.openhub.net/p/VoiceStudio"
+submit "OpenHub"                     "https://www.openhub.net/p/ElevenVoice"
 submit "Awesome Self-Hosted"         "https://awesome-selfhosted.net/"
 submit "RunaCapital ROSS Index"      "https://runacap.com/ross-index/"
-submit "SaaSHub Lookup"              "https://www.saashub.com/omnivoice-studio"
+submit "SaaSHub Lookup"              "https://www.saashub.com/elevenvoice"
 
 # ── 8. AI / ML TOOL DIRECTORIES ─────────────────────────────────────────────
 echo ""
@@ -189,12 +189,12 @@ submit "GPT Store (alt)"             "https://gptstore.ai/submit"
 # ── 9. STARTUP / SOFTWARE DIRECTORIES ───────────────────────────────────────
 echo ""
 echo "${YELLOW}━━━ 9. Startup & Software Directories ━━━${NC}"
-submit "AlternativeTo Lookup"        "https://alternativeto.net/software/omnivoice-studio/"
-submit "Slant Lookup"                "https://www.slant.co/search?query=omnivoice+studio"
+submit "AlternativeTo Lookup"        "https://alternativeto.net/software/elevenvoice/"
+submit "Slant Lookup"                "https://www.slant.co/search?query=elevenvoice"
 submit "G2 Submit"                   "https://www.g2.com/products/new"
 submit "Capterra Submit"             "https://www.capterra.com/vendors/sign-up"
-submit "GetApp Lookup"               "https://www.getapp.com/search/?q=omnivoice+studio"
-submit "SoftwareAdvice"              "https://www.softwareadvice.com/search/?q=omnivoice+studio"
+submit "GetApp Lookup"               "https://www.getapp.com/search/?q=elevenvoice"
+submit "SoftwareAdvice"              "https://www.softwareadvice.com/search/?q=elevenvoice"
 submit "Crunchbase Lookup"           "https://www.crunchbase.com/discover/organization.companies"
 submit "BetaList Submit"             "https://betalist.com/submit"
 submit "BetaPage Submit"             "https://betapage.co/submit"
@@ -246,7 +246,7 @@ echo "${YELLOW}━━━ 12. WHOIS & Domain Lookup Caches ━━━${NC}"
 submit "W3Techs"                     "https://w3techs.com/sites/info/github.com"
 submit "BuiltWith"                   "https://builtwith.com/debpalash.github.io"
 submit "Netcraft Site Report"        "https://sitereport.netcraft.com/?url=${ENCODED_URL}"
-submit "SimilarWeb"                  "https://www.similarweb.com/website/github.com/debpalash/VoiceStudio/"
+submit "SimilarWeb"                  "https://www.similarweb.com/website/github.com/Hylanderry/ElevenVoice/"
 submit "Wappalyzer"                  "https://www.wappalyzer.com/lookup/${SITE_URL}/"
 submit "SecurityHeaders"             "https://securityheaders.com/?q=${ENCODED_URL}&followRedirects=on"
 submit "Mozilla Observatory"         "https://observatory.mozilla.org/analyze/${SITE_URL}"
@@ -256,14 +256,14 @@ submit "SSL Labs"                    "https://www.ssllabs.com/ssltest/analyze.ht
 echo ""
 echo "${YELLOW}━━━ 13. Additional Pages to Index ━━━${NC}"
 PAGES=(
-  "https://github.com/debpalash/VoiceStudio"
-  "https://github.com/debpalash/VoiceStudio/releases"
-  "https://github.com/debpalash/VoiceStudio/wiki"
-  "https://github.com/debpalash/VoiceStudio/issues"
-  "https://github.com/debpalash/VoiceStudio/pulls"
-  "https://github.com/debpalash/VoiceStudio/blob/main/README.md"
-  "https://github.com/debpalash/VoiceStudio/blob/main/ROADMAP.md"
-  "https://github.com/debpalash/VoiceStudio/releases/tag/v0.2.4"
+  "https://github.com/Hylanderry/ElevenVoice"
+  "https://github.com/Hylanderry/ElevenVoice/releases"
+  "https://github.com/Hylanderry/ElevenVoice/wiki"
+  "https://github.com/Hylanderry/ElevenVoice/issues"
+  "https://github.com/Hylanderry/ElevenVoice/pulls"
+  "https://github.com/Hylanderry/ElevenVoice/blob/main/README.md"
+  "https://github.com/Hylanderry/ElevenVoice/blob/main/ROADMAP.md"
+  "https://github.com/Hylanderry/ElevenVoice/releases/tag/v0.2.4"
 )
 for page in "${PAGES[@]}"; do
   EPAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$page', safe=''))")

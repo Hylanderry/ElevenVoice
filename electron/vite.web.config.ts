@@ -12,7 +12,7 @@ const webDist = resolve(import.meta.dirname, '../frontend/dist');
 const version = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../package.json'), 'utf8'),
 ).version;
-const backendPort = process.env.OMNIVOICE_PORT || String(DEFAULT_BACKEND_PORT);
+const backendPort = process.env.ELEVENVOICE_PORT || String(DEFAULT_BACKEND_PORT);
 
 export default defineConfig({
   root,
@@ -54,9 +54,9 @@ export default defineConfig({
   server: {
     host: 'localhost',
     // Same name the backend reads for its CORS/CSRF allow-list (core/csrf.py);
-    // VOICESTUDIO_UI_PORT remains an accepted alias.
+    // ELEVENVOICE_UI_PORT remains an accepted alias.
     port:
-      Number(process.env.OMNIVOICE_UI_PORT || process.env.VOICESTUDIO_UI_PORT) || DEFAULT_WEB_PORT,
+      Number(process.env.ELEVENVOICE_UI_PORT || process.env.ELEVENVOICE_UI_PORT) || DEFAULT_WEB_PORT,
     strictPort: true,
     proxy: {
       '/api/ws': {

@@ -70,7 +70,7 @@ def test_full_json_replaces_broken_utf8_token_bytes(tmp_path, monkeypatch):
 def test_custom_local_model_has_no_invented_repository(tmp_path, monkeypatch, m):
     model = tmp_path / 'custom.bin'
     model.write_bytes(b'weights')
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_MODEL', str(model))
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_MODEL', str(model))
     assert m.ab.backend_model_repos(m.WhisperCppBackend()) == []
 
 
@@ -78,7 +78,7 @@ def test_known_cached_model_preserves_repository_licence(tmp_path, monkeypatch, 
     model = tmp_path / 'models--licensed-owner--custom-whisper' / 'snapshots' / 'rev' / 'ggml-custom.bin'
     model.parent.mkdir(parents=True)
     model.write_bytes(b'weights')
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_MODEL', str(model))
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_MODEL', str(model))
     assert m.ab.backend_model_repos(m.WhisperCppBackend()) == ['licensed-owner/custom-whisper']
 
 
@@ -87,7 +87,7 @@ def test_known_model_licence_is_checked_before_use(tmp_path, monkeypatch, m):
     model = tmp_path / 'models--gated-owner--custom-whisper' / 'snapshots' / 'rev' / 'ggml-custom.bin'
     model.parent.mkdir(parents=True)
     model.write_bytes(b'weights')
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_MODEL', str(model))
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_MODEL', str(model))
     def refuse(repos):
         assert repos == ['gated-owner/custom-whisper']
         raise RuntimeError('licence refused')

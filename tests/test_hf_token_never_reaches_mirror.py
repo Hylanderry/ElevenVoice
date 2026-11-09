@@ -71,9 +71,9 @@ def test_token_checks_go_only_to_hugging_face(tmp_path):
         "HF_HUB_OFFLINE": "0",
         "HF_HOME": str(tmp_path / "hf"),
         "HF_TOKEN_PATH": str(tmp_path / "hf" / "token"),
-        "OMNIVOICE_DATA_DIR": str(tmp_path / "data"),
-        "OMNIVOICE_MODEL": "test",
-        "OMNIVOICE_DISABLE_FILE_LOG": "1",
+        "ELEVENVOICE_DATA_DIR": str(tmp_path / "data"),
+        "ELEVENVOICE_MODEL": "test",
+        "ELEVENVOICE_DISABLE_FILE_LOG": "1",
     }
     env.pop("HF_HUB_DISABLE_IMPLICIT_TOKEN", None)
     proc = subprocess.run(

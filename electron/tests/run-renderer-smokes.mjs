@@ -37,9 +37,9 @@ const smokes = listSmokes(dir)
   .filter((smoke) => smoke.kind === 'renderer')
   .filter((smoke) => !filters.length || filters.some((filter) => smoke.file.includes(filter)));
 
-// The smoke server proxies /api to OMNIVOICE_PORT. Smokes mock the routes they care about; the
+// The smoke server proxies /api to ELEVENVOICE_PORT. Smokes mock the routes they care about; the
 // rest used to hang on a connecting screen with nothing listening, so answer them locally.
-const backendPort = Number(process.env.OMNIVOICE_PORT) || 0;
+const backendPort = Number(process.env.ELEVENVOICE_PORT) || 0;
 const backend = backendPort ? await startHealthBackend({ port: backendPort }) : null;
 
 const results = [];

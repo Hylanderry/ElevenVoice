@@ -33,11 +33,11 @@ from services.subprocess_backend import (
     SubprocessBackend,
 )
 
-logger = logging.getLogger("omnivoice.asr.subprocess")
+logger = logging.getLogger("elevenvoice.asr.subprocess")
 
 # A model load + transcription can take a while on CPU for a long clip; give
 # the transcribe round-trip more headroom than the TTS default. Configurable via
-# OMNIVOICE_ASR_RECV_TIMEOUT_S (#2103).
+# ELEVENVOICE_ASR_RECV_TIMEOUT_S (#2103).
 ASR_RECV_TIMEOUT_S = 600.0
 
 
@@ -85,7 +85,7 @@ class SubprocessASRBackend(SubprocessBackend):
     def recv_timeout_s(self) -> float:
         """Wall-clock timeout in seconds waiting for an ASR sidecar response (#2103)."""
         try:
-            v = float(os.environ.get("OMNIVOICE_ASR_RECV_TIMEOUT_S", str(ASR_RECV_TIMEOUT_S)))
+            v = float(os.environ.get("ELEVENVOICE_ASR_RECV_TIMEOUT_S", str(ASR_RECV_TIMEOUT_S)))
         except (ValueError, TypeError):
             return ASR_RECV_TIMEOUT_S
         if not math.isfinite(v):
@@ -163,7 +163,7 @@ class SubprocessASRBackend(SubprocessBackend):
                             f"{self.id} ASR sidecar exceeded receive timeout "
                             f"({timeout_s:g}s); killed mid-transcription "
                             f"(device={self._device()}) — retry or raise "
-                            f"OMNIVOICE_ASR_RECV_TIMEOUT_S."
+                            f"ELEVENVOICE_ASR_RECV_TIMEOUT_S."
                         )
                     # Pipe closed mid-transcription → the child crashed.
                     raise RuntimeError(
@@ -201,7 +201,7 @@ class IsolatedFasterWhisperBackend(SubprocessASRBackend):
     CTranslate2's GPU teardown can segfault (the endemic faster-whisper crash);
     running it isolated keeps that from killing the backend. Uses the PARENT
     venv (faster-whisper is already installed) — only the process boundary is
-    new. Select with ``OMNIVOICE_ASR_BACKEND=faster-whisper-isolated``.
+    new. Select with ``ELEVENVOICE_ASR_BACKEND=faster-whisper-isolated``.
     """
 
     id = "faster-whisper-isolated"
@@ -224,7 +224,7 @@ class IsolatedFasterWhisperBackend(SubprocessASRBackend):
 
         if (status := availability_status()) is not None:
             if not cls.sidecar_script().is_file():
-                return False, "ASR sidecar script missing; reinstall VoiceStudio"
+                return False, "ASR sidecar script missing; reinstall ElevenVoice"
             return status
 
         ok, detail = ensure_ctranslate2_loadable()

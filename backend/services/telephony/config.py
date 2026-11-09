@@ -273,12 +273,12 @@ def _int_env(name: str, default: int, lo: int, hi: int) -> int:
 
 
 def max_concurrent_calls() -> int:
-    return _int_env("OMNIVOICE_TWILIO_MAX_CALLS", 2, 1, 16)
+    return _int_env("ELEVENVOICE_TWILIO_MAX_CALLS", 2, 1, 16)
 
 
 def max_call_seconds() -> int:
-    return _int_env("OMNIVOICE_TWILIO_MAX_CALL_SECONDS", 300, 30, 3600)
+    return _int_env("ELEVENVOICE_TWILIO_MAX_CALL_SECONDS", 300, 30, 3600)
 
 
 def webhooks_per_minute() -> int:
-    return _int_env("OMNIVOICE_TWILIO_WEBHOOKS_PER_MINUTE", 30, 1, 600)
+    return _int_env("ELEVENVOICE_TWILIO_WEBHOOKS_PER_MINUTE", 30, 1, 600)

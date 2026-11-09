@@ -17,7 +17,7 @@ module; they carry a pinned copy of the same fallback
 
 import logging
 
-logger = logging.getLogger("omnivoice.model")
+logger = logging.getLogger("elevenvoice.model")
 
 _PATCHED = False
 _WARNED = False

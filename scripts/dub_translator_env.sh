@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Source this BEFORE launching VoiceStudio to enable Cinematic dub translation.
+# Source this BEFORE launching ElevenVoice to enable Cinematic dub translation.
 #   source scripts/dub_translator_env.sh gemini    # hosted (best Hindi quality)
 #   source scripts/dub_translator_env.sh openai    # hosted GPT
 #   source scripts/dub_translator_env.sh gemma     # local Gemma 4 E4B (needs llama-server)
@@ -13,7 +13,7 @@ case "$mode" in
     export TRANSLATE_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
     export TRANSLATE_API_KEY="$GEMINI_API_KEY"
     export TRANSLATE_MODEL="gemini-2.0-flash"
-    export OMNIVOICE_LLM_TIMEOUT=60
+    export ELEVENVOICE_LLM_TIMEOUT=60
     echo "Cinematic dub: Gemini Flash (hosted)"
     ;;
   openai)
@@ -21,14 +21,14 @@ case "$mode" in
     export TRANSLATE_BASE_URL="https://api.openai.com/v1"
     export TRANSLATE_API_KEY="$OPENAI_API_KEY"
     export TRANSLATE_MODEL="gpt-4o-mini"
-    export OMNIVOICE_LLM_TIMEOUT=60
+    export ELEVENVOICE_LLM_TIMEOUT=60
     echo "Cinematic dub: OpenAI gpt-4o-mini (hosted)"
     ;;
   gemma)
     export TRANSLATE_BASE_URL="http://localhost:8001/v1"
     export TRANSLATE_API_KEY="local"
     export TRANSLATE_MODEL="gemma-4-E4B"
-    export OMNIVOICE_LLM_TIMEOUT=120
+    export ELEVENVOICE_LLM_TIMEOUT=120
     echo "Cinematic dub: Gemma 4 E4B (local). Start llama-server first:"
     echo "  scripts/start_gemma4_server.sh"
     ;;

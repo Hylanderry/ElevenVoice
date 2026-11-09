@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "Esa é a aplicación instalada, que non se pode editar. Escolle un clon git no seu lugar.",
       "not_git": "Ese cartafol non é un clon de git. Unha descarga ZIP non funcionará; usar git clone.",
-      "not_voicestudio": "Non se atopou ningún clon de ElevenVoice nese cartafol.",
+      "not_elevenvoice": "Non se atopou ningún clon de ElevenVoice nese cartafol.",
       "read_only": "ElevenVoice non pode escribir nese cartafol. Escolle un que teñas."
     },
     "chooseFailed": "Non se puido usar ese cartafol. Téntao de novo ou escolle outro.",
@@ -3789,7 +3789,7 @@
       "last_seen": "Última vez visto {{time}}",
       "forget": "Esquece",
       "error_unreachable": "Non se pode acceder a {{host}}. Asegúrate de que ElevenVoice estea en execución, de que o uso compartido de rede estea activado e que este teléfono estea na mesma rede ou na mesma escala.",
-      "error_not_voicestudio": "{{host}} respondeu, pero non é un servidor de ElevenVoice. Comproba o enderezo e o porto.",
+      "error_not_elevenvoice": "{{host}} respondeu, pero non é un servidor de ElevenVoice. Comproba o enderezo e o porto.",
       "error_pin": "O PIN foi rexeitado. O uso compartido xera un novo PIN cada vez que se activa: escanea o código QR de novo.",
       "error_api_key": "A clave API foi rexeitada. Comprobe a chave definida en OmniVoice_API_KEY no servidor.",
       "error_session_expired": "A túa sesión caducou. Introduce de novo a clave API para volver conectar.",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "O {{percent}}% do audio satura",
     "duration_ok": "Cabe na duración orixinal",
     "duration_issue": "{{track_seconds}} s, máis longo que o orixinal de {{source_seconds}} s"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

@@ -17,8 +17,8 @@ if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
 if ([Environment]::OSVersion.Platform -ne 'Win32NT') { $source = $source.Replace("if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'Use install.sh on macOS or Linux.' }", '') }
 $installer = [scriptblock]::Create($source)
 $env:PROCESSOR_ARCHITECTURE = 'AMD64'
-$env:VOICESTUDIO_VERSION = ''
-$env:VOICESTUDIO_INSTALL_MODE = ''
+$env:ELEVENVOICE_VERSION = ''
+$env:ELEVENVOICE_INSTALL_MODE = ''
 $script:urls = [Collections.Generic.List[string]]::new()
 $script:launched = $false
 $script:corrupt = $false
@@ -60,12 +60,12 @@ foreach ($version in @('', 'v1.0.0')) {
     & $installer -Version $version
     if (-not $script:launched) { throw 'Setup was not launched' }
     $selected = if ($version) { '1.0.0' } else { '1.2.3' }
-    if (-not ($script:urls -match "download/v$selected/VoiceStudio-$selected-win-x64.exe")) { throw 'Wrong package selected' }
+    if (-not ($script:urls -match "download/v$selected/ElevenVoice-$selected-win-x64.exe")) { throw 'Wrong package selected' }
     if ($version -and ($script:urls -match '/latest')) { throw 'Pinned version consulted latest' }
     if (Test-Path $script:downloaded) { throw 'Temporary installer not cleaned up' }
 }
-# Releases up to v0.5.7-beta.3 named their installers VoiceStudio-Electron-*.
-foreach ($case in @(@('0.5.6', 'VoiceStudio-Electron'), @('0.5.7-beta.3', 'VoiceStudio-Electron'), @('0.5.7-beta.4', 'VoiceStudio'), @('0.5.7', 'VoiceStudio'))) {
+# Releases up to v0.5.7-beta.3 named their installers ElevenVoice-Electron-*.
+foreach ($case in @(@('0.5.6', 'ElevenVoice-Electron'), @('0.5.7-beta.3', 'ElevenVoice-Electron'), @('0.5.7-beta.4', 'ElevenVoice'), @('0.5.7', 'ElevenVoice'))) {
     $script:urls.Clear(); $script:launched = $false
     & $installer -Version $case[0]
     if (-not $script:launched) { throw "Setup was not launched for $($case[0])" }
@@ -79,11 +79,11 @@ foreach ($armEnv in @(@('ARM64', ''), @('AMD64', 'ARM64'))) {
     $script:noArmAsset = $false; $script:urls.Clear(); $script:launched = $false
     & $installer -Version '1.0.0'
     if (-not $script:launched) { throw 'ARM64 setup was not launched' }
-    if (-not ($script:urls -match 'download/v1\.0\.0/VoiceStudio-1\.0\.0-win-arm64\.exe')) { throw 'ARM64 host must install the native build' }
+    if (-not ($script:urls -match 'download/v1\.0\.0/ElevenVoice-1\.0\.0-win-arm64\.exe')) { throw 'ARM64 host must install the native build' }
     $script:noArmAsset = $true; $script:urls.Clear(); $script:launched = $false
     & $installer -Version '1.0.0'
     if (-not $script:launched) { throw 'ARM64 fallback did not launch setup' }
-    if (-not ($script:urls -match 'download/v1\.0\.0/VoiceStudio-1\.0\.0-win-x64\.exe')) { throw 'ARM64 host must fall back to the x64 build' }
+    if (-not ($script:urls -match 'download/v1\.0\.0/ElevenVoice-1\.0\.0-win-x64\.exe')) { throw 'ARM64 host must fall back to the x64 build' }
 }
 $script:noArmAsset = $false
 $env:PROCESSOR_ARCHITECTURE = 'AMD64'; $env:PROCESSOR_ARCHITEW6432 = ''
@@ -93,7 +93,7 @@ foreach ($legacy in @($true, $false)) {
     $script:urls.Clear(); $script:launched = $false; $script:downloaded = $null; $script:launchCount = 0
     & $installer -Silent
     if (-not $script:launched -or $script:launchCount -ne 1) { throw 'Fallback must launch setup exactly once' }
-    if (-not ($script:urls -match 'download/v1\.2\.3/VoiceStudio-1\.2\.3-win-x64\.exe')) { throw 'Rate-limit fallback selected wrong package' }
+    if (-not ($script:urls -match 'download/v1\.2\.3/ElevenVoice-1\.2\.3-win-x64\.exe')) { throw 'Rate-limit fallback selected wrong package' }
     if ($script:lastArguments -notcontains '/S') { throw 'Silent fallback lost its setup flag' }
     if (Test-Path $script:downloaded) { throw 'Fallback left its temporary installer behind' }
 }
@@ -110,23 +110,23 @@ try { & $installer -Version '1.2.3'; throw 'Cancellation accepted' } catch {
 Write-Output 'PASS: PowerShell latest, pinned version, checksum refusal, cancellation, and cleanup'
 $uninstallRoot = Join-Path ([IO.Path]::GetTempPath()) ('vs-uninstall-test-' + [Guid]::NewGuid())
 New-Item -ItemType Directory -Path $uninstallRoot | Out-Null
-$script:uninstaller = Join-Path $uninstallRoot 'Uninstall VoiceStudio.exe'
+$script:uninstaller = Join-Path $uninstallRoot 'Uninstall ElevenVoice.exe'
 [IO.File]::WriteAllText($script:uninstaller, 'fixture')
 function Get-ItemProperty($Path, $ErrorAction) {
     return @(
-        @{ DisplayName = 'VoiceStudio'; UninstallString = 'MsiExec.exe /X{legacy-tauri}' },
+        @{ DisplayName = 'ElevenVoice'; UninstallString = 'MsiExec.exe /X{legacy-tauri}' },
         @{ DisplayName = $script:displayName; UninstallString = '"' + $script:uninstaller + '" /currentuser' },
         @{ DisplayName = $script:displayName; UninstallString = '"' + $script:uninstaller + '" /allusers' },
-        @{ DisplayName = 'VoiceStudio'; UninstallString = 'MsiExec.exe /X{other-legacy}' }
+        @{ DisplayName = 'ElevenVoice'; UninstallString = 'MsiExec.exe /X{other-legacy}' }
     )
 }
 try {
-    $script:displayName = 'VoiceStudio 0.5.4'
+    $script:displayName = 'ElevenVoice 0.5.4'
     $script:cancel = $false; $script:launched = $false; $script:urls.Clear(); $script:launchCount = 0
     & $installer -Uninstall -Silent
     if ($script:launchCount -ne 1 -or $script:lastArguments -notcontains '/S' -or $script:lastArguments -notcontains '/currentuser') { throw 'Expected exactly one silent Electron uninstall' }
     if (-not $script:launched -or $script:urls.Count) { throw 'Uninstall must launch registered setup without downloading' }
-    $script:displayName = 'VoiceStudio'
+    $script:displayName = 'ElevenVoice'
     $script:cancel = $true
     try { & $installer -Uninstall; throw 'Uninstall cancellation accepted' } catch {
         if ($_.Exception.Message -notmatch 'cancelled') { throw }

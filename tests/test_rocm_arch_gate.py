@@ -275,7 +275,7 @@ def test_rocm_host_routes_to_gpu_not_cpu(monkeypatch):
         "core.device_caps.detect_host_caps",
         lambda: types.SimpleNamespace(family="rocm"),
     )
-    monkeypatch.delenv("OMNIVOICE_FORCE_CUDA", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FORCE_CUDA", raising=False)
 
     assert mm.check_device_compatibility() == (True, None)
     assert mm.get_best_device() == "cuda"

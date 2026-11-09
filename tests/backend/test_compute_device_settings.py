@@ -7,7 +7,7 @@ Covers the API contract of GET/PUT /api/settings/compute-device:
     restart_required=True (caps are immutable per process).
   - PUT rejects unknown values and accelerators this host doesn't have —
     a silent no-op pick would read as "the setting doesn't work".
-  - An OMNIVOICE_DEVICE env pin is reported (env_pinned) and wins over PUT.
+  - An ELEVENVOICE_DEVICE env pin is reported (env_pinned) and wins over PUT.
 """
 from __future__ import annotations
 
@@ -20,8 +20,8 @@ import pytest
 @pytest.fixture
 def fresh_app(monkeypatch, tmp_path):
     """Same isolation pattern as tests/backend/test_perf_settings.py."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
-    monkeypatch.delenv("OMNIVOICE_DEVICE", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.delenv("ELEVENVOICE_DEVICE", raising=False)
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGING_FACE_HUB_TOKEN", raising=False)
@@ -100,7 +100,7 @@ def test_put_rejects_unknown_and_unavailable_values(fresh_app):
 
 
 def test_env_pin_is_reported_and_wins(fresh_app, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     c = _client(fresh_app)
     state = c.get("/api/settings/compute-device").json()
     assert state["env_pinned"] is True

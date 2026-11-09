@@ -41,7 +41,7 @@ from services.pronunciation import (
     load_entries_from_db,
 )
 
-logger = logging.getLogger("omnivoice.pronunciation")
+logger = logging.getLogger("elevenvoice.pronunciation")
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 _VALID_TYPES = ("respelling", "ipa", "cmu")

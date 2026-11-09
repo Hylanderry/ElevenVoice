@@ -49,7 +49,7 @@ def test_packaged_layout_matches_the_backend_lookup():
     config = (REPO / "electron" / "electron-builder.config.mjs").read_text(encoding="utf-8")
     assert "from: '../backend',\n      to: 'backend'" in config
     bundle = (REPO / "electron" / "omnivoice-tts-bundle.mjs").read_text(encoding="utf-8")
-    assert "OMNIVOICE_TTS_RESOURCE_DIR = 'bin'" in bundle
+    assert "ELEVENVOICE_TTS_RESOURCE_DIR = 'bin'" in bundle
 
 
 def _run_windows_build(tmp_path: Path, runtime: dict[str, str]):
@@ -72,7 +72,7 @@ def _run_windows_build(tmp_path: Path, runtime: dict[str, str]):
     for dll, body in runtime.items():
         (msvc / dll).write_text(body)
     env = {**os.environ, "PATH": f"{fake}:/usr/bin:/bin",
-           "OMNIVOICE_MSVC_RUNTIME_DIR": msvc.as_posix()}
+           "ELEVENVOICE_MSVC_RUNTIME_DIR": msvc.as_posix()}
     env.pop("VULKAN_SDK", None)
     return subprocess.run(
         [BASH, str(scripts / "build-omnivoice-tts.sh"), "--platform", "windows-x86_64",

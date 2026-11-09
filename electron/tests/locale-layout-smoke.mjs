@@ -32,7 +32,7 @@ const locales = [
 ];
 const longStringLocales = ['de', 'fr', 'ru', 'uk', 'hi', 'ar', 'zh-TW'];
 const routes = ['settings/general', 'settings/performance', 'settings/models', 'clone', 'dub'];
-const baseUrl = process.env.VOICESTUDIO_UI_URL || process.env.VOICESTUDIO_SMOKE_URL || 'http://localhost:3912';
+const baseUrl = process.env.ELEVENVOICE_UI_URL || process.env.ELEVENVOICE_SMOKE_URL || 'http://localhost:3912';
 
 async function catalog(locale) {
   return JSON.parse(await readFile(join(localeRoot, `${locale}.json`), 'utf8'));
@@ -56,8 +56,8 @@ try {
       if (message.type() === 'error') errors.push(message.text());
     });
     await page.addInitScript((selectedLocale) => {
-      localStorage.setItem('voicestudio.setup.complete.v1', '1');
-      localStorage.setItem('voicestudio.locale', selectedLocale);
+      localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+      localStorage.setItem('elevenvoice.locale', selectedLocale);
     }, locale);
     await page.goto(`${baseUrl}/#/settings/general`);
     await page.locator('main h1').waitFor();
@@ -88,8 +88,8 @@ try {
         if (message.type() === 'error') errors.push(message.text());
       });
       await page.addInitScript((selectedLocale) => {
-        localStorage.setItem('voicestudio.setup.complete.v1', '1');
-        localStorage.setItem('voicestudio.locale', selectedLocale);
+        localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+        localStorage.setItem('elevenvoice.locale', selectedLocale);
       }, locale);
       for (const route of routes) {
         await page.goto(`${baseUrl}/#/${route}`);

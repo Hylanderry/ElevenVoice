@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks" / "OmniVoice_Studio_Colab.ipynb"
+NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks" / "ElevenVoice_Colab.ipynb"
 
 
 class ColabWebBuildTests(unittest.TestCase):
@@ -20,7 +20,7 @@ class ColabWebBuildTests(unittest.TestCase):
         calls = []
         with patch("os.path.exists", side_effect=exists):
             exec(self.build_source(), {
-                "os": os, "REPO_DIR": "/content/VoiceStudio", "BUN": "bun",
+                "os": os, "REPO_DIR": "/content/ElevenVoice", "BUN": "bun",
                 "run": lambda cmd, **kwargs: calls.append((cmd, kwargs)),
             })
         return calls
@@ -31,7 +31,7 @@ class ColabWebBuildTests(unittest.TestCase):
             ["bun", "install", "--frozen-lockfile"],
             ["bun", "run", "--cwd", "electron", "build:web"],
         ])
-        self.assertTrue(all(opts["cwd"] == "/content/VoiceStudio" for _, opts in calls))
+        self.assertTrue(all(opts["cwd"] == "/content/ElevenVoice" for _, opts in calls))
 
     def test_existing_bundle_skips_install_and_build(self):
         self.assertEqual(self.run_build([True]), [])

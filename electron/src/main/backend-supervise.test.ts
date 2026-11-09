@@ -74,7 +74,7 @@ function stubHealth(health: Health): void {
       if (health.mode === 'busy') throw new DOMException('timed out', 'TimeoutError');
       if (health.mode === 'down') throw new TypeError('fetch failed');
       if (health.mode === 'rejected') {
-        return new Response('{}', { status: 503, headers: { 'x-omnivoice-backend': 'test' } });
+        return new Response('{}', { status: 503, headers: { 'x-elevenvoice-backend': 'test' } });
       }
       if (String(input).endsWith('/system/info')) {
         if (health.authInconclusive === 'timeout') {
@@ -84,7 +84,7 @@ function stubHealth(health: Health): void {
         if (health.authRejected) return new Response('{}', { status: 401 });
       }
       return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-        headers: { 'x-omnivoice-backend': 'test' },
+        headers: { 'x-elevenvoice-backend': 'test' },
       });
     }),
   );
@@ -105,10 +105,10 @@ function liveChild() {
 
 it('reports a live-but-busy backend as unresponsive, not failed (#2430)', async () => {
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
-  vi.stubEnv('OMNIVOICE_STARTUP_BUDGET_S', '60');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_STARTUP_BUDGET_S', '60');
   const health: Health = { mode: 'down' };
   stubHealth(health);
   const child = liveChild();
@@ -156,10 +156,10 @@ it('reports a live-but-busy backend as unresponsive, not failed (#2430)', async 
 // old wording must stay dead.
 it('never classifies download-period health timeouts on a live managed child as failed (#3184)', async () => {
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
-  vi.stubEnv('OMNIVOICE_STARTUP_BUDGET_S', '60');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_STARTUP_BUDGET_S', '60');
   const health: Health = { mode: 'down' };
   stubHealth(health);
   const child = liveChild();
@@ -198,9 +198,9 @@ it('never classifies download-period health timeouts on a live managed child as 
 
 async function attachedSupervisor(health: Health): Promise<BackendSupervisor> {
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   stubHealth(health);
   // No child to inspect: a backend that was already running is attached to.
   const supervisor = new BackendSupervisor();
@@ -286,9 +286,9 @@ it('forgets a past refusal once the listener is back (classified from the latest
 it('reports remote timeouts as uncertain connectivity, not busy', async () => {
   const health: Health = { mode: 'up' };
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   stubHealth(health);
   const supervisor = new BackendSupervisor();
   (supervisor as unknown as { remoteUrl: string }).remoteUrl = 'http://remote.example:3900';
@@ -350,9 +350,9 @@ it('does not let unhealthy answers hide a listener that then goes away', async (
 it('resumes supervising a remote after a Retry made while it was down', async () => {
   const health: Health = { mode: 'up' };
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   stubHealth(health);
   const supervisor = new BackendSupervisor();
   (supervisor as unknown as { remoteUrl: string }).remoteUrl = 'http://remote.example:3900';
@@ -385,9 +385,9 @@ it('resumes supervising a remote after a Retry made while it was down', async ()
 
 async function remoteSupervisor(health: Health): Promise<BackendSupervisor> {
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   stubHealth(health);
   const supervisor = new BackendSupervisor();
   (supervisor as unknown as { remoteUrl: string }).remoteUrl = 'http://remote.example:3900';
@@ -590,5 +590,5 @@ it('demotes a recovering remote whose credentials are rejected, even after incon
 
 it('asserts the desktop origin in main-owned backend headers', () => {
   const supervisor = new BackendSupervisor();
-  expect(supervisor.requestHeaders()).toMatchObject({ 'X-VoiceStudio-Desktop-Origin': 'app://voicestudio' });
+  expect(supervisor.requestHeaders()).toMatchObject({ 'X-ElevenVoice-Desktop-Origin': 'app://elevenvoice' });
 });

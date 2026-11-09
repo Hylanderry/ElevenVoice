@@ -39,7 +39,7 @@ def _broken(module_name: str):
 def _hermetic_selection(monkeypatch):
     """No env pin, no pref pin, no MPS — auto-detect goes whisperx-first —
     and shallow probes report ready regardless of the host's installs."""
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr("core.prefs.get", lambda key, default=None: None)
     monkeypatch.setattr(ab, "_mps_available", lambda: False)
     monkeypatch.setattr(
@@ -92,7 +92,7 @@ def test_settings_reports_broken_backend_with_repair_hint(monkeypatch):
 
 
 def test_pinned_backend_raises_actionable_error_not_silent_switch(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "whisperx")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "whisperx")
     monkeypatch.setattr(ab.WhisperXBackend, "ensure_loaded", _broken("lightning_fabric"))
     switched = []
     monkeypatch.setattr(

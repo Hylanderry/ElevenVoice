@@ -36,7 +36,7 @@ vi.mock('@/hooks/use-backend-status', () => ({
 const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 vi.mock('./twilio-setup', () => ({
-  TWILIO_DOCS: 'https://github.com/debpalash/VoiceStudio/blob/main/docs/integrations/twilio.md',
+  TWILIO_DOCS: 'https://github.com/Hylanderry/ElevenVoice#readme',
   TwilioSetup: ({
     hero,
     rail,
@@ -59,7 +59,7 @@ it('copies the shown live configuration only after the user requests it', async 
   expect(copy).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
   await waitFor(() => expect(toast.success).toHaveBeenCalled());
-  expect(JSON.parse(copy.mock.calls[0][0]).mcpServers.voicestudio.url).toBe(
+  expect(JSON.parse(copy.mock.calls[0][0]).mcpServers.elevenvoice.url).toBe(
     'http://127.0.0.1:3912/mcp/',
   );
 });
@@ -72,7 +72,7 @@ it('exports the n8n workflow only on request and handles canceled saves', async 
   expect(save).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'Save as…' }));
   await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
-  expect(save.mock.calls[0][1]).toBe('voicestudio-n8n.json');
+  expect(save.mock.calls[0][1]).toBe('elevenvoice-n8n.json');
   expect(toast.success).not.toHaveBeenCalled();
   await waitFor(() => expect(screen.getByRole('button', { name: 'Save as…' })).toBeEnabled());
   save.mockRejectedValue(new Error('disk full'));
@@ -85,7 +85,7 @@ it('exports the n8n workflow only on request and handles canceled saves', async 
 it('shows the Codex TOML export and one heading per panel', () => {
   route.slug = 'codex-cli';
   render(<IntegrationDetailPage />);
-  expect(screen.getByText(/\[mcp_servers\.voicestudio\]/)).toBeInTheDocument();
+  expect(screen.getByText(/\[mcp_servers\.elevenvoice\]/)).toBeInTheDocument();
   expect(screen.getByText(/Merge this configuration into/)).toHaveTextContent(
     '~/.codex/config.toml',
   );

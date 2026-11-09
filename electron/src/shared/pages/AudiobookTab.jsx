@@ -37,7 +37,7 @@ const EMPTY_CAST = Object.freeze({});
 // the clone workspace (Script / Voice + pinned actions). Persisted per visit;
 // validated on read so a stale value can never strand the workspace.
 const BOOK_TABS = ['script', 'voices', 'book'];
-const BOOK_TAB_KEY = 'omnivoice.audiobook.tab';
+const BOOK_TAB_KEY = 'elevenvoice.audiobook.tab';
 
 function readStoredBookTab() {
   try {

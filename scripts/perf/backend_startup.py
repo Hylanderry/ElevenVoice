@@ -50,11 +50,11 @@ def _rss_mb(pid: int) -> float:
 def _isolated_env(data_dir: str) -> dict[str, str]:
     """Environment for a run that cannot see this machine's state.
 
-    - ``OMNIVOICE_ENV_FILE``: the backend loads ~/.config/omnivoice/env over the
+    - ``ELEVENVOICE_ENV_FILE``: the backend loads ~/.config/omnivoice/env over the
       process environment, and that file can redirect the data folder. Point it
       at a file that does not exist so the run stays inside ``data_dir`` and
       never touches the user's real database or jobs.
-    - ``HF_HOME``, ``HF_HUB_CACHE``, ``OMNIVOICE_CACHE_DIR``, ``TORCH_HOME`` and
+    - ``HF_HOME``, ``HF_HUB_CACHE``, ``ELEVENVOICE_CACHE_DIR``, ``TORCH_HOME`` and
       ``AUDIOSEAL_CACHE_DIR``: results must not depend on which
       models this machine has cached. The startup warm-ups load a model only
       when its weights are already on disk, so an installed one would change
@@ -62,11 +62,11 @@ def _isolated_env(data_dir: str) -> dict[str, str]:
     """
     return {
         **os.environ,
-        "OMNIVOICE_DATA_DIR": data_dir,
-        "OMNIVOICE_ENV_FILE": os.path.join(data_dir, "isolated.env"),
+        "ELEVENVOICE_DATA_DIR": data_dir,
+        "ELEVENVOICE_ENV_FILE": os.path.join(data_dir, "isolated.env"),
         "HF_HOME": os.path.join(data_dir, "hf"),
         "HF_HUB_CACHE": os.path.join(data_dir, "hf", "hub"),
-        "OMNIVOICE_CACHE_DIR": os.path.join(data_dir, "omnivoice-cache"),
+        "ELEVENVOICE_CACHE_DIR": os.path.join(data_dir, "omnivoice-cache"),
         "TORCH_HOME": os.path.join(data_dir, "torch"),
         "AUDIOSEAL_CACHE_DIR": os.path.join(data_dir, "audioseal-cache"),
     }

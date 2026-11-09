@@ -23,7 +23,7 @@ def test_client_setup_initializes_lists_tools_and_preserves_voice_binding(monkey
     ))
     monkeypatch.setattr(mcp_bindings, 'touch_last_seen', lambda client: None)
     from urllib.parse import parse_qs
-    monkeypatch.delenv('OMNIVOICE_API_URL', raising=False)
+    monkeypatch.delenv('ELEVENVOICE_API_URL', raising=False)
     def generate(request):
         # The mounted server calls its own app in-process as a loopback
         # caller: no bind host/port involved.
@@ -35,7 +35,7 @@ def test_client_setup_initializes_lists_tools_and_preserves_voice_binding(monkey
     monkeypatch.setattr(httpx, 'AsyncClient', lambda **kwargs: real_client(
         **{**kwargs, 'transport': httpx.MockTransport(generate)}
     ))
-    monkeypatch.setenv('OMNIVOICE_MCP_OUTPUT_MODE', 'resources')
+    monkeypatch.setenv('ELEVENVOICE_MCP_OUTPUT_MODE', 'resources')
     @asynccontextmanager
     async def lifespan(app):
         async with app.state.mcp_session_manager.run():
@@ -48,7 +48,7 @@ def test_client_setup_initializes_lists_tools_and_preserves_voice_binding(monkey
     app = Starlette(lifespan=lifespan)
     assert mcp_server.mount_mcp(app)
     app.router.routes.append(Mount('/', app=StaticFiles(directory=spa, html=True)))
-    headers = {'Accept': 'application/json, text/event-stream', 'X-OmniVoice-Client-Id': client_id}
+    headers = {'Accept': 'application/json, text/event-stream', 'X-ElevenVoice-Client-Id': client_id}
     def result(response):
         assert response.status_code == 200, response.text
         if response.headers.get('content-type', '').startswith('text/event-stream'):
@@ -81,7 +81,7 @@ def test_client_setup_initializes_lists_tools_and_preserves_voice_binding(monkey
 
 
 def test_standalone_server_calls_the_backend_on_its_real_port(monkeypatch):
-    """Without a mounted app the tools go over HTTP to OMNIVOICE_PORT, not :3900."""
+    """Without a mounted app the tools go over HTTP to ELEVENVOICE_PORT, not :3900."""
     import asyncio
     import httpx
     import mcp_server
@@ -96,8 +96,8 @@ def test_standalone_server_calls_the_backend_on_its_real_port(monkeypatch):
     monkeypatch.setattr(httpx, 'AsyncClient', lambda **kwargs: real_client(
         **{**kwargs, 'transport': httpx.MockTransport(health)}
     ))
-    monkeypatch.setenv('OMNIVOICE_PORT', '3912')
-    for name in ('OMNIVOICE_API_URL', 'OMNIVOICE_BIND_HOST'):
+    monkeypatch.setenv('ELEVENVOICE_PORT', '3912')
+    for name in ('ELEVENVOICE_API_URL', 'ELEVENVOICE_BIND_HOST'):
         monkeypatch.delenv(name, raising=False)
     server = mcp_server.create_mcp_server()
     asyncio.run(server.call_tool('check_health', {}))
@@ -119,11 +119,11 @@ def test_standalone_server_authenticates_to_a_keyed_https_backend(monkeypatch):
     monkeypatch.setattr(httpx, 'AsyncClient', lambda **kwargs: real_client(
         **{**kwargs, 'transport': httpx.MockTransport(health)}
     ))
-    monkeypatch.setenv('OMNIVOICE_API_URL', 'https://gpu.example/voicestudio')
-    monkeypatch.setenv('OMNIVOICE_API_KEY', 'k' * 40)
+    monkeypatch.setenv('ELEVENVOICE_API_URL', 'https://gpu.example/elevenvoice')
+    monkeypatch.setenv('ELEVENVOICE_API_KEY', 'k' * 40)
     server = mcp_server.create_mcp_server()
     asyncio.run(server.call_tool('check_health', {}))
-    assert seen == [('https://gpu.example/voicestudio/health', 'Bearer ' + 'k' * 40)]
+    assert seen == [('https://gpu.example/elevenvoice/health', 'Bearer ' + 'k' * 40)]
 
 
 @pytest.mark.parametrize('backend_status', [200, 503])
@@ -149,10 +149,10 @@ def test_remote_compressed_speech_checks_backend_encoder_not_mcp_host(
         **{**kwargs, 'transport': httpx.MockTransport(backend)}
     ))
     monkeypatch.setattr(ffmpeg_utils, 'find_ffmpeg', lambda: None)
-    monkeypatch.delenv('OMNIVOICE_MCP_BASE_PATH', raising=False)
-    monkeypatch.setenv('OMNIVOICE_MCP_OUTPUT_MODE', 'files')
-    monkeypatch.setenv('OMNIVOICE_API_URL', 'https://gpu.example/voicestudio')
-    monkeypatch.setenv('OMNIVOICE_API_KEY', 'k' * 40)
+    monkeypatch.delenv('ELEVENVOICE_MCP_BASE_PATH', raising=False)
+    monkeypatch.setenv('ELEVENVOICE_MCP_OUTPUT_MODE', 'files')
+    monkeypatch.setenv('ELEVENVOICE_API_URL', 'https://gpu.example/elevenvoice')
+    monkeypatch.setenv('ELEVENVOICE_API_KEY', 'k' * 40)
     server = mcp_server.create_mcp_server()
     if backend_status == 503:
         with pytest.raises(ToolError, match='503'):
@@ -160,9 +160,9 @@ def test_remote_compressed_speech_checks_backend_encoder_not_mcp_host(
     else:
         result = asyncio.run(server.call_tool('generate_speech', {'text': 'Hello', 'format': 'opus'}))
         assert json.loads(result[0][0].text)['audio_url'] == (
-            'https://gpu.example/voicestudio/audio/ab12cd34.opus'
+            'https://gpu.example/elevenvoice/audio/ab12cd34.opus'
         )
     assert seen == [
-        ('/voicestudio/generate', 'Bearer ' + 'k' * 40),
-        ('/voicestudio/audio/ab12cd34.opus', 'Bearer ' + 'k' * 40),
+        ('/elevenvoice/generate', 'Bearer ' + 'k' * 40),
+        ('/elevenvoice/audio/ab12cd34.opus', 'Bearer ' + 'k' * 40),
     ]

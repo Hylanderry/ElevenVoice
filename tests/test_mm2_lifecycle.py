@@ -53,8 +53,8 @@ def test_active_instance_reused_for_same_id(monkeypatch):
 
 def test_model_status_reports_resident_checkpoint_identity(monkeypatch):
     class _Model:
-        _voicestudio_checkpoint = "k2-fsa/resident-model"
-        _voicestudio_loaded_at = "2026-09-13T12:34:56Z"
+        _elevenvoice_checkpoint = "k2-fsa/resident-model"
+        _elevenvoice_loaded_at = "2026-09-13T12:34:56Z"
 
     monkeypatch.setattr(mm, "model", _Model())
 
@@ -197,12 +197,12 @@ def test_facade_unload_sidecars_none_running():
 # ── MM2-05: unified idle config (env wins) ──────────────────────────────────
 
 def test_idle_timeout_env_wins(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_IDLE_TIMEOUT_S", "123")
+    monkeypatch.setenv("ELEVENVOICE_IDLE_TIMEOUT_S", "123")
     assert mm._resolve_idle_timeout() == 123.0
 
 
 def test_sidecar_idle_timeout_env_wins(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_SIDECAR_IDLE_TIMEOUT_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_SIDECAR_IDLE_TIMEOUT_S", "0")
     assert sb._resolve_sidecar_idle_timeout() == 0.0  # <=0 disables reaping
 
 

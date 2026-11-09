@@ -1316,7 +1316,7 @@
     "compute_device_auto": "Auto (disarankan)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "Perangkat komputasi",
-    "compute_device_env_pinned": "Disematkan oleh variabel lingkungan OMNIVOICE_DEVICE",
+    "compute_device_env_pinned": "Disematkan oleh variabel lingkungan ELEVENVOICE_DEVICE",
     "perf_title": "Performa",
     "generate_timeout_cpu_note": "Digunakan saat proses generasi berjalan di CPU. Setelah disimpan di sini, nilai ini selalu mengatur generasi CPU — terlepas dari anggaran yang dipercepat di atas.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1464,7 +1464,7 @@
     "audio_tools_ytdlp_restored": "yt-dlp yang telah diuji dipulihkan — mulai ulang backend untuk menerapkan.",
     "remote_backend_title": "Bagian belakang jarak jauh",
     "remote_backend_desc": "Jalankan inferensi di komputer lain; biarkan URL kosong untuk backend lokal. Menyimpan memuat ulang aplikasi untuk diterapkan.",
-    "remote_backend_hint": "Mulai backend di mesin lain dengan <1>OMNIVOICE_API_KEY</1> yang disetel, jangkau melalui tailnet Anda, dan arahkan aplikasi ini ke sana.",
+    "remote_backend_hint": "Mulai backend di mesin lain dengan <1>ELEVENVOICE_API_KEY</1> yang disetel, jangkau melalui tailnet Anda, dan arahkan aplikasi ini ke sana.",
     "remote_backend_url": "URL ujung belakang",
     "remote_backend_key_placeholder": "Kunci API di komputer lain",
     "remote_backend_probe_ok": "Oke — {{detail}}",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}} ditemukan, tetapi build PyTorch ini ({{torch}}) tidak memiliki kernel untuk arsitektur komputasinya, sehingga mesin berjalan di CPU.",
     "gpu_report_state_unknown": "Status GPU tidak dapat ditentukan.",
     "gpu_report_option_vulkan_engines": "Pakai mesin dengan runtime GPU sendiri: audio.cpp berjalan di GPU AMD Radeon lewat Vulkan (Pengaturan → Model → pasang runtime).",
-    "gpu_report_option_rocm_windows_manual": "Pada perangkat keras AMD yang didukung dengan Windows 11 x64, aktifkan penyiapan ROCm 7.2.1 ElevenVoice melalui OMNIVOICE_TORCH_VARIANT=rocm. Jika sudah terpasang, jalankan penyiapan lagi dan periksa matriks driver serta perangkat keras AMD. Mesin opsional memiliki batasan tersendiri; lihat panduan pemasangan Windows.",
-    "gpu_report_option_rocm_variant_linux": "Setel OMNIVOICE_TORCH_VARIANT=rocm lalu jalankan penyiapan lagi untuk memasang build ROCm dari PyTorch.",
+    "gpu_report_option_rocm_windows_manual": "Pada perangkat keras AMD yang didukung dengan Windows 11 x64, aktifkan penyiapan ROCm 7.2.1 ElevenVoice melalui ELEVENVOICE_TORCH_VARIANT=rocm. Jika sudah terpasang, jalankan penyiapan lagi dan periksa matriks driver serta perangkat keras AMD. Mesin opsional memiliki batasan tersendiri; lihat panduan pemasangan Windows.",
+    "gpu_report_option_rocm_variant_linux": "Setel ELEVENVOICE_TORCH_VARIANT=rocm lalu jalankan penyiapan lagi untuk memasang build ROCm dari PyTorch.",
     "gpu_report_option_rocm_device_access": "Pastikan driver amdgpu dimuat dan pengguna Anda dapat membuka /dev/kfd (grup render dan video).",
     "gpu_report_option_reinstall_cuda_torch": "Pasang ulang runtime agar memasang build CUDA dari PyTorch.",
     "gpu_report_option_update_nvidia_driver": "Perbarui driver NVIDIA (R525 atau lebih baru di Linux, R528.33 atau lebih baru di Windows) lalu mulai ulang ElevenVoice.",
@@ -2242,7 +2242,7 @@
     "failed": "Mesin lokal tidak dapat dimulai.",
     "idle": "Menunggu mesin lokal…",
     "log_label": "Log mesin",
-    "port_in_use": "Port {{port}} sudah digunakan program lain. Tutup program tersebut atau atur OMNIVOICE_PORT ke port yang kosong, lalu coba lagi.",
+    "port_in_use": "Port {{port}} sudah digunakan program lain. Tutup program tersebut atau atur ELEVENVOICE_PORT ke port yang kosong, lalu coba lagi.",
     "elapsed": "{{seconds}} dtk berlalu",
     "first_run_hint": "Proses pertama dapat memakan waktu beberapa menit saat lingkungan Python disiapkan.",
     "port_in_use_short": "Port {{port}} sedang digunakan",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "Itu aplikasi terpasang, yang tidak bisa diedit. Pilih git clone sebagai gantinya.",
       "not_git": "Folder itu bukan git clone. Unduhan ZIP tidak berfungsi; gunakan git clone.",
-      "not_voicestudio": "Tidak ada klon ElevenVoice di folder itu.",
+      "not_elevenvoice": "Tidak ada klon ElevenVoice di folder itu.",
       "read_only": "ElevenVoice tidak bisa menulis ke folder itu. Pilih folder milik Anda."
     },
     "chooseFailed": "Folder itu tidak dapat digunakan. Coba lagi atau pilih folder lain.",
@@ -3311,10 +3311,10 @@
       "workflow": "Alur kerja n8n",
       "dockerRunPowerShell": "Jalankan kontainer (Windows PowerShell)"
     },
-    "apiBearerHint": "Backend ini jarak jauh: atur OMNIVOICE_API_KEY di shell Anda ke kunci API-nya. Contoh membacanya dari sana dan tidak pernah memuatnya.",
+    "apiBearerHint": "Backend ini jarak jauh: atur ELEVENVOICE_API_KEY di shell Anda ke kunci API-nya. Contoh membacanya dari sana dan tidak pernah memuatnya.",
     "apiInsecureHint": "Kunci API memerlukan https:// pada backend jarak jauh. Tempatkan backend ini di balik https (misalnya Tailscale Serve) sebelum memakai kunci.",
     "dockerGpuHint": "GPU: NVIDIA memerlukan --gpus all (di Compose, reservasi perangkat GPU). AMD memakai tag :stable-rocm dengan /dev/kfd dan /dev/dri. Lihat panduan instalasi Docker.",
-    "openaiAgentsHint": "Arahkan pipeline suara OpenAI Agents SDK ke ElevenVoice untuk ucapan-ke-teks dan teks-ke-ucapan. Biarkan ElevenVoice tetap berjalan. Untuk backend jarak jauh, atur OMNIVOICE_API_KEY sebelum menjalankan. Atur AGENT_LLM_BASE_URL dan AGENT_LLM_MODEL ke server model bahasa yang harus digunakan agen Anda.",
+    "openaiAgentsHint": "Arahkan pipeline suara OpenAI Agents SDK ke ElevenVoice untuk ucapan-ke-teks dan teks-ke-ucapan. Biarkan ElevenVoice tetap berjalan. Untuk backend jarak jauh, atur ELEVENVOICE_API_KEY sebelum menjalankan. Atur AGENT_LLM_BASE_URL dan AGENT_LLM_MODEL ke server model bahasa yang harus digunakan agen Anda.",
     "category": {
       "all": "Semua",
       "comms": "Panggilan & agen suara",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "PIN akses",
       "api_key_label": "Kunci API (opsional)",
-      "api_key_help": "Hanya diperlukan jika server menetapkan OMNIVOICE_API_KEY. Kunci ditukar dengan sesi dan tidak pernah disimpan.",
+      "api_key_help": "Hanya diperlukan jika server menetapkan ELEVENVOICE_API_KEY. Kunci ditukar dengan sesi dan tidak pernah disimpan.",
       "connect": "Hubungkan",
       "connecting": "Menghubungkan…",
       "connected_to": "Terhubung ke {{host}}",
@@ -3789,9 +3789,9 @@
       "last_seen": "Terakhir terlihat {{time}}",
       "forget": "Lupakan",
       "error_unreachable": "Tidak dapat menjangkau {{host}}. Pastikan ElevenVoice berjalan, berbagi Jaringan aktif, dan ponsel ini berada di jaringan yang sama atau Tailscale.",
-      "error_not_voicestudio": "{{host}} merespons, tetapi bukan server ElevenVoice. Periksa alamat dan port.",
+      "error_not_elevenvoice": "{{host}} merespons, tetapi bukan server ElevenVoice. Periksa alamat dan port.",
       "error_pin": "PIN ditolak. Berbagi membuat PIN baru setiap kali diaktifkan — pindai kode QR lagi.",
-      "error_api_key": "Kunci API ditolak. Periksa kunci yang ditetapkan di OMNIVOICE_API_KEY pada server.",
+      "error_api_key": "Kunci API ditolak. Periksa kunci yang ditetapkan di ELEVENVOICE_API_KEY pada server.",
       "error_session_expired": "Sesi Anda berakhir. Masukkan kunci API lagi untuk terhubung kembali.",
       "error_insecure": "http:// biasa hanya diizinkan untuk alamat di jaringan lokal atau Tailscale Anda. Gunakan https:// untuk server lain.",
       "error_invalid_url": "Itu tidak terlihat seperti alamat server. Contoh: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "{{percent}}% audio pecah",
     "duration_ok": "Sesuai durasi asli",
     "duration_issue": "{{track_seconds}} dtk, lebih panjang dari asli {{source_seconds}} dtk"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

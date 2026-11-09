@@ -45,13 +45,13 @@ def test_overrides_use_pinned_runtime_environment(monkeypatch, backend, index, e
     """Native compute choices use backend-local GGML device names."""
     monkeypatch.setenv(gguf.BACKEND_ENV, backend)
     monkeypatch.setenv(gguf.DEVICE_ENV, index)
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     assert gguf._spawn_env()["GGML_BACKEND"] == expected
 
 
 def test_global_cpu_pin_reaches_native_subprocess(monkeypatch, gguf):
     """The global CPU choice takes priority over native GPU overrides."""
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     monkeypatch.setenv(gguf.BACKEND_ENV, "vulkan")
     monkeypatch.setenv("GGML_BACKEND", "Vulkan0")
     assert gguf._spawn_env()["GGML_BACKEND"] == "CPU"
@@ -75,10 +75,10 @@ def test_unverified_native_device_keeps_cpu_timeout_budget(monkeypatch, gguf):
 ])
 def test_invalid_device_overrides_fail_clearly(monkeypatch, backend, index, gguf):
     """Reject invalid backend and device combinations before spawning."""
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     monkeypatch.setenv(gguf.BACKEND_ENV, backend)
     monkeypatch.setenv(gguf.DEVICE_ENV, index)
-    with pytest.raises(ValueError, match="OMNIVOICE_GGUF_"):
+    with pytest.raises(ValueError, match="ELEVENVOICE_GGUF_"):
         gguf._spawn_env()
 
 
@@ -89,7 +89,7 @@ def test_settings_cpu_pin_reaches_real_spawn_boundary(monkeypatch, gguf):
     from core import prefs
     from services import binary_preflight
 
-    monkeypatch.delenv("OMNIVOICE_DEVICE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DEVICE", raising=False)
     monkeypatch.setattr(prefs, "resolve", lambda *args, **kwargs: "cpu")
     monkeypatch.setenv(gguf.BACKEND_ENV, "vulkan")
     monkeypatch.setattr(binary_preflight, "validate_executable", lambda *args, **kwargs: None)
@@ -106,7 +106,7 @@ def test_settings_cpu_pin_reaches_real_spawn_boundary(monkeypatch, gguf):
 
 def test_auto_preserves_native_selection(monkeypatch, gguf):
     """Automatic selection leaves GGML free to choose its backend."""
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     monkeypatch.delenv(gguf.BACKEND_ENV, raising=False)
     monkeypatch.delenv(gguf.DEVICE_ENV, raising=False)
     monkeypatch.delenv("GGML_BACKEND", raising=False)

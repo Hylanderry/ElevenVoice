@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 // Saving a designed voice confirms it: the form only clears its name field, so
 // without the toast the save looked like nothing happened.
-const BASE = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const BASE = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 const browser = await launchSmokeBrowser();
 try {
   const created = [];

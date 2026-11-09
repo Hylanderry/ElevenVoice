@@ -162,9 +162,9 @@ def _read_linux(drm_root: str = _LINUX_DRM) -> tuple[HostGPU, ...]:
 def detect_host_gpus() -> tuple[HostGPU, ...]:
     """Every PCI GPU from AMD/NVIDIA/Intel the OS knows about. Never raises.
 
-    ``OMNIVOICE_DISABLE_GPU_INVENTORY=1`` returns ``()`` - the test suite sets it
+    ``ELEVENVOICE_DISABLE_GPU_INVENTORY=1`` returns ``()`` - the test suite sets it
     so a developer's own GPUs never change what a routing test resolves."""
-    if os.environ.get("OMNIVOICE_DISABLE_GPU_INVENTORY", "").strip() in ("1", "true"):
+    if os.environ.get("ELEVENVOICE_DISABLE_GPU_INVENTORY", "").strip() in ("1", "true"):
         return ()
     try:
         if sys.platform == "win32":

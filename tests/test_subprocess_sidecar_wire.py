@@ -6,7 +6,7 @@ parametrizes the protocol invariants across all of them, so a bug in one
 sidecar's copy is caught without a per-engine test file.
 
 Inspired by debpalash's test_pockettts_sidecar.py (PR
-paoloantinori/OmniVoice-Studio#1), which established the pattern for testing
+paoloantinori/ElevenVoice#1), which established the pattern for testing
 the wire protocol against a single sidecar. This lifts the generic protocol
 tests (send/recv roundtrip, EOF, oversized-frame cap, truncated-body) so every
 sidecar inherits the same coverage. Engine-specific tests (language mapping, PCM

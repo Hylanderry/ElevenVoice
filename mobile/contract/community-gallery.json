@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "name": "VoiceStudio Gallery",
+  "name": "ElevenVoice Gallery",
   "updated_at": "2026-10-26",
   "homepage": "https://github.com/debpalash/omnivoice-gallery",
   "packs": [
     {
       "id": "omnivoice-starter",
-      "name": "VoiceStudio Starter",
-      "description": "Curated designed voices shipped by the VoiceStudio team.",
+      "name": "ElevenVoice Starter",
+      "description": "Curated designed voices shipped by the ElevenVoice team.",
       "icon": "Sparkles",
       "item_ids": [
         "feat_00_the_librarian",
@@ -97,7 +97,7 @@
       "instruct": "female, middle-aged, low pitch, british accent",
       "language": "English",
       "sample_script": "The valley had been quiet for a hundred years, and tonight, for the first time, something stirred beneath the old stone bridge.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -119,7 +119,7 @@
       "instruct": "male, middle-aged, low pitch, american accent",
       "language": "English",
       "sample_script": "The valley had been quiet for a hundred years, and tonight, for the first time, something stirred beneath the old stone bridge.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -141,7 +141,7 @@
       "instruct": "female, middle-aged, low pitch, whisper",
       "language": "English",
       "sample_script": "The valley had been quiet for a hundred years, and tonight, for the first time, something stirred beneath the old stone bridge.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -163,7 +163,7 @@
       "instruct": "male, elderly, low pitch, british accent",
       "language": "English",
       "sample_script": "The valley had been quiet for a hundred years, and tonight, for the first time, something stirred beneath the old stone bridge.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -185,7 +185,7 @@
       "instruct": "female, young adult, moderate pitch, american accent",
       "language": "English",
       "sample_script": "Oh hey, I didn't expect to run into you here! How have you been? We should really catch up properly one of these days.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -207,7 +207,7 @@
       "instruct": "female, young adult, moderate pitch, indian accent",
       "language": "English",
       "sample_script": "Oh hey, I didn't expect to run into you here! How have you been? We should really catch up properly one of these days.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -229,7 +229,7 @@
       "instruct": "male, young adult, moderate pitch, australian accent",
       "language": "English",
       "sample_script": "Oh hey, I didn't expect to run into you here! How have you been? We should really catch up properly one of these days.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -251,7 +251,7 @@
       "instruct": "female, middle-aged, moderate pitch, canadian accent",
       "language": "English",
       "sample_script": "Oh hey, I didn't expect to run into you here! How have you been? We should really catch up properly one of these days.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -273,7 +273,7 @@
       "instruct": "male, elderly, very low pitch",
       "language": "English",
       "sample_script": "You think you can stop me? Ha! I have crossed oceans of time and bent whole kingdoms to my will.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -295,7 +295,7 @@
       "instruct": "teenager, high pitch",
       "language": "English",
       "sample_script": "You think you can stop me? Ha! I have crossed oceans of time and bent whole kingdoms to my will.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -317,7 +317,7 @@
       "instruct": "male, young adult, high pitch, american accent",
       "language": "English",
       "sample_script": "You think you can stop me? Ha! I have crossed oceans of time and bent whole kingdoms to my will.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -339,7 +339,7 @@
       "instruct": "female, child, very high pitch",
       "language": "English",
       "sample_script": "You think you can stop me? Ha! I have crossed oceans of time and bent whole kingdoms to my will.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -361,7 +361,7 @@
       "instruct": "male, middle-aged, very low pitch",
       "language": "English",
       "sample_script": "You think you can stop me? Ha! I have crossed oceans of time and bent whole kingdoms to my will.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -383,7 +383,7 @@
       "instruct": "female, young adult, high pitch, australian accent",
       "language": "English",
       "sample_script": "What is up, everyone, welcome back to the channel! Today we are trying something I have honestly never done before.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -405,7 +405,7 @@
       "instruct": "male, young adult, very high pitch, american accent",
       "language": "English",
       "sample_script": "What is up, everyone, welcome back to the channel! Today we are trying something I have honestly never done before.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -427,7 +427,7 @@
       "instruct": "female, young adult, high pitch",
       "language": "English",
       "sample_script": "What is up, everyone, welcome back to the channel! Today we are trying something I have honestly never done before.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -449,7 +449,7 @@
       "instruct": "male, middle-aged, moderate pitch, american accent",
       "language": "English",
       "sample_script": "Good evening, and welcome. Tonight's top story is one you will not want to miss, so stay right there — we'll be back after this.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -471,7 +471,7 @@
       "instruct": "male, middle-aged, high pitch, british accent",
       "language": "English",
       "sample_script": "Good evening, and welcome. Tonight's top story is one you will not want to miss, so stay right there — we'll be back after this.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -493,7 +493,7 @@
       "instruct": "male, middle-aged, moderate pitch",
       "language": "English",
       "sample_script": "Good evening, and welcome. Tonight's top story is one you will not want to miss, so stay right there — we'll be back after this.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -515,7 +515,7 @@
       "instruct": "male, middle-aged, low pitch",
       "language": "English",
       "sample_script": "Introducing a whole new way to get more done in less time. Available today. Your best work starts right now.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -537,7 +537,7 @@
       "instruct": "female, middle-aged, moderate pitch, british accent",
       "language": "English",
       "sample_script": "Introducing a whole new way to get more done in less time. Available today. Your best work starts right now.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -559,7 +559,7 @@
       "instruct": "female, young adult, high pitch, american accent",
       "language": "English",
       "sample_script": "Introducing a whole new way to get more done in less time. Available today. Your best work starts right now.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -581,7 +581,7 @@
       "instruct": "female, middle-aged, moderate pitch, american accent",
       "language": "English",
       "sample_script": "Let's break this down simply. There are three things you need to know, and the very first one surprises most people.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -603,7 +603,7 @@
       "instruct": "male, young adult, moderate pitch, british accent",
       "language": "English",
       "sample_script": "Let's break this down simply. There are three things you need to know, and the very first one surprises most people.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-05-31"
@@ -677,7 +677,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Dutch",
       "sample_script": "Hallo en welkom bij deze korte stemdemonstratie. Ik hoop dat je geniet van hoe deze stem klinkt.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -699,7 +699,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Dutch",
       "sample_script": "Hallo en welkom bij deze korte stemdemonstratie. Ik hoop dat je geniet van hoe deze stem klinkt.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -721,7 +721,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Turkish",
       "sample_script": "Merhaba ve bu kısa ses tanıtımına hoş geldiniz. Umarım bu sesi dinlemekten keyif alırsınız.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -743,7 +743,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Turkish",
       "sample_script": "Merhaba ve bu kısa ses tanıtımına hoş geldiniz. Umarım bu sesi dinlemekten keyif alırsınız.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -765,7 +765,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Polish",
       "sample_script": "Cześć i witaj w tej krótkiej prezentacji głosu. Mam nadzieję, że spodoba ci się, jak brzmi.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -787,7 +787,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Polish",
       "sample_script": "Cześć i witaj w tej krótkiej prezentacji głosu. Mam nadzieję, że spodoba ci się, jak brzmi.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -809,7 +809,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Vietnamese",
       "sample_script": "Xin chào và chào mừng bạn đến với bản giới thiệu giọng nói ngắn này. Hy vọng bạn sẽ thích giọng nói này.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -831,7 +831,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Vietnamese",
       "sample_script": "Xin chào và chào mừng bạn đến với bản giới thiệu giọng nói ngắn này. Hy vọng bạn sẽ thích giọng nói này.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -853,7 +853,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Indonesian",
       "sample_script": "Halo dan selamat datang di demo suara singkat ini. Semoga Anda menikmati bagaimana suara ini terdengar.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -875,7 +875,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Indonesian",
       "sample_script": "Halo dan selamat datang di demo suara singkat ini. Semoga Anda menikmati bagaimana suara ini terdengar.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -897,7 +897,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Swedish",
       "sample_script": "Hej och välkommen till den här korta röstdemonstrationen. Jag hoppas att du gillar hur den låter.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -919,7 +919,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Swedish",
       "sample_script": "Hej och välkommen till den här korta röstdemonstrationen. Jag hoppas att du gillar hur den låter.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -941,7 +941,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Greek",
       "sample_script": "Γεια σας και καλώς ήρθατε σε αυτή τη σύντομη επίδειξη φωνής. Ελπίζω να σας αρέσει πώς ακούγεται.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -963,7 +963,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Greek",
       "sample_script": "Γεια σας και καλώς ήρθατε σε αυτή τη σύντομη επίδειξη φωνής. Ελπίζω να σας αρέσει πώς ακούγεται.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -985,7 +985,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Ukrainian",
       "sample_script": "Привіт і ласкаво просимо до цієї короткої демонстрації голосу. Сподіваюся, вам сподобається, як він звучить.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1007,7 +1007,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Ukrainian",
       "sample_script": "Привіт і ласкаво просимо до цієї короткої демонстрації голосу. Сподіваюся, вам сподобається, як він звучить.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1029,7 +1029,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Czech",
       "sample_script": "Dobrý den a vítejte u této krátké ukázky hlasu. Doufám, že se vám bude líbit, jak zní.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1051,7 +1051,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Czech",
       "sample_script": "Dobrý den a vítejte u této krátké ukázky hlasu. Doufám, že se vám bude líbit, jak zní.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1073,7 +1073,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Romanian",
       "sample_script": "Bună și bine ai venit la această scurtă demonstrație vocală. Sper să-ți placă cum sună.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1095,7 +1095,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Romanian",
       "sample_script": "Bună și bine ai venit la această scurtă demonstrație vocală. Sper să-ți placă cum sună.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1117,7 +1117,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Danish",
       "sample_script": "Hej og velkommen til denne korte stemmedemonstration. Jeg håber, du kan lide, hvordan den lyder.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1139,7 +1139,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Danish",
       "sample_script": "Hej og velkommen til denne korte stemmedemonstration. Jeg håber, du kan lide, hvordan den lyder.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1161,7 +1161,7 @@
       "instruct": "female, middle-aged, low pitch",
       "language": "Finnish",
       "sample_script": "Hei ja tervetuloa tähän lyhyeen ääninäytteeseen. Toivottavasti pidät siitä, miltä se kuulostaa.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"
@@ -1183,7 +1183,7 @@
       "instruct": "male, young adult, moderate pitch",
       "language": "Finnish",
       "sample_script": "Hei ja tervetuloa tähän lyhyeen ääninäytteeseen. Toivottavasti pidät siitä, miltä se kuulostaa.",
-      "author": "VoiceStudio",
+      "author": "ElevenVoice",
       "license": "OpenRAIL-M",
       "source": "starter",
       "added_at": "2026-10-26"

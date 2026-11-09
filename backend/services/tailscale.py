@@ -20,7 +20,7 @@ from urllib.parse import urlsplit
 from services import network_share
 
 _ADMIN_DNS = "https://login.tailscale.com/admin/dns"
-logger = logging.getLogger("omnivoice.tailscale")
+logger = logging.getLogger("elevenvoice.tailscale")
 
 
 def _cli():
@@ -206,7 +206,7 @@ def serve_enable(port: int | None = None) -> dict:
             "ok": False,
             "error": (
                 f"Tailscale ports {_DEFAULT_PORTS['http']} and {_FALLBACK_PORT} already serve other apps "
-                "on this machine; VoiceStudio left them unchanged."
+                "on this machine; ElevenVoice left them unchanged."
             ),
         }
     http = _run([cli, "serve", "--bg", f"--http={http_port}", target])

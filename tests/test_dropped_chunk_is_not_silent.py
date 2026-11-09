@@ -31,8 +31,8 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -54,7 +54,7 @@ def _empty():
 
 
 def test_a_dropped_chunk_is_logged(ct, caplog):
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.concatenate_audio_chunks([_tone(), _empty(), _tone()], 24000, 0)
     assert out.shape[-1] == 2000, "the non-empty chunks must still be joined"
     assert "Dropped 1 of 3" in caplog.text, (
@@ -67,7 +67,7 @@ def test_the_log_names_the_text_that_was_lost(ct, caplog):
     """A count alone tells a maintainer that something went missing. The text
     tells them which sentence to try to reproduce with."""
     texts = ["First sentence.", "The one that failed.", "Third sentence."]
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         ct.concatenate_audio_chunks([_tone(), _empty(), _tone()], 24000, 0, texts=texts)
     assert "The one that failed." in caplog.text, caplog.text
     # ...and not the ones that rendered fine.
@@ -78,7 +78,7 @@ def test_the_tail_case_specifically(ct, caplog):
     """The reported shape: it is the LAST chunk that comes back empty, so the
     output ends early and everything before it sounds perfect."""
     texts = ["Body of the text.", "and the last few sentences"]
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.concatenate_audio_chunks([_tone(), _empty()], 24000, 0, texts=texts)
     assert out.shape[-1] == 1000
     assert "and the last few sentences" in caplog.text
@@ -87,7 +87,7 @@ def test_the_tail_case_specifically(ct, caplog):
 def test_nothing_is_logged_when_every_chunk_rendered(ct, caplog):
     """The overwhelmingly common case. A warning on every healthy render would
     train everyone to ignore the one that matters."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         ct.concatenate_audio_chunks([_tone(), _tone()], 24000, 0)
     assert "Dropped" not in caplog.text
 
@@ -95,7 +95,7 @@ def test_nothing_is_logged_when_every_chunk_rendered(ct, caplog):
 def test_none_entries_count_as_dropped(ct, caplog):
     """An engine that returns None rather than an empty tensor loses the same
     text, so it must not be treated as a different, quieter case."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.concatenate_audio_chunks([_tone(), None], 24000, 0)
     assert out.shape[-1] == 1000
     assert "Dropped 1 of 2" in caplog.text
@@ -104,7 +104,7 @@ def test_none_entries_count_as_dropped(ct, caplog):
 def test_all_chunks_empty_still_returns_a_tensor(ct, caplog):
     """The total-failure path is owned by the downstream dead-render guards;
     this must keep handing them something rather than raising here."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.concatenate_audio_chunks([_empty(), _empty()], 24000, 0)
     assert out.numel() >= 1
     assert "Dropped 2 of 2" in caplog.text
@@ -137,7 +137,7 @@ def test_reporting_never_breaks_the_join(ct, monkeypatch):
 def test_mismatched_texts_do_not_break_the_report(ct, caplog):
     """A caller that passes a shorter list than it rendered must still get the
     count — an IndexError here would lose the whole diagnostic."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         ct.concatenate_audio_chunks([_tone(), _empty(), _empty()], 24000, 0,
                                     texts=["only one"])
     assert "Dropped 2 of 3" in caplog.text
@@ -181,7 +181,7 @@ def test_chunking_itself_loses_no_text(ct):
 def test_one_survivor_of_several_is_reported(ct, caplog):
     """The branch that shipped broken."""
     texts = ["kept", "lost one", "lost two"]
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.join_rendered_chunks([_tone(), _empty(), _empty()], 24000, texts=texts)
     assert out is not None and out.shape[-1] == 1000, "the survivor must still be used"
     assert "Dropped 2 of 3" in caplog.text, caplog.text
@@ -191,21 +191,21 @@ def test_one_survivor_of_several_is_reported(ct, caplog):
 def test_nothing_rendered_returns_none_and_reports(ct, caplog):
     """None rather than a silence buffer: the caller's dead-render handling
     owns that case, and handing back silence would hide it from them."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.join_rendered_chunks([_empty(), _empty()], 24000, texts=["a", "b"])
     assert out is None
     assert "Dropped 2 of 2" in caplog.text
 
 
 def test_a_clean_multi_chunk_join_says_nothing(ct, caplog):
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.join_rendered_chunks([_tone(), _tone()], 24000, crossfade_ms=0)
     assert out.shape[-1] == 2000
     assert "Dropped" not in caplog.text
 
 
 def test_a_single_chunk_that_rendered_says_nothing(ct, caplog):
-    with caplog.at_level(logging.WARNING, logger="omnivoice.chunked_tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.chunked_tts"):
         out = ct.join_rendered_chunks([_tone()], 24000)
     assert out.shape[-1] == 1000
     assert "Dropped" not in caplog.text

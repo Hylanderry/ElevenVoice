@@ -9,7 +9,7 @@ try {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
     const stream = { getTracks: () => [{ stop() {} }] };
     Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
       configurable: true,
@@ -82,7 +82,7 @@ try {
       } else received();
     });
   });
-  const base = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902';
+  const base = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902';
   await page.goto(base + '/#/transcriptions');
   const worklet = await page.request.get(base + '/aec-worklet.js');
   assert.equal(worklet.status(), 200);

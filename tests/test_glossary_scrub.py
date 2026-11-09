@@ -7,7 +7,7 @@ current setup surface (Settings → LLM Providers), not the legacy env vars.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from fastapi import HTTPException

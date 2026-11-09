@@ -28,7 +28,7 @@ class CudaProbe:
 @pytest.fixture
 def compile_policy(monkeypatch):
     module = importlib.import_module("services.model_manager")
-    monkeypatch.delenv("OMNIVOICE_FORCE_CUDAGRAPH", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FORCE_CUDAGRAPH", raising=False)
 
     def resolve(probe, requested=None):
         monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(cuda=probe))
@@ -60,7 +60,7 @@ def test_modes_without_cuda_graphs_bypass_hardware_detection(compile_policy):
 
 def test_explicit_override_wins_on_an_older_adapter(compile_policy, monkeypatch):
     module, resolve = compile_policy
-    monkeypatch.setenv("OMNIVOICE_FORCE_CUDAGRAPH", " YES ")
+    monkeypatch.setenv("ELEVENVOICE_FORCE_CUDAGRAPH", " YES ")
     assert resolve(CudaProbe(compute=(5, 2))) == module._TORCH_COMPILE_MODE
 
 

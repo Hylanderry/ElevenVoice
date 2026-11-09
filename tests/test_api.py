@@ -1,5 +1,5 @@
 """
-VoiceStudio API — Unit Test Suite
+ElevenVoice API — Unit Test Suite
 Tests all roadmap features: TaskManager, scene detection, lip-sync scoring,
 export endpoints (VTT, SRT, MP3, segments ZIP, stems ZIP), streaming TTS.
 
@@ -18,7 +18,7 @@ import pytest
 import asyncio
 
 # Patch environment before importing api
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 from unittest.mock import patch, MagicMock, AsyncMock
 import torch
@@ -617,8 +617,8 @@ def test_server_mode_remote_without_api_key_cannot_set_executable_path(monkeypat
     executable = tmp_path / "ffmpeg"
     executable.write_bytes(b"not actually executable")
     original = os.environ.get("FFMPEG_PATH")
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     try:
         response = TestClient(app, client=("172.17.0.1", 50000)).post(
             "/system/set-env",
@@ -641,8 +641,8 @@ def test_set_env_never_accepts_executable_path_even_with_admin_key(monkeypatch, 
     executable = tmp_path / "ffmpeg"
     executable.write_bytes(b"not actually executable")
     original = os.environ.get("FFMPEG_PATH")
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret")
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret")
     try:
         response = TestClient(app, client=("172.17.0.1", 50000)).post(
             "/system/set-env",

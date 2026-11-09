@@ -59,7 +59,7 @@ describe('coalesced JSON storage', () => {
 
     for (let count = 1; count <= 100; count += 1) {
       latest = count;
-      controller.queueJsonWrite('omnivoice.app', provider);
+      controller.queueJsonWrite('elevenvoice.app', provider);
     }
 
     expect(provider).not.toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe('coalesced JSON storage', () => {
     expect(provider).toHaveBeenCalledTimes(1);
     expect(stringify).toHaveBeenCalledTimes(1);
     expect(storage.setItem).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(storage.data.get('omnivoice.app')!)).toEqual({
+    expect(JSON.parse(storage.data.get('elevenvoice.app')!)).toEqual({
       state: { count: 100 },
       version: 7,
     });
@@ -174,9 +174,9 @@ describe('coalesced JSON storage', () => {
     const adapter = controller.createZustandJsonStorage<{ count: number }>();
     const value = { state: { count: 8 }, version: 7 };
 
-    adapter.setItem('omnivoice.app', value);
+    adapter.setItem('elevenvoice.app', value);
 
-    expect(adapter.getItem('omnivoice.app')).toBe(value);
+    expect(adapter.getItem('elevenvoice.app')).toBe(value);
     expect(storage.getItem).not.toHaveBeenCalled();
     expect(storage.setItem).not.toHaveBeenCalled();
   });

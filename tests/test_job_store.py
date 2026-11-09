@@ -2,7 +2,7 @@
 import os
 import time
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from core import job_store

@@ -35,7 +35,7 @@ def main():
     # Settings persists sidecar locations; restore only those paths, never
     # network/provider credentials or preferences that could disable offline.
     for key, value in _load().items():
-        if key.startswith('env.OMNIVOICE_') and key.endswith('_DIR') and isinstance(value, str):
+        if key.startswith('env.ELEVENVOICE_') and key.endswith('_DIR') and isinstance(value, str):
             os.environ.setdefault(key.removeprefix('env.'), value)
     import numpy as np
     import soundfile as sf

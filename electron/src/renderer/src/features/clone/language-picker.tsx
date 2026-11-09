@@ -119,7 +119,7 @@ export function LanguagePicker({
       ariaLabel={ariaLabel || t('clone.language')}
       buttonClassName={className}
       unavailableLabel={unavailable}
-      recentsKey={`voicestudio.language-recents.${recentsScope}.v1`}
+      recentsKey={`elevenvoice.language-recents.${recentsScope}.v1`}
       onChange={(next) => {
         if (onValueChange) onValueChange(next);
         else setCloneSetting('language', next);

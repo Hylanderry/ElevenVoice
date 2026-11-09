@@ -14,8 +14,8 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -39,9 +39,9 @@ def _isolate(monkeypatch, tmp_path):
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     monkeypatch.setattr(config, "DATA_DIR", str(tmp_path))
     monkeypatch.delenv("POSTHOG_PROJECT_TOKEN", raising=False)
-    monkeypatch.delenv("OMNIVOICE_ANALYTICS_DISABLED", raising=False)
-    monkeypatch.delenv("OMNIVOICE_INSTALL_CHANNEL", raising=False)
-    monkeypatch.delenv("OMNIVOICE_SERVER_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ANALYTICS_DISABLED", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INSTALL_CHANNEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SERVER_MODE", raising=False)
 
     class _InertPosthog:
         def __init__(self, *a, **k):
@@ -110,7 +110,7 @@ def test_enabled_only_when_BOTH_gates_are_true(monkeypatch):
 def test_kill_switch_outranks_everything(monkeypatch):
     monkeypatch.setenv("POSTHOG_PROJECT_TOKEN", "phc_test")
     analytics.set_opted_in(True)
-    monkeypatch.setenv("OMNIVOICE_ANALYTICS_DISABLED", "1")
+    monkeypatch.setenv("ELEVENVOICE_ANALYTICS_DISABLED", "1")
     assert analytics.enabled() is False
 
 
@@ -311,13 +311,13 @@ def test_installation_id_is_random_not_derived_from_the_machine():
 
 def test_install_channel_resolves_installer_docker_then_source(monkeypatch):
     assert analytics.install_channel() == "source"  # bare source run
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")  # the Docker image's marker
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")  # the Docker image's marker
     assert analytics.install_channel() == "docker"
-    monkeypatch.setenv("OMNIVOICE_INSTALL_CHANNEL", "installer")  # desktop shell marker
+    monkeypatch.setenv("ELEVENVOICE_INSTALL_CHANNEL", "installer")  # desktop shell marker
     assert analytics.install_channel() == "installer"
     # A value outside the closed set falls through to the other markers.
-    monkeypatch.setenv("OMNIVOICE_INSTALL_CHANNEL", "franken-build")
-    monkeypatch.delenv("OMNIVOICE_SERVER_MODE")
+    monkeypatch.setenv("ELEVENVOICE_INSTALL_CHANNEL", "franken-build")
+    monkeypatch.delenv("ELEVENVOICE_SERVER_MODE")
     assert analytics.install_channel() == "source"
 
 

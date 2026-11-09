@@ -36,7 +36,7 @@ from .backend import (
 )
 from .quant_cache import installed_pair
 
-logger = logging.getLogger("omnivoice.gguf.quants")
+logger = logging.getLogger("elevenvoice.gguf.quants")
 
 _MIB = 1024 * 1024
 #: Fixed text for the UI: exception messages can carry local paths or URLs.
@@ -186,7 +186,7 @@ def quant_status() -> dict:
     try:
         recommended = _automatic_entry(q)
     except ComputeConfigError:
-        # An invalid OMNIVOICE_GGUF_BACKEND / _DEVICE: generation reports it;
+        # An invalid ELEVENVOICE_GGUF_BACKEND / _DEVICE: generation reports it;
         # the picker still renders, on the conservative tier.
         recommended = q["cpu"]
     env_pin = env_quant_override()

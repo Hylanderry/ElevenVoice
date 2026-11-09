@@ -12,10 +12,10 @@ try {
     },
   });
   await page.goto(
-    (process.env.VOICESTUDIO_UI_URL || 'http://localhost:3928') + '/#/settings/appearance',
+    (process.env.ELEVENVOICE_UI_URL || 'http://localhost:3928') + '/#/settings/appearance',
   );
   const dark = page.getByRole('group', { name: 'Dark', exact: true });
-  const original = dark.getByRole('button', { name: 'VoiceStudio Original', exact: true });
+  const original = dark.getByRole('button', { name: 'ElevenVoice Original', exact: true });
   assert.equal(
     await dark.getByRole('button', { name: 'Studio', exact: true }).getAttribute('aria-pressed'),
     'true',
@@ -31,7 +31,7 @@ try {
   let state = await page.evaluate(() => ({
     dark: document.documentElement.classList.contains('dark'),
     palette: document.documentElement.dataset.themeId ?? null,
-    saved: JSON.parse(localStorage.getItem('voicestudio.theme.v2') || '{}'),
+    saved: JSON.parse(localStorage.getItem('elevenvoice.theme.v2') || '{}'),
   }));
   assert.equal(state.dark, true);
   assert.equal(state.palette, null);
@@ -56,7 +56,7 @@ try {
   state = await page.evaluate(() => ({
     dark: document.documentElement.classList.contains('dark'),
     palette: document.documentElement.dataset.themeId ?? null,
-    saved: JSON.parse(localStorage.getItem('voicestudio.theme.v2') || '{}'),
+    saved: JSON.parse(localStorage.getItem('elevenvoice.theme.v2') || '{}'),
   }));
   assert.equal(state.dark, false);
   assert.equal(state.palette, null);

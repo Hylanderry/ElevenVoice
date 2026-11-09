@@ -22,13 +22,13 @@ export function bundledPython(resourcesPath: string): string {
 /** Mutable model, data and cache files stay in the app's own sandbox container. */
 export function bundledRuntimeEnv(resourcesPath: string, userData: string): NodeJS.ProcessEnv {
   return {
-    VOICESTUDIO_BUNDLED_CODE_ONLY: '1',
-    VOICESTUDIO_BUNDLED_RESOURCES: resourcesPath,
-    VOICESTUDIO_SANDBOX_BOOKMARKS: join(userData, 'security-scoped-directories.json'),
+    ELEVENVOICE_BUNDLED_CODE_ONLY: '1',
+    ELEVENVOICE_BUNDLED_RESOURCES: resourcesPath,
+    ELEVENVOICE_SANDBOX_BOOKMARKS: join(userData, 'security-scoped-directories.json'),
     PYTHONNOUSERSITE: '1',
     PYTHONDONTWRITEBYTECODE: '1',
-    OMNIVOICE_DATA_DIR: join(userData, 'data'),
-    OMNIVOICE_CACHE_DIR: join(userData, 'models'),
+    ELEVENVOICE_DATA_DIR: join(userData, 'data'),
+    ELEVENVOICE_CACHE_DIR: join(userData, 'models'),
     HF_HOME: join(userData, 'models'),
     HF_HUB_CACHE: join(userData, 'models'),
     XDG_CACHE_HOME: join(userData, 'cache'),
@@ -38,7 +38,7 @@ export function bundledRuntimeEnv(resourcesPath: string, userData: string): Node
     NUMBA_CACHE_DIR: join(userData, 'cache', 'numba'),
     FFMPEG_PATH: join(resourcesPath, 'media-tools', 'ffmpeg'),
     FFPROBE_PATH: join(resourcesPath, 'media-tools', 'ffprobe'),
-    OMNIVOICE_FFPROBE_PATH: join(resourcesPath, 'media-tools', 'ffprobe'),
+    ELEVENVOICE_FFPROBE_PATH: join(resourcesPath, 'media-tools', 'ffprobe'),
     PATH: [
       join(resourcesPath, 'media-tools'),
       join(resourcesPath, 'python-runtime', 'bin'),

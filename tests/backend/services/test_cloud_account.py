@@ -39,11 +39,11 @@ def test_bridge_env_is_removed_from_os_environ(monkeypatch):
     import importlib
     import os
 
-    monkeypatch.setenv("VOICESTUDIO_ACCOUNT_BRIDGE_URL", "http://127.0.0.1:1")
-    monkeypatch.setenv("VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN", "cap")
+    monkeypatch.setenv("ELEVENVOICE_ACCOUNT_BRIDGE_URL", "http://127.0.0.1:1")
+    monkeypatch.setenv("ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN", "cap")
     importlib.reload(cloud_account)
-    assert "VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN" not in os.environ
-    assert "VOICESTUDIO_ACCOUNT_BRIDGE_URL" not in os.environ
+    assert "ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN" not in os.environ
+    assert "ELEVENVOICE_ACCOUNT_BRIDGE_URL" not in os.environ
     cloud_account._configure("", "")
 
 

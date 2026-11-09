@@ -9,16 +9,16 @@ indextts package).
 
 Probe order (Open Question #1 resolution from 02-RESEARCH.md):
 
-    1. ``${OMNIVOICE_INDEXTTS_DIR}/.venv/`` (or ``Scripts\\python.exe`` on
+    1. ``${ELEVENVOICE_INDEXTTS_DIR}/.venv/`` (or ``Scripts\\python.exe`` on
        Windows). Highest priority — power users who already cloned
        IndexTTS and ran ``uv pip install -e .`` get zero migration cost.
     2. ``backend/engines/indextts/.venv/`` — this package's own venv,
-       created by step 3 if needed. Survives across VoiceStudio upgrades;
+       created by step 3 if needed. Survives across ElevenVoice upgrades;
        the IndexTTS clone is referenced via ``uv pip install -e`` so
-       weights and code live in the user's clone, not under VoiceStudio.
+       weights and code live in the user's clone, not under ElevenVoice.
     3. Bootstrap: run ``uv venv`` then ``uv pip install -e
-       ${OMNIVOICE_INDEXTTS_DIR}`` to populate step-2's venv. Requires
-       OMNIVOICE_INDEXTTS_DIR to be set (otherwise we don't know where
+       ${ELEVENVOICE_INDEXTTS_DIR}`` to populate step-2's venv. Requires
+       ELEVENVOICE_INDEXTTS_DIR to be set (otherwise we don't know where
        the IndexTTS clone is); we raise with a clear error message that
        points at the install docs.
 
@@ -33,7 +33,7 @@ Threat model (Plan 02-03 frontmatter):
         where the Phase 1 ``HFTokenRedactor`` filter strips token bytes.
     T-02-09 — supply chain (uv pip install -e):
         Bootstrap installs from a user-controlled local directory
-        (``OMNIVOICE_INDEXTTS_DIR``). The user already trusts that
+        (``ELEVENVOICE_INDEXTTS_DIR``). The user already trusts that
         directory's contents (it's their own clone). Accepted for now; a
         later hardening pass can hash-pin the indextts requirements.
 """
@@ -47,7 +47,7 @@ from typing import Optional
 
 from engines._venv_probe import ProbeResult, log_safe, venv_can_import
 
-logger = logging.getLogger("omnivoice.indextts.bootstrap")
+logger = logging.getLogger("elevenvoice.indextts.bootstrap")
 
 # Absolute path to the sidecar entrypoint. ``IndexTTS2Backend.sidecar_script``
 # returns this; SubprocessBackend spawns it with the resolved venv python.
@@ -121,14 +121,14 @@ def resolve_indextts_venv() -> Path:
     unproven: Optional[Path] = None
 
     # Probe 1 — user's clone-level venv (highest priority for back-compat).
-    omv_dir = os.environ.get("OMNIVOICE_INDEXTTS_DIR")
+    omv_dir = os.environ.get("ELEVENVOICE_INDEXTTS_DIR")
     if omv_dir:
         cand = _venv_python_path(Path(omv_dir) / ".venv")
         if cand.is_file():
             verdict = _venv_can_import_indextts(cand)
             if verdict == "yes":
                 logger.info(
-                    "IndexTTS venv resolved from OMNIVOICE_INDEXTTS_DIR: %s", cand,
+                    "IndexTTS venv resolved from ELEVENVOICE_INDEXTTS_DIR: %s", cand,
                 )
                 _resolved_python = cand
                 return cand
@@ -162,10 +162,10 @@ def resolve_indextts_venv() -> Path:
     # Probe 3 — bootstrap.
     if not omv_dir:
         raise RuntimeError(
-            "IndexTTS 2.5 is not installed. Set the OMNIVOICE_INDEXTTS_DIR "
+            "IndexTTS 2.5 is not installed. Set the ELEVENVOICE_INDEXTTS_DIR "
             "environment variable to your IndexTTS clone (the directory "
             "that contains checkpoints/ and pyproject.toml), then restart "
-            "VoiceStudio. See docs/engines/indextts.md for the full install "
+            "ElevenVoice. See docs/engines/indextts.md for the full install "
             "walk-through."
         )
 
@@ -192,7 +192,7 @@ def _venv_python_path(venv_dir: Path) -> Path:
 def _probe_paths() -> list[Path]:
     """Ordered list of candidate venv-python paths (no .is_file() check)."""
     out: list[Path] = []
-    omv_dir = os.environ.get("OMNIVOICE_INDEXTTS_DIR")
+    omv_dir = os.environ.get("ELEVENVOICE_INDEXTTS_DIR")
     if omv_dir:
         out.append(_venv_python_path(Path(omv_dir) / ".venv"))
     out.append(_venv_python_path(_ENGINES_VENV_DIR))
@@ -204,7 +204,7 @@ def _venv_can_import_indextts(python_path: Path) -> ProbeResult:
 
     Tri-state — "yes" / "no" / "unproven". See ``engines._venv_probe``: a
     probe that runs out of time proves nothing, and treating that as "no"
-    is what discarded working OMNIVOICE_INDEXTTS_DIR installs (#1414).
+    is what discarded working ELEVENVOICE_INDEXTTS_DIR installs (#1414).
     """
     probe = (
         "try:\n import indextts.infer_v2_5\n"
@@ -240,9 +240,9 @@ def _bootstrap_engines_venv(indextts_clone: Path) -> Path:
         raise RuntimeError(
             "uv is required to bootstrap the IndexTTS 2.5 venv but was not "
             "found on PATH (and the bundled uv path was not set via the "
-            "OMNIVOICE_BUNDLED_UV env var). Install uv from "
-            "https://docs.astral.sh/uv/ and re-launch VoiceStudio, or set "
-            "OMNIVOICE_BUNDLED_UV to the absolute path of a uv binary."
+            "ELEVENVOICE_BUNDLED_UV env var). Install uv from "
+            "https://docs.astral.sh/uv/ and re-launch ElevenVoice, or set "
+            "ELEVENVOICE_BUNDLED_UV to the absolute path of a uv binary."
         )
 
     logger.info(

@@ -27,8 +27,8 @@ export function scopedStorageEnv(
   const set = (key: string, value: string) => {
     if (!env[key]?.trim()) out[key] = value;
   };
-  set('OMNIVOICE_DATA_DIR', s.data);
-  set('OMNIVOICE_CACHE_DIR', s.models);
+  set('ELEVENVOICE_DATA_DIR', s.data);
+  set('ELEVENVOICE_CACHE_DIR', s.models);
   // Temp must move as a set: Windows tools read TEMP/TMP, POSIX tools TMPDIR.
   set('TEMP', s.temp);
   set('TMP', s.temp);

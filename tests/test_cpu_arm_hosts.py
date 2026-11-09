@@ -33,24 +33,24 @@ def _dtype():
 
 @pytest.mark.parametrize("device", ["cuda", "xpu", "mps", "privateuseone:0", "CUDA"])
 def test_accelerators_keep_half_precision(device, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_CPU_DTYPE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CPU_DTYPE", raising=False)
     assert _dtype().tts_dtype_name(device) == "float16"
 
 
 @pytest.mark.parametrize("device", ["cpu", "CPU", " cpu ", "", None])
 def test_cpu_loads_float32(device, monkeypatch):
     # fp16 has no fast CPU GEMM — the old hard-coded float16 made CPU hosts crawl.
-    monkeypatch.delenv("OMNIVOICE_CPU_DTYPE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CPU_DTYPE", raising=False)
     assert _dtype().tts_dtype_name(device) == "float32"
 
 
 def test_cpu_dtype_override_is_validated(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CPU_DTYPE", "bfloat16")
+    monkeypatch.setenv("ELEVENVOICE_CPU_DTYPE", "bfloat16")
     assert _dtype().tts_dtype_name("cpu") == "bfloat16"
-    monkeypatch.setenv("OMNIVOICE_CPU_DTYPE", "int4")
+    monkeypatch.setenv("ELEVENVOICE_CPU_DTYPE", "int4")
     assert _dtype().tts_dtype_name("cpu") == "float32"
     # The override never downgrades an accelerator.
-    monkeypatch.setenv("OMNIVOICE_CPU_DTYPE", "bfloat16")
+    monkeypatch.setenv("ELEVENVOICE_CPU_DTYPE", "bfloat16")
     assert _dtype().tts_dtype_name("cuda") == "float16"
 
 
@@ -82,7 +82,7 @@ def _capture_dtype(monkeypatch, device):
     monkeypatch.setattr(mm, "get_best_device", lambda: device)
     monkeypatch.setattr(mm, "resolve_omnivoice_checkpoint", lambda: "stub/checkpoint")
     monkeypatch.setattr(mm, "should_preload_tts_asr", lambda: False)
-    monkeypatch.delenv("OMNIVOICE_CPU_DTYPE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CPU_DTYPE", raising=False)
     return mm, seen
 
 
@@ -114,7 +114,7 @@ def test_sidecar_loader_matches_the_in_process_loader(monkeypatch, device, expec
 
 
 def test_every_loader_goes_through_the_shared_dtype_policy():
-    """The CLIs honour OMNIVOICE_CPU_DTYPE too, not just the backend loaders."""
+    """The CLIs honour ELEVENVOICE_CPU_DTYPE too, not just the backend loaders."""
     for rel in (
         "backend/services/model_manager.py",
         "backend/engines/omnivoice_subprocess/main.py",

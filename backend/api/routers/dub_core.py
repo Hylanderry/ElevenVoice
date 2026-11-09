@@ -56,7 +56,7 @@ from services import dub_pipeline
 from core.browser_guard import reject_cross_site_get
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 _MAX_COOKIE_EXPORT_BYTES = 1024 * 1024
 
@@ -105,7 +105,7 @@ def _stage_cookie_export(contents: str | None) -> str | None:
             ),
         )
     fd, cookie_path = tempfile.mkstemp(
-        prefix="voicestudio-ytdlp-", suffix=".cookies.txt",
+        prefix="elevenvoice-ytdlp-", suffix=".cookies.txt",
     )
     try:
         os.chmod(cookie_path, 0o600)
@@ -992,7 +992,7 @@ async def dub_ingest_url(req: DubIngestUrlRequest, request: Request):
     if req.cookie_file and not _cookie_transport_allowed(
         request.url.scheme,
         request.client.host if request.client else None,
-        request.headers.get("origin") or request.headers.get("x-voicestudio-desktop-origin"),
+        request.headers.get("origin") or request.headers.get("x-elevenvoice-desktop-origin"),
     ):
         raise HTTPException(
             status_code=403,
@@ -1029,19 +1029,19 @@ async def dub_ingest_url(req: DubIngestUrlRequest, request: Request):
     )
 
 
-TRANSCRIBE_CHUNK_S = float(os.environ.get("OMNIVOICE_TRANSCRIBE_CHUNK_S", "30.0"))
-TRANSCRIBE_CHUNK_TIMEOUT_S = float(os.environ.get("OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S", "120.0"))
+TRANSCRIBE_CHUNK_S = float(os.environ.get("ELEVENVOICE_TRANSCRIBE_CHUNK_S", "30.0"))
+TRANSCRIBE_CHUNK_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S", "120.0"))
 #: How many times to attempt each transcribe chunk before giving up on it. A
 #: transient wedge (esp. the first chunk, where whisperx cold-loads its model)
 #: shouldn't silently drop that whole window — retry once on a fresh pool so the
 #: transcript doesn't come back "missing the beginning".
-_CHUNK_TRANSCRIBE_ATTEMPTS = max(1, int(os.environ.get("OMNIVOICE_TRANSCRIBE_CHUNK_ATTEMPTS", "2")))
+_CHUNK_TRANSCRIBE_ATTEMPTS = max(1, int(os.environ.get("ELEVENVOICE_TRANSCRIBE_CHUNK_ATTEMPTS", "2")))
 #: Seconds between SSE keepalive comments while the transcribe preflight loads
 #: the ASR backend (#1196). A first-run load can download multi-GB weights —
 #: minutes with zero bytes on the wire — and byte-silent streams get severed
 #: by Chrome's ~5 min no-response cap and by reverse-proxy idle timeouts,
 #: which the UI can only report as the generic "stream dropped" guess.
-ASR_LOAD_KEEPALIVE_S = float(os.environ.get("OMNIVOICE_ASR_LOAD_KEEPALIVE_S", "15.0"))
+ASR_LOAD_KEEPALIVE_S = float(os.environ.get("ELEVENVOICE_ASR_LOAD_KEEPALIVE_S", "15.0"))
 #: Seconds between `ping` SSE events while a step that runs after the transcript
 #: exists (diarisation, clone extraction, reference-text refinement, model
 #: unload) is busy on an executor. Those steps can take minutes, and a stream
@@ -1641,8 +1641,8 @@ async def dub_transcribe_stream(
         else:
             # The TTS core model is loaded here for exactly one reason: to harvest a
             # preloaded `_asr_pipe` off it (passed to get_active_asr_backend below).
-            # That attribute is only ever set by VoiceStudio.from_pretrained under
-            # OMNIVOICE_PRELOAD_TTS_ASR, which is off by default — so in the default
+            # That attribute is only ever set by ElevenVoice.from_pretrained under
+            # ELEVENVOICE_PRELOAD_TTS_ASR, which is off by default — so in the default
             # config this loaded ~3 GB, harvested None, and then offload_tts_for_asr()
             # freed it again 60 lines below. On unified memory that offload is a full
             # UNLOAD (#1119), so dub_generate later cold-reloaded the same model (~8s).
@@ -1816,10 +1816,10 @@ async def dub_transcribe_stream(
             chunk_len = TRANSCRIBE_CHUNK_S
         if whole_file_mode:
             chunk_timeout = ASR_TRANSCRIBE_TIMEOUT_S
-            chunk_timeout_env = "OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S"
+            chunk_timeout_env = "ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S"
         else:
             chunk_timeout = TRANSCRIBE_CHUNK_TIMEOUT_S
-            chunk_timeout_env = "OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S"
+            chunk_timeout_env = "ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S"
         chunks_n = max(1, math.ceil(total / chunk_len)) if total > 0 else 1
         yield _sse_event("start", {"duration": total, "chunks": chunks_n, "chunk_s": chunk_len})
 
@@ -2693,7 +2693,7 @@ async def dub_transcribe(job_id: str, num_speakers: Optional[int] = None):
     detected: dict = {"segment_clones": {}, "speaker_clones": {}, "cast_sources": {}}
     # Same as the streaming preflight: the only use of the TTS core here is the
     # last-resort `_model._asr_pipe` fallback below, which exists solely under
-    # OMNIVOICE_PRELOAD_TTS_ASR — and when it is off, that branch raises "fallback
+    # ELEVENVOICE_PRELOAD_TTS_ASR — and when it is off, that branch raises "fallback
     # is not preloaded" anyway. Loading ~3 GB to reach a None attribute (and then
     # having offload_tts_for_asr free it) was pure cost.
     _model = None

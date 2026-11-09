@@ -1,6 +1,6 @@
 import { Children, useRef, useState } from 'react';
 
-const STORAGE_KEY = 'omnivoice.dubSplit.v1';
+const STORAGE_KEY = 'elevenvoice.dubSplit.v1';
 const MIN_LEFT = 25;
 const MAX_LEFT = 70;
 const KEYBOARD_STEP = 5;

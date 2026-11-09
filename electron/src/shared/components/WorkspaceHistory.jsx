@@ -1,6 +1,6 @@
 /**
  * WorkspaceHistory — the right-side, workspace-scoped generation history
- * (spec: docs/specs/voice-studio-unification.md, P1).
+ * (spec: docs/specs/elevenvoice-unification.md, P1).
  *
  * Lifts the synth-history rows out of the left Sidebar so history lives next
  * to the work that produced it. For the Voice workspace it shows clone + design

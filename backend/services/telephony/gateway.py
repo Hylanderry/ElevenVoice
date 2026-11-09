@@ -23,7 +23,7 @@ import socket
 from dataclasses import dataclass
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.telephony")
+logger = logging.getLogger("elevenvoice.telephony")
 
 _DEFAULT_PORT = 3950
 _PORT_TRIES = 20
@@ -34,20 +34,20 @@ _LOOPBACK = "127.0.0.1"
 
 def gateway_host() -> str:
     """Loopback by default. A Docker deployment whose tunnel runs in another
-    container may set OMNIVOICE_TWILIO_HOST to a specific IP deliberately
+    container may set ELEVENVOICE_TWILIO_HOST to a specific IP deliberately
     (docs/integrations/twilio.md). Only IP literals are accepted; anything
     else — including an empty value — falls back to loopback, never to
     "all interfaces"."""
-    raw = (os.environ.get("OMNIVOICE_TWILIO_HOST") or _LOOPBACK).strip()
+    raw = (os.environ.get("ELEVENVOICE_TWILIO_HOST") or _LOOPBACK).strip()
     try:
         return str(ipaddress.ip_address(raw))
     except ValueError:
-        logger.warning("Ignoring invalid OMNIVOICE_TWILIO_HOST; using loopback")
+        logger.warning("Ignoring invalid ELEVENVOICE_TWILIO_HOST; using loopback")
         return _LOOPBACK
 
 
 def gateway_port_base() -> int:
-    raw = os.environ.get("OMNIVOICE_TWILIO_PORT")
+    raw = os.environ.get("ELEVENVOICE_TWILIO_PORT")
     try:
         port = int(raw) if raw else _DEFAULT_PORT
     except ValueError:

@@ -2,7 +2,7 @@
 
 Driving the real app on a full disk, uploading audio on the Transcriptions page
 returned HTTP 500 from ``POST /transcribe`` with ``error_class: DISK_FULL`` (the
-error journal knew) but only the generic "VoiceStudio hit an internal error"
+error journal knew) but only the generic "ElevenVoice hit an internal error"
 detail: ``failure.classify`` had no DISK_FULL class, so the global 500 handler,
 the streaming generate frame, ``build_failure`` (dub/batch events) and the dub
 transcription stream all fell back to their floor messages.
@@ -62,7 +62,7 @@ def test_the_errno_alone_is_enough_through_a_wrapper(failure):
 
 def test_a_path_in_the_os_sentence_cannot_claim_the_failure(failure):
     """An AppImage mount path used to reach the WebKit white-screen rule first."""
-    reason = "[Errno 28] No space left on device: '/tmp/.mount_VoiceStudio.AppImage/x.wav'"
+    reason = "[Errno 28] No space left on device: '/tmp/.mount_ElevenVoice.AppImage/x.wav'"
     assert failure.classify(reason) == "DISK_FULL"
 
 
@@ -102,7 +102,7 @@ def test_neighbouring_codes_are_not_read_as_a_full_disk(failure, reason):
     assert not failure.is_disk_full_error(reason)
 
 
-def test_it_is_a_context_free_class_with_a_voicestudio_hint(failure):
+def test_it_is_a_context_free_class_with_a_elevenvoice_hint(failure):
     assert "DISK_FULL" in failure._CONTEXT_FREE_HINT_CLASSES
     hint = failure._HINTS["DISK_FULL"]
     assert "disk is full" in hint.lower()
@@ -111,7 +111,7 @@ def test_it_is_a_context_free_class_with_a_voicestudio_hint(failure):
 
 def test_the_500_payload_names_the_class_and_hint(public):
     payload = public.public_exception_response(
-        ENOSPC, fallback="VoiceStudio hit an internal error; check the backend log for details."
+        ENOSPC, fallback="ElevenVoice hit an internal error; check the backend log for details."
     )
     assert payload["docs_topic"] == "DISK_FULL"
     assert "disk is full" in payload["hint"].lower()

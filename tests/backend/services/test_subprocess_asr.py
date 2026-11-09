@@ -40,12 +40,12 @@ class EchoASRBackend(SubprocessASRBackend):
 
 @pytest.fixture
 def asr(monkeypatch):
-    # The echo sidecar self-crashes after one frame when OMNIVOICE_ECHO_CRASH
+    # The echo sidecar self-crashes after one frame when ELEVENVOICE_ECHO_CRASH
     # is set (a sibling subprocess test uses it). Clear it by default so the
     # non-crash tests here never inherit a leaked flag via os.environ.copy();
     # the crash test re-sets it explicitly.
-    monkeypatch.delenv("OMNIVOICE_ECHO_CRASH", raising=False)
-    monkeypatch.delenv("OMNIVOICE_ECHO_CRASH_NO_REPLY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ECHO_CRASH", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ECHO_CRASH_NO_REPLY", raising=False)
     b = EchoASRBackend()
     yield b
     try:
@@ -89,7 +89,7 @@ def test_shared_loader_contract_starts_and_reuses_sidecar(asr):
 def test_crash_mid_transcribe_fails_then_respawns(monkeypatch, asr):
     # The sidecar exits BEFORE replying — a deterministic dead pipe simulating
     # a CTranslate2 GPU-teardown segfault mid-transcription.
-    monkeypatch.setenv("OMNIVOICE_ECHO_CRASH_NO_REPLY", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_CRASH_NO_REPLY", "1")
     with pytest.raises(RuntimeError) as ei:
         asr.transcribe("/boom.wav")
     msg = str(ei.value)
@@ -98,7 +98,7 @@ def test_crash_mid_transcribe_fails_then_respawns(monkeypatch, asr):
 
     # Backend is still healthy: a fresh call (crash hook off) respawns a new
     # sidecar via _spawn's dead-process check.
-    monkeypatch.delenv("OMNIVOICE_ECHO_CRASH_NO_REPLY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ECHO_CRASH_NO_REPLY", raising=False)
     result = asr.transcribe("/after.wav")
     assert result["segments"][0]["text"] == "echo:/after.wav"
 
@@ -143,7 +143,7 @@ def test_get_active_asr_backend_caches_isolated_singleton(monkeypatch):
     so get_active_asr_backend must hand back one process-wide instance."""
     from services import asr_backend
 
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "faster-whisper-isolated")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "faster-whisper-isolated")
     monkeypatch.setattr(asr_backend, "_ISOLATED_INSTANCES", {})
     a = asr_backend.get_active_asr_backend()
     b = asr_backend.get_active_asr_backend()

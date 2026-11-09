@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -78,7 +78,7 @@ def test_fallback_chain_still_degrades_to_faster_whisper_then_pytorch(monkeypatc
 
 def test_an_explicitly_pinned_backend_still_wins(monkeypatch):
     """Anyone who pinned an engine keeps it — auto-detect must not override."""
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "faster-whisper")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "faster-whisper")
     monkeypatch.setattr(ab, "_mps_available", lambda: True)
     monkeypatch.setattr(ab, "_probe_available", _probe({"mlx-whisper"}))
     assert ab.active_backend_id() == "faster-whisper"
@@ -92,7 +92,7 @@ def test_explicit_omnivoice_alias_routes_shared_asr_to_pytorch(monkeypatch):
     on the PyTorch-native Whisper path that can use ROCm/HIP.
     """
     attached_pipeline = object()
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "omnivoice")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "omnivoice")
 
     selected = ab.get_active_asr_backend(asr_pipe=attached_pipeline)
 
@@ -409,13 +409,13 @@ def test_parakeet_mlx_token_to_word_mapping():
 
 # Real-weights smoke — opt-in like the supertonic smoke tests: downloads
 # ~460 MB (the tiny 110M TDT-CTC model, NOT the 1.2 GB v3), so CI never runs
-# it. Locally: OMNIVOICE_SMOKE=1 pytest tests/test_asr_device_aware_autodetect.py
+# it. Locally: ELEVENVOICE_SMOKE=1 pytest tests/test_asr_device_aware_autodetect.py
 _PARAKEET_MLX_TINY = "mlx-community/parakeet-tdt_ctc-110m"
 
 
 @pytest.mark.skipif(
-    os.environ.get("OMNIVOICE_SMOKE") != "1",
-    reason="network test (~460 MB weights); set OMNIVOICE_SMOKE=1 to run",
+    os.environ.get("ELEVENVOICE_SMOKE") != "1",
+    reason="network test (~460 MB weights); set ELEVENVOICE_SMOKE=1 to run",
 )
 def test_parakeet_mlx_real_transcribe_smoke(tmp_path):
     """End-to-end on real weights (Apple Silicon only): load, transcribe a

@@ -20,20 +20,28 @@ export const MCP_CLIENTS = {
     format: 'toml',
     type: undefined,
   },
+  // Hermes Agent reads `mcp_servers` from ~/.hermes/config.yaml; an entry with a
+  // `url` connects over Streamable HTTP, `headers` adds static headers.
+  'hermes-agent': {
+    file: '~/.hermes/config.yaml',
+    docs: 'https://github.com/NousResearch/hermes-agent',
+    format: 'yaml',
+    type: undefined,
+  },
 } as const;
 
-export const MCP_CLIENT_ID_HEADER = 'X-OmniVoice-Client-Id';
+export const MCP_CLIENT_ID_HEADER = 'X-ElevenVoice-Client-Id';
 /** The trailing-slash form works on every backend version; bare `/mcp` only on
  * backends that serve it directly (it used to 405 behind the SPA mount). */
 export const MCP_ENDPOINT = '/mcp/';
 /** Exports reference the backend API key by this environment variable name. */
-export const API_KEY_ENV = 'OMNIVOICE_API_KEY';
+export const API_KEY_ENV = 'ELEVENVOICE_API_KEY';
 
 /**
  * How an export authenticates to `baseUrl`, without ever containing a key.
  *
  * - `none`: loopback, which the backend never challenges.
- * - `bearer`: a remote https backend; exports reference `$OMNIVOICE_API_KEY`.
+ * - `bearer`: a remote https backend; exports reference `$ELEVENVOICE_API_KEY`.
  * - `insecure`: a remote plain-http backend; no key is exported, because it
  *   would cross the network in clear text (see docs/api-auth.md).
  */
@@ -53,6 +61,23 @@ export function mcpSetup(slug: string, baseUrl: string) {
   // Remote https backends: reference the key from the user's environment
   // with each client's own interpolation syntax; never embed it.
   const bearer = remoteAuth(baseUrl) === 'bearer';
+  if (client.format === 'yaml') {
+    // JSON strings are valid YAML scalars, so values stay quoted and escaped.
+    return {
+      file: client.file,
+      docs: client.docs,
+      format: client.format,
+      text: [
+        'mcp_servers:',
+        '  elevenvoice:',
+        `    url: ${JSON.stringify(url)}`,
+        '    headers:',
+        `      ${JSON.stringify(MCP_CLIENT_ID_HEADER)}: ${JSON.stringify(slug)}`,
+        ...(bearer ? [`      Authorization: ${JSON.stringify(`Bearer \${${API_KEY_ENV}}`)}`] : []),
+        '',
+      ].join('\n'),
+    };
+  }
   if (client.format === 'toml') {
     return {
       file: client.file,
@@ -60,7 +85,7 @@ export function mcpSetup(slug: string, baseUrl: string) {
       format: client.format,
       // JSON string syntax is valid TOML basic-string syntax, so values stay escaped.
       text: [
-        '[mcp_servers.voicestudio]',
+        '[mcp_servers.elevenvoice]',
         `url = ${JSON.stringify(url)}`,
         `http_headers = { ${JSON.stringify(MCP_CLIENT_ID_HEADER)} = ${JSON.stringify(slug)} }`,
         ...(bearer ? [`bearer_token_env_var = ${JSON.stringify(API_KEY_ENV)}`] : []),
@@ -75,7 +100,7 @@ export function mcpSetup(slug: string, baseUrl: string) {
     text: JSON.stringify(
       {
         mcpServers: {
-          voicestudio: {
+          elevenvoice: {
             ...(client.type ? { type: client.type } : {}),
             url,
             headers: {

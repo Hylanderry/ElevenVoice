@@ -20,18 +20,18 @@ def setup_mod():
 
 
 class TestOptIn:
-    @pytest.mark.parametrize("env", [{}, {"OMNIVOICE_TORCH_VARIANT": ""}, {"OMNIVOICE_TORCH_VARIANT": "cuda"},
-                                     {"OMNIVOICE_TORCH_VARIANT": "auto"}])
+    @pytest.mark.parametrize("env", [{}, {"ELEVENVOICE_TORCH_VARIANT": ""}, {"ELEVENVOICE_TORCH_VARIANT": "cuda"},
+                                     {"ELEVENVOICE_TORCH_VARIANT": "auto"}])
     def test_not_requested(self, setup_mod, env):
         assert setup_mod._rocm_opt_in(env) is None
 
     def test_requested_with_odd_spelling(self, setup_mod):
-        assert setup_mod._rocm_opt_in({"OMNIVOICE_TORCH_VARIANT": "\tRoCm\n"}) == setup_mod.ROCM_TORCH_INDEX
+        assert setup_mod._rocm_opt_in({"ELEVENVOICE_TORCH_VARIANT": "\tRoCm\n"}) == setup_mod.ROCM_TORCH_INDEX
 
     def test_index_override_and_empty_override(self, setup_mod):
-        env = {"OMNIVOICE_TORCH_VARIANT": "rocm", "OMNIVOICE_TORCH_INDEX": "https://wheels.invalid/amd"}
+        env = {"ELEVENVOICE_TORCH_VARIANT": "rocm", "ELEVENVOICE_TORCH_INDEX": "https://wheels.invalid/amd"}
         assert setup_mod._rocm_opt_in(env) == "https://wheels.invalid/amd"
-        env["OMNIVOICE_TORCH_INDEX"] = ""
+        env["ELEVENVOICE_TORCH_INDEX"] = ""
         assert setup_mod._rocm_opt_in(env) == setup_mod.ROCM_TORCH_INDEX
 
 
@@ -65,10 +65,10 @@ class _Recorder:
 
 def _arm(monkeypatch, mod, *, variant="rocm", already=False, exc=None):
     if variant is None:
-        monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", variant)
-    monkeypatch.delenv("OMNIVOICE_TORCH_INDEX", raising=False)
+        monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", variant)
+    monkeypatch.delenv("ELEVENVOICE_TORCH_INDEX", raising=False)
     monkeypatch.setattr(mod, "_installed_torch_is_rocm", lambda: already)
     rec = _Recorder(exc)
     monkeypatch.setattr(mod.subprocess, "check_call", rec)
@@ -105,7 +105,7 @@ def test_probe_survives_missing_interpreter(monkeypatch, setup_mod):
 def test_rocm_swap_is_verified_in_a_fresh_interpreter(monkeypatch, capsys, setup_mod):
     # Review on #3553: an untagged mirror can resolve ordinary wheels, so a
     # successful uv run is not proof of a ROCm build.
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     states = iter([False, False])  # before the swap, after the swap
     monkeypatch.setattr(setup_mod, "_installed_torch_is_rocm", lambda: next(states))
     monkeypatch.setattr(setup_mod.subprocess, "check_call", lambda cmd: 0)
@@ -118,7 +118,7 @@ def test_rocm_swap_is_verified_in_a_fresh_interpreter(monkeypatch, capsys, setup
 @pytest.mark.parametrize("plat, runs", [("linux", True), ("linux2", True), ("win32", False), ("darwin", False)])
 def test_main_platform_gate(monkeypatch, setup_mod, plat, runs):
     monkeypatch.setattr(setup_mod.sys, "platform", plat)
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     hits = []
     monkeypatch.setattr(setup_mod, "_ensure_rocm_torch", lambda: hits.append(1))
     monkeypatch.setattr(setup_mod, "_ensure_vcredist_windows", lambda: None)
@@ -136,7 +136,7 @@ def test_launcher_never_resyncs(variant):
     )
     env = {"PATH": os.environ["PATH"]}
     if variant is not None:
-        env["OMNIVOICE_TORCH_VARIANT"] = variant
+        env["ELEVENVOICE_TORCH_VARIANT"] = variant
     res = subprocess.run(["node", "--input-type=module", "-e", code], cwd=REPO, env=env,
                          capture_output=True, text=True, check=True)
     data = json.loads(res.stdout)

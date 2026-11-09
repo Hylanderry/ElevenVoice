@@ -18,7 +18,7 @@ segment_transcript(...)` can keep working unchanged — new backends normalise
 their output to the `{"chunks": [{"text", "timestamp": (start, end)}]}`
 shape the segmenter expects.
 
-Selection via `OMNIVOICE_ASR_BACKEND` (default: auto-detect, prefers
+Selection via `ELEVENVOICE_ASR_BACKEND` (default: auto-detect, prefers
 faster-whisper because it's available on every platform we ship to).
 """
 from __future__ import annotations
@@ -41,10 +41,10 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.asr")
+logger = logging.getLogger("elevenvoice.asr")
 
 # A single ASR transcribe must never block a request indefinitely. The chunked
-# dub pipeline already bounds each chunk (OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S);
+# dub pipeline already bounds each chunk (ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S);
 # the *whole-file* paths (dub QC re-transcribe, dictation, OpenAI-compat) ran
 # unbounded, so a slow/stuck transcribe — e.g. large-v3 on a VRAM-starved GPU
 # where the resident TTS model contends for memory — hung the request *and* tied
@@ -52,7 +52,7 @@ logger = logging.getLogger("omnivoice.asr")
 # local backend" (TamKieu / Vietnam report). Bound them so a hang becomes a fast,
 # actionable error instead. Generous default (whole-file large-v3 on CPU is slow
 # but valid); override with the env var for very long single files.
-ASR_TRANSCRIBE_TIMEOUT_S = float(os.environ.get("OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "300.0"))
+ASR_TRANSCRIBE_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "300.0"))
 
 
 class ASRTimeoutError(TimeoutError):
@@ -143,14 +143,14 @@ def _isolated_engine_hint(streak: int) -> str:
         "ASR engine to 'Faster-Whisper (crash-isolated subprocess)' "
         "(faster-whisper-isolated) in Model Catalogue — it runs "
         "transcription in a separate process that can be force-killed to "
-        "reclaim a hung transcribe and its VRAM. VoiceStudio never switches "
+        "reclaim a hung transcribe and its VRAM. ElevenVoice never switches "
         "engines automatically."
     )
 
 
 async def run_transcribe_guarded(executor, fn, *, what: str = "ASR",
                                  timeout: float = ASR_TRANSCRIBE_TIMEOUT_S,
-                                 timeout_env: str = "OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S",
+                                 timeout_env: str = "ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S",
                                  reset_on_timeout: bool = False,
                                  on_abandon=None):
     """Run a blocking transcribe ``fn`` in ``executor`` with a hard wall-clock
@@ -309,7 +309,7 @@ def _ctranslate2_execstack_ok() -> tuple[bool, str]:
 
 
 def _decode_audio_16k_mono(audio_path: str):
-    """Decode `audio_path` to a 16 kHz mono float32 waveform using VoiceStudio's
+    """Decode `audio_path` to a 16 kHz mono float32 waveform using ElevenVoice's
     *validated* ffmpeg, instead of whisperx.load_audio's bare ``"ffmpeg"`` PATH
     lookup.
 
@@ -336,7 +336,7 @@ def _decode_audio_16k_mono(audio_path: str):
     if not ffmpeg:
         raise MediaToolUnavailableError(
             "Cannot transcribe: ffmpeg is missing or not runnable. Install "
-            "ffmpeg (or let VoiceStudio's bundled binary download), then retry. "
+            "ffmpeg (or let ElevenVoice's bundled binary download), then retry. "
             "On Windows a '[WinError 193]' here means the ffmpeg binary is "
             "corrupt or the wrong architecture — reinstall it or clear the "
             "imageio-ffmpeg cache."
@@ -545,7 +545,7 @@ def _harden_speechbrain_lazy_imports() -> None:
         except AttributeError:
             _warnings.warn(
                 "Failed to inspect frame to check if we should ignore importing a "
-                "module lazily (VoiceStudio cross-platform guard)."
+                "module lazily (ElevenVoice cross-platform guard)."
             )
         if importer_frame is not None:
             # Normalise BOTH separators explicitly (not os.path.basename, which is
@@ -581,7 +581,7 @@ _ALIGN_CACHE: dict[tuple[str, str], object] = {}
 #: is uneven across aligner models, and a failure here would silently cost us the
 #: ±10-30 ms timing that lip-sync depends on. Hence: try MPS, fall back to **CPU**,
 #: and only then give up and keep Whisper's own looser timestamps.
-_ALIGN_DEVICE_ENV = "OMNIVOICE_ALIGN_DEVICE"
+_ALIGN_DEVICE_ENV = "ELEVENVOICE_ALIGN_DEVICE"
 
 
 def load_align_model(language_code: str, device: str):
@@ -738,9 +738,9 @@ class WhisperXBackend(ASRBackend):
     def _degrade_for_vram(self, device: str, compute_type: str) -> tuple[str, str]:
         """Downgrade the CUDA compute type (or fall to CPU) if free VRAM can't
         hold the model — preventing the un-catchable native OOM abort (#723).
-        Opt-out: OMNIVOICE_ASR_VRAM_PREFLIGHT=0."""
+        Opt-out: ELEVENVOICE_ASR_VRAM_PREFLIGHT=0."""
         if device != "cuda" or os.environ.get(
-            "OMNIVOICE_ASR_VRAM_PREFLIGHT", "1"
+            "ELEVENVOICE_ASR_VRAM_PREFLIGHT", "1"
         ).strip().lower() in ("0", "false", "no"):
             return device, compute_type
         free = self._free_vram_gb()
@@ -763,7 +763,7 @@ class WhisperXBackend(ASRBackend):
             "whisperx VRAM preflight: %.1f GB free is too little for %s on CUDA "
             "(needs ≥%.1f GB even at int8) — using CPU int8 instead. Free VRAM "
             "(flush the TTS model, or close other GPU apps) for GPU-speed ASR, or "
-            "set OMNIVOICE_ASR_VRAM_PREFLIGHT=0 to skip this check. (#723)",
+            "set ELEVENVOICE_ASR_VRAM_PREFLIGHT=0 to skip this check. (#723)",
             free, self._model_name,
             self._CUDA_VRAM_BUDGET_GB["int8"] * scale,
         )
@@ -1072,7 +1072,7 @@ class WhisperXBackend(ASRBackend):
         self._ensure_asr()
         import whisperx  # used for whisperx.align() below
         logger.info("whisperx transcribing %s (word_timestamps=%s)", audio_path, word_timestamps)
-        # Decode via VoiceStudio's validated ffmpeg, NOT whisperx.load_audio's bare
+        # Decode via ElevenVoice's validated ffmpeg, NOT whisperx.load_audio's bare
         # "ffmpeg" PATH lookup which yields [WinError 193] -> "no segments" on
         # Windows (#479). Same 16 kHz mono s16le array whisperx expects.
         audio = _decode_audio_16k_mono(audio_path)
@@ -1523,7 +1523,7 @@ class PyTorchWhisperBackend(ASRBackend):
     @staticmethod
     def _model_name() -> str:
         return os.environ.get(
-            "OMNIVOICE_PYTORCH_ASR_MODEL", "openai/whisper-large-v3-turbo"
+            "ELEVENVOICE_PYTORCH_ASR_MODEL", "openai/whisper-large-v3-turbo"
         )
 
     @classmethod
@@ -1540,7 +1540,7 @@ class PyTorchWhisperBackend(ASRBackend):
 
         device = str(get_best_device())
         if not device.startswith("cuda") or os.environ.get(
-            "OMNIVOICE_ASR_VRAM_PREFLIGHT", "1"
+            "ELEVENVOICE_ASR_VRAM_PREFLIGHT", "1"
         ).strip().lower() in ("0", "false", "no"):
             return device
         try:
@@ -1558,7 +1558,7 @@ class PyTorchWhisperBackend(ASRBackend):
             "PyTorch Whisper VRAM preflight: %.1f GB free < %.1f GB needed "
             "for %s on CUDA — using CPU instead. Close other GPU apps or Flush "
             "models to restore GPU-speed ASR, or set "
-            "OMNIVOICE_ASR_VRAM_PREFLIGHT=0 to skip this check.",
+            "ELEVENVOICE_ASR_VRAM_PREFLIGHT=0 to skip this check.",
             free_gb,
             budget_gb,
             model_name,
@@ -1579,7 +1579,7 @@ class PyTorchWhisperBackend(ASRBackend):
         # on PyTorch's own stack (cuDNN 9 ships with torch), so it works as a
         # fallback on machines where WhisperX / faster-whisper can't load
         # cuDNN 8 (the `cudnn_ops_infer64_8.dll` failure, issue #255) — and it
-        # needs neither OMNIVOICE_PRELOAD_TTS_ASR=1 nor a loaded TTS model.
+        # needs neither ELEVENVOICE_PRELOAD_TTS_ASR=1 nor a loaded TTS model.
         # When the TTS model already has an ASR head, dub_core passes it via the
         # constructor and this path is skipped.
         import torch
@@ -1797,7 +1797,7 @@ class NeMoASRBackend(ASRBackend):
             [audio_path], timestamps=word_timestamps
         )
         # NeMo returns a list of Hypothesis objects with .text and optional
-        # .timestep / .alignments. Normalise to VoiceStudio's expected shape.
+        # .timestep / .alignments. Normalise to ElevenVoice's expected shape.
         hyp = outputs[0] if outputs else None
         if hyp is None:
             return {"chunks": [], "segments": [], "language": "en"}
@@ -2083,7 +2083,7 @@ def _load_audio_16k_mono_f32(audio_path: str):
     """Decode any audio file to 16 kHz mono float32 in [-1, 1] for sherpa.
 
     Prefers soundfile (WAV/FLAC — the dictation buffers are already WAV) and
-    resamples to 16 kHz when needed; falls back to VoiceStudio's validated ffmpeg
+    resamples to 16 kHz when needed; falls back to ElevenVoice's validated ffmpeg
     for containers soundfile can't read (WebM/Opus). 16 kHz is sherpa's cheapest
     feed; it resamples internally too, but doing it here keeps the contract tight.
     """
@@ -2219,7 +2219,7 @@ class SherpaDictationBackend(ASRBackend):
 
 
 def _sherpa_result(text: str, samples, sr) -> dict:
-    """Normalise a sherpa decode to VoiceStudio's ``{chunks, segments, language,
+    """Normalise a sherpa decode to ElevenVoice's ``{chunks, segments, language,
     text}`` contract. sherpa gives plain text (no VAD split), so emit a single
     segment spanning the buffer — same shape Moonshine uses."""
     text = (text or "").strip()
@@ -2257,7 +2257,7 @@ def _clean_funasr_text(text):
 
 
 def _normalize_funasr(res) -> dict:
-    """Normalise FunASR ``generate()`` output → VoiceStudio's
+    """Normalise FunASR ``generate()`` output → ElevenVoice's
     ``{chunks, segments, language}`` shape (the same one the Whisper backends
     return, consumed by ``services.segmentation``). Defensive about FunASR's
     output variations: prefers VAD ``sentence_info`` (ms timestamps + optional
@@ -2784,12 +2784,12 @@ _INSTALL_HINTS: dict[str, str] = {
     "whisper-cpp":     "Place whisper-cli in backend/engines/whisper_cpp/bin/ (Vulkan/CUDA/CPU)",
     "nemo-parakeet":   (
         "No safe install path in this app yet — nemo_toolkit's ASR extras pin "
-        "transformers>=4.57,<4.58, which conflicts with VoiceStudio's own "
+        "transformers>=4.57,<4.58, which conflicts with ElevenVoice's own "
         "transformers>=5.3 requirement and WILL break the backend "
         "(ImportError on startup) if installed into this shared venv. Do NOT "
         "install nemo_toolkit here. If you want to try Parakeet TDT, set it "
         "up in a separate/dedicated Python environment — not the one "
-        "VoiceStudio manages; in-app isolation for this engine is tracked "
+        "ElevenVoice manages; in-app isolation for this engine is tracked "
         "separately."
     ),
     "parakeet-mlx":    (
@@ -2802,7 +2802,7 @@ _INSTALL_HINTS: dict[str, str] = {
     "sherpa-onnx-asr": "uv add sherpa-onnx  (ONNX live dictation; CPU, cross-platform)",
     "openai-compat-asr": (
         "No install needed — configure a server endpoint in "
-        "Settings → Models → ASR. Points VoiceStudio at any OpenAI-compatible "
+        "Settings → Models → ASR. Points ElevenVoice at any OpenAI-compatible "
         "server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's "
         "own Whisper API, or similar) — a path to Qwen3-ASR today, without "
         "waiting on a direct transformers integration."
@@ -2846,7 +2846,7 @@ def _deep_import_reason(cls: type["ASRBackend"], exc: ImportError) -> str:
     )
     return (
         f"{cls.display_name} failed to load: {what}. The app environment "
-        "looks partially installed — reinstall VoiceStudio (or run "
+        "looks partially installed — reinstall ElevenVoice (or run "
         "`uv sync --reinstall` on a source checkout; plain `uv sync` "
         "trusts the intact package metadata and skips the broken files) "
         "to repair it."
@@ -2995,7 +2995,7 @@ def _ctranslate2_cuda_ok() -> bool:
     Linux HIP keeps its prior CPU CT2/PyTorch-ASR behavior.
 
     Also honors the user compute-device override (Settings → Performance /
-    ``OMNIVOICE_DEVICE``): a host pinned to cpu (or any non-cuda family)
+    ``ELEVENVOICE_DEVICE``): a host pinned to cpu (or any non-cuda family)
     must not hand CTranslate2 a CUDA device — the probe applies the
     override, so gating on its family covers every CT2 loader at once.
     """
@@ -3051,7 +3051,7 @@ def _auto_detect() -> str:
       4. pytorch-whisper — last resort; requires the TTS model to be loaded so it
                           can reuse `_asr_pipe`.
 
-    Auto-detect only. An explicit ``OMNIVOICE_ASR_BACKEND`` or the ``asr_backend``
+    Auto-detect only. An explicit ``ELEVENVOICE_ASR_BACKEND`` or the ``asr_backend``
     pref still wins, so anyone who pinned an engine keeps it.
     """
     if _mps_available() and _probe_available(MLXWhisperBackend):
@@ -3073,7 +3073,7 @@ def _auto_detect() -> str:
 
 
 def active_backend_id() -> str:
-    explicit = os.environ.get("OMNIVOICE_ASR_BACKEND")
+    explicit = os.environ.get("ELEVENVOICE_ASR_BACKEND")
     if explicit:
         # #1582's public spelling predates the registry name. Keep it as a
         # compatibility alias for the PyTorch-native Whisper implementation
@@ -3119,7 +3119,7 @@ def get_active_asr_backend(*, asr_pipe=None) -> ASRBackend:
 def _asr_backend_pinned() -> bool:
     """True when the user explicitly pinned an ASR engine (env var or pref) —
     a pinned engine is honored, never silently swapped (see _auto_detect)."""
-    if os.environ.get("OMNIVOICE_ASR_BACKEND"):
+    if os.environ.get("ELEVENVOICE_ASR_BACKEND"):
         return True
     from core import prefs
     return bool(prefs.get("asr_backend"))
@@ -3238,7 +3238,7 @@ def load_active_asr_backend(
     re-select, and load the next candidate — mirroring how
     :func:`_probe_available` already swallows broken natives at probe time.
 
-    An *explicitly pinned* backend (``OMNIVOICE_ASR_BACKEND`` / the
+    An *explicitly pinned* backend (``ELEVENVOICE_ASR_BACKEND`` / the
     ``asr_backend`` pref) is never silently swapped: the enriched error —
     naming the missing module and the repair command — is raised instead.
 
@@ -3679,7 +3679,7 @@ def transcribe_reference(audio_path: str, *, release_after: bool = False) -> str
     """Transcribe a voice-clone reference clip with the active ASR backend.
 
     Voice cloning without a user-supplied transcript used to fall through to
-    ``VoiceStudio.load_asr_model()`` — a transformers ``pipeline()`` load of
+    ``ElevenVoice.load_asr_model()`` — a transformers ``pipeline()`` load of
     whisper-large-v3-turbo that fails outright on transformers 5.3 (#308),
     even when whisperx / faster-whisper / mlx-whisper are installed and
     working. Route the reference transcript through the registry instead, so
@@ -3901,7 +3901,7 @@ def sherpa_engine_model_id() -> str:
     on this host) falls through to the default rather than being re-picked.
     """
     from services import sherpa_dictation as _sd
-    explicit = os.environ.get("OMNIVOICE_SHERPA_ASR_MODEL")
+    explicit = os.environ.get("ELEVENVOICE_SHERPA_ASR_MODEL")
     if explicit:
         return explicit
     try:
@@ -3917,7 +3917,7 @@ def sherpa_engine_model_id() -> str:
 def dictation_model_id() -> str | None:
     """The selected sherpa dictation model id, or None when dictation is off /
     no sherpa model is chosen. Env var wins (power-user pin), then prefs."""
-    explicit = os.environ.get("OMNIVOICE_SHERPA_ASR_MODEL")
+    explicit = os.environ.get("ELEVENVOICE_SHERPA_ASR_MODEL")
     if explicit:
         return explicit
     try:
@@ -4169,7 +4169,7 @@ def select_faster_whisper_model(repo_id: str) -> None:
     from services.model_acceptance import ensure_accepted
 
     if prefs.is_env_shadowed("ASR_MODEL_FASTER"):
-        raise ValueError("ASR_MODEL_FASTER is set outside VoiceStudio")
+        raise ValueError("ASR_MODEL_FASTER is set outside ElevenVoice")
     # Selecting a gated model asks for acceptance up front; use is still
     # checked at load, so a later revocation applies too (#2689).
     ensure_accepted([_licence_repo(repo_id, faster_whisper=True)])
@@ -4262,7 +4262,7 @@ def _offline_asr_repo(backend_id: str | None = None) -> str | None:
         except Exception:  # noqa: BLE001 — preflight must stay best-effort
             return None
     if bid == "pytorch-whisper":
-        return os.environ.get("OMNIVOICE_PYTORCH_ASR_MODEL", _PYTORCH_ASR_DEFAULT)
+        return os.environ.get("ELEVENVOICE_PYTORCH_ASR_MODEL", _PYTORCH_ASR_DEFAULT)
     if bid == "whisper-cpp":
         # The physical target decides the repository: a cached model is a
         # symlink into a content-addressed blob, and the repository holding
@@ -4294,7 +4294,7 @@ def _capture_whisper_repo() -> str | None:
         # OPEN rather than coerce to the default repo and demand a download
         # of a model the user never picked.
         return _fw_repo(faster_whisper_model_id())
-    return os.environ.get("OMNIVOICE_PYTORCH_ASR_MODEL", _PYTORCH_ASR_DEFAULT)
+    return os.environ.get("ELEVENVOICE_PYTORCH_ASR_MODEL", _PYTORCH_ASR_DEFAULT)
 
 
 def _recommended_asr_model(
@@ -4496,7 +4496,7 @@ def asr_model_missing_detail(payload: dict) -> str:
     """Human-readable (English) fallback message for the typed payload —
     what legacy clients / logs see; the frontend renders its own i18n copy."""
     if payload.get("reason") == "manual_install":
-        return ("whisper.cpp needs a local GGML model. Set OMNIVOICE_WHISPER_CPP_MODEL "
+        return ("whisper.cpp needs a local GGML model. Set ELEVENVOICE_WHISPER_CPP_MODEL "
                 "to its file path; see the whisper.cpp setup guide in README.md.")
     if payload.get("reason") == "verification_failed":
         return ("Could not verify the local speech-to-text model. "

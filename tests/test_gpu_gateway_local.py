@@ -76,7 +76,7 @@ async def test_prewarm_uses_the_model_load_budget_and_calls_ensure_ready(monkeyp
         return None
 
     monkeypatch.setattr(gpu_gateway, "_run_local", run_local)
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "321")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "321")
     backend = SimpleNamespace(ensure_ready=lambda: None, engine_id="fake")
 
     await gpu_gateway.prewarm(backend=backend, engine="fake")

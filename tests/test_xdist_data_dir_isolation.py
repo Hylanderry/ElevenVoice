@@ -1,7 +1,7 @@
 """Each pytest-xdist worker must get its own hermetic data dir (tests/conftest.py).
 
 The controller exports the dir it created and workers inherit the environment,
-so before the fix all workers shared one prefs.json/omnivoice.db. That made the
+so before the fix all workers shared one prefs.json/elevenvoice.db. That made the
 LLM skill tests fail in parallel CI runs (#3223) while passing serially.
 """
 from __future__ import annotations
@@ -22,8 +22,8 @@ _PROBE_OUT = os.environ.get("XDIST_DATA_DIR_PROBE_OUT")
 @pytest.mark.parametrize("i", range(12))
 def test_probe_records_worker_and_data_dir(i):
     with open(_PROBE_OUT, "a", encoding="utf-8") as out:
-        data_dir = os.environ["OMNIVOICE_DATA_DIR"]
-        env_file = os.environ["OMNIVOICE_ENV_FILE"]
+        data_dir = os.environ["ELEVENVOICE_DATA_DIR"]
+        env_file = os.environ["ELEVENVOICE_ENV_FILE"]
         # Directory names only (mkdtemp names are unique), never absolute paths.
         out.write(
             f"{os.environ.get('PYTEST_XDIST_WORKER')}\t{os.path.basename(data_dir)}"
@@ -34,7 +34,7 @@ def test_probe_records_worker_and_data_dir(i):
 @pytest.mark.skipif(importlib.util.find_spec("xdist") is None, reason="pytest-xdist not installed")
 def test_each_xdist_worker_gets_its_own_data_dir(tmp_path):
     out = tmp_path / "probe.tsv"
-    env = {k: v for k, v in os.environ.items() if not k.startswith(("OMNIVOICE_DATA_DIR", "OMNIVOICE_ENV_FILE", "_OMNIVOICE_TEST"))}
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("ELEVENVOICE_DATA_DIR", "ELEVENVOICE_ENV_FILE", "_ELEVENVOICE_TEST"))}
     env["XDIST_DATA_DIR_PROBE_OUT"] = str(out)
     subprocess.run(
         [sys.executable, "-m", "pytest", "-p", "no:cacheprovider", "-q", "-n", "3",

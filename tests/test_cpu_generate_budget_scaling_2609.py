@@ -28,14 +28,14 @@ def mm(monkeypatch):
     for name in ("core.config", "services.model_manager"):
         if getattr(sys.modules.get(name), "__file__", None) is None:
             sys.modules.pop(name, None)
-    for var in ("OMNIVOICE_GENERATE_TIMEOUT_S", "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"):
+    for var in ("ELEVENVOICE_GENERATE_TIMEOUT_S", "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"):
         monkeypatch.delenv(var, raising=False)
     import services.model_manager as m
     m = importlib.reload(m)
     yield m
     # Tests may set the budget env vars; clear them BEFORE the reload so no
     # explicit-budget state leaks into later suites.
-    for var in ("OMNIVOICE_GENERATE_TIMEOUT_S", "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"):
+    for var in ("ELEVENVOICE_GENERATE_TIMEOUT_S", "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"):
         monkeypatch.delenv(var, raising=False)
     importlib.reload(m)
 
@@ -81,7 +81,7 @@ def test_cpu_default_budget_has_a_hard_cap(mm, monkeypatch, gb):
 
 def test_explicit_cpu_setting_is_not_capped(mm, monkeypatch, gb):
     """Only the AUTOMATIC budget is capped; an explicit value is authoritative."""
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "21000")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "21000")
     mm = importlib.reload(mm)
     _host(monkeypatch, "cpu")
     assert mm.generate_timeout_s("x" * 500_000) == 21000.0 + (500_000 - 1200) / 40.0
@@ -94,7 +94,7 @@ def test_gpu_budget_unchanged(mm, monkeypatch):
 
 
 def test_explicit_cpu_setting_stays_authoritative(mm, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "700")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "700")
     mm = importlib.reload(mm)
     _host(monkeypatch, "cpu")
     assert mm.generate_timeout_s("x" * 400) == 700.0
@@ -102,7 +102,7 @@ def test_explicit_cpu_setting_stays_authoritative(mm, monkeypatch):
 
 
 def test_explicit_universal_setting_stays_authoritative_on_cpu(mm, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123")
     mm = importlib.reload(mm)
     _host(monkeypatch, "cpu")
     assert mm.generate_timeout_s("x" * 400) == 123.0
@@ -202,8 +202,8 @@ def test_every_client_waits_at_least_as_long_as_the_backend(mm, monkeypatch, raw
     """One rule, identical inputs: the MCP wait is >= the backend budget for the
     text the backend ACTUALLY budgets (after real normalization), however much
     that expands."""
-    for v in ("OMNIVOICE_MCP_TIMEOUT_S", "OMNIVOICE_GENERATE_TIMEOUT_S",
-              "OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "OMNIVOICE_GPU_QUEUE_TIMEOUT_S"):
+    for v in ("ELEVENVOICE_MCP_TIMEOUT_S", "ELEVENVOICE_GENERATE_TIMEOUT_S",
+              "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "ELEVENVOICE_GPU_QUEUE_TIMEOUT_S"):
         monkeypatch.delenv(v, raising=False)
     import mcp_server
     from services.text_normalization import normalize_for_tts
@@ -313,10 +313,10 @@ def test_normalizer_never_outgrows_the_client_expansion_factor(gb):
 def test_mcp_wait_covers_prepared_text_with_an_explicit_budget(mm, monkeypatch, raw, cpu_budget):
     """Fail-before: with an explicit CPU budget the MCP wait sized the length
     bonus from 4x the typed length; real normalization expands digits ~11x."""
-    for v in ("OMNIVOICE_MCP_TIMEOUT_S", "OMNIVOICE_GENERATE_TIMEOUT_S",
-              "OMNIVOICE_GPU_QUEUE_TIMEOUT_S"):
+    for v in ("ELEVENVOICE_MCP_TIMEOUT_S", "ELEVENVOICE_GENERATE_TIMEOUT_S",
+              "ELEVENVOICE_GPU_QUEUE_TIMEOUT_S"):
         monkeypatch.delenv(v, raising=False)
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", cpu_budget)
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", cpu_budget)
     mm = importlib.reload(mm)
     import mcp_server
     from services.text_normalization import normalize_for_tts

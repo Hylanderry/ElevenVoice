@@ -1,4 +1,4 @@
-"""HTTP client for the VoiceStudio Cloud sync API (vssaas sync-api.md).
+"""HTTP client for the ElevenVoice Cloud sync API (vssaas sync-api.md).
 
 Every request asks ``token()`` first; ``None`` raises ``CloudOff`` before any
 byte is sent, which is how the S0 switches stop sync. The client never
@@ -67,7 +67,7 @@ def _checked_base(base_url: str) -> str:
     for known in _KNOWN_SYNC_APIS:
         if wanted == known:
             return known
-    raise ValueError("refusing a sync endpoint outside the known VoiceStudio Cloud environments")
+    raise ValueError("refusing a sync endpoint outside the known ElevenVoice Cloud environments")
 
 
 def _checked_organization(organization_id: str) -> str:

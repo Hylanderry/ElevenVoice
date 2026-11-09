@@ -1,7 +1,7 @@
 """Pre-migration SQLite safety net (core.db_backup) — feat/safe-updates.
 
 Covers the contract the data-safe update flow depends on: a WAL-safe snapshot
-is written as ``omnivoice.db.backup-<version>-<n>``, only the newest
+is written as ``elevenvoice.db.backup-<version>-<n>``, only the newest
 ``KEEP_BACKUPS`` survive pruning, oversized DBs are skipped with a log line,
 and ``latest_backup`` reports the newest snapshot for the Settings → Updates
 backup line.
@@ -36,20 +36,20 @@ def _rows(path):
 
 
 def test_snapshot_creates_named_backup_with_identical_content(tmp_path):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db, rows=4)
 
     backup = db_backup.snapshot_before_migration(str(db), "0.3.9")
 
     assert backup is not None
-    assert os.path.basename(backup) == "omnivoice.db.backup-0.3.9-1"
+    assert os.path.basename(backup) == "elevenvoice.db.backup-0.3.9-1"
     assert _rows(backup) == _rows(db) == [f"voice-{i}" for i in range(4)]
 
 
 def test_snapshot_captures_wal_content(tmp_path):
     """The live DB runs WAL; un-checkpointed writes must land in the backup
     (a plain file copy would miss them — the reason we use the backup API)."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     # Hold a connection open with an extra row committed to the WAL.
     conn = sqlite3.connect(str(db))
@@ -64,7 +64,7 @@ def test_snapshot_captures_wal_content(tmp_path):
 
 
 def test_snapshot_counter_increments_never_overwrites(tmp_path):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     first = db_backup.snapshot_before_migration(str(db), "0.3.9")
     second = db_backup.snapshot_before_migration(str(db), "0.3.9")
@@ -74,7 +74,7 @@ def test_snapshot_counter_increments_never_overwrites(tmp_path):
 
 
 def test_rotation_keeps_only_newest_three(tmp_path):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     made = []
     base = time.time() - 100
@@ -93,7 +93,7 @@ def test_rotation_keeps_only_newest_three(tmp_path):
 def test_preview_version_with_dashes_roundtrips(tmp_path):
     """Preview builds stamp X.Y.Z-N — the dash inside the version must not
     confuse the name parsing or the per-version counter."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     b1 = db_backup.snapshot_before_migration(str(db), "0.3.9-41")
     b2 = db_backup.snapshot_before_migration(str(db), "0.3.9-41")
@@ -103,10 +103,10 @@ def test_preview_version_with_dashes_roundtrips(tmp_path):
 
 
 def test_oversized_db_is_skipped_with_log_line(tmp_path, monkeypatch, caplog):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     monkeypatch.setattr(db_backup, "MAX_BACKUP_DB_BYTES", 1)  # everything is "too big"
-    with caplog.at_level(logging.INFO, logger="omnivoice.db.backup"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.db.backup"):
         assert db_backup.snapshot_before_migration(str(db), "0.3.9") is None
     assert any("Skipping pre-migration DB backup" in r.message for r in caplog.records)
     assert db_backup.list_backups(str(db)) == []
@@ -117,7 +117,7 @@ def test_missing_db_returns_none(tmp_path):
 
 
 def test_latest_backup_reports_newest(tmp_path):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     assert db_backup.latest_backup(str(db)) is None
     _make_db(db)
     older = db_backup.snapshot_before_migration(str(db), "0.3.8")
@@ -132,7 +132,7 @@ def test_latest_backup_reports_newest(tmp_path):
 
 
 def test_version_is_sanitized_for_filenames(tmp_path):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _make_db(db)
     backup = db_backup.snapshot_before_migration(str(db), "0.3.9/../evil")
     name = os.path.basename(backup)
@@ -178,8 +178,8 @@ def test_next_snapshot_reaps_only_partials_without_a_live_owner(tmp_path, monkey
 
 
 def test_pruning_preserves_non_snapshot_partials(tmp_path, monkeypatch):
-    db = tmp_path / "omnivoice.db"
-    notes = tmp_path / "omnivoice.db.backup-notes.part-424242"
+    db = tmp_path / "elevenvoice.db"
+    notes = tmp_path / "elevenvoice.db.backup-notes.part-424242"
     notes.write_bytes(b"user notes")
     monkeypatch.setattr(db_backup, "_pid_alive", lambda pid: False)
     assert db_backup.prune_backups(str(db)) == []

@@ -1,4 +1,4 @@
-export const LONGFORM_DB_NAME = 'omnivoice.longform';
+export const LONGFORM_DB_NAME = 'elevenvoice.longform';
 const LONGFORM_DB_STORE = 'documents';
 const LONGFORM_DB_RECORD_ID = 'workspace';
 export const LONGFORM_DB_SCHEMA = 1;

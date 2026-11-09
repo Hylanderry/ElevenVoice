@@ -27,12 +27,12 @@ def find_omnivoice_source_root(candidates):
 def _candidate_roots(backend_dir):
     """Source roots to probe, most-specific first.
 
-    ``OMNIVOICE_PROJECT_ROOT`` lets the launcher point at the staged project dir
+    ``ELEVENVOICE_PROJECT_ROOT`` lets the launcher point at the staged project dir
     explicitly; otherwise the desktop layout puts ``omnivoice/`` beside
     ``backend/`` (parent of ``backend_dir``).
     """
     roots = []
-    env = os.environ.get("OMNIVOICE_PROJECT_ROOT")
+    env = os.environ.get("ELEVENVOICE_PROJECT_ROOT")
     if env:
         roots.append(env)
     roots.append(os.path.dirname(os.path.abspath(backend_dir)))

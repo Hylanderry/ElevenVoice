@@ -30,7 +30,7 @@ try {
     return route.fulfill({ json: { ok: true } });
   });
   await page.goto(
-    (process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902') + '/#/settings/media',
+    (process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902') + '/#/settings/media',
   );
   await page.getByText('Unavailable', { exact: true }).waitFor();
   assert.deepEqual(actions, []);

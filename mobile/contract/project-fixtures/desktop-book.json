@@ -1,5 +1,5 @@
 {
-  "format": "voicestudio.project",
+  "format": "elevenvoice.project",
   "version": 1,
   "kind": "audiobook",
   "title": "Portable book",

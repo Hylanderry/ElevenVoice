@@ -11,7 +11,7 @@ function renderTab(overrides = {}) {
     logSource: 'backend',
     setLogSource: vi.fn(),
     logs: LINES,
-    logMeta: { path: '/home/u/.omnivoice/omnivoice.log', exists: true },
+    logMeta: { path: '/home/u/.omnivoice/elevenvoice.log', exists: true },
     loadingLogs: false,
     refreshLogs: vi.fn(),
     onClearLogs: vi.fn(),
@@ -39,7 +39,7 @@ describe('LogsTab', () => {
     await waitFor(() => {
       const call = fetchMock.mock.calls.find(([u]) => u.endsWith('/export/reveal'));
       expect(call).toBeTruthy();
-      expect(JSON.parse(call[1].body)).toEqual({ path: '/home/u/.omnivoice/omnivoice.log' });
+      expect(JSON.parse(call[1].body)).toEqual({ path: '/home/u/.omnivoice/elevenvoice.log' });
     });
   });
 

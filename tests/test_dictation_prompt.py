@@ -6,10 +6,10 @@ import tempfile
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
-os.environ["OMNIVOICE_STREAM_INTERVAL"] = "0.1"
-os.environ["OMNIVOICE_STREAM_SILENCE"] = "0.2"
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
+os.environ["ELEVENVOICE_STREAM_INTERVAL"] = "0.1"
+os.environ["ELEVENVOICE_STREAM_SILENCE"] = "0.2"
 
 pytestmark = pytest.mark.usefixtures("asr_model_installed")
 

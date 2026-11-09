@@ -39,7 +39,7 @@ it('promotes the clone rail into an open library pane', () => {
   const compactToggle = screen.getByRole('button', { name: 'clone.toggle_sidebar' });
   fireEvent.click(compactToggle);
 
-  const persisted = JSON.parse(localStorage.getItem('voicestudio.workspace-layout') || '{}');
+  const persisted = JSON.parse(localStorage.getItem('elevenvoice.workspace-layout') || '{}');
   expect(persisted).toMatchObject({
     libraryOpen: true,
     expandedLibraryContext: '/clone:false',

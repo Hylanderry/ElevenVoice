@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 
     from .vulkan_auto import VulkanAdapter
 
-BACKEND_ENV = "OMNIVOICE_GGUF_BACKEND"
-DEVICE_ENV = "OMNIVOICE_GGUF_DEVICE"
+BACKEND_ENV = "ELEVENVOICE_GGUF_BACKEND"
+DEVICE_ENV = "ELEVENVOICE_GGUF_DEVICE"
 
 
 class ComputeConfigError(RuntimeError, ValueError):
@@ -36,7 +36,7 @@ class ComputeConfigError(RuntimeError, ValueError):
         """Append how to fix the backend / device variables to ``problem``."""
         super().__init__(
             f"{problem}. Fix or clear {BACKEND_ENV} / {DEVICE_ENV} "
-            "(for example OMNIVOICE_GGUF_BACKEND=vulkan OMNIVOICE_GGUF_DEVICE=0) "
+            "(for example ELEVENVOICE_GGUF_BACKEND=vulkan ELEVENVOICE_GGUF_DEVICE=0) "
             "and restart the backend."
         )
 
@@ -93,7 +93,7 @@ def selected_vulkan_adapter() -> Optional["VulkanAdapter"]:
     None whenever the route is not a verified Vulkan one: an explicit CPU
     choice, an explicit CUDA backend (or an ambient non-Vulkan
     ``GGML_BACKEND``), a binary without the Vulkan module, or no working
-    Vulkan driver. With ``OMNIVOICE_GGUF_BACKEND=vulkan`` the requested
+    Vulkan driver. With ``ELEVENVOICE_GGUF_BACKEND=vulkan`` the requested
     ``Vulkan<N>`` is used; otherwise GGML's own automatic pick (first
     discrete GPU, else first integrated).
     """
@@ -138,8 +138,8 @@ def cpu_selection_explicit() -> bool:
     """True when the compute policy explicitly pins the CPU.
 
     :func:`apply_compute_env` already folds the Settings choice, the
-    global ``OMNIVOICE_DEVICE`` pin, the engine-level
-    ``OMNIVOICE_GGUF_BACKEND`` override and an ambient native
+    global ``ELEVENVOICE_DEVICE`` pin, the engine-level
+    ``ELEVENVOICE_GGUF_BACKEND`` override and an ambient native
     ``GGML_BACKEND`` into one effective device, so the question is
     simply "did that resolve to CPU?".
 

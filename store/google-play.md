@@ -2,7 +2,7 @@
 
 Status: listing prepared; no Play Console app exists yet.
 
-Package name: `sh.voicestudio.mobile`
+Package name: `sh.elevenvoice.mobile`
 
 Everything the Play Console asks for is in [`google-play/listing.json`](google-play/listing.json),
 so the answers stay reviewable in Git. Graphics are rendered from the app's own
@@ -28,8 +28,8 @@ every permission in the Android manifest has a declaration here.
 6. Prepare a signed APK/AAB without a store upload using **mobile-release**
    from `main`: leave `release_ref` empty, enable `android`, and disable `ios`
    and `signed_ios`. Its `mobile-release` environment needs the four Android
-   upload-key secrets. Download `VoiceStudio-android-release` and upload
-   `VoiceStudio.aab` to internal testing by hand, then use **Android Play internal
+   upload-key secrets. Download `ElevenVoice-android-release` and upload
+   `ElevenVoice.aab` to internal testing by hand, then use **Android Play internal
    testing** with the same upload key in the `google-play` environment
    ([`docs/mobile.md`](../docs/mobile.md#play-internal-testing-maintainers)).
 

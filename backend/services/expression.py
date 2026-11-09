@@ -11,7 +11,7 @@ from typing import Literal
 
 #: OmniVoice's natively tokenized reaction tags, in the order of
 #: ``omnivoice.models.omnivoice._NONVERBAL_PATTERN`` (a test keeps them equal).
-OMNIVOICE_INLINE_TAGS: tuple[str, ...] = (
+ELEVENVOICE_INLINE_TAGS: tuple[str, ...] = (
     "[laughter]",
     "[sigh]",
     "[confirmation-en]",

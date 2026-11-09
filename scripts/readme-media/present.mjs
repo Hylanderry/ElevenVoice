@@ -91,7 +91,7 @@ export async function presentReadmeMedia(browser, captures, output, scratch) {
   filters.push("[x1][v2]xfade=transition=fade:duration=0.5:offset=6.6[x2]");
   filters.push("[x2][v3]xfade=transition=fade:duration=0.5:offset=9.9[x3]");
   filters.push("[x3][v4]xfade=transition=fade:duration=0.5:offset=13.2[tour]");
-  const video = join(output, "voicestudio.mp4");
+  const video = join(output, "elevenvoice.mp4");
   console.log("Encoding the 30 fps HD tour");
   await run(process.env.FFMPEG_PATH || "ffmpeg", [
     ...args,
@@ -127,7 +127,7 @@ export async function presentReadmeMedia(browser, captures, output, scratch) {
     "0",
     gif,
   ]);
-  const finalGif = join(output, "voicestudio.gif");
+  const finalGif = join(output, "elevenvoice.gif");
   await run(process.env.GIFSICLE_PATH || "gifsicle", [
     "--optimize=3",
     "--careful",

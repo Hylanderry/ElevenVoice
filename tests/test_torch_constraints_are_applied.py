@@ -35,7 +35,7 @@ import pytest
 _ROOT = Path(__file__).resolve().parent.parent
 _CONSTRAINTS = _ROOT / "deploy" / "torch-constraints.txt"
 _DOCKERFILE = _ROOT / "deploy" / "Dockerfile"
-_NOTEBOOK = _ROOT / "notebooks" / "OmniVoice_Studio_Colab.ipynb"
+_NOTEBOOK = _ROOT / "notebooks" / "ElevenVoice_Colab.ipynb"
 
 _PACKAGES = ("torch", "torchaudio", "torchvision")
 

@@ -10,13 +10,13 @@
  * The values mirror the backend defaults in backend/services/model_manager.py
  * and are held equal by tests/test_generate_abort_budget.py:
  *
- * - modelLoad: cold-load ceiling, OMNIVOICE_MODEL_LOAD_TIMEOUT
- * - queueWait: GPU queue wait, OMNIVOICE_GPU_QUEUE_TIMEOUT_S
+ * - modelLoad: cold-load ceiling, ELEVENVOICE_MODEL_LOAD_TIMEOUT
+ * - queueWait: GPU queue wait, ELEVENVOICE_GPU_QUEUE_TIMEOUT_S
  * - executionBase: the largest default execution base (sidecar receive
  *   timeouts reach 900 s; CPU hosts get 600 s, accelerated hosts 300 s)
  * - sidecarGrace: the grace generate_timeout_s adds for sidecar engines
  * - progressExtensionCap / progressExtensionBudgets: heartbeat extension,
- *   max(OMNIVOICE_PROGRESS_EXTENSION_CAP_S, budgets x execution budget)
+ *   max(ELEVENVOICE_PROGRESS_EXTENSION_CAP_S, budgets x execution budget)
  * - freeChars / charsPerSecond: the execution budget's length scaling
  * - cpuSecondsPerChar / cpuAutoCap: the default CPU budget's scaling and its
  *   ceiling (#2609), from backend/core/generate_budget.py

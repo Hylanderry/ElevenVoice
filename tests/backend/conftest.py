@@ -3,7 +3,7 @@
 Several files in this tree (test_perf_settings.py, test_engine_spawn_token.py,
 api/test_engines_route_shape.py, services/test_token_resolver.py, …) purge
 ``core`` / ``api`` / ``services`` from ``sys.modules`` and re-import them under
-a per-test, monkeypatched ``OMNIVOICE_DATA_DIR``. monkeypatch restores the ENV
+a per-test, monkeypatched ``ELEVENVOICE_DATA_DIR``. monkeypatch restores the ENV
 at teardown, but the re-imported modules stay cached — bound to the now-dead
 tmp_path (``core.config`` freezes DB_PATH/VOICES_DIR at import time). Any
 later test that lazily resolves those modules (e.g. a route handler doing

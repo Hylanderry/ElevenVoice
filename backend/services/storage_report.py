@@ -40,9 +40,9 @@ DEFAULT_MIN_FREE_GB = 10  # callers pass setup.wizard.MIN_FREE_GB — this is th
 # write there). Anything else lands in the "other" subtotal so the numbers
 # always add up to the real on-disk footprint.
 _DATA_CHILD_DIRS = ("voices", "outputs", "dub_jobs", "batch", "preview")
-_DB_PREFIX = "omnivoice.db"          # omnivoice.db + -wal / -shm / -journal
+_DB_PREFIX = "elevenvoice.db"          # elevenvoice.db + -wal / -shm / -journal
 _LOG_FILES = ("crash_log.txt", "error_journal.jsonl")
-_LOG_PREFIX = "omnivoice.log"        # rolling log + rotations
+_LOG_PREFIX = "elevenvoice.log"        # rolling log + rotations
 
 _GB = 1024 ** 3
 
@@ -568,7 +568,7 @@ def clear_temp(temp_root: str | None = None) -> dict:
 
     Removes exactly the population ``build_report`` counts as the "temp"
     category — direct children of ``temp_root`` whose basename starts with
-    ``omnivoice`` — so nothing outside VoiceStudio's own working files can ever
+    ``omnivoice`` — so nothing outside ElevenVoice's own working files can ever
     be swept up. Symlinked entries are unlinked, never followed, so a stray
     ``omnivoice*`` link cannot make this delete its target's contents.
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Profile the hot paths of VoiceStudio's major features — once, safely.
+"""Profile the hot paths of ElevenVoice's major features — once, safely.
 
 This exists because "make it faster" kept turning into guesswork. Every claim in
 the dub-performance work (#1127, #1129) is supposed to come from a number, and a
 number needs a repeatable way to get it.
 
-**It is deliberately gentle with memory.** VoiceStudio's worst bug class is the
+**It is deliberately gentle with memory.** ElevenVoice's worst bug class is the
 out-of-memory kill on a 16 GB unified-memory Mac (#1119), so a profiler that
 loads every model at once — or loops a benchmark until RAM runs out — would
 reproduce the very crash it is meant to help fix. Therefore:
@@ -21,7 +21,7 @@ reproduce the very crash it is meant to help fix. Therefore:
 Usage:
     uv run python scripts/bench_pipeline.py              # everything
     uv run python scripts/bench_pipeline.py tts clone    # only these stages
-    OMNIVOICE_BENCH_FLOOR_GB=4 uv run python scripts/bench_pipeline.py
+    ELEVENVOICE_BENCH_FLOOR_GB=4 uv run python scripts/bench_pipeline.py
 
 Stop the backend first — it holds a TTS model and will skew every number.
 """
@@ -32,12 +32,12 @@ import sys
 import time
 from contextlib import contextmanager
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
 #: Don't start a stage with less than this much RAM free. A whisper/TTS load
 #: wants ~3 GB; starting one at 2 GB free is how the backend gets OOM-killed.
-FLOOR_GB = float(os.environ.get("OMNIVOICE_BENCH_FLOOR_GB", "3.5"))
+FLOOR_GB = float(os.environ.get("ELEVENVOICE_BENCH_FLOOR_GB", "3.5"))
 
 RESULTS: list[tuple[str, str, float, str]] = []
 
@@ -78,10 +78,10 @@ def stage(name: str):
     # `not (have >= FLOOR_GB)` instead of `have < FLOOR_GB`: NaN (RAM
     # unmeasurable) fails every comparison, and an unmeasurable machine should
     # refuse the stage rather than risk the OOM the floor exists to prevent.
-    # OMNIVOICE_BENCH_FLOOR_GB=0 disables the guard entirely.
+    # ELEVENVOICE_BENCH_FLOOR_GB=0 disables the guard entirely.
     if FLOOR_GB > 0 and not (have >= FLOOR_GB):
         print(f"\n=== {name}: SKIPPED — only {have:.1f} GB free (floor {FLOOR_GB} GB; "
-              f"OMNIVOICE_BENCH_FLOOR_GB=0 to force)", flush=True)
+              f"ELEVENVOICE_BENCH_FLOOR_GB=0 to force)", flush=True)
         RESULTS.append((name, "skipped", 0.0, f"only {have:.1f} GB free"))
         yield None
         return
@@ -287,7 +287,7 @@ STAGES = {"tts": bench_tts, "clone": bench_clone, "asr": bench_asr}
 
 def main() -> None:
     want = [a for a in sys.argv[1:] if not a.startswith("-")] or list(STAGES)
-    print(f"VoiceStudio pipeline profile — floor {FLOOR_GB} GB, stages: {', '.join(want)}")
+    print(f"ElevenVoice pipeline profile — floor {FLOOR_GB} GB, stages: {', '.join(want)}")
     print(f"free RAM at start: {free_gb():.1f} GB", flush=True)
 
     for name in want:

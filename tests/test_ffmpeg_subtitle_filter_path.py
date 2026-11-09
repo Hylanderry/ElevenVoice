@@ -16,11 +16,11 @@ import subprocess
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 
-WIN_CAPTION = r"C:\Users\Ada\omnivoice_data\dub_jobs\j1\exports\burn_subs_x.srt"
-WIN_ESCAPED = r"C\:/Users/Ada/omnivoice_data/dub_jobs/j1/exports/burn_subs_x.srt"
+WIN_CAPTION = r"C:\Users\Ada\elevenvoice_data\dub_jobs\j1\exports\burn_subs_x.srt"
+WIN_ESCAPED = r"C\:/Users/Ada/elevenvoice_data/dub_jobs/j1/exports/burn_subs_x.srt"
 
 
 def test_windows_drive_path_uses_forward_slashes_and_escaped_colon():

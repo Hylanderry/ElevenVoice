@@ -27,7 +27,7 @@ from typing import Any
 
 from core.db import db_conn
 
-logger = logging.getLogger("omnivoice.local_stats")
+logger = logging.getLogger("elevenvoice.local_stats")
 
 
 def _scalar(conn, sql: str, default: Any = 0) -> Any:

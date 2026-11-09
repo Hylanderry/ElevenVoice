@@ -3,7 +3,7 @@
  *
  * Lets the user choose where model weights download (the HuggingFace / Torch
  * cache). The backend persists it to the durable per-user env file as
- * OMNIVOICE_CACHE_DIR, which main.py maps to HF_HOME / HF_HUB_CACHE / TORCH_HOME
+ * ELEVENVOICE_CACHE_DIR, which main.py maps to HF_HOME / HF_HUB_CACHE / TORCH_HOME
  * on the next launch — so changes apply after a restart.
  *
  * Endpoints:

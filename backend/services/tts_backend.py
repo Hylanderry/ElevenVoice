@@ -10,7 +10,7 @@ A uniform protocol for every TTS engine. Today we ship:
 
 Callers should use `get_active_tts_backend()` to pick the configured engine
 instead of importing a specific class. The selection is controlled by the
-`OMNIVOICE_TTS_BACKEND` env var (default: `"omnivoice"`).
+`ELEVENVOICE_TTS_BACKEND` env var (default: `"omnivoice"`).
 
 The protocol deliberately stays narrow: `generate(...)` returns a 1-channel
 tensor sampled at `sample_rate`. Streaming is left for a later pass — the
@@ -34,9 +34,9 @@ from typing import Literal, Optional
 
 import torch
 
-from services.expression import COSYVOICE_INLINE_TAGS, OMNIVOICE_INLINE_TAGS, expression_caps
+from services.expression import COSYVOICE_INLINE_TAGS, ELEVENVOICE_INLINE_TAGS, expression_caps
 
-logger = logging.getLogger("omnivoice.tts")
+logger = logging.getLogger("elevenvoice.tts")
 
 
 # ── HF token leak mitigation (Plan 02-04, T-02-12) ─────────────────────────
@@ -135,8 +135,8 @@ def _retry_once_with_fresh_hf_client(loader, what: str):
     """
     from core.failure import is_hf_connectivity_error
 
-    attempts = max(1, _int_env("OMNIVOICE_MODEL_LOAD_RETRIES", 3))
-    backoff = max(0.0, _float_env("OMNIVOICE_MODEL_LOAD_BACKOFF_S", 2.0))
+    attempts = max(1, _int_env("ELEVENVOICE_MODEL_LOAD_RETRIES", 3))
+    backoff = max(0.0, _float_env("ELEVENVOICE_MODEL_LOAD_BACKOFF_S", 2.0))
     client_reset_used = False
     attempt = 0
     while True:
@@ -303,11 +303,11 @@ class TTSBackend(ABC):
 
         Every adapter lazily loads inside ``generate()`` via a private
         ``_ensure_loaded()`` — which meant a cold first call spent its whole
-        ``OMNIVOICE_GENERATE_TIMEOUT_S`` window (default 300s) downloading /
+        ``ELEVENVOICE_GENERATE_TIMEOUT_S`` window (default 300s) downloading /
         loading weights and got killed with a misleading "too heavy for the
         available compute" error (measured in the wild on a fresh install:
         multi-GB checkpoint download, 0% GPU util, #1014). Routes call this
-        first under the model-load budget (``OMNIVOICE_MODEL_LOAD_TIMEOUT``,
+        first under the model-load budget (``ELEVENVOICE_MODEL_LOAD_TIMEOUT``,
         default 1200s), then start the generate clock on an already-warm
         engine. Default implementation dispatches to the adapter's own
         ``_ensure_loaded`` when present; engines without lazy state no-op.
@@ -730,7 +730,7 @@ _unresolved_prompt_recognizers: dict = {}
 # same tuple as the memory cache — the ref file's mtime is inside the key, so
 # an edited reference never matches a stale file; stale files age out via the
 # mtime prune. Best-effort like the memory cache: any failure means "no disk
-# hit / no disk write", never a failed generation. OMNIVOICE_PROMPT_DISK_CACHE=0
+# hit / no disk write", never a failed generation. ELEVENVOICE_PROMPT_DISK_CACHE=0
 # disables the layer entirely.
 _PROMPT_DISK_CACHE_MAX = 32
 
@@ -738,7 +738,7 @@ _PROMPT_DISK_CACHE_MAX = 32
 def _prompt_disk_dir():
     """Return the prompt-cache directory (created on first use), or None when
     the layer is disabled or the directory can't be created."""
-    if os.environ.get("OMNIVOICE_PROMPT_DISK_CACHE", "1") == "0":
+    if os.environ.get("ELEVENVOICE_PROMPT_DISK_CACHE", "1") == "0":
         return None
     try:
         from core.config import DATA_DIR
@@ -1007,7 +1007,7 @@ def _capture_recognizer_label(ab) -> str:
     if ok:
         return "faster-whisper:" + ab.faster_whisper_model_id()
     model = os.environ.get(
-        "OMNIVOICE_PYTORCH_ASR_MODEL", "openai/whisper-large-v3-turbo",
+        "ELEVENVOICE_PYTORCH_ASR_MODEL", "openai/whisper-large-v3-turbo",
     )
     return "pytorch-whisper:" + model
 
@@ -1780,7 +1780,7 @@ class OmniVoiceBackend(TTSBackend):
     id = "omnivoice"
     display_name = "ElevenVoice (k2-fsa/OmniVoice, 600+ languages)"
     instruct_vocabulary = "tags"
-    inline_tags = OMNIVOICE_INLINE_TAGS
+    inline_tags = ELEVENVOICE_INLINE_TAGS
     supports_voice_design = True
     gpu_compat = ("cuda", "rocm", "mps", "cpu")
     # Derived from the pool's own per-job budget (_GPU_VRAM_PER_JOB_GB = 5.0 in
@@ -2244,7 +2244,7 @@ class VoxCPM2Backend(TTSBackend):
         if hint:
             logger.warning("VoxCPM2: %s", hint)
         from voxcpm import VoxCPM  # type: ignore[import-not-found]
-        checkpoint = os.environ.get("OMNIVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
+        checkpoint = os.environ.get("ELEVENVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
         logger.info("Loading VoxCPM2 from %s", checkpoint)
         # #1224: this first-use download is multi-GB. Unretried, a truncated
         # body at 90% aborted the load outright.
@@ -2360,7 +2360,7 @@ class MossTTSNanoBackend(TTSBackend):
             return False, (
                 "moss_tts_nano package not installed. Install from "
                 "https://github.com/OpenMOSS/MOSS-TTS-Nano "
-                "(`pip install -e .`), then set OMNIVOICE_TTS_BACKEND=moss-tts-nano."
+                "(`pip install -e .`), then set ELEVENVOICE_TTS_BACKEND=moss-tts-nano."
             )
         # Importing the MODULE is not enough (#1287). The user had the package
         # installed, so this reported "ready", they switched engine, and the
@@ -2405,7 +2405,7 @@ class MossTTSNanoBackend(TTSBackend):
                 "moss_tts_nano exposes no usable model class; see Model Catalogue"
             )
         checkpoint = os.environ.get(
-            "OMNIVOICE_MOSS_TTS_MODEL", "OpenMOSS-Team/MOSS-TTS-Nano"
+            "ELEVENVOICE_MOSS_TTS_MODEL", "OpenMOSS-Team/MOSS-TTS-Nano"
         )
         logger.info("Loading MOSS-TTS-Nano from %s", checkpoint)
         self._model = _retry_once_with_fresh_hf_client(
@@ -2505,7 +2505,7 @@ class KittenTTSBackend(TTSBackend):
         # initializes it inside the constructor below.
         ensure_espeak_data_path()
         checkpoint = os.environ.get(
-            "OMNIVOICE_KITTENTTS_MODEL", "KittenML/kitten-tts-mini-0.8"
+            "ELEVENVOICE_KITTENTTS_MODEL", "KittenML/kitten-tts-mini-0.8"
         )
         logger.info("Loading KittenTTS from %s", checkpoint)
         # #880: the first-use load downloads ~80 MB from the HF Hub inside the
@@ -2771,7 +2771,7 @@ def _ensure_melotts_text_frontend() -> None:
         raise RuntimeError(
             "MeloTTS English needs the optional 'g2p_en' text package. "
             "Pick another MLX-Audio model or install it explicitly into "
-            "VoiceStudio's Python environment (uv pip install g2p_en)."
+            "ElevenVoice's Python environment (uv pip install g2p_en)."
         )
     import nltk
     from core.config import DATA_DIR
@@ -2785,7 +2785,7 @@ def _ensure_melotts_text_frontend() -> None:
         except LookupError as exc:
             raise RuntimeError(
                 f"MeloTTS needs the local NLTK '{package}' data. "
-                "Install its resources explicitly in VoiceStudio's Python "
+                "Install its resources explicitly in ElevenVoice's Python "
                 "environment: python -m nltk.downloader "
                 "averaged_perceptron_tagger averaged_perceptron_tagger_eng cmudict. "
                 "Generation does not download these resources."
@@ -2902,7 +2902,7 @@ class MLXAudioBackend(TTSBackend):
 
     Exposed as a single backend with a `model_id` selector so the Settings
     UI can surface an engine picker within one adapter. The user switches
-    models by setting `OMNIVOICE_MLX_AUDIO_MODEL` or picking from the UI —
+    models by setting `ELEVENVOICE_MLX_AUDIO_MODEL` or picking from the UI —
     no code change per engine. Default is Kokoro (82M, multilingual, small).
 
     Availability: requires mlx (Apple Silicon only). Skipped entirely on
@@ -2926,7 +2926,7 @@ class MLXAudioBackend(TTSBackend):
     # A curated subset surfaced by default — the full mlx-audio roster is
     # larger but these cover the useful tiers: small multilingual (Kokoro),
     # voice-clone (CSM), voice-design (Qwen3), European (Kugel), lightweight
-    # VITS (MeloTTS). Users can point at any HF repo via OMNIVOICE_MLX_AUDIO_MODEL.
+    # VITS (MeloTTS). Users can point at any HF repo via ELEVENVOICE_MLX_AUDIO_MODEL.
     CURATED_MODELS = {
         "kokoro":      "mlx-community/Kokoro-82M-bf16",
         "csm":         "mlx-community/csm-1b-8bit",
@@ -2987,7 +2987,7 @@ class MLXAudioBackend(TTSBackend):
         from core import prefs
         key = prefs.resolve(
             "mlx_audio_model_id",
-            env="OMNIVOICE_MLX_AUDIO_MODEL",
+            env="ELEVENVOICE_MLX_AUDIO_MODEL",
             default=cls.DEFAULT_MODEL_KEY,
         )
         # Accept either a curated key ("kokoro") or a full HF repo id
@@ -3253,7 +3253,7 @@ class CosyVoiceBackend(TTSBackend):
     non-trivial (git clone --recursive + SoX) so we ship as an optional
     scaffold: ``is_available()`` reports the missing install cleanly.
 
-    Set ``OMNIVOICE_COSYVOICE_MODEL`` to the pretrained model directory path
+    Set ``ELEVENVOICE_COSYVOICE_MODEL`` to the pretrained model directory path
     (e.g. ``pretrained_models/Fun-CosyVoice3-0.5B``). The directory must
     contain the CosyVoice checkpoint files.
 
@@ -3304,7 +3304,7 @@ class CosyVoiceBackend(TTSBackend):
                 "cosyvoice package not installed. Install from "
                 "https://github.com/FunAudioLLM/CosyVoice "
                 "(git clone --recursive + pip install -r requirements.txt + SoX). "
-                "Then set OMNIVOICE_COSYVOICE_MODEL to your model directory."
+                "Then set ELEVENVOICE_COSYVOICE_MODEL to your model directory."
             )
 
     @property
@@ -3320,7 +3320,7 @@ class CosyVoiceBackend(TTSBackend):
     @staticmethod
     def _resolved_model_dir() -> str:
         return os.environ.get(
-            "OMNIVOICE_COSYVOICE_MODEL",
+            "ELEVENVOICE_COSYVOICE_MODEL",
             "pretrained_models/Fun-CosyVoice3-0.5B",
         )
 
@@ -3456,7 +3456,7 @@ class GPTSoVITSBackend(TTSBackend):
         cd GPT-SoVITS
         python api_v2.py -a 127.0.0.1 -p 9880 -c GPT_SoVITS/configs/tts_infer.yaml
 
-    Set ``OMNIVOICE_GPTSOVITS_URL`` to the server URL (default: http://127.0.0.1:9880).
+    Set ``ELEVENVOICE_GPTSOVITS_URL`` to the server URL (default: http://127.0.0.1:9880).
 
     License: MIT — fully permissive, commercial use OK.
     """
@@ -3468,7 +3468,7 @@ class GPTSoVITSBackend(TTSBackend):
     gpu_compat = ("cuda", "cpu")
 
     def __init__(self):
-        self._url = os.environ.get("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+        self._url = os.environ.get("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
 
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
@@ -3480,7 +3480,7 @@ class GPTSoVITSBackend(TTSBackend):
         # the path is unmapped. The two are now distinguishable instead of
         # both reading as "server not reachable".
         from services.outbound_http import EndpointHTTPError, open_trusted_endpoint
-        url = os.environ.get("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+        url = os.environ.get("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
         try:
             with open_trusted_endpoint(
                 url, method="GET", path="tts", timeout=2, allowed_statuses={400, 405},
@@ -3543,16 +3543,16 @@ class GPTSoVITSBackend(TTSBackend):
             transcript = ref_text or ""
             prompt_lang = "auto"  # a profile stores the output language, not the clip's
         else:
-            clip = os.environ.get("OMNIVOICE_GPTSOVITS_REF_AUDIO") or None
-            transcript = (os.environ.get("OMNIVOICE_GPTSOVITS_REF_TEXT") or "") if clip else ""
-            env_lang = (os.environ.get("OMNIVOICE_GPTSOVITS_REF_LANG") or "").strip().lower()
+            clip = os.environ.get("ELEVENVOICE_GPTSOVITS_REF_AUDIO") or None
+            transcript = (os.environ.get("ELEVENVOICE_GPTSOVITS_REF_TEXT") or "") if clip else ""
+            env_lang = (os.environ.get("ELEVENVOICE_GPTSOVITS_REF_LANG") or "").strip().lower()
             prompt_lang = lang_map.get(env_lang, "auto")
         if not clip:
             raise TTSInputError(
                 "GPT-SoVITS api_v2 needs a reference clip for every request. "
                 "Pick a voice profile that has one, or set "
-                "OMNIVOICE_GPTSOVITS_REF_AUDIO (a path the GPT-SoVITS server "
-                "can read) together with OMNIVOICE_GPTSOVITS_REF_TEXT (what "
+                "ELEVENVOICE_GPTSOVITS_REF_AUDIO (a path the GPT-SoVITS server "
+                "can read) together with ELEVENVOICE_GPTSOVITS_REF_TEXT (what "
                 "the clip says) to give plain TTS a default voice."
             )
         body = {
@@ -3561,7 +3561,7 @@ class GPTSoVITSBackend(TTSBackend):
             "ref_audio_path": clip,
             "prompt_text": transcript or "",
             "prompt_lang": prompt_lang,
-            # VoiceStudio already chunks long text; ask the server not to
+            # ElevenVoice already chunks long text; ask the server not to
             # re-split it into short fragments.
             "text_split_method": "cut0",
             "media_type": "wav",
@@ -3653,13 +3653,13 @@ class SherpaOnnxBackend(TTSBackend):
       • Android / iOS
       • WebAssembly (browser)
 
-    This is the bridge to browser-based VoiceStudio: the same engine runs natively
+    This is the bridge to browser-based ElevenVoice: the same engine runs natively
     on desktop and compiles to WASM for the web UI.
 
     Install: pip install sherpa-onnx
     Models: download from https://github.com/k2-fsa/sherpa-onnx/releases
 
-    Set ``OMNIVOICE_SHERPA_MODEL`` to the model directory path.
+    Set ``ELEVENVOICE_SHERPA_MODEL`` to the model directory path.
     """
 
     id = "sherpa-onnx"
@@ -3672,7 +3672,7 @@ class SherpaOnnxBackend(TTSBackend):
 
     def __init__(self):
         self._tts = None
-        self._model_dir = os.environ.get("OMNIVOICE_SHERPA_MODEL", "")
+        self._model_dir = os.environ.get("ELEVENVOICE_SHERPA_MODEL", "")
 
     def model_identity(self) -> Optional[str]:
         model_dir = (self._model_dir or "").strip()
@@ -3689,22 +3689,22 @@ class SherpaOnnxBackend(TTSBackend):
                 "Download models from https://github.com/k2-fsa/sherpa-onnx/releases"
             )
         # #919: sherpa-onnx ships no bundled default model — it can only
-        # synthesize once OMNIVOICE_SHERPA_MODEL points at a downloaded model
+        # synthesize once ELEVENVOICE_SHERPA_MODEL points at a downloaded model
         # directory. Gate on it here (like the other path-configured opt-in
         # engines: Confucius4/dots/MOSS) so the picker marks it unavailable-
         # with-a-reason instead of letting a user select it, generate, and hit
         # a config error that used to be mislabeled as out-of-memory.
-        model_dir = os.environ.get("OMNIVOICE_SHERPA_MODEL", "").strip()
+        model_dir = os.environ.get("ELEVENVOICE_SHERPA_MODEL", "").strip()
         if not model_dir:
             return False, (
-                "OMNIVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS "
+                "ELEVENVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS "
                 "model directory (containing model.onnx + tokens.txt), then "
-                "restart VoiceStudio. Download models from "
+                "restart ElevenVoice. Download models from "
                 "https://github.com/k2-fsa/sherpa-onnx/releases"
             )
         if _sherpa_model_file(model_dir) is None:
             return False, (
-                f"OMNIVOICE_SHERPA_MODEL points to {model_dir!r}, but that directory "
+                f"ELEVENVOICE_SHERPA_MODEL points to {model_dir!r}, but that directory "
                 "does not contain model.onnx or exactly one voice-named .onnx file. "
                 "Choose a sherpa-onnx TTS model directory containing that model and "
                 "tokens.txt (Piper archives use a per-voice filename). Download models "
@@ -3734,7 +3734,7 @@ class SherpaOnnxBackend(TTSBackend):
 
         if not self._model_dir:
             raise RuntimeError(
-                "OMNIVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx "
+                "ELEVENVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx "
                 "TTS model directory (containing model.onnx + tokens.txt)."
             )
 
@@ -3817,12 +3817,12 @@ _LAZY_REGISTRY: dict[str, tuple[str, str]] = {
     # cross-lingual zero-shot cloning, Apache-2.0. Opt-in + subprocess-isolated
     # (own Python 3.10 venv) like the entries above. Validated end-to-end
     # 2026-07-02 (CPU, Apple Silicon; 22.05 kHz output). Gated behind
-    # OMNIVOICE_CONFUCIUS4_TTS_DIR so it's inert until enabled.
+    # ELEVENVOICE_CONFUCIUS4_TTS_DIR so it's inert until enabled.
     "confucius4-tts": ("engines.confucius4", "Confucius4Backend"),
     # audio.cpp (0xShug0/audio.cpp) — pure-C++ ggml runtime, no Python venv.
     # v1 serves Breeze-TTS-2 (en+zh, clone+design) through a parent-managed
     # audiocpp_server over loopback HTTP. Gated behind a server binary
-    # (OMNIVOICE_AUDIOCPP_BIN) so it's inert until enabled. Lazy for the
+    # (ELEVENVOICE_AUDIOCPP_BIN) so it's inert until enabled. Lazy for the
     # same import-cycle reason as the entries above (engines.audiocpp
     # imports services.tts_backend for TTSBackend).
     "audiocpp": ("engines.audiocpp", "AudioCPPBackend"),
@@ -3920,7 +3920,7 @@ _LAST_ERRORS: dict[str, str] = {}
 # Helps users understand what pip package to install and where.
 _INSTALL_HINTS: dict[str, str] = {
     "omnivoice":     "pip install omnivoice  (bundled — no extra install needed)",
-    "omnivoice-subprocess": "No extra install; uses the host OmniVoice install. Opt in with OMNIVOICE_TTS_BACKEND=omnivoice-subprocess (same model in a killable sidecar, for unattended reliability).",
+    "omnivoice-subprocess": "No extra install; uses the host OmniVoice install. Opt in with ELEVENVOICE_TTS_BACKEND=omnivoice-subprocess (same model in a killable sidecar, for unattended reliability).",
     "cosyvoice":     "git clone --recursive FunAudioLLM/CosyVoice + pip install -r requirements.txt + SoX",
     "kittentts":     "pip install kittentts  (ONNX, CPU-only, ~80 MB)",
     "mlx-audio":     "pip install mlx-audio  (Apple Silicon only)",
@@ -3932,12 +3932,12 @@ _INSTALL_HINTS: dict[str, str] = {
     "omnivoice-gguf":"Bundled — runs the C++ omnivoice-tts binary in bin/. An installed quant pair is reused; a missing one downloads from Serveurperso/OmniVoice-GGUF (pinned revision) on first generate. Offline hosts: see docs/engines/omnivoice-gguf.md.",
     "supertonic3":   "uv sync --extra supertonic  (CPU-only ONNX, 31 langs, ~400 MB model on first use; OpenRAIL-M model license)",
     "pockettts":     "uv sync --extra pockettts  (Kyutai, CPU-only, ~100 MB model on first use; MIT code + CC-BY-4.0 weights; HF-gated, review terms and set HF_TOKEN)",
-    "moss-tts-v15":  "git clone OpenMOSS/MOSS-TTS + set OMNIVOICE_MOSS_TTS_V15_DIR  (own venv, transformers==5.0; 8B, ~16 GB weights; CUDA/ROCm/XPU/NPU/CPU, no MPS; Apache-2.0)",
-    "dots-tts":      "git clone rednote-hilab/dots.tts + set OMNIVOICE_DOTS_TTS_DIR  (own venv, transformers==4.57; 2B, ~9 GB weights; CUDA/CPU, Linux/macOS only — on Windows use the audio.cpp dots.tts engine; Apache-2.0)",
-    "confucius4-tts":"git clone netease-youdao/Confucius4-TTS + set OMNIVOICE_CONFUCIUS4_TTS_DIR  (own Python 3.10 venv; 14-lang cross-lingual zero-shot clone; ~5 GB weights auto-download; CUDA/ROCm/XPU/NPU/CPU, no MPS; Apache-2.0)",
-    "audiocpp":     "download the matching audio.cpp v0.7.4 prebuilt + set OMNIVOICE_AUDIOCPP_BIN, then explicitly install Breeze-TTS-2 in Model Catalogue → Models  (native CPU/Vulkan/CUDA/Metal GGUF server, no Python; en+zh clone+design; ~4.73 GiB; weights research/non-commercial only)",
+    "moss-tts-v15":  "git clone OpenMOSS/MOSS-TTS + set ELEVENVOICE_MOSS_TTS_V15_DIR  (own venv, transformers==5.0; 8B, ~16 GB weights; CUDA/ROCm/XPU/NPU/CPU, no MPS; Apache-2.0)",
+    "dots-tts":      "git clone rednote-hilab/dots.tts + set ELEVENVOICE_DOTS_TTS_DIR  (own venv, transformers==4.57; 2B, ~9 GB weights; CUDA/CPU, Linux/macOS only — on Windows use the audio.cpp dots.tts engine; Apache-2.0)",
+    "confucius4-tts":"git clone netease-youdao/Confucius4-TTS + set ELEVENVOICE_CONFUCIUS4_TTS_DIR  (own Python 3.10 venv; 14-lang cross-lingual zero-shot clone; ~5 GB weights auto-download; CUDA/ROCm/XPU/NPU/CPU, no MPS; Apache-2.0)",
+    "audiocpp":     "download the matching audio.cpp v0.7.4 prebuilt + set ELEVENVOICE_AUDIOCPP_BIN, then explicitly install Breeze-TTS-2 in Model Catalogue → Models  (native CPU/Vulkan/CUDA/Metal GGUF server, no Python; en+zh clone+design; ~4.73 GiB; weights research/non-commercial only)",
     "audiocpp-dots": "download the matching audio.cpp v0.7.4 prebuilt (Model Catalogue installs it) + explicitly install dots.tts SOAR in Model Catalogue → Models  (native CPU/Vulkan/CUDA/Metal GGUF on Windows, macOS and Linux; multilingual voice cloning; ~3 GB; Apache-2.0)",
-    "cosyvoice-gguf": "Build Lourdle/cosyvoice.cpp at the documented pinned revision with Vulkan enabled; set OMNIVOICE_COSYVOICE_GGUF_DIR and install its GGUF/ONNX model assets from Model Catalogue (native Vulkan/CPU; no automatic runtime download).",
+    "cosyvoice-gguf": "Build Lourdle/cosyvoice.cpp at the documented pinned revision with Vulkan enabled; set ELEVENVOICE_COSYVOICE_GGUF_DIR and install its GGUF/ONNX model assets from Model Catalogue (native Vulkan/CPU; no automatic runtime download).",
 }
 
 
@@ -3949,12 +3949,12 @@ _INSTALL_HINTS: dict[str, str] = {
 # var each engine's is_available() actually reads. bash/zsh form (the dominant
 # clone-and-run workflow for these engines; dots.tts is *nix-only anyway).
 _SETUP_SNIPPETS: dict[str, str] = {
-    "indextts2":      "export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts",
-    "moss-tts-v15":   "export OMNIVOICE_MOSS_TTS_V15_DIR=/path/to/MOSS-TTS",
-    "dots-tts":       "export OMNIVOICE_DOTS_TTS_DIR=/path/to/dots.tts",
-    "confucius4-tts": "export OMNIVOICE_CONFUCIUS4_TTS_DIR=/path/to/Confucius4-TTS",
+    "indextts2":      "export ELEVENVOICE_INDEXTTS_DIR=/path/to/index-tts",
+    "moss-tts-v15":   "export ELEVENVOICE_MOSS_TTS_V15_DIR=/path/to/MOSS-TTS",
+    "dots-tts":       "export ELEVENVOICE_DOTS_TTS_DIR=/path/to/dots.tts",
+    "confucius4-tts": "export ELEVENVOICE_CONFUCIUS4_TTS_DIR=/path/to/Confucius4-TTS",
     # #919: sherpa-onnx gates on a downloaded model dir (model.onnx + tokens.txt).
-    "sherpa-onnx":    "export OMNIVOICE_SHERPA_MODEL=/path/to/sherpa-onnx-model",
+    "sherpa-onnx":    "export ELEVENVOICE_SHERPA_MODEL=/path/to/sherpa-onnx-model",
 }
 
 
@@ -3993,7 +3993,7 @@ _ENGINE_DOCS: dict[str, str] = {
 def _engine_docs_url(bid: str) -> str | None:
     """Public URL of this engine's doc page, or None when it has none.
 
-    VoiceStudio-owned constant either way: the path comes from the registry
+    ElevenVoice-owned constant either way: the path comes from the registry
     above and the base from :mod:`core.links`, so no part of it is derived
     from an engine probe. That is what lets it cross the public boundary
     intact (see api.public_engine_metadata).
@@ -4261,7 +4261,7 @@ def list_backends(*, include_hidden: bool = False) -> list[dict]:
             from core import prefs
             active_model = prefs.resolve(
                 "mlx_audio_model_id",
-                env="OMNIVOICE_MLX_AUDIO_MODEL",
+                env="ELEVENVOICE_MLX_AUDIO_MODEL",
                 default=cls.DEFAULT_MODEL_KEY,
             )
             out[-1]["curated_models"] = [
@@ -4558,7 +4558,7 @@ def active_backend_id() -> str:
     # Env var > persisted UI choice > default. Env wins so power-users can
     # pin a backend without the Settings picker silently undoing it.
     from core import prefs
-    return prefs.resolve("tts_backend", env="OMNIVOICE_TTS_BACKEND", default="omnivoice")
+    return prefs.resolve("tts_backend", env="ELEVENVOICE_TTS_BACKEND", default="omnivoice")
 
 
 # Cached active backend instance + its id (MM2-01). Without this, every call
@@ -4649,7 +4649,7 @@ def get_active_tts_backend(*, model=None) -> TTSBackend:
         from core import prefs
         mlx_model_key = prefs.resolve(
             "mlx_audio_model_id",
-            env="OMNIVOICE_MLX_AUDIO_MODEL",
+            env="ELEVENVOICE_MLX_AUDIO_MODEL",
             default=MLXAudioBackend.DEFAULT_MODEL_KEY,
         )
 
@@ -4746,9 +4746,9 @@ def _idle_seconds_from_env(name: str, default: float, *, floor: float) -> float:
 
 
 #: How long an engine may sit unused before its weights are handed back.
-#: Override with OMNIVOICE_ENGINE_IDLE_UNLOAD_SECONDS (testing).
+#: Override with ELEVENVOICE_ENGINE_IDLE_UNLOAD_SECONDS (testing).
 ENGINE_IDLE_UNLOAD_SECONDS = _idle_seconds_from_env(
-    "OMNIVOICE_ENGINE_IDLE_UNLOAD_SECONDS", 600.0, floor=5.0
+    "ELEVENVOICE_ENGINE_IDLE_UNLOAD_SECONDS", 600.0, floor=5.0
 )
 
 
@@ -4911,7 +4911,7 @@ async def resolve_generation_backend(
     except ValueError as e:
         raise ValueError(
             f"Active TTS engine '{engine_id}' is not a recognized backend ({e}). "
-            "Check Model Catalogue or the OMNIVOICE_TTS_BACKEND env var."
+            "Check Model Catalogue or the ELEVENVOICE_TTS_BACKEND env var."
         ) from e
 
     ensure_engine_licence(backend_cls)

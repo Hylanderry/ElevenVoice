@@ -43,7 +43,7 @@ function renderFooter() {
 describe('LogsFooter Tauri cleanup failure', () => {
   beforeEach(() => {
     localStorage.clear();
-    localStorage.setItem('omnivoice.logs.active', 'tauri');
+    localStorage.setItem('elevenvoice.logs.active', 'tauri');
     clearTauriLogs.mockReset();
     toastError.mockReset();
     toastSuccess.mockReset();

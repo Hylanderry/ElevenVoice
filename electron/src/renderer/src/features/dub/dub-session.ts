@@ -1194,7 +1194,7 @@ export async function ingestDubUrl(value: string, cookieFile?: File, fetchSubs =
   await run('preparing', async (signal) => {
     if (
       cookieFile &&
-      !(window.location.protocol === 'app:' && window.location.hostname === 'voicestudio') &&
+      !(window.location.protocol === 'app:' && window.location.hostname === 'elevenvoice') &&
       !_cookieTransportAllowed('/api')
     )
       throw new Error('DUB_COOKIE_TRANSPORT');
@@ -1222,7 +1222,7 @@ async function runLocalTranslationAgent(
   signal: AbortSignal,
   retry?: () => Promise<unknown>,
 ): Promise<DubAgentTranslationResult> {
-  const bridge = window.voicestudio?.repair;
+  const bridge = window.elevenvoice?.repair;
   if (!bridge?.translate) throw new Error('LOCAL_TRANSLATION_AGENT_UNAVAILABLE');
   const stop = () => void bridge.stopTranslation().catch(() => {});
   if (signal.aborted) {

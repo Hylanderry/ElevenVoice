@@ -1,6 +1,6 @@
 """Per-agent MCP voice bindings (Wave 2.2 / Spec 2).
 
-An MCP client identifies itself with the ``X-OmniVoice-Client-Id`` header.
+An MCP client identifies itself with the ``X-ElevenVoice-Client-Id`` header.
 Each client can be bound to a default voice profile + engine so different
 agents speak in different voices ("Claude Code in Morgan, Cursor in
 Scarlett"). Pure data layer over the ``mcp_client_bindings`` table — the

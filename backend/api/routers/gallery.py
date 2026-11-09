@@ -32,7 +32,7 @@ from core.url_safety import (
 from core.path_security import contained_join
 from services.ffmpeg_utils import spawn_subprocess
 
-logger = logging.getLogger("omnivoice.gallery")
+logger = logging.getLogger("elevenvoice.gallery")
 
 router = APIRouter()
 

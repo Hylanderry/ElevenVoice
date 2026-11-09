@@ -32,7 +32,7 @@ _BOOT_RUNNER = Path(__file__).resolve().parent / "_boot_runner.py"
 
 @contextlib.contextmanager
 def fresh_data_dir(tmp_path: str | os.PathLike | None = None):
-    """Yield a brand-new, empty OMNIVOICE_DATA_DIR (true first-run state)."""
+    """Yield a brand-new, empty ELEVENVOICE_DATA_DIR (true first-run state)."""
     created = None
     if tmp_path is None:
         created = tempfile.mkdtemp(prefix="probe-firstrun-")
@@ -52,12 +52,12 @@ def fresh_data_dir(tmp_path: str | os.PathLike | None = None):
 @contextlib.contextmanager
 def seeded_data_dir():
     """Yield a temp data dir pre-populated with the checked-in regression fixture
-    (tests/fixtures/omnivoice_data) — for testing the alembic UPGRADE path on
+    (tests/fixtures/elevenvoice_data) — for testing the alembic UPGRADE path on
     existing user data, not a clean first run."""
     import shutil
     import tempfile
 
-    fixture = _REPO_ROOT / "tests" / "fixtures" / "omnivoice_data"
+    fixture = _REPO_ROOT / "tests" / "fixtures" / "elevenvoice_data"
     if not fixture.exists():
         raise RuntimeError(f"regression fixture missing at {fixture}")
     tmp = tempfile.mkdtemp(prefix="probe-seeded-")
@@ -79,9 +79,9 @@ def capture_first_run(data_dir: str | os.PathLike, timeout: float = 180.0) -> di
     os.close(fd)
     child_env = dict(os.environ)
     child_env.update(
-        OMNIVOICE_MODEL="test",
-        OMNIVOICE_DISABLE_FILE_LOG="1",
-        OMNIVOICE_DATA_DIR=str(data_dir),
+        ELEVENVOICE_MODEL="test",
+        ELEVENVOICE_DISABLE_FILE_LOG="1",
+        ELEVENVOICE_DATA_DIR=str(data_dir),
     )
     try:
         proc = subprocess.run(

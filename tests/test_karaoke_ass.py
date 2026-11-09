@@ -23,7 +23,7 @@ import uuid
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 from services.karaoke_ass import (
     build_ass,

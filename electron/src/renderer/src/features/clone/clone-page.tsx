@@ -30,7 +30,7 @@ import { runRendererTask } from '@/lib/global-error-recovery';
 import { SynthesisDock } from '@/components/synthesis-dock';
 
 const DEMO_PROFILE_ID = 'demo0001';
-const DEMO_PROMPTED_KEY = 'omnivoice.demoClonePrompted';
+const DEMO_PROMPTED_KEY = 'elevenvoice.demoClonePrompted';
 
 export function ClonePage() {
   const { t } = useTranslation();
@@ -161,7 +161,7 @@ export function ClonePage() {
                 size="icon-sm"
                 aria-label={t('preferences.search')}
                 title="Ctrl/Cmd + K"
-                onClick={() => window.dispatchEvent(new Event('voicestudio:commands'))}
+                onClick={() => window.dispatchEvent(new Event('elevenvoice:commands'))}
               >
                 <SearchIcon />
               </Button>

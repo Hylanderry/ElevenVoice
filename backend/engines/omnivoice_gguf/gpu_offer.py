@@ -41,9 +41,9 @@ def _engine_chosen() -> Optional[str]:
 
 
 def _env_engine() -> Optional[str]:
-    """``OMNIVOICE_TTS_BACKEND``: it wins over Settings, so while it names
+    """``ELEVENVOICE_TTS_BACKEND``: it wins over Settings, so while it names
     another engine accepting the offer could not switch anything."""
-    return os.environ.get("OMNIVOICE_TTS_BACKEND", "").strip() or None
+    return os.environ.get("ELEVENVOICE_TTS_BACKEND", "").strip() or None
 
 
 def _licence_accepted() -> bool:

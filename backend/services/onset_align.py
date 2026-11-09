@@ -63,7 +63,7 @@ from typing import Sequence
 
 import numpy as np
 
-logger = logging.getLogger("omnivoice.onset_align")
+logger = logging.getLogger("elevenvoice.onset_align")
 
 # Analysis frame for RMS energy. 20 ms is fine-grained enough to localise
 # a syllable onset while staying cheap (a 10-min track is ~30k frames).

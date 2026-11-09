@@ -15,7 +15,7 @@ import wave
 
 import pytest
 
-# conftest.py puts `backend/` on sys.path and points OMNIVOICE_DATA_DIR at a
+# conftest.py puts `backend/` on sys.path and points ELEVENVOICE_DATA_DIR at a
 # throwaway tmpdir before the router imports VOICES_DIR / OUTPUTS_DIR from
 # the REAL core.config (the old sys.modules stub leaked at collection time).
 from fastapi import FastAPI  # noqa: E402
@@ -358,7 +358,7 @@ def test_concurrent_previews_share_one_render(monkeypatch, tmp_path):
 
     responses = asyncio.run(run())
     assert len(calls) == 1
-    assert {r.headers["X-OmniVoice-Preview-Source"] for r in responses} == {"local"}
+    assert {r.headers["X-ElevenVoice-Preview-Source"] for r in responses} == {"local"}
     assert not arch_router._renders
 
 

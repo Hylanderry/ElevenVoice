@@ -25,7 +25,7 @@ from services.cloud_sync.client import CloudOff, SyncApiError
 from services.cloud_sync.merge import canonical, merge_item
 from services.cloud_sync.store import BaseItem, OutboxRow, SyncStore
 
-logger = logging.getLogger("omnivoice.cloud_sync")
+logger = logging.getLogger("elevenvoice.cloud_sync")
 
 #: Highest ``schema_version`` this app understands, per collection.
 SUPPORTED = {"settings": 1, "shortcuts": 1, "favorites": 1, "device-preferences": 1}

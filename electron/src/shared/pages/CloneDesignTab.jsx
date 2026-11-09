@@ -87,7 +87,7 @@ export default function CloneDesignTab(props) {
   const { t } = useTranslation();
   // "Define voice" method — 'audio' (was the Clone tab) | 'design' (was the
   // Design tab). Lives in the store so navigation shims / profile selection
-  // can preset it (voice-studio-unification P4).
+  // can preset it (elevenvoice-unification P4).
   const defineMethod = useAppStore((s) => s.defineMethod);
   const setDefineMethod = useAppStore((s) => s.setDefineMethod);
   // Voice-design seed (#526): show the seed the last synth used, let the user
@@ -255,11 +255,11 @@ export default function CloneDesignTab(props) {
     if (defineMethod !== 'audio') return;
     if (selectedProfile !== DEMO_PROFILE_ID) return;
     if (typeof window === 'undefined') return;
-    if (localStorage.getItem('omnivoice.demoClonePrompted') === '1') return;
+    if (localStorage.getItem('elevenvoice.demoClonePrompted') === '1') return;
     if (text) return; // user already typed something
     setText(DEMO_PROMPT);
     setShowDemoCoachmark(true);
-    localStorage.setItem('omnivoice.demoClonePrompted', '1');
+    localStorage.setItem('elevenvoice.demoClonePrompted', '1');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defineMethod, selectedProfile]);
 

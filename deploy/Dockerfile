@@ -74,7 +74,7 @@ WORKDIR /app
 # Enable unbuffered logs and optimizations
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV HF_HOME=/app/omnivoice_data/huggingface
+ENV HF_HOME=/app/elevenvoice_data/huggingface
 # Allow bare imports (from core.config, from services.*, etc.) when
 # uvicorn is started as `backend.main:app` from WORKDIR /app.
 ENV PYTHONPATH=/app/backend
@@ -84,7 +84,7 @@ ENV PYTHONPATH=/app/backend
 # ("Loopback origin required", issue #261). Exposure is governed by the
 # operator's `-p` port mapping plus the optional share PIN. Desktop builds
 # never set this, so their loopback boundary is unchanged.
-ENV OMNIVOICE_SERVER_MODE=1
+ENV ELEVENVOICE_SERVER_MODE=1
 
 # Install system dependencies (FFmpeg is critical for torchaudio/scene splitting)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -196,13 +196,13 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=5 \
   CMD ["python3", "backend/docker_entrypoint.py", "--health-check"]
 
 # Mount points for persistent data (sqlite db, user voices, huggingface cache)
-VOLUME ["/app/omnivoice_data"]
+VOLUME ["/app/elevenvoice_data"]
 
 # Bind to 0.0.0.0 for external access. The entrypoint reads the manifest default
-# (or OMNIVOICE_PORT) and forwards any explicit Uvicorn options after the image.
-ENV OMNIVOICE_BIND_HOST=0.0.0.0
+# (or ELEVENVOICE_PORT) and forwards any explicit Uvicorn options after the image.
+ENV ELEVENVOICE_BIND_HOST=0.0.0.0
 # Late on purpose: a new commit changes this arg every build, and nothing above may
 # be invalidated by it. Shown in bug reports to tell builds of one version apart.
 ARG BUILD_COMMIT=unknown
-ENV OMNIVOICE_BUILD_COMMIT=${BUILD_COMMIT}
+ENV ELEVENVOICE_BUILD_COMMIT=${BUILD_COMMIT}
 ENTRYPOINT ["python3", "backend/docker_entrypoint.py"]

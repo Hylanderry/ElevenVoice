@@ -45,7 +45,7 @@ from core.logging_utils import log_safe
 from core.browser_guard import reject_cross_site_get
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.generate")
+logger = logging.getLogger("elevenvoice.generate")
 
 # A URL can be fetched repeatedly (including the MCP readiness probe). Cache
 # the encoded bytes by WAV version, and coordinate misses per WAV so a slow
@@ -662,7 +662,7 @@ def _apply_effect_chain(audio_out, sample_rate, effect_preset, *, skip_mastering
     ``skip_mastering`` honors a backend's ``applies_own_mastering`` flag
     (issue #312): studio engines (e.g. VoxCPM2's native 48 kHz output)
     opt out of the broadcast highpass + Compressor pre-stage that's tuned
-    for VoiceStudio's 24 kHz clone output. Loudness normalization still runs —
+    for ElevenVoice's 24 kHz clone output. Loudness normalization still runs —
     it's a benign peak scale. Mirrors ``_run_tts`` in openai_compat.py.
     """
     from services.audio_dsp import (
@@ -839,7 +839,7 @@ def _is_oom_failure(e) -> bool:
 # #919: an engine that requires a model path / env var which isn't set (or is
 # set to a directory missing its model files) fails with a *configuration*
 # error, not a runtime one. The reporting user selected sherpa-onnx and hit
-# "OMNIVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS model
+# "ELEVENVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS model
 # directory …" — a pure setup problem — yet the OOM catch-all told them (on a
 # 63 GB-RAM box) to press Flush for memory they never ran out of. Classify the
 # whole CLASS of "engine not configured / required env var not set" errors so
@@ -847,14 +847,14 @@ def _is_oom_failure(e) -> bool:
 # actionable setup guidance instead of the memory hint. All lowercase; matched
 # over the whole exception chain (engines wrap the original error).
 _CONFIG_MSG_SIGNATURES = (
-    "not set. point it to",      # sherpa: OMNIVOICE_SHERPA_MODEL not set
+    "not set. point it to",      # sherpa: ELEVENVOICE_SHERPA_MODEL not set
     "no model.onnx found in",    # sherpa: dir set but the model file is missing
     "not configured",            # generic "engine not configured" wording
     "venv not found. set",       # confucius4/dots/MOSS dedicated-venv opt-ins
     "unavailable: omnivoice_",   # is_available() reason wrapped by _ensure_loaded
 )
 
-# An OMNIVOICE_* engine env var named alongside "not set" / "point it to" /
+# An ELEVENVOICE_* engine env var named alongside "not set" / "point it to" /
 # "set omnivoice_…" is the strongest config-missing signal and generalizes to
 # any engine gated on such a var (issue #919 class).
 _CONFIG_ENV_RE = re.compile(r"omnivoice_[a-z0-9_]+")
@@ -975,7 +975,7 @@ def _oom_friendly_reraise(e):
                 "Settings → Audio tools and use "
                 "Download/Repair for the media engine, then retry. If Audio "
                 "tools is already ready, repair the selected TTS engine and "
-                f"restart VoiceStudio. Underlying error: {_safe_exc_text(_exc)}"
+                f"restart ElevenVoice. Underlying error: {_safe_exc_text(_exc)}"
             ) from e
     if isinstance(e, PermissionError) or "Permission denied" in es or "Errno 13" in es:
         raise RuntimeError(
@@ -1026,13 +1026,13 @@ def _oom_friendly_reraise(e):
     if ("[winerror 4551]" in _low or "[winerror 1260]" in _low
             or "application control policy" in _low):
         raise RuntimeError(
-            f"Windows blocked a file VoiceStudio needs from running — an "
+            f"Windows blocked a file ElevenVoice needs from running — an "
             f"Application Control policy (Smart App Control, WDAC, or "
             f"AppLocker) refused to load it. On a personal PC: Windows "
             f"Security → App & browser control → Smart App Control → Off "
             f"(note Windows only lets you turn it off once — re-enabling "
-            f"needs a Windows reset), then restart VoiceStudio. On a managed/"
-            f"work PC ask IT to allow the VoiceStudio install folder. The Flush "
+            f"needs a Windows reset), then restart ElevenVoice. On a managed/"
+            f"work PC ask IT to allow the ElevenVoice install folder. The Flush "
             f"button won't help. Underlying error: {e}"
         ) from e
     # #1221: libsndfile/soundfile could not read or write an audio file. Its
@@ -1047,7 +1047,7 @@ def _oom_friendly_reraise(e):
             f"the OS level). This is a file/disk problem, not a memory one: "
             f"check the drive isn't full, the output and temp folders exist "
             f"and are writable, and that antivirus or OneDrive isn't locking "
-            f"them (add a VoiceStudio exclusion if you use one). If it happens "
+            f"them (add a ElevenVoice exclusion if you use one). If it happens "
             f"only with one reference clip, re-import that clip. Underlying "
             f"error: {e}"
         ) from e
@@ -1061,7 +1061,7 @@ def _oom_friendly_reraise(e):
     # #756: the GPU's compute capability isn't in this PyTorch build's arch list,
     # so CUDA can't launch kernels ("no kernel image is available for execution").
     # NOT OOM. get_best_device() now falls back to CPU up front, but classify the
-    # raw error too in case CUDA was forced (OMNIVOICE_FORCE_CUDA) or a sub-path
+    # raw error too in case CUDA was forced (ELEVENVOICE_FORCE_CUDA) or a sub-path
     # still ran on the GPU — point at the real fix, not the Flush button.
     if "no kernel image is available" in _low:
         raise RuntimeError(
@@ -1096,7 +1096,7 @@ def _oom_friendly_reraise(e):
         ) from e
     # #919: a required engine model path / env var that isn't set is a pure
     # CONFIGURATION problem, not a runtime one. sherpa-onnx's
-    # "OMNIVOICE_SHERPA_MODEL not set. Point it to …" used to fall through to
+    # "ELEVENVOICE_SHERPA_MODEL not set. Point it to …" used to fall through to
     # the OOM catch-all, telling a user with 63 GB of RAM to press Flush. Point
     # at the real fix — set the variable — and never mention memory or Flush.
     # The underlying error already names the exact variable + what to point it
@@ -1108,7 +1108,7 @@ def _oom_friendly_reraise(e):
             f"This TTS engine isn't set up yet — it needs a model path or "
             f"environment variable that isn't configured, so nothing was "
             f"generated. Set it as the underlying error describes (it names the "
-            f"exact variable and what to point it at), then restart VoiceStudio — "
+            f"exact variable and what to point it at), then restart ElevenVoice — "
             f"or pick a ready engine in Model Catalogue. This is a setup "
             f"problem, not a memory one. Underlying error: {e}"
         ) from e
@@ -1136,7 +1136,7 @@ def _oom_friendly_reraise(e):
             "usual causes are a first-use model download still in progress "
             "(retry once it finishes — it resumes), a very long input, or an "
             "engine running on CPU. Shorter text, or raising "
-            "OMNIVOICE_GENERATE_TIMEOUT_S, will get it through."
+            "ELEVENVOICE_GENERATE_TIMEOUT_S, will get it through."
             + _tail
         ) from e
     # #1334: Windows refusing to back a large model mapping (WinError 1455) is
@@ -1183,7 +1183,7 @@ def _oom_friendly_reraise(e):
             f"Try the Flush button to reload the model, then regenerate. Underlying error: {e}"
         ) from e
     raise RuntimeError(
-        f"TTS engine stopped mid-generation with an error VoiceStudio doesn't "
+        f"TTS engine stopped mid-generation with an error ElevenVoice doesn't "
         f"recognize. Retry once; if it keeps failing, please report it with "
         f"the full trace. Underlying error: {_safe_exc_text(e)}"
     ) from e
@@ -1299,7 +1299,7 @@ def _run_inference(
             else:
                 audio_out = _gen(text, duration)[0]
 
-        # Apply DSP effect preset. The VoiceStudio model never masters its own
+        # Apply DSP effect preset. The ElevenVoice model never masters its own
         # output, so mastering always runs here (unchanged behavior).
         # Pause renders were trimmed per span above; trimming the whole take
         # would also eat a deliberate leading/trailing [pause].
@@ -1335,7 +1335,7 @@ def _run_backend_inference(
     """Engine-aware twin of :func:`_run_inference` (issue #312).
 
     Runs the request through a pluggable ``TTSBackend`` adapter instead of the
-    VoiceStudio model directly. A crash-isolated OmniVoice proxy advertises
+    ElevenVoice model directly. A crash-isolated OmniVoice proxy advertises
     ``supports_native_omnivoice_controls`` and receives the same advanced
     controls and per-call seed as the native path; other adapters keep the
     narrower protocol unchanged.
@@ -1504,7 +1504,7 @@ def _profile_language_rejection_detail(exc: BaseException, language) -> str:
         "falls back to the language stored on the profile.",
         "Either edit the profile and give it a language the engine supports, "
         "select a supported language yourself for this render, or "
-        "switch engine in Model Catalogue (the VoiceStudio engine has the "
+        "switch engine in Model Catalogue (the ElevenVoice engine has the "
         "widest language coverage).",
         f"Engine's own message: {exc}",
     ]
@@ -1549,7 +1549,7 @@ def _language_rejection_or(e: BaseException, backend, language):
     friendly = ValueError(
         f"{engine_name} rejected the requested language{quoted}. Engines "
         "each cover their own set of languages: choose one this engine "
-        "supports, or switch engine in Model Catalogue (the VoiceStudio "
+        "supports, or switch engine in Model Catalogue (the ElevenVoice "
         "engine has the widest coverage), then regenerate. "
         f"Engine's own message: {e}"
     )
@@ -1767,10 +1767,10 @@ def _apply_routing_headers(headers, engine_notice):
     if not engine_notice:
         return headers
     from services.engine_routing import header_safe_reason
-    headers["X-OmniVoice-Routing"] = engine_notice[0]
+    headers["X-ElevenVoice-Routing"] = engine_notice[0]
     safe = header_safe_reason(engine_notice[1]) if engine_notice[1] else ""
     if safe:
-        headers["X-OmniVoice-Routing-Reason"] = safe
+        headers["X-ElevenVoice-Routing-Reason"] = safe
     return headers
 
 @router.get("/generate/budget")
@@ -1861,7 +1861,7 @@ async def generate_speech(
     crossfade_ms: int = Form(50, ge=0, le=1000),
     # Expressive-TTS Spec 01: apply the user pronunciation dictionary + inline
     # [[…]] overrides to the text before synthesis. Default ON; the
-    # OMNIVOICE_PRONUNCIATION env var can disable it for power users. Omitting it
+    # ELEVENVOICE_PRONUNCIATION env var can disable it for power users. Omitting it
     # with an empty dictionary is byte-identical to legacy behavior.
     pronounce: bool = Form(True),
     # Streaming preview: when true, the response is application/x-ndjson —
@@ -1890,9 +1890,9 @@ async def generate_speech(
 
     # ── Engine resolution (issue #312) ──────────────────────────────────────
     # The request runs on the engine selected in Settings (POST /engines/select,
-    # env var OMNIVOICE_TTS_BACKEND wins), or an explicit per-request `engine`
+    # env var ELEVENVOICE_TTS_BACKEND wins), or an explicit per-request `engine`
     # override — same pattern as /ws/tts's `engine` field and /v1/audio/speech's
-    # `model`. Omitting both keeps the historical default (VoiceStudio), so
+    # `model`. Omitting both keeps the historical default (ElevenVoice), so
     # existing API consumers see no change.
     from services.tts_backend import (
         OmniVoiceBackend, _mask_hf_tokens, active_backend_id, get_backend_class,
@@ -1983,7 +1983,7 @@ async def generate_speech(
     # entirely) doesn't stack two multi-GB models in memory — the
     # accumulation behind the 16 GB-Mac OOM deaths. No-op when nothing else
     # is resident, so steady-state single-engine use pays nothing. Opt out:
-    # OMNIVOICE_SINGLE_ENGINE_RESIDENT=0.
+    # ELEVENVOICE_SINGLE_ENGINE_RESIDENT=0.
     from services.engine_memory import evict_other_tts_engines
     await evict_other_tts_engines(engine_id)
 
@@ -2003,7 +2003,7 @@ async def generate_speech(
     # native TTS generate (this route, WS TTS, dub, batch, audiobook) is
     # covered.
     if backend_cls is OmniVoiceBackend:
-        # VoiceStudio keeps its native path: it carries the full advanced
+        # ElevenVoice keeps its native path: it carries the full advanced
         # parameter surface (t_shift, layer/position/class controls) that
         # the generic adapter protocol doesn't. Byte-identical behavior.
         _model = await get_model()
@@ -2057,10 +2057,10 @@ async def generate_speech(
     # ── #1033/#1037: warm the engine under the LOAD budget, not the generate
     # budget. A cold adapter lazily loads (and possibly downloads multi-GB
     # weights) inside generate(), so a fresh install's first request burned
-    # its whole OMNIVOICE_GENERATE_TIMEOUT_S window on the download and died
+    # its whole ELEVENVOICE_GENERATE_TIMEOUT_S window on the download and died
     # with a misleading "too heavy for the available compute" 503 (#1014
     # measured it: 0% GPU util for the full 300s). Model loading gets its own,
-    # larger budget (OMNIVOICE_MODEL_LOAD_TIMEOUT, default 1200s) — the same
+    # larger budget (ELEVENVOICE_MODEL_LOAD_TIMEOUT, default 1200s) — the same
     # split get_model() already has for the native engine. Once warm, this is
     # a no-op per request.
     if _backend is not None:
@@ -2080,7 +2080,7 @@ async def generate_speech(
                     f"for progress), not that generation failed. Retry once the "
                     f"model shows as installed."
                 ),
-                headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+                headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
             ) from exc
         except HTTPException:
             raise
@@ -2100,7 +2100,7 @@ async def generate_speech(
             return JSONResponse(
                 status_code=503,
                 content=model_load_failure(engine_id, exc),
-                headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+                headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
             )
 
     ref_audio_path = None
@@ -2281,7 +2281,7 @@ async def generate_speech(
     # [[…]] one-off overrides to the text, here — AFTER `language` is fully
     # resolved (a profile may fill it above) so per-language entries match the
     # real render language, and BEFORE the text reaches either inference path
-    # (native VoiceStudio or a pluggable backend) and the chunk splitter. This is
+    # (native ElevenVoice or a pluggable backend) and the chunk splitter. This is
     # the single point user text → normalized text → model, so the transform
     # covers generate for every engine. Pure text substitution → identical on
     # mac/Win/Linux. A disabled pref or empty dictionary is a pass-through, so
@@ -2749,10 +2749,10 @@ async def generate_speech(
         # then as much of the lost text as a header can safely hold.
         if _dropped_text:
             from services.engine_routing import header_safe_reason
-            _resp_headers["X-OmniVoice-Dropped-Chunks"] = str(len(_dropped_text))
+            _resp_headers["X-ElevenVoice-Dropped-Chunks"] = str(len(_dropped_text))
             _lost = header_safe_reason(" | ".join(t for t in _dropped_text if t))
             if _lost:
-                _resp_headers["X-OmniVoice-Dropped-Text"] = _lost
+                _resp_headers["X-ElevenVoice-Dropped-Text"] = _lost
         # Routing notice (#21): cpu_fallback, accelerated-with-caveat, or the
         # machine this render ran on. The WAV body is binary so the header
         # channel is the carrier.
@@ -2772,7 +2772,7 @@ async def generate_speech(
         raise HTTPException(
             status_code=503, detail=str(e),
             headers={"Retry-After": str(e.retry_after),
-                     "X-OmniVoice-Retryable": "true"},
+                     "X-ElevenVoice-Retryable": "true"},
         ) from e
     except GpuJobTimeoutError as e:
         # A generate that really ran and overran its budget (#730 class). The
@@ -2781,7 +2781,7 @@ async def generate_speech(
         logger.error("Generate timed out: %s", e)
         raise HTTPException(
             status_code=503, detail=str(e),
-            headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+            headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
         ) from e
     except InvalidBinaryError as e:
         # #1172 class: a managed engine binary is a placeholder / corrupt /
@@ -2794,7 +2794,7 @@ async def generate_speech(
         if language_from_profile and _is_language_rejection(str(e)):
             raise _language_rejection_http_error(
                 e, language, from_profile=True) from e
-        # Most ValueErrors here are VoiceStudio's own validation messages and
+        # Most ValueErrors here are ElevenVoice's own validation messages and
         # are exactly what the user should read. A few are raw library text
         # naming parameters and files the user cannot act on — those get the
         # owned remedy for their class instead (#1879). Unclassified ones keep
@@ -2879,10 +2879,10 @@ def _remove_wav_if_unreferenced(conn, audio_path, exclude_ids=(), defer=None):
 # shared with api/routers/settings.py (the GET/PUT endpoint) — same pattern as
 # perf.torch_compile_disabled, which settings.py and engine_env.py both name.
 def pronunciation_enabled() -> bool:
-    """The pronunciation dictionary is on unless OMNIVOICE_PRONUNCIATION is
+    """The pronunciation dictionary is on unless ELEVENVOICE_PRONUNCIATION is
     "0"/"false"/"no"/"off". Env only: a prefs key was once read here too, but
     no Settings surface ever wrote it."""
-    value = os.environ.get("OMNIVOICE_PRONUNCIATION")
+    value = os.environ.get("ELEVENVOICE_PRONUNCIATION")
     return value is None or value.strip().lower() not in ("0", "false", "no", "off", "")
 
 

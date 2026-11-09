@@ -1,6 +1,6 @@
 """moss-tts-nano-subprocess: MOSS-TTS-Nano from its own venv (one-click install).
 
-The in-process engine needs ``moss_tts_nano`` installed into VoiceStudio's own
+The in-process engine needs ``moss_tts_nano`` installed into ElevenVoice's own
 environment, with upstream's exact pins (torch 2.7.0, transformers 4.57.1)
 landing there too. It also looks for a model class the package no longer
 exports: at the commit pinned here, ``moss_tts_nano`` exports only
@@ -21,7 +21,7 @@ from pathlib import Path
 
 from services.subprocess_backend import SubprocessBackend
 
-VENV_ENV_VAR = "OMNIVOICE_MOSS_TTS_NANO_DIR"
+VENV_ENV_VAR = "ELEVENVOICE_MOSS_TTS_NANO_DIR"
 
 
 def own_venv_python() -> "Path | None":
@@ -68,7 +68,7 @@ class MossTTSNanoSubprocessBackend(SubprocessBackend):
         # A cold load downloads the model and its audio tokenizer; the sidecar
         # heartbeats progress frames meanwhile, and each re-arms this deadline.
         try:
-            v = float(os.environ.get("OMNIVOICE_MOSS_TTS_NANO_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_MOSS_TTS_NANO_RECV_TIMEOUT_S", "900"))
         except (TypeError, ValueError):
             return 900.0
         if not math.isfinite(v):  # reject inf/nan so the deadline can't be disabled

@@ -113,7 +113,7 @@ describe('gate (c) — permanent opt-out', () => {
   });
 
   it('honors the legacy postcard opt-out persisted in the omnivoice.app blob', () => {
-    localStorage.setItem('omnivoice.app', JSON.stringify({ state: { optedOut: true } }));
+    localStorage.setItem('elevenvoice.app', JSON.stringify({ state: { optedOut: true } }));
     expect(isDonationOptedOut()).toBe(true);
     seedEligible(T0);
     const res = recordValueMoment('export', { now: T0, random: win });
@@ -121,14 +121,14 @@ describe('gate (c) — permanent opt-out', () => {
   });
 
   it('honors the unchanged v7 legacy envelope after a deferred flush', () => {
-    queueJsonWrite('omnivoice.app', () => ({ state: { optedOut: true }, version: 7 }));
+    queueJsonWrite('elevenvoice.app', () => ({ state: { optedOut: true }, version: 7 }));
     flushPendingWrites();
 
     expect(isDonationOptedOut()).toBe(true);
   });
 
   it('a corrupt legacy blob is ignored (not treated as opted out)', () => {
-    localStorage.setItem('omnivoice.app', '{definitely not json');
+    localStorage.setItem('elevenvoice.app', '{definitely not json');
     expect(isDonationOptedOut()).toBe(false);
     seedEligible(T0);
     expect(recordValueMoment('export', { now: T0, random: win }).show).toBe(true);

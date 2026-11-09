@@ -1316,7 +1316,7 @@
     "compute_device_auto": "Tự động (khuyên dùng)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "Thiết bị tính toán",
-    "compute_device_env_pinned": "Được ghim bởi biến môi trường OMNIVOICE_DEVICE",
+    "compute_device_env_pinned": "Được ghim bởi biến môi trường ELEVENVOICE_DEVICE",
     "perf_title": "Hiệu suất",
     "generate_timeout_cpu_note": "Dùng khi quá trình tạo chạy trên CPU. Sau khi lưu ở đây, giá trị này luôn chi phối việc tạo trên CPU — không phụ thuộc vào ngân sách tăng tốc ở trên.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1470,7 +1470,7 @@
     "audio_tools_open": "Mở công cụ âm thanh",
     "remote_backend_title": "Phụ trợ từ xa",
     "remote_backend_desc": "Chạy suy luận trên máy khác; để trống URL cho chương trình phụ trợ cục bộ. Lưu tải lại ứng dụng để áp dụng.",
-    "remote_backend_hint": "Bắt đầu chương trình phụ trợ trên máy kia với bộ <1>OMNIVOICE_API_KEY</1>, tiếp cận máy đó qua tailnet của bạn và trỏ ứng dụng này vào máy đó.",
+    "remote_backend_hint": "Bắt đầu chương trình phụ trợ trên máy kia với bộ <1>ELEVENVOICE_API_KEY</1>, tiếp cận máy đó qua tailnet của bạn và trỏ ứng dụng này vào máy đó.",
     "remote_backend_url": "URL phụ trợ",
     "remote_backend_key_placeholder": "Khóa API đặt trên máy tính kia",
     "remote_backend_probe_ok": "Được — {{detail}}",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "Đã tìm thấy {{gpu}}, nhưng bản dựng PyTorch này ({{torch}}) không có kernel cho kiến trúc tính toán của nó nên các engine chạy trên CPU.",
     "gpu_report_state_unknown": "Không xác định được trạng thái GPU.",
     "gpu_report_option_vulkan_engines": "Dùng engine có runtime GPU riêng: audio.cpp chạy trên GPU AMD Radeon qua Vulkan (Cài đặt → Mô hình → cài runtime).",
-    "gpu_report_option_rocm_windows_manual": "Trên phần cứng AMD được hỗ trợ chạy Windows 11 x64, bật cài đặt ROCm 7.2.1 của ElevenVoice bằng OMNIVOICE_TORCH_VARIANT=rocm. Nếu đã cài, hãy chạy lại thiết lập và kiểm tra bảng tương thích trình điều khiển và phần cứng của AMD. Các engine tùy chọn có giới hạn riêng; xem hướng dẫn cài đặt Windows.",
-    "gpu_report_option_rocm_variant_linux": "Đặt OMNIVOICE_TORCH_VARIANT=rocm rồi chạy lại phần thiết lập để cài bản dựng ROCm của PyTorch.",
+    "gpu_report_option_rocm_windows_manual": "Trên phần cứng AMD được hỗ trợ chạy Windows 11 x64, bật cài đặt ROCm 7.2.1 của ElevenVoice bằng ELEVENVOICE_TORCH_VARIANT=rocm. Nếu đã cài, hãy chạy lại thiết lập và kiểm tra bảng tương thích trình điều khiển và phần cứng của AMD. Các engine tùy chọn có giới hạn riêng; xem hướng dẫn cài đặt Windows.",
+    "gpu_report_option_rocm_variant_linux": "Đặt ELEVENVOICE_TORCH_VARIANT=rocm rồi chạy lại phần thiết lập để cài bản dựng ROCm của PyTorch.",
     "gpu_report_option_rocm_device_access": "Kiểm tra trình điều khiển amdgpu đã được nạp và người dùng của bạn mở được /dev/kfd (nhóm render và video).",
     "gpu_report_option_reinstall_cuda_torch": "Cài lại runtime để nó cài bản dựng CUDA của PyTorch.",
     "gpu_report_option_update_nvidia_driver": "Cập nhật trình điều khiển NVIDIA (R525 trở lên trên Linux, R528.33 trở lên trên Windows) rồi khởi động lại ElevenVoice.",
@@ -2242,7 +2242,7 @@
     "failed": "Không thể khởi động bộ máy cục bộ.",
     "idle": "Đang chờ bộ máy cục bộ…",
     "log_label": "Nhật ký bộ máy",
-    "port_in_use": "Cổng {{port}} đang được chương trình khác sử dụng. Đóng chương trình đó hoặc đặt OMNIVOICE_PORT thành một cổng trống rồi thử lại.",
+    "port_in_use": "Cổng {{port}} đang được chương trình khác sử dụng. Đóng chương trình đó hoặc đặt ELEVENVOICE_PORT thành một cổng trống rồi thử lại.",
     "elapsed": "Đã qua {{seconds}} giây",
     "first_run_hint": "Lần chạy đầu có thể mất vài phút để chuẩn bị môi trường Python.",
     "port_in_use_short": "Cổng {{port}} đang được sử dụng",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "Đó là ứng dụng đã cài, không thể chỉnh sửa. Hãy chọn một bản git clone.",
       "not_git": "Thư mục này không phải git clone. Bản tải ZIP không dùng được; hãy dùng git clone.",
-      "not_voicestudio": "Không tìm thấy bản sao ElevenVoice trong thư mục này.",
+      "not_elevenvoice": "Không tìm thấy bản sao ElevenVoice trong thư mục này.",
       "read_only": "ElevenVoice không thể ghi vào thư mục này. Hãy chọn thư mục của bạn."
     },
     "chooseFailed": "Không thể dùng thư mục này. Hãy thử lại hoặc chọn thư mục khác.",
@@ -3311,10 +3311,10 @@
       "workflow": "Quy trình n8n",
       "dockerRunPowerShell": "Chạy container (Windows PowerShell)"
     },
-    "apiBearerHint": "Backend này ở xa: đặt OMNIVOICE_API_KEY trong shell thành khóa API của nó. Các ví dụ đọc khóa từ đó và không bao giờ chứa khóa.",
+    "apiBearerHint": "Backend này ở xa: đặt ELEVENVOICE_API_KEY trong shell thành khóa API của nó. Các ví dụ đọc khóa từ đó và không bao giờ chứa khóa.",
     "apiInsecureHint": "Khóa API cần https:// với backend ở xa. Hãy đặt backend này sau https (ví dụ Tailscale Serve) trước khi dùng khóa.",
     "dockerGpuHint": "GPU: NVIDIA cần --gpus all (trong Compose là đặt trước thiết bị GPU). AMD dùng thẻ :stable-rocm với /dev/kfd và /dev/dri. Xem hướng dẫn cài đặt Docker.",
-    "openaiAgentsHint": "Trỏ pipeline giọng nói của OpenAI Agents SDK tới ElevenVoice để chuyển giọng nói thành văn bản và văn bản thành giọng nói. Giữ ElevenVoice đang chạy. Với backend từ xa, hãy đặt OMNIVOICE_API_KEY trước khi chạy. Đặt AGENT_LLM_BASE_URL và AGENT_LLM_MODEL thành máy chủ mô hình ngôn ngữ mà agent của bạn sẽ dùng.",
+    "openaiAgentsHint": "Trỏ pipeline giọng nói của OpenAI Agents SDK tới ElevenVoice để chuyển giọng nói thành văn bản và văn bản thành giọng nói. Giữ ElevenVoice đang chạy. Với backend từ xa, hãy đặt ELEVENVOICE_API_KEY trước khi chạy. Đặt AGENT_LLM_BASE_URL và AGENT_LLM_MODEL thành máy chủ mô hình ngôn ngữ mà agent của bạn sẽ dùng.",
     "category": {
       "all": "Tất cả",
       "comms": "Cuộc gọi & tác tử giọng nói",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "PIN truy cập",
       "api_key_label": "Khóa API (không bắt buộc)",
-      "api_key_help": "Chỉ cần khi máy chủ đặt OMNIVOICE_API_KEY. Khóa được đổi lấy một phiên và không bao giờ được lưu.",
+      "api_key_help": "Chỉ cần khi máy chủ đặt ELEVENVOICE_API_KEY. Khóa được đổi lấy một phiên và không bao giờ được lưu.",
       "connect": "Kết nối",
       "connecting": "Đang kết nối…",
       "connected_to": "Đã kết nối với {{host}}",
@@ -3789,9 +3789,9 @@
       "last_seen": "Lần cuối thấy {{time}}",
       "forget": "Quên",
       "error_unreachable": "Không thể kết nối tới {{host}}. Hãy đảm bảo ElevenVoice đang chạy, chia sẻ Mạng đã bật và điện thoại này cùng mạng hoặc dùng Tailscale.",
-      "error_not_voicestudio": "{{host}} có phản hồi nhưng không phải máy chủ ElevenVoice. Hãy kiểm tra địa chỉ và cổng.",
+      "error_not_elevenvoice": "{{host}} có phản hồi nhưng không phải máy chủ ElevenVoice. Hãy kiểm tra địa chỉ và cổng.",
       "error_pin": "PIN bị từ chối. Mỗi lần bật chia sẻ sẽ tạo một PIN mới — hãy quét lại mã QR.",
-      "error_api_key": "Khóa API bị từ chối. Hãy kiểm tra khóa đặt trong OMNIVOICE_API_KEY trên máy chủ.",
+      "error_api_key": "Khóa API bị từ chối. Hãy kiểm tra khóa đặt trong ELEVENVOICE_API_KEY trên máy chủ.",
       "error_session_expired": "Phiên của bạn đã hết hạn. Nhập lại khóa API để kết nối lại.",
       "error_insecure": "http:// thuần chỉ được phép với địa chỉ trong mạng cục bộ hoặc Tailscale của bạn. Hãy dùng https:// cho các máy chủ khác.",
       "error_invalid_url": "Đây không giống địa chỉ máy chủ. Ví dụ: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "{{percent}}% âm thanh bị vỡ tiếng",
     "duration_ok": "Vừa với thời lượng gốc",
     "duration_issue": "{{track_seconds}} giây, dài hơn bản gốc {{source_seconds}} giây"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

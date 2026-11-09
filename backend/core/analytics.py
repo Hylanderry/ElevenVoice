@@ -1,6 +1,6 @@
 """Opt-in product analytics — hardened.
 
-VoiceStudio is local-first, so analytics here is held to a higher bar than the
+ElevenVoice is local-first, so analytics here is held to a higher bar than the
 usual SDK drop-in. Three rules, each enforced in code below and pinned by tests:
 
 1. **Off unless the user says yes.** Two independent gates must BOTH be true:
@@ -8,7 +8,7 @@ usual SDK drop-in. Three rules, each enforced in code below and pinned by tests:
    by ``POSTHOG_PROJECT_TOKEN`` when set — see ``_PUBLIC_PROJECT_TOKEN``) *and*
    the user's explicit ``analytics_enabled`` preference, which defaults to
    **False**. A default install transmits nothing, so the product's promise
-   holds out of the box. ``OMNIVOICE_ANALYTICS_DISABLED=1`` is a hard kill
+   holds out of the box. ``ELEVENVOICE_ANALYTICS_DISABLED=1`` is a hard kill
    switch that outranks both.
 
 2. **No exception autocapture, ever.** The obvious SDK default
@@ -36,12 +36,12 @@ import os
 import uuid
 from typing import Any, Optional
 
-logger = logging.getLogger("omnivoice.analytics")
+logger = logging.getLogger("elevenvoice.analytics")
 
 _client = None
 _client_key: Optional[str] = None  # the (token, host) the live client was built for
 
-_KILL_SWITCH = "OMNIVOICE_ANALYTICS_DISABLED"
+_KILL_SWITCH = "ELEVENVOICE_ANALYTICS_DISABLED"
 _OFF_VALUES = {"1", "true", "yes", "on"}
 
 #: In-repo default analytics destination (owner-sanctioned reversal, #1193):
@@ -307,14 +307,14 @@ def _platform() -> str:
 def install_channel() -> str:
     """How this backend was distributed — a closed set, never derived from
     paths or hostnames. "installer": the desktop shell sets
-    ``OMNIVOICE_INSTALL_CHANNEL=installer`` (backend.rs analytics_env()).
-    "docker": the image sets ``OMNIVOICE_SERVER_MODE=1`` (see
+    ``ELEVENVOICE_INSTALL_CHANNEL=installer`` (backend.rs analytics_env()).
+    "docker": the image sets ``ELEVENVOICE_SERVER_MODE=1`` (see
     api/dependencies.py — the pre-existing Docker marker). Else "source"."""
-    ch = (os.environ.get("OMNIVOICE_INSTALL_CHANNEL", "") or "").strip().lower()
+    ch = (os.environ.get("ELEVENVOICE_INSTALL_CHANNEL", "") or "").strip().lower()
     if ch in {"installer", "docker", "source"}:
         return ch
     # _OFF_VALUES doubles as the repo's canonical truthy-string set.
-    if (os.environ.get("OMNIVOICE_SERVER_MODE", "") or "").strip().lower() in _OFF_VALUES:
+    if (os.environ.get("ELEVENVOICE_SERVER_MODE", "") or "").strip().lower() in _OFF_VALUES:
         return "docker"
     return "source"
 

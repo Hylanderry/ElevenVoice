@@ -38,7 +38,7 @@ from services.tts_backend import (
 )
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.batch")
+logger = logging.getLogger("elevenvoice.batch")
 
 # Compatibility values emitted by the established Tauri Batch picker. They
 # are taxonomy tokens, not arbitrary prose, and are resolved server-side so
@@ -367,7 +367,7 @@ async def _run_batch_pipeline_leased(job_id: str, job: dict, lease: voice_leases
         raise failure.SourceLanguageRequiredError()
 
     # ── Engine resolution (issue #312 class) ────────────────────────────
-    # Batch used to hardcode VoiceStudio regardless of the engine selected in
+    # Batch used to hardcode ElevenVoice regardless of the engine selected in
     # Model Catalogue. Clone profiles require a cloning-capable engine; presets
     # and designed voices use instruction mode. Resolve once for the whole job.
     # below shares the same active engine); an uncaught ValueError here

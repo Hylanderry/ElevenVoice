@@ -13,7 +13,7 @@ export function openaiAgentsSetup(slug: string, baseUrl: string) {
   // plain-http backend must not receive it in clear text.
   const apiKey =
     remoteAuth(baseUrl) === 'bearer'
-      ? 'os.environ.get("OMNIVOICE_API_KEY", "not-needed-locally")'
+      ? 'os.environ.get("ELEVENVOICE_API_KEY", "not-needed-locally")'
       : '"not-needed-locally"';
   const text = `# pip install "openai-agents[voice]"
 import os
@@ -31,7 +31,7 @@ from openai import AsyncOpenAI
 
 set_tracing_disabled(True)  # keep traces on this machine
 
-voicestudio = AsyncOpenAI(
+elevenvoice = AsyncOpenAI(
     base_url=${JSON.stringify(url)},
     api_key=${apiKey},
 )
@@ -51,18 +51,18 @@ agent = Agent(
 
 pipeline = VoicePipeline(
     workflow=SingleAgentVoiceWorkflow(agent),
-    stt_model="gpt-4o-transcribe",  # served by VoiceStudio's active speech-recognition engine
-    tts_model="gpt-4o-mini-tts",  # served by VoiceStudio's active voice engine
+    stt_model="gpt-4o-transcribe",  # served by ElevenVoice's active speech-recognition engine
+    tts_model="gpt-4o-mini-tts",  # served by ElevenVoice's active voice engine
     config=VoicePipelineConfig(
-        model_provider=OpenAIVoiceModelProvider(openai_client=voicestudio),
+        model_provider=OpenAIVoiceModelProvider(openai_client=elevenvoice),
         stt_settings=STTModelSettings(language="en"),  # omit language to auto-detect
-        tts_settings=TTSModelSettings(voice="alloy"),  # or a VoiceStudio voice-profile id
+        tts_settings=TTSModelSettings(voice="alloy"),  # or a ElevenVoice voice-profile id
     ),
 )
 `;
   return {
-    file: 'voicestudio_agents.py',
-    docs: 'https://github.com/debpalash/VoiceStudio/blob/main/docs/agentic-voice.md#openai-agents-sdk',
+    file: 'elevenvoice_agents.py',
+    docs: 'https://github.com/Hylanderry/ElevenVoice#readme',
     text,
   };
 }

@@ -11,7 +11,7 @@ import json
 import os
 import sys
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 from services import translation_engines as te
 

@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skipif(platform.system() != "Darwin", reason="iOS bridg
 
 
 def test_cpu_capability_requires_the_scoped_backend_export(tmp_path):
-    source = ROOT / "mobile/ios/VoiceStudioKit/Sources/VSNative"
+    source = ROOT / "mobile/ios/ElevenVoiceKit/Sources/VSNative"
     bridge = tmp_path / "bridge.dylib"
     subprocess.run(["xcrun", "clang", "-dynamiclib", "-std=c11", "-I", str(source / "include"), str(source / "VSNative.c"), "-o", str(bridge)], check=True, capture_output=True)
     libs = []
@@ -25,7 +25,7 @@ def test_cpu_capability_requires_the_scoped_backend_export(tmp_path):
     for function in [native.vs_runtime_available, native.vs_cpu_runtime_available]:
         function.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
         function.restype = ctypes.c_int
-    assert native.vs_runtime_available(b"omnivoice.cpp", libs[0]) == 1
-    assert native.vs_cpu_runtime_available(b"omnivoice.cpp", libs[0]) == 0
-    assert native.vs_cpu_runtime_available(b"omnivoice.cpp", libs[1]) == 1
-    assert native.vs_cpu_runtime_available(b"omnivoice.cpp", b"/missing-runtime.dylib") == 0
+    assert native.vs_runtime_available(b"elevenvoice.cpp", libs[0]) == 1
+    assert native.vs_cpu_runtime_available(b"elevenvoice.cpp", libs[0]) == 0
+    assert native.vs_cpu_runtime_available(b"elevenvoice.cpp", libs[1]) == 1
+    assert native.vs_cpu_runtime_available(b"elevenvoice.cpp", b"/missing-runtime.dylib") == 0

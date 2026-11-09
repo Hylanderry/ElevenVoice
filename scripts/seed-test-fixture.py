@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Deterministic builder for `tests/fixtures/omnivoice_data/` — the frozen
+Deterministic builder for `tests/fixtures/elevenvoice_data/` — the frozen
 regression fixture loaded by PR smoke tests (GATE-01).
 
 Usage (from repo root):
     uv run python scripts/seed-test-fixture.py
 
 What it produces (≤ 200 KB total):
-    tests/fixtures/omnivoice_data/
-    ├── omnivoice.db                          # all 8 tables, 1 voice_profiles row, 0 history rows
+    tests/fixtures/elevenvoice_data/
+    ├── elevenvoice.db                          # all 8 tables, 1 voice_profiles row, 0 history rows
     ├── voices/test-voice/
     │   ├── profile.json                      # mirrors the voice_profiles row
     │   └── sample.wav                        # 1-sec 24 kHz mono silence (~48 KB)
@@ -35,7 +35,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-FIX = REPO_ROOT / "tests" / "fixtures" / "omnivoice_data"
+FIX = REPO_ROOT / "tests" / "fixtures" / "elevenvoice_data"
 VOICE_DIR = FIX / "voices" / "test-voice"
 
 # Fixed timestamp so the fixture is byte-deterministic for git diffs.
@@ -78,12 +78,12 @@ def build_database(db_path: Path, profile: dict) -> None:
     """Build the SQLite DB by importing backend.core.db and calling init_db().
 
     `init_db()` reads `core.config.DB_PATH` at call time, so we monkey-patch
-    that module-level constant after import. `OMNIVOICE_DISABLE_FILE_LOG=1`
+    that module-level constant after import. `ELEVENVOICE_DISABLE_FILE_LOG=1`
     is set before any backend import so we don't write log files to
     nonexistent paths.
     """
-    os.environ["OMNIVOICE_DISABLE_FILE_LOG"] = "1"
-    # OMNIVOICE_DATA_DIR is read by backend.core.config.get_app_data_dir()
+    os.environ["ELEVENVOICE_DISABLE_FILE_LOG"] = "1"
+    # ELEVENVOICE_DATA_DIR is read by backend.core.config.get_app_data_dir()
     # but DB_PATH is set at module import time. We override DB_PATH directly
     # below for full control.
 
@@ -140,7 +140,7 @@ def build_database(db_path: Path, profile: dict) -> None:
 
 def write_readme(path: Path) -> None:
     body = (
-        "# tests/fixtures/omnivoice_data/\n"
+        "# tests/fixtures/elevenvoice_data/\n"
         "\n"
         "**Frozen regression fixture** loaded by `tests/smoke/test_boot_smoke.py`\n"
         "on every PR (macOS / Windows / Linux). (GATE-01; the requirements doc\n"
@@ -157,7 +157,7 @@ def write_readme(path: Path) -> None:
         "\n"
         "## Layout\n"
         "\n"
-        "- `omnivoice.db` — all 8 tables created by `backend/core/db.py::init_db()`,\n"
+        "- `elevenvoice.db` — all 8 tables created by `backend/core/db.py::init_db()`,\n"
         "  with exactly one row in `voice_profiles` and zero rows in history tables.\n"
         "- `voices/test-voice/profile.json` — JSON mirror of the voice_profiles row.\n"
         "- `voices/test-voice/sample.wav` — 1-sec, 24 kHz, mono, 16-bit PCM silence.\n"
@@ -192,7 +192,7 @@ def main() -> int:
 
     write_silence_wav(VOICE_DIR / "sample.wav")
     profile = write_profile_json(VOICE_DIR / "profile.json")
-    build_database(FIX / "omnivoice.db", profile)
+    build_database(FIX / "elevenvoice.db", profile)
     write_readme(FIX / "README.md")
 
     total = directory_size_bytes(FIX)

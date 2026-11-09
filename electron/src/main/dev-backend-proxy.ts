@@ -9,7 +9,7 @@ const STRIP_HEADERS = new Set([
   'forwarded',
   'host',
   'origin',
-  'x-voicestudio-desktop-origin',
+  'x-elevenvoice-desktop-origin',
   'proxy-authorization',
   'referer',
   'te',
@@ -69,7 +69,7 @@ export interface DevBackendProxy {
 }
 
 /**
- * Port for the dev proxy from `VOICESTUDIO_ELECTRON_PROXY_PORT`. `0` asks the OS
+ * Port for the dev proxy from `ELEVENVOICE_ELECTRON_PROXY_PORT`. `0` asks the OS
  * for a free port at bind time: test harnesses that load the packaged renderer
  * use it, because a port picked first and bound later can be taken in between
  * (Electron's own debugger listener took one in CI).
@@ -91,7 +91,7 @@ export async function startDevBackendProxy(
   const server = createServer((incoming, response) => {
     if (proxyRequestRefused(incoming.headers, allowedOrigins)) {
       response.writeHead(403, { 'content-type': 'application/json' });
-      response.end('{"detail":"Request refused: it did not come from the VoiceStudio window"}');
+      response.end('{"detail":"Request refused: it did not come from the ElevenVoice window"}');
       incoming.resume();
       return;
     }

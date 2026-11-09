@@ -178,7 +178,7 @@ def test_env_forwarding_contract(monkeypatch, tmp_path):
     monkeypatch.setenv("HF_HOME", str(tmp_path / "hf_home"))
     monkeypatch.setenv("HF_ENDPOINT", "https://huggingface.co")
     monkeypatch.setenv("HF_HUB_CACHE", str(tmp_path / "hf_cache"))
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
 
     backend = EchoBackend()
     try:
@@ -374,7 +374,7 @@ def test_op_allowlist_drops_unknown(monkeypatch):
     by a legitimate `pong`; parent must silently drop the first and return
     the second.
     """
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
     backend = EchoBackend()
     try:
         with backend._lock:
@@ -407,8 +407,8 @@ def test_sidecar_crash_releases_resources(monkeypatch, echo_backend):
     """A sidecar that os._exit(1)'s mid-frame must not leave the parent
     holding state — `_proc` becomes detectable as dead and a fresh spawn
     works."""
-    monkeypatch.setenv("OMNIVOICE_ECHO_CRASH", "1")
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_CRASH", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
 
     # First generate causes the sidecar to crash after sending the audio
     # frame (the crash hook fires after frames_handled >= 1).
@@ -427,7 +427,7 @@ def test_sidecar_crash_releases_resources(monkeypatch, echo_backend):
     except Exception:
         pass
     # Disable the crash hook so the next spawn lives.
-    monkeypatch.delenv("OMNIVOICE_ECHO_CRASH", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ECHO_CRASH", raising=False)
     # Fresh spawn works.
     ok, msg = echo_backend.health_check()
     assert ok, f"recovery failed: {msg}"
@@ -462,8 +462,8 @@ def _spawn_expecting_failure(backend) -> str:
 
 
 def test_an_early_exit_names_its_exit_code_and_stderr(monkeypatch, echo_backend):
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_ECHO_EXIT_BEFORE_READY", "3")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_EXIT_BEFORE_READY", "3")
     msg = _spawn_expecting_failure(echo_backend)
     assert "did not signal ready: it exited with code 3 before signalling ready" in msg
     assert "exiting before ready on purpose" in msg
@@ -471,8 +471,8 @@ def test_an_early_exit_names_its_exit_code_and_stderr(monkeypatch, echo_backend)
 
 
 def test_a_deadline_kill_says_it_was_the_deadline(monkeypatch, echo_backend):
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_ECHO_STALL_BEFORE_READY", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_STALL_BEFORE_READY", "1")
     echo_backend.spawn_ready_timeout_s = 1.0
     msg = _spawn_expecting_failure(echo_backend)
     assert "no ready frame within 1s, so it was stopped" in msg
@@ -481,18 +481,18 @@ def test_a_deadline_kill_says_it_was_the_deadline(monkeypatch, echo_backend):
 
 
 def test_a_wrong_first_frame_is_a_protocol_mismatch(monkeypatch, echo_backend):
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_ECHO_WRONG_READY", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_WRONG_READY", "1")
     msg = _spawn_expecting_failure(echo_backend)
     assert "it sent op='pong' instead of 'ready'" in msg
 
 
 def test_each_spawn_quotes_only_its_own_stderr(monkeypatch, echo_backend):
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_ECHO_EXIT_BEFORE_READY", "3")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_EXIT_BEFORE_READY", "3")
     _spawn_expecting_failure(echo_backend)
     first = echo_backend._stderr_tail
-    monkeypatch.setenv("OMNIVOICE_ECHO_EXIT_BEFORE_READY", "4")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_EXIT_BEFORE_READY", "4")
     msg = _spawn_expecting_failure(echo_backend)
     assert "exited with code 4" in msg
     # The first process's drain, still finishing, writes to its own buffer.
@@ -502,9 +502,9 @@ def test_each_spawn_quotes_only_its_own_stderr(monkeypatch, echo_backend):
 
 
 def test_an_error_frame_before_ready_is_quoted_and_scrubbed(monkeypatch, echo_backend):
-    monkeypatch.setenv("OMNIVOICE_ECHO_TEST_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_ECHO_TEST_MODE", "1")
     monkeypatch.setenv(
-        "OMNIVOICE_ECHO_ERROR_BEFORE_READY", "import failed in C:\\Users\\alice\\engine"
+        "ELEVENVOICE_ECHO_ERROR_BEFORE_READY", "import failed in C:\\Users\\alice\\engine"
     )
     msg = _spawn_expecting_failure(echo_backend)
     assert "it reported an error instead: import failed in" in msg

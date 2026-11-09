@@ -8,14 +8,14 @@ a hard ``transformers`` pin (``==5.0.0``) that conflicts with the parent's
 
 Probe order (priority — existing power-user installs win, zero migration):
 
-    1. ``${OMNIVOICE_MOSS_TTS_V15_DIR}/.venv/`` — the user's clone-level
+    1. ``${ELEVENVOICE_MOSS_TTS_V15_DIR}/.venv/`` — the user's clone-level
        venv. Highest priority: a user who already cloned MOSS-TTS and ran
        ``uv pip install -e ".[torch-runtime]"`` (per upstream docs) gets
        reused verbatim, no re-download of the ~16 GB model.
     2. ``backend/engines/moss_tts_v15/.venv/`` — this package's own venv,
        created by step 3 if needed.
     3. Bootstrap: ``uv venv`` then ``uv pip install -e
-       "${DIR}[torch-runtime]"``. Requires ``OMNIVOICE_MOSS_TTS_V15_DIR``.
+       "${DIR}[torch-runtime]"``. Requires ``ELEVENVOICE_MOSS_TTS_V15_DIR``.
        The upstream ``torch-runtime`` extra is CUDA (``+cu128``), so the
        auto-bootstrap targets CUDA hosts; non-CUDA (CPU/Mac) users set up
        their own venv per docs/engines/moss-tts-v15.md (Probe 1).
@@ -40,7 +40,7 @@ from typing import Optional
 
 from engines._venv_probe import ProbeResult, log_safe, venv_can_import
 
-logger = logging.getLogger("omnivoice.moss_tts_v15.bootstrap")
+logger = logging.getLogger("elevenvoice.moss_tts_v15.bootstrap")
 
 #: Absolute path to the sidecar entrypoint. ``MossTTSV15Backend.sidecar_script``
 #: returns this; SubprocessBackend spawns it with the resolved venv python.
@@ -61,7 +61,7 @@ def _uv_env() -> "dict[str, str] | None":
     return uv_subprocess_env(_ENGINES_VENV_DIR.parent.parent)
 
 #: Env var pointing at the user's MOSS-TTS clone root.
-_CLONE_DIR_ENV: str = "OMNIVOICE_MOSS_TTS_V15_DIR"
+_CLONE_DIR_ENV: str = "ELEVENVOICE_MOSS_TTS_V15_DIR"
 
 #: Per-process resolution cache. Cleared by :func:`invalidate` for tests.
 _resolved_python: Optional[Path] = None
@@ -166,7 +166,7 @@ def resolve_moss_tts_v15_venv() -> Path:
             "MOSS-TTS-v1.5 is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your MOSS-TTS clone "
             "(the directory that contains pyproject.toml), then restart "
-            "VoiceStudio. See docs/engines/moss-tts-v15.md for the full "
+            "ElevenVoice. See docs/engines/moss-tts-v15.md for the full "
             "install walk-through."
         )
 
@@ -223,7 +223,7 @@ def _venv_can_import_moss(python_path: Path) -> ProbeResult:
 
 def _locate_uv() -> Optional[str]:
     """Find the uv binary — bundled first (Tauri-set env var), else PATH."""
-    bundled = os.environ.get("OMNIVOICE_BUNDLED_UV")
+    bundled = os.environ.get("ELEVENVOICE_BUNDLED_UV")
     if bundled and Path(bundled).is_file():
         return bundled
     sys_uv = shutil.which("uv")
@@ -245,9 +245,9 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
     if not uv:
         raise RuntimeError(
             "uv is required to bootstrap the MOSS-TTS-v1.5 venv but was not "
-            "found on PATH (and OMNIVOICE_BUNDLED_UV was not set). Install uv "
-            "from https://docs.astral.sh/uv/ and re-launch VoiceStudio, or set "
-            "OMNIVOICE_BUNDLED_UV to the absolute path of a uv binary."
+            "found on PATH (and ELEVENVOICE_BUNDLED_UV was not set). Install uv "
+            "from https://docs.astral.sh/uv/ and re-launch ElevenVoice, or set "
+            "ELEVENVOICE_BUNDLED_UV to the absolute path of a uv binary."
         )
 
     logger.info(

@@ -28,21 +28,21 @@ import { waitForQuietRequests } from './crawler-settle.mjs';
  * A canary screen with a deliberately stuck button and a throwing button runs first, so a
  * detector that has gone blind fails the smoke instead of passing it.
  *
- * Run it against `smoke:server` like the renderer smokes; with OMNIVOICE_PORT set it serves that
+ * Run it against `smoke:server` like the renderer smokes; with ELEVENVOICE_PORT set it serves that
  * port from the shared fake backend itself.
  *
- * Env: VOICESTUDIO_UI_URL, VOICESTUDIO_CRAWL_MODES (comma list), VOICESTUDIO_CRAWL_ROUTES
- * (comma list of path substrings), VOICESTUDIO_CRAWL_SHARD (`i/n`: the i-th of n cost-balanced
- * route sets, for parallel CI jobs; see crawler-shards.mjs), VOICESTUDIO_CRAWL_VERBOSE=1 to log every click.
+ * Env: ELEVENVOICE_UI_URL, ELEVENVOICE_CRAWL_MODES (comma list), ELEVENVOICE_CRAWL_ROUTES
+ * (comma list of path substrings), ELEVENVOICE_CRAWL_SHARD (`i/n`: the i-th of n cost-balanced
+ * route sets, for parallel CI jobs; see crawler-shards.mjs), ELEVENVOICE_CRAWL_VERBOSE=1 to log every click.
  */
 
-const BASE = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const BASE = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 const MODES = ['fixture', 'http-500', 'network-error', 'bad-json'];
-const modes = (process.env.VOICESTUDIO_CRAWL_MODES || MODES.join(',')).split(',').filter(Boolean);
-const routeFilter = (process.env.VOICESTUDIO_CRAWL_ROUTES || '').split(',').filter(Boolean);
-const [shard, shards] = (process.env.VOICESTUDIO_CRAWL_SHARD || '1/1').split('/').map(Number);
-assert.ok(shard >= 1 && shard <= shards, 'VOICESTUDIO_CRAWL_SHARD must look like 1/3');
-const verbose = process.env.VOICESTUDIO_CRAWL_VERBOSE === '1';
+const modes = (process.env.ELEVENVOICE_CRAWL_MODES || MODES.join(',')).split(',').filter(Boolean);
+const routeFilter = (process.env.ELEVENVOICE_CRAWL_ROUTES || '').split(',').filter(Boolean);
+const [shard, shards] = (process.env.ELEVENVOICE_CRAWL_SHARD || '1/1').split('/').map(Number);
+assert.ok(shard >= 1 && shard <= shards, 'ELEVENVOICE_CRAWL_SHARD must look like 1/3');
+const verbose = process.env.ELEVENVOICE_CRAWL_VERBOSE === '1';
 
 /** Longest a click's API traffic may stay in flight before the button is judged stuck. */
 const REQUEST_BUDGET_MS = 8_000;
@@ -88,7 +88,7 @@ async function openSession(browser, mode) {
     });
     // Popups and sandboxed frames have an opaque origin where localStorage throws.
     try {
-      localStorage.setItem('voicestudio.setup.complete.v1', '1');
+      localStorage.setItem('elevenvoice.setup.complete.v1', '1');
     } catch {}
   });
   const state = { faulting: false, failedWrites: 0, inflight: new Set(), activity: 0, events: [] };
@@ -519,7 +519,7 @@ async function crawlMode(browser, mode, routes) {
   return { mode, clicks, unclickable, reloads, findings };
 }
 
-const backendPort = Number(process.env.OMNIVOICE_PORT) || 0;
+const backendPort = Number(process.env.ELEVENVOICE_PORT) || 0;
 const backend = backendPort ? await startHealthBackend({ port: backendPort }) : null;
 const browser = await chromium.launch({
   ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
@@ -530,7 +530,7 @@ const browser = await chromium.launch({
 try {
   await canary(browser);
   const probe = await browser.newPage();
-  await probe.addInitScript(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+  await probe.addInitScript(() => localStorage.setItem('elevenvoice.setup.complete.v1', '1'));
   await probe.goto(`${BASE}/#/settings/usage`);
   await probe.locator('main').first().waitFor();
   const allRoutes = [

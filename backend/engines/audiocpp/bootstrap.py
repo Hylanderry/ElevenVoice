@@ -12,14 +12,14 @@ none of the dependency-isolation machinery in ``engines._venv_probe`` or
 
 Probe order for the server binary (existing installs win, zero migration):
 
-    1. ``${OMNIVOICE_AUDIOCPP_BIN}`` — absolute path to the binary itself.
-    2. ``${OMNIVOICE_AUDIOCPP_DIR}/audiocpp_server[.exe]`` — a user-managed
+    1. ``${ELEVENVOICE_AUDIOCPP_BIN}`` — absolute path to the binary itself.
+    2. ``${ELEVENVOICE_AUDIOCPP_DIR}/audiocpp_server[.exe]`` — a user-managed
        install dir (e.g. an extracted release zip, or a self-built tree).
     3. ``backend/engines/audiocpp/bin/audiocpp_server[.exe]`` — an explicitly
        installed local copy.
 
 ``is_installed()`` is a cheap file-existence check — no spawn, no network.
-VoiceStudio never downloads executable code for this engine.
+ElevenVoice never downloads executable code for this engine.
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-logger = logging.getLogger("omnivoice.audiocpp.bootstrap")
+logger = logging.getLogger("elevenvoice.audiocpp.bootstrap")
 
 #: Pinned audio.cpp release. BreezeTTS-2 support landed in 0.7.2; 0.7.4 adds
 #: the current native fixes and Sortformer v2.1 streaming runtime.
@@ -60,25 +60,25 @@ FAMILY = "breeze_tts"
 PACKAGE_DIR = "Breeze-TTS-2-GGUF"
 
 #: Default package (Q8_0, the upstream-recommended GGUF). ``bf16`` is
-#: available via ``OMNIVOICE_AUDIOCPP_PACKAGE``.
+#: available via ``ELEVENVOICE_AUDIOCPP_PACKAGE``.
 DEFAULT_PACKAGE = "breeze-tts-2-q8_0.gguf"
 
 #: Env var pointing directly at the ``audiocpp_server`` binary.
-BIN_ENV = "OMNIVOICE_AUDIOCPP_BIN"
+BIN_ENV = "ELEVENVOICE_AUDIOCPP_BIN"
 
 #: Env var pointing at a directory containing ``audiocpp_server``.
-DIR_ENV = "OMNIVOICE_AUDIOCPP_DIR"
+DIR_ENV = "ELEVENVOICE_AUDIOCPP_DIR"
 
 #: Env var overriding the GGUF package filename (e.g. the bf16 package).
-PACKAGE_ENV = "OMNIVOICE_AUDIOCPP_PACKAGE"
+PACKAGE_ENV = "ELEVENVOICE_AUDIOCPP_PACKAGE"
 
 #: Optional advanced overrides for a binary that exposes several runtimes or
 #: devices. Device indices are local to the selected backend registry.
-BACKEND_ENV = "OMNIVOICE_AUDIOCPP_BACKEND"
-DEVICE_ENV = "OMNIVOICE_AUDIOCPP_DEVICE"
+BACKEND_ENV = "ELEVENVOICE_AUDIOCPP_BACKEND"
+DEVICE_ENV = "ELEVENVOICE_AUDIOCPP_DEVICE"
 
 #: Env var overriding the loopback port the managed server binds.
-PORT_ENV = "OMNIVOICE_AUDIOCPP_PORT"
+PORT_ENV = "ELEVENVOICE_AUDIOCPP_PORT"
 
 #: Default loopback port. High and engine-specific to avoid clashing with
 #: the app itself or a user-run ``audiocpp_server`` (default 8080).
@@ -116,7 +116,7 @@ BREEZE = ModelPackage(
     default_port=DEFAULT_PORT,
     package_env=PACKAGE_ENV,
     port_env=PORT_ENV,
-    model_env="OMNIVOICE_AUDIOCPP_MODEL",
+    model_env="ELEVENVOICE_AUDIOCPP_MODEL",
     workdir="audiocpp",
 )
 
@@ -130,9 +130,9 @@ DOTS = ModelPackage(
     default_package="dots-tts-soar-q8_0.gguf",
     label="dots.tts",
     default_port=DEFAULT_PORT + 1,
-    package_env="OMNIVOICE_AUDIOCPP_DOTS_PACKAGE",
-    port_env="OMNIVOICE_AUDIOCPP_DOTS_PORT",
-    model_env="OMNIVOICE_AUDIOCPP_DOTS_MODEL",
+    package_env="ELEVENVOICE_AUDIOCPP_DOTS_PACKAGE",
+    port_env="ELEVENVOICE_AUDIOCPP_DOTS_PORT",
+    model_env="ELEVENVOICE_AUDIOCPP_DOTS_MODEL",
     workdir="audiocpp-dots",
 )
 
@@ -386,7 +386,7 @@ def resolve_server_binary() -> Path:
             raise RuntimeError(
                 "audiocpp_server is not executable. Run `chmod +x "
                 "audiocpp_server` on the configured binary, then restart "
-                "VoiceStudio. See docs/engines/audio-cpp.md."
+                "ElevenVoice. See docs/engines/audio-cpp.md."
             )
     slug = _platform_slug()
     asset = _ASSETS.get(slug)
@@ -736,7 +736,7 @@ def _materialize_gguf_cache_path(model_file: Path) -> Path:
 def resolve_model_file(package: ModelPackage = BREEZE) -> Path:
     """Resolve an explicitly installed GGUF file for one model package.
 
-    An explicit path in the package's model env var (``OMNIVOICE_AUDIOCPP_MODEL``
+    An explicit path in the package's model env var (``ELEVENVOICE_AUDIOCPP_MODEL``
     for Breeze-TTS-2) wins (file or directory containing the package file).
     Otherwise only the local Hugging Face cache is inspected. Downloads must be
     started explicitly from Model Catalogue → Models, so generation can never

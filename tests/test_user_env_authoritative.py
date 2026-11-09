@@ -23,33 +23,33 @@ def test_user_env_overrides_preinjected_value(tmp_path, monkeypatch):
     # validation drops path keys that can't exist — this test is about
     # PRECEDENCE, so keep the path valid and assert the file value wins.
     new_dir = tmp_path / "new-models-dir"
-    envfile.write_text(f"OMNIVOICE_CACHE_DIR={new_dir}\n")
-    monkeypatch.setenv("OMNIVOICE_ENV_FILE", str(envfile))
+    envfile.write_text(f"ELEVENVOICE_CACHE_DIR={new_dir}\n")
+    monkeypatch.setenv("ELEVENVOICE_ENV_FILE", str(envfile))
     # simulate Tauri injecting the OLD value before the backend loads the file
-    monkeypatch.setenv("OMNIVOICE_CACHE_DIR", "/old/models/dir")
+    monkeypatch.setenv("ELEVENVOICE_CACHE_DIR", "/old/models/dir")
 
     loaded = _user_env().load_into_environ()
 
     assert loaded is True
-    assert os.environ["OMNIVOICE_CACHE_DIR"] == str(new_dir)
+    assert os.environ["ELEVENVOICE_CACHE_DIR"] == str(new_dir)
 
 
 def test_user_env_sets_value_absent_from_environ(tmp_path, monkeypatch):
     """When nothing was pre-injected, the file value is applied as-is."""
     envfile = tmp_path / "env"
     chosen = tmp_path / "chosen-dir"
-    envfile.write_text(f"OMNIVOICE_CACHE_DIR={chosen}\n")
-    monkeypatch.setenv("OMNIVOICE_ENV_FILE", str(envfile))
-    monkeypatch.delenv("OMNIVOICE_CACHE_DIR", raising=False)
+    envfile.write_text(f"ELEVENVOICE_CACHE_DIR={chosen}\n")
+    monkeypatch.setenv("ELEVENVOICE_ENV_FILE", str(envfile))
+    monkeypatch.delenv("ELEVENVOICE_CACHE_DIR", raising=False)
 
     assert _user_env().load_into_environ() is True
-    assert os.environ["OMNIVOICE_CACHE_DIR"] == str(chosen)
+    assert os.environ["ELEVENVOICE_CACHE_DIR"] == str(chosen)
 
 
 def test_user_env_missing_file_is_noop(tmp_path, monkeypatch):
     """No file -> no-op, and a pre-injected value is left untouched."""
-    monkeypatch.setenv("OMNIVOICE_ENV_FILE", str(tmp_path / "does-not-exist"))
-    monkeypatch.setenv("OMNIVOICE_CACHE_DIR", "/old")
+    monkeypatch.setenv("ELEVENVOICE_ENV_FILE", str(tmp_path / "does-not-exist"))
+    monkeypatch.setenv("ELEVENVOICE_CACHE_DIR", "/old")
 
     assert _user_env().load_into_environ() is False
-    assert os.environ["OMNIVOICE_CACHE_DIR"] == "/old"
+    assert os.environ["ELEVENVOICE_CACHE_DIR"] == "/old"

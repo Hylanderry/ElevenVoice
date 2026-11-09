@@ -13,7 +13,7 @@ import pytest
 pytestmark = pytest.mark.usefixtures("asr_model_installed")
 
 
-# conftest.py puts `backend/` on sys.path and points OMNIVOICE_DATA_DIR at a
+# conftest.py puts `backend/` on sys.path and points ELEVENVOICE_DATA_DIR at a
 # throwaway tmpdir before the batch router imports the REAL core.config (the
 # old sys.modules stub leaked at collection time and broke mixed runs).
 from fastapi import FastAPI

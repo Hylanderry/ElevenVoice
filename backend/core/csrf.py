@@ -8,7 +8,7 @@ from urllib.parse import SplitResult, urlsplit
 from core.app_config import DEFAULT_WEB_PORT
 
 
-CSRF_HEADER = "x-voicestudio-csrf"
+CSRF_HEADER = "x-elevenvoice-csrf"
 CSRF_VALUE = "1"
 SAFE_HTTP_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
@@ -85,17 +85,17 @@ def _origin_tuple(value: str | None) -> tuple[str, str, int | None] | None:
     return scheme, parsed.hostname.lower(), port
 
 
-# Electron serves the packaged renderer from app://voicestudio. The retired
+# Electron serves the packaged renderer from app://elevenvoice. The retired
 # Tauri shell's origins are deliberately absent: final Tauri installs spawn the
 # backend bundled with them, never this one.
-DEFAULT_DESKTOP_ORIGINS = ("app://voicestudio",)
+DEFAULT_DESKTOP_ORIGINS = ("app://elevenvoice",)
 
-# The browser UI dev-server port. OMNIVOICE_UI_PORT is canonical, matching
-# OMNIVOICE_PORT; VOICESTUDIO_UI_PORT is the name the Vite configs read before
+# The browser UI dev-server port. ELEVENVOICE_UI_PORT is canonical, matching
+# ELEVENVOICE_PORT; ELEVENVOICE_UI_PORT is the name the Vite configs read before
 # the two were unified and stays accepted as an alias. Mirrored in
 # config/app.json.
-UI_PORT_ENV = "OMNIVOICE_UI_PORT"
-UI_PORT_ENV_ALIASES = ("VOICESTUDIO_UI_PORT",)
+UI_PORT_ENV = "ELEVENVOICE_UI_PORT"
+UI_PORT_ENV_ALIASES = ("ELEVENVOICE_UI_PORT",)
 DEFAULT_UI_PORT = DEFAULT_WEB_PORT
 
 
@@ -126,7 +126,7 @@ def allowed_origin_values() -> list[str]:
     """Raw allow-list entries shared by CORS (main.py) and the CSRF checks."""
     port = ui_port()
     values = os.environ.get(
-        "OMNIVOICE_ALLOWED_ORIGINS",
+        "ELEVENVOICE_ALLOWED_ORIGINS",
         f"http://localhost:{port},http://127.0.0.1:{port}," + ",".join(DEFAULT_DESKTOP_ORIGINS),
     ).split(",")
     return [value.strip() for value in values if value.strip()]
@@ -151,10 +151,10 @@ CORS_EXPOSED_HEADERS = (
     "X-Audio-Duration",
     "X-Gen-Time",
     "X-Seed",
-    "X-OmniVoice-Routing",
-    "X-OmniVoice-Routing-Reason",
-    "X-OmniVoice-Dropped-Chunks",
-    "X-OmniVoice-Dropped-Text",
+    "X-ElevenVoice-Routing",
+    "X-ElevenVoice-Routing-Reason",
+    "X-ElevenVoice-Dropped-Chunks",
+    "X-ElevenVoice-Dropped-Text",
     "X-Clean-Filename",
 )
 

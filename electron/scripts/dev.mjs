@@ -27,12 +27,12 @@ import {
   withMacDevCacheLock,
 } from './mac-dev-cache.mjs';
 
-const APP_NAME = 'VoiceStudio';
+const APP_NAME = 'ElevenVoice';
 const here = dirname(fileURLToPath(import.meta.url));
 const electronRoot = resolve(here, '..');
 const repoRoot = resolve(electronRoot, '..');
 const require = createRequire(import.meta.url);
-const defaultCacheRoot = join(electronRoot, 'node_modules', '.cache', 'voicestudio-electron-dev');
+const defaultCacheRoot = join(electronRoot, 'node_modules', '.cache', 'elevenvoice-electron-dev');
 
 export function createMacDevBundlePlan({
   electronExecutable,
@@ -202,7 +202,7 @@ export function pruneOldBundles(cacheRoot, keep, { leaseDirectory } = {}) {
       if (result.status !== 0) return; // Unknown usage is not safe to delete.
       for (const line of result.stdout.split(/\r?\n/)) {
         const command = /^\s*\d+\s+(.*)$/.exec(line)?.[1];
-        const marker = '/VoiceStudio.app/Contents/MacOS/';
+        const marker = '/ElevenVoice.app/Contents/MacOS/';
         if (!command?.includes(marker)) continue;
         const end = command.indexOf(' ', command.indexOf(marker) + marker.length);
         const executable = end < 0 ? command : command.slice(0, end);
@@ -233,13 +233,13 @@ export function pruneOldBundles(cacheRoot, keep, { leaseDirectory } = {}) {
 /**
  * Ports only a `bun dev` instance uses: the Electron main's private dev proxy
  * (listened on by the Electron app itself) and the renderer dev server. The
- * backend port is left alone: an installed VoiceStudio may own it, and the dev
+ * backend port is left alone: an installed ElevenVoice may own it, and the dev
  * app falls back to another port anyway.
  */
 export function devInstancePorts(env = process.env) {
-  const rawProxy = env.VOICESTUDIO_ELECTRON_PROXY_PORT?.trim();
+  const rawProxy = env.ELEVENVOICE_ELECTRON_PROXY_PORT?.trim();
   const renderer =
-    Number(env.OMNIVOICE_UI_PORT || env.VOICESTUDIO_UI_PORT) || DEFAULT_ELECTRON_DEV_PORT;
+    Number(env.ELEVENVOICE_UI_PORT || env.ELEVENVOICE_UI_PORT) || DEFAULT_ELECTRON_DEV_PORT;
   // `0` lets the OS pick the proxy port (electronProxyPort), so there is none to free.
   if (rawProxy === '0') return [renderer];
   return [Number(rawProxy) || DEFAULT_ELECTRON_PROXY_PORT, renderer];
@@ -257,7 +257,7 @@ export async function replacePreviousDevInstance(
   clear = clearDevPorts,
   stopApps = stopLeftoverDevApps,
 ) {
-  if (env.VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES === '1') return;
+  if (env.ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES === '1') return;
   // The app first, through its normal quit path, and only once it has fully
   // exited the ports: an app still flushing its windows holds the proxy port
   // longer than clearDevPorts waits.

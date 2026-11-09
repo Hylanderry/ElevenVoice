@@ -23,7 +23,7 @@ import { UninstallSettings, uninstallBytes } from './uninstall-settings';
 
 const targets = [
   { key: 'data' as const, path: 'C:\\OmniVoice', size_bytes: 1024, exists: true, shared: false },
-  { key: 'env' as const, path: 'C:\\VoiceStudio', size_bytes: 2048, exists: true, shared: false },
+  { key: 'env' as const, path: 'C:\\ElevenVoice', size_bytes: 2048, exists: true, shared: false },
   {
     key: 'models' as const,
     path: 'C:\\Users\\pal\\.cache\\huggingface',
@@ -70,14 +70,14 @@ it('does not double-count a nested shared cache in the estimate', () => {
   const overlapping = [
     {
       key: 'data' as const,
-      path: 'D:\\VoiceStudio',
+      path: 'D:\\ElevenVoice',
       size_bytes: 10_000,
       exists: true,
       shared: true,
     },
     {
       key: 'models' as const,
-      path: 'D:\\VoiceStudio\\models',
+      path: 'D:\\ElevenVoice\\models',
       size_bytes: 8_000,
       exists: true,
       shared: true,

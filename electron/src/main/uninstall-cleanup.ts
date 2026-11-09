@@ -7,7 +7,7 @@ import { app } from 'electron';
 import { backendRoot } from './backend';
 
 export function nativeCleanupHelperPath(): string {
-  const name = 'voicestudio-desktop-bridge' + (process.platform === 'win32' ? '.exe' : '');
+  const name = 'elevenvoice-desktop-bridge' + (process.platform === 'win32' ? '.exe' : '');
   return app.isPackaged
     ? join(process.resourcesPath, 'native', name)
     : join(backendRoot(), 'native', 'desktop-bridge', 'target', 'debug', name);
@@ -17,7 +17,7 @@ export async function scheduleUninstallCleanup(
   targets: Array<{ path: string; kind: 'app' | 'models' }>,
 ): Promise<void> {
   if (!targets.length) throw new Error('no_cleanup_targets');
-  const plan = join(tmpdir(), `voicestudio-uninstall-${randomUUID()}.json`);
+  const plan = join(tmpdir(), `elevenvoice-uninstall-${randomUUID()}.json`);
   await writeFile(plan, JSON.stringify({ paths: targets }), {
     encoding: 'utf8',
     flag: 'wx',

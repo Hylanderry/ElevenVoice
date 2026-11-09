@@ -1,6 +1,6 @@
 import { GROVE_THEME, type ThemeColors, type ThemeDefinition } from './t3-palettes';
 
-// Refined VoiceStudio/Tauri palette: original charcoal canvas and rose action,
+// Refined ElevenVoice/Tauri palette: original charcoal canvas and rose action,
 // lavender text, plum surfaces, and quieter translucent borders.
 // The light variant is a complementary adaptation; the original default is dark.
 function colors(light: boolean): ThemeColors {

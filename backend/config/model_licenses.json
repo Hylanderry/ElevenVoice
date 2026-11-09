@@ -92,7 +92,7 @@
       "audit_observations": {
         "commercial_inference": {
           "status": "mixed_bundle_requires_per_file_records",
-          "summary": "This repo contains unrelated models. VoiceStudio downloads Breeze TTS 2 Q8_0 and Sortformer 4spk v1 Q8_0 only. Both have noncommercial upstream signals but different governing terms; see file variants."
+          "summary": "This repo contains unrelated models. ElevenVoice downloads Breeze TTS 2 Q8_0 and Sortformer 4spk v1 Q8_0 only. Both have noncommercial upstream signals but different governing terms; see file variants."
         },
         "output_terms": {
           "status": "not_assessed",
@@ -1527,7 +1527,7 @@
           "tokenizer.json",
           "tokenization_voxcpm2.py",
           "MiniCPM-4 provenance",
-          "optional denoiser/text normalization (verify VoiceStudio route)"
+          "optional denoiser/text normalization (verify ElevenVoice route)"
         ]
       }
     },
@@ -2948,7 +2948,7 @@
       "engines": [
         "pytorch-whisper"
       ],
-      "configured_at": "backend/services/tts_backend.py OMNIVOICE_PYTORCH_ASR_MODEL fallback",
+      "configured_at": "backend/services/tts_backend.py ELEVENVOICE_PYTORCH_ASR_MODEL fallback",
       "notes": "Clone-reference ASR fallback outside models.yaml. Model-card licence metadata is recorded; component terms and required notices remain under review.",
       "runtime_revision": null,
       "runtime_pin_scope": "external",
@@ -2990,7 +2990,7 @@
       "engines": [
         "moss-tts-nano"
       ],
-      "configured_at": "backend/services/tts_backend.py OMNIVOICE_MOSS_TTS_MODEL",
+      "configured_at": "backend/services/tts_backend.py ELEVENVOICE_MOSS_TTS_MODEL",
       "notes": "Licence label is upstream metadata only; governing component terms, author credit and required notices remain under review.",
       "runtime_revision": null,
       "runtime_pin_scope": "external",
@@ -3390,7 +3390,7 @@
         "whisper-cpp"
       ],
       "configured_at": "backend/engines/whisper_cpp/bootstrap.py:29",
-      "notes": "Model-card metadata only: the pinned card declares the MIT licence and is not gated. The GGML/GGUF weights and the whisper.cpp CLI are user-managed and are never downloaded or redistributed by VoiceStudio, so no runtime revision is pinned here and no permission review was performed. Component terms, attribution text and the per-file terms of the selected checkpoint remain under review.",
+      "notes": "Model-card metadata only: the pinned card declares the MIT licence and is not gated. The GGML/GGUF weights and the whisper.cpp CLI are user-managed and are never downloaded or redistributed by ElevenVoice, so no runtime revision is pinned here and no permission review was performed. Component terms, attribution text and the per-file terms of the selected checkpoint remain under review.",
       "runtime_revision": null,
       "runtime_pin_scope": "external",
       "runtime_pin_source": null,

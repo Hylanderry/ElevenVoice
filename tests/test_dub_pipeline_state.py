@@ -4,7 +4,7 @@ Covers the non-ingest, non-streaming surface: path safety, cache lookup,
 process tracking, in-memory + DB job round-trip.
 """
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import uuid
 import pytest

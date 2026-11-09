@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 from api.dependencies import require_admin
 
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 

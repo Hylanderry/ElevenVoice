@@ -229,12 +229,12 @@ it('reports a failed model catalogue with a retry instead of hiding downloads', 
 // Mirrors the owned guidance returned by ASR list_backends(), not a raw probe error.
 const nemoInstallHint =
   "No safe install path in this app yet — nemo_toolkit's ASR extras pin " +
-  "transformers>=4.57,<4.58, which conflicts with VoiceStudio's own " +
+  "transformers>=4.57,<4.58, which conflicts with ElevenVoice's own " +
   'transformers>=5.3 requirement and WILL break the backend ' +
   '(ImportError on startup) if installed into this shared venv. Do NOT ' +
   'install nemo_toolkit here. If you want to try Parakeet TDT, set it ' +
   'up in a separate/dedicated Python environment — not the one ' +
-  'VoiceStudio manages; in-app isolation for this engine is tracked ' +
+  'ElevenVoice manages; in-app isolation for this engine is tracked ' +
   'separately.';
 
 it.each([
@@ -308,7 +308,7 @@ it.each([
 
 it.each([
   { setup_snippet: 'uv sync --extra whisperx' },
-  { docs_url: 'https://github.com/debpalash/VoiceStudio/blob/main/docs/engines/whisperx.md' },
+  { docs_url: 'https://github.com/Hylanderry/ElevenVoice#readme' },
   { local_install_required: true },
 ])(
   'preserves existing setup guidance instead of replacing it with an install hint: %o',

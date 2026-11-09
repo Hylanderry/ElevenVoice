@@ -15,7 +15,7 @@ from core.contained_subprocess import spawn_owned
 
 from engines.cosyvoice_gguf import bootstrap
 
-logger = logging.getLogger("omnivoice.cosyvoice_gguf")
+logger = logging.getLogger("elevenvoice.cosyvoice_gguf")
 
 
 class NativeServer:

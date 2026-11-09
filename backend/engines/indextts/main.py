@@ -1,8 +1,8 @@
 """IndexTTS 2.5/2 sidecar entry point (Phase 2 Plan 02-03).
 
 Runs inside ``engines/indextts/.venv`` (or the user's existing
-``${OMNIVOICE_INDEXTTS_DIR}/.venv``) with ``transformers<5``, isolated
-from the VoiceStudio parent process which pins ``transformers>=5.3``.
+``${ELEVENVOICE_INDEXTTS_DIR}/.venv``) with ``transformers<5``, isolated
+from the ElevenVoice parent process which pins ``transformers>=5.3``.
 Closes issue #42 — the canonical ``OffloadedCache`` ImportError that
 results from running both libraries inside one Python interpreter.
 
@@ -50,7 +50,7 @@ Op flow expected by the parent:
 Restrictions:
 
   * NO imports from ``backend.services``, ``backend.engines`` (other
-    than this package), or any VoiceStudio parent code. The sidecar runs
+    than this package), or any ElevenVoice parent code. The sidecar runs
     under a venv where those modules may not resolve.
   * NO logging of ``os.environ`` contents or env-var values. Defense in
     depth against accidental token-bytes-on-stderr (T-02-08); the
@@ -219,7 +219,7 @@ _BF16_PROBE_TIMEOUT_S = 120
 #: contract exactly (default 900 s, unparseable/non-finite → 900 s, floor
 #: 30 s); the sidecar cannot import the parent's engine module, so
 #: tests/test_indextts_bf16_rocm_2372.py pins the two together.
-_PARENT_RECV_ENV = "OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S"
+_PARENT_RECV_ENV = "ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S"
 _PARENT_RECV_DEFAULT_S = 900.0
 _PARENT_RECV_FLOOR_S = 30.0
 #: Probe end → the first frame the parent sees after it: the remaining
@@ -295,7 +295,7 @@ def _torch_bf16_supported() -> bool:
             # ROCm: the claim is necessary but not sufficient — verify it in
             # a child so a Tensile segfault fails only the probe (#2372) and
             # the model falls back to fp32 (the verified workaround was
-            # OMNIVOICE_INDEXTTS_FP16=0).
+            # ELEVENVOICE_INDEXTTS_FP16=0).
             return _bf16_probe()
         return True
     except Exception:
@@ -303,7 +303,7 @@ def _torch_bf16_supported() -> bool:
 
 
 #: Model-config filenames to look for, most-preferred first, per version.
-#: IndexTeam/IndexTTS-2.5 ships ``config.yaml``; VoiceStudio used to demand
+#: IndexTeam/IndexTTS-2.5 ships ``config.yaml``; ElevenVoice used to demand
 #: ``config_v2_5.yaml``, a name that exists in no upstream revision, so the
 #: install failed until the user hand-renamed the file (#1611). Both names are
 #: accepted now — the hand-renamed installs must keep working untouched — and
@@ -386,7 +386,7 @@ def _model_init_kwargs(
 
 
 def _load_model(stdout) -> object:
-    """Cold-construct IndexTTS2 from OMNIVOICE_INDEXTTS_DIR/checkpoints/.
+    """Cold-construct IndexTTS2 from ELEVENVOICE_INDEXTTS_DIR/checkpoints/.
 
     Emits ``progress`` frames at 0/50/100% so the parent can surface the
     20+ second model-load latency in the Compat Matrix UI (T-02-10). On
@@ -414,8 +414,8 @@ def _load_model(stdout) -> object:
 
     _send(stdout, {"op": "progress", "stage": "loading_model", "percent": 50})
 
-    repo_dir = os.environ.get("OMNIVOICE_INDEXTTS_DIR", ".")
-    reduced_precision = os.environ.get("OMNIVOICE_INDEXTTS_FP16", "1") == "1"
+    repo_dir = os.environ.get("ELEVENVOICE_INDEXTTS_DIR", ".")
+    reduced_precision = os.environ.get("ELEVENVOICE_INDEXTTS_FP16", "1") == "1"
     model_kw = _model_init_kwargs(
         repo_dir, version=_model_version, reduced_precision=reduced_precision,
     )
@@ -514,7 +514,7 @@ def _handle_synthesize(msg: dict, stdout) -> None:
 
 
 def _build_infer_kwargs(msg: dict, ref_audio: str, *, is_v25: bool) -> dict:
-    """Translate the stable VoiceStudio wire payload to either upstream API."""
+    """Translate the stable ElevenVoice wire payload to either upstream API."""
     infer_kw: dict = {
         "spk_audio_prompt": ref_audio,
         "text": msg.get("text"),

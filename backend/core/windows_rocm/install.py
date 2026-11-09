@@ -93,7 +93,7 @@ def provision(uv):
             raise
     recipe = load_recipe()
     # Verify CT2 before changing any package, and discard downloads on any failure.
-    with tempfile.TemporaryDirectory(prefix="voicestudio-windows-rocm-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="elevenvoice-windows-rocm-") as temporary:
         folder = Path(temporary)
         archive = folder / "ctranslate2.zip"
         ct2 = recipe["ctranslate2"]

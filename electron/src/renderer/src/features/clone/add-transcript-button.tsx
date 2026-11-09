@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
 /** Asks the Clone reference panel to open and focus its transcript box. */
-export const FOCUS_TRANSCRIPT_EVENT = 'voicestudio:focus-clone-transcript';
+export const FOCUS_TRANSCRIPT_EVENT = 'elevenvoice:focus-clone-transcript';
 
 /** Offered beside a "no transcript" failure: typing the transcript is the other fix. */
 export function AddTranscriptButton() {

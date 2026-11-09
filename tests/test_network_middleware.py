@@ -37,7 +37,7 @@ def test_non_loopback_without_pin_401_on_api():
 
 def test_non_loopback_with_valid_pin_passes():
     c = TestClient(_app_with_pin("654321"), client=("10.0.0.5", 1))
-    r = c.get("/api/voices", headers={"X-OmniVoice-Pin": "654321"})
+    r = c.get("/api/voices", headers={"X-ElevenVoice-Pin": "654321"})
     assert r.status_code != 401
 
 
@@ -56,7 +56,7 @@ def test_spa_shell_served_without_pin():
 
 
 def test_session_exchange_reaches_its_master_key_guard_before_the_pin_gate(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "master-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "master-key")
     c = TestClient(_app_with_pin(), client=("10.0.0.5", 1))
 
     response = c.post(
@@ -70,7 +70,7 @@ def test_session_exchange_reaches_its_master_key_guard_before_the_pin_gate(monke
 
 
 def test_master_exchange_does_not_bypass_pin_on_normal_routes(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "master-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "master-key")
     c = TestClient(_app_with_pin("654321"), client=("10.0.0.5", 1))
 
     issued = c.post(
@@ -83,27 +83,27 @@ def test_master_exchange_does_not_bypass_pin_on_normal_routes(monkeypatch):
     without_pin = c.get("/api/voices")
     assert without_pin.status_code == 401
     assert without_pin.json() == {"detail": "PIN required"}
-    with_both = c.get("/api/voices", headers={"X-OmniVoice-Pin": "654321"})
+    with_both = c.get("/api/voices", headers={"X-ElevenVoice-Pin": "654321"})
     assert with_both.status_code not in {401, 403}
 
 
 def test_cors_wraps_both_auth_gates_and_answers_credentialless_preflight(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "master-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "master-key")
     c = TestClient(_app_with_pin("654321"), client=("10.0.0.5", 1))
     cors = {
-        "Origin": "app://voicestudio",
+        "Origin": "app://elevenvoice",
         "Access-Control-Request-Method": "GET",
-        "Access-Control-Request-Headers": "authorization,x-omnivoice-pin",
+        "Access-Control-Request-Headers": "authorization,x-elevenvoice-pin",
     }
 
     preflight = c.options("/api/voices", headers=cors)
-    rejected = c.get("/api/voices", headers={"Origin": "app://voicestudio"})
+    rejected = c.get("/api/voices", headers={"Origin": "app://elevenvoice"})
 
     assert preflight.status_code == 200
-    assert preflight.headers["access-control-allow-origin"] == "app://voicestudio"
+    assert preflight.headers["access-control-allow-origin"] == "app://elevenvoice"
     assert "authorization" in preflight.headers["access-control-allow-headers"].lower()
     assert rejected.status_code == 401
-    assert rejected.headers["access-control-allow-origin"] == "app://voicestudio"
+    assert rejected.headers["access-control-allow-origin"] == "app://elevenvoice"
 
 
 def test_middleware_is_plain_asgi_not_buffering():
@@ -144,7 +144,7 @@ def test_streaming_response_passes_through_with_valid_pin():
     # Without the PIN, the stream route is gated.
     assert c.get("/stream").status_code == 401
     # With the PIN, it streams the full body through the ASGI middleware.
-    r = c.get("/stream", headers={"X-OmniVoice-Pin": "777888"})
+    r = c.get("/stream", headers={"X-ElevenVoice-Pin": "777888"})
     assert r.status_code == 200
     body = r.text
     for i in range(5):
@@ -169,7 +169,7 @@ def test_valid_pin_sets_cookie_via_asgi():
         return {"ok": True}
 
     c = TestClient(app, client=("10.0.0.5", 1))
-    r = c.get("/api/ping", headers={"X-OmniVoice-Pin": "424242"})
+    r = c.get("/api/ping", headers={"X-ElevenVoice-Pin": "424242"})
     assert r.status_code == 200
     # The ASGI send-wrapper injects Set-Cookie on the first valid-PIN request
     # (when the cookie isn't already present).

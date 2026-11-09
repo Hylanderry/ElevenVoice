@@ -10,9 +10,9 @@ _POSTHOG_TOKEN = re.search(
     r"phc_[A-Za-z0-9]{20,}",
     (ROOT / "backend/core/analytics.py").read_text(encoding="utf-8"),
 )
-assert _POSTHOG_TOKEN is not None
+# The analytics token is blank until a project key is configured.
 EXPECTED_EXACT_REGEXES = {
-    f"^{_POSTHOG_TOKEN.group(0)}$",
+    *([f"^{_POSTHOG_TOKEN.group(0)}$"] if _POSTHOG_TOKEN else []),
     "^528e871c2a26c4f0f7773b9754e2e1acae20899d$",
     "^hf_abcdefghijklmnopqrstuvwxyz01234567890abcd$",
     "^hf_abcdefghijklmnopqrstuvwxyz0123456789ABCDEF$",
@@ -39,10 +39,10 @@ def test_gitleaks_allowlist_contains_only_reviewed_exact_values():
 def test_dub_storage_key_allowlist_does_not_hide_similar_credentials():
     config = tomllib.loads((ROOT / ".gitleaks.toml").read_text(encoding="utf-8"))
     regexes = config["allowlist"]["regexes"]
-    assert any(re.fullmatch(regex, "omnivoice.dubSplit.v1") for regex in regexes)
+    assert any(re.fullmatch(regex, "elevenvoice.dubSplit.v1") for regex in regexes)
     for value in (
         "omnivoiceXdubSplitXv1",
-        "omnivoice.dubSplit.v1-secret",
+        "elevenvoice.dubSplit.v1-secret",
         "secret-omnivoice.dubSplit.v1",
     ):
         assert not any(re.fullmatch(regex, value) for regex in regexes)
@@ -67,7 +67,7 @@ _REVIEWED_NON_SECRETS = {
     "97ee0f37079c06a8e2e80eb3625bc60885bc8a27:docs/mobile.md:curl-auth-header:114":
         "curl docs use the literal YOUR_TOKEN placeholder",
     "4dab817e78d54b055967860581687eeb5bb77472:mobile/android/core/network/src/main/kotlin/"
-    "com/voicestudio/mobile/network/ContentReports.kt:generic-api-key:38":
+    "com/elevenvoice/mobile/network/ContentReports.kt:generic-api-key:38":
         "Crockford base32 alphabet used to build the report idempotency key",
 }
 

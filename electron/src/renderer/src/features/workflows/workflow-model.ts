@@ -1,4 +1,4 @@
-export const WORKFLOW_STORAGE_KEY = 'voicestudio.workflows.v1';
+export const WORKFLOW_STORAGE_KEY = 'elevenvoice.workflows.v1';
 
 export type StepKind =
   | 'start'

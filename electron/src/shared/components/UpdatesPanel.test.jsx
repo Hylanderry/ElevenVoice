@@ -43,7 +43,7 @@ describe('UpdatesPanel — data-safety line (pre-update DB backups)', () => {
     const created = new Date('2026-07-02T10:00:00Z').getTime() / 1000;
     mockBackup.mockResolvedValue({
       available: true,
-      latest: { path: '/data/omnivoice.db.backup-0.3.9-1', created_at: created, size_bytes: 42 },
+      latest: { path: '/data/elevenvoice.db.backup-0.3.9-1', created_at: created, size_bytes: 42 },
     });
     render(<UpdatesPanel />);
     await waitFor(() =>

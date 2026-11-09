@@ -146,7 +146,7 @@ it('saves the share port and exposes explicit Tailscale controls', async () => {
   await waitFor(() =>
     expect(mock.api).toHaveBeenCalledWith('/system/set-env', {
       method: 'POST',
-      body: JSON.stringify({ key: 'OMNIVOICE_SHARE_PORT', value: '4101' }),
+      body: JSON.stringify({ key: 'ELEVENVOICE_SHARE_PORT', value: '4101' }),
     }),
   );
 

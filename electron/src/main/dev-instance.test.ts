@@ -12,10 +12,10 @@ describe('bun dev replaces an earlier dev instance', () => {
   it('clears only the dev proxy and renderer ports, never the backend port', () => {
     expect(devInstancePorts({})).toEqual([3903, 3902]);
     expect(
-      devInstancePorts({ VOICESTUDIO_UI_PORT: '4100', VOICESTUDIO_ELECTRON_PROXY_PORT: '4200' }),
+      devInstancePorts({ ELEVENVOICE_UI_PORT: '4100', ELEVENVOICE_ELECTRON_PROXY_PORT: '4200' }),
     ).toEqual([4200, 4100]);
     // An OS-assigned proxy port has nothing fixed to free.
-    expect(devInstancePorts({ VOICESTUDIO_ELECTRON_PROXY_PORT: '0' })).toEqual([3902]);
+    expect(devInstancePorts({ ELEVENVOICE_ELECTRON_PROXY_PORT: '0' })).toEqual([3902]);
   });
 
   it('asks a Windows dev app to close its windows before any forced stop', () => {
@@ -31,7 +31,7 @@ describe('bun dev replaces an earlier dev instance', () => {
     await replacePreviousDevInstance({}, clear, stopApps);
     expect(order).toEqual(['apps', 'clear']);
     await replacePreviousDevInstance(
-      { VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES: '1' },
+      { ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES: '1' },
       clear,
       stopApps,
     );
@@ -40,15 +40,15 @@ describe('bun dev replaces an earlier dev instance', () => {
 
   it('matches only processes running from the dev Electron location', () => {
     const listing = [
-      '  101 /repo/electron/node_modules/.cache/voicestudio-electron-dev/x/VoiceStudio.app/Contents/MacOS/Electron .',
-      '  102 /Applications/VoiceStudio.app/Contents/MacOS/VoiceStudio',
-      '  103 /repo/electron/node_modules/.cache/voicestudio-electron-dev-old/Electron',
-      '  104 /usr/bin/node /repo/electron/node_modules/.cache/voicestudio-electron-dev/x',
+      '  101 /repo/electron/node_modules/.cache/elevenvoice-electron-dev/x/ElevenVoice.app/Contents/MacOS/Electron .',
+      '  102 /Applications/ElevenVoice.app/Contents/MacOS/ElevenVoice',
+      '  103 /repo/electron/node_modules/.cache/elevenvoice-electron-dev-old/Electron',
+      '  104 /usr/bin/node /repo/electron/node_modules/.cache/elevenvoice-electron-dev/x',
     ].join('\n');
     expect(
       devElectronPids(
         listing,
-        '/repo/electron/node_modules/.cache/voicestudio-electron-dev/',
+        '/repo/electron/node_modules/.cache/elevenvoice-electron-dev/',
         false,
       ),
     ).toEqual([101]);

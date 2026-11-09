@@ -52,7 +52,7 @@ export default function useTTS({ selectedProfile, setSelectedProfile, loadHistor
   const vdStates = useAppStore((s) => s.vdStates);
   // Which "Define voice" method is active in the Voice (studio) workspace —
   // 'audio' (reference clip) vs 'design' (described attributes). Replaces the
-  // old clone/design navigation-mode checks (voice-studio-unification P4).
+  // old clone/design navigation-mode checks (elevenvoice-unification P4).
   const defineMethod = useAppStore((s) => s.defineMethod);
   const setSidebarTab = useAppStore((s) => s.setSidebarTab);
   // Voice-design seed (#526): reuse the pinned seed when "keep this seed" is on
@@ -266,15 +266,15 @@ export default function useTTS({ selectedProfile, setSelectedProfile, loadHistor
         // user — they reported it by reading along. Classic path only; the
         // streaming path learns this from a `warning` frame (headers are sent
         // before the render starts).
-        const droppedCount = parseInt(response.headers.get('X-OmniVoice-Dropped-Chunks') || '', 10);
+        const droppedCount = parseInt(response.headers.get('X-ElevenVoice-Dropped-Chunks') || '', 10);
         if (Number.isInteger(droppedCount) && droppedCount > 0) {
-          announceDroppedText(droppedCount, response.headers.get('X-OmniVoice-Dropped-Text'));
+          announceDroppedText(droppedCount, response.headers.get('X-ElevenVoice-Dropped-Text'));
         }
 
-        const routingStatus = response.headers.get('X-OmniVoice-Routing');
+        const routingStatus = response.headers.get('X-ElevenVoice-Routing');
         if (routingStatus && routingStatus !== _lastRoutingStatus) {
           _lastRoutingStatus = routingStatus;
-          const reason = response.headers.get('X-OmniVoice-Routing-Reason') || '';
+          const reason = response.headers.get('X-ElevenVoice-Routing-Reason') || '';
           if (routingStatus === 'cpu_fallback') {
             toast(t('tts.routingFallback', { reason }), { icon: '🐢' });
           } else if (routingStatus === 'accelerated' && reason) {

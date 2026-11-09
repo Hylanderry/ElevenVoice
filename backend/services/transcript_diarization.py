@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.transcribe")
+logger = logging.getLogger("elevenvoice.transcribe")
 
 MAX_SPEAKER_HINT = 20
 

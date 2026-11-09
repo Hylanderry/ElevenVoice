@@ -35,6 +35,6 @@ describe('expressionCaps (#3422)', () => {
     expect(
       engineShortName(engine({ display_name: 'ElevenVoice (k2-fsa/OmniVoice, 600+ languages)' })),
     ).toBe('OmniVoice');
-    expect(engineShortName(engine({ display_name: 'VoiceStudio' }))).toBe('VoiceStudio');
+    expect(engineShortName(engine({ display_name: 'ElevenVoice' }))).toBe('ElevenVoice');
   });
 });

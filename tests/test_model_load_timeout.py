@@ -22,13 +22,13 @@ def model_manager(fresh_model_manager, monkeypatch):
 
 def test_model_load_timeout_respects_env(model_manager, monkeypatch):
     mm = model_manager
-    monkeypatch.delenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", raising=False)
     assert mm._model_load_timeout() == 1200.0
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "5000")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "5000")
     assert mm._model_load_timeout() == 5000.0
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "not-a-number")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "not-a-number")
     assert mm._model_load_timeout() == 1200.0
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "1")  # below the safety floor
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "1")  # below the safety floor
     assert mm._model_load_timeout() == 30.0
 
 

@@ -45,7 +45,7 @@ def test_install_hint_present():
     from services.tts_backend import _INSTALL_HINTS
 
     hint = _INSTALL_HINTS.get("dots-tts", "")
-    assert "OMNIVOICE_DOTS_TTS_DIR" in hint
+    assert "ELEVENVOICE_DOTS_TTS_DIR" in hint
     assert "rednote-hilab" in hint
 
 
@@ -97,7 +97,7 @@ def test_is_available_not_installed_is_honest(monkeypatch):
 
     ok, msg = DotsTTSBackend.is_available()
     assert ok is False
-    assert "OMNIVOICE_DOTS_TTS_DIR" in msg
+    assert "ELEVENVOICE_DOTS_TTS_DIR" in msg
     assert "docs/engines/dots-tts.md" in msg  # actionable pointer
     # No-MPS honesty is enforced by gpu_compat; the message may disclaim MPS.
 

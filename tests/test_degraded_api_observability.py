@@ -13,7 +13,7 @@ def test_voice_catalog_db_failure_keeps_shape_and_warns(monkeypatch, caplog):
 
     monkeypatch.setattr(db, "db_conn", broken_db)
     monkeypatch.setattr("services.tts_backend.list_backends", lambda: [])
-    with caplog.at_level("WARNING", logger="omnivoice.openai"):
+    with caplog.at_level("WARNING", logger="elevenvoice.openai"):
         result = openai_compat.list_voices()
 
     assert set(result) == {"voices", "engines"}

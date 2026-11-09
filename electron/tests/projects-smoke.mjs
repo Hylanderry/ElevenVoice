@@ -96,7 +96,7 @@ try {
       json: route.request().url().endsWith('/projects') ? (row ? [row] : []) : row,
     });
   });
-  await page.goto((process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902') + '/#/projects');
+  await page.goto((process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902') + '/#/projects');
   const filters = page.locator('[data-slot=secondary-sidebar]');
   await filters.getByRole('button', { name: 'Voice profiles 1', exact: true }).click();
   await page.locator('main').getByRole('heading', { name: 'Library voice', exact: true }).waitFor();
@@ -148,8 +148,8 @@ try {
   await dialog.waitFor();
   const bounds = await dialog.boundingBox();
   assert(bounds && bounds.y >= 0 && bounds.y + bounds.height <= page.viewportSize().height);
-  if (process.env.VOICESTUDIO_SCREENSHOT)
-    await page.screenshot({ path: process.env.VOICESTUDIO_SCREENSHOT });
+  if (process.env.ELEVENVOICE_SCREENSHOT)
+    await page.screenshot({ path: process.env.ELEVENVOICE_SCREENSHOT });
   await page.getByRole('dialog').getByRole('button', { name: 'Delete', exact: true }).click();
   await page
     .getByRole('button', { name: 'Library renamed', exact: true })

@@ -52,7 +52,7 @@ import { cp, mkdir, readFile, readdir, rm, stat, statfs, writeFile } from 'node:
 import { dirname, isAbsolute, join, win32 } from 'node:path';
 
 // The web UI is not staged: the backend serves it straight from the app's
-// resources via OMNIVOICE_FRONTEND_DIST, so it always matches this version.
+// resources via ELEVENVOICE_FRONTEND_DIST, so it always matches this version.
 const SOURCES = [
   'backend',
   'config',
@@ -102,7 +102,7 @@ export const ROCM_TORCH_PROBE =
   "import torch, sys; sys.exit(0 if getattr(torch.version, 'hip', None) else 1)";
 export const ROCM_TORCH_PROBE_FAILURE =
   'The ROCm setup installed a PyTorch build without ROCm support. Check that ' +
-  'OMNIVOICE_TORCH_INDEX points at a ROCm wheel index, then run setup again.';
+  'ELEVENVOICE_TORCH_INDEX points at a ROCm wheel index, then run setup again.';
 /**
  * Linux uses PyTorch's ROCm index; Windows x64 uses the shared AMD recipe.
  */
@@ -112,7 +112,7 @@ export function rocmTorchApplies(platform: NodeJS.Platform = process.platform): 
 /** The user explicitly asked for ROCm torch AND this OS can have it. */
 export function rocmTorchOptIn(platform: NodeJS.Platform = process.platform): boolean {
   return (
-    process.env.OMNIVOICE_TORCH_VARIANT?.trim().toLowerCase() === 'rocm' &&
+    process.env.ELEVENVOICE_TORCH_VARIANT?.trim().toLowerCase() === 'rocm' &&
     rocmTorchApplies(platform)
   );
 }
@@ -162,7 +162,7 @@ export const WINDOWS_TORCH_SYSTEM_LIBRARIES = [
   'vcomp140.dll',
 ] as const;
 /** Marker the native diagnostic prints on stdout. */
-export const NATIVE_DIAGNOSTIC_PREFIX = 'VOICESTUDIO_NATIVE_DIAGNOSTIC=';
+export const NATIVE_DIAGNOSTIC_PREFIX = 'ELEVENVOICE_NATIVE_DIAGNOSTIC=';
 /** Error code for "a system library the native extensions need is missing". */
 export const MISSING_SYSTEM_LIBRARY_CODE = 'MISSING_SYSTEM_LIBRARY';
 /** Error code for "the Visual C++ runtime this host loads is too old for the wheels". */
@@ -190,7 +190,7 @@ const RUNTIME_IMPORT_MODULES = [
   'torchaudio',
   'torchvision',
 ] as const;
-const IMPORT_MARKER = 'VOICESTUDIO_IMPORT=';
+const IMPORT_MARKER = 'ELEVENVOICE_IMPORT=';
 /**
  * Imports every runtime module, announcing each one first. A native import that
  * dies with an access violation (exit code 3221225477) leaves no traceback, so
@@ -217,7 +217,7 @@ function importFailure(error: unknown): Error {
   );
 }
 const RUNTIME_SCHEMA = 'electron-runtime-v2-cudnn8';
-const CUDNN8_PROBE_PREFIX = 'VOICESTUDIO_CUDNN8_PROBE=';
+const CUDNN8_PROBE_PREFIX = 'ELEVENVOICE_CUDNN8_PROBE=';
 const REQUIRED_ENV_BYTES = 9 * 1024 ** 3;
 // No CUDA wheels: torch itself is ~0.2 GB; the rest is ordinary dependencies plus
 // the uv cache copy that cannot hardlink across volumes. macOS wheels never carry
@@ -287,7 +287,7 @@ export function runtimePython(root: string, platform = process.platform): string
 export type TorchVariant = 'default' | 'cpu' | 'rocm';
 export interface TorchChoice {
   variant: TorchVariant;
-  /** True when pinned via OMNIVOICE_TORCH_VARIANT; false when inferred from the host. */
+  /** True when pinned via ELEVENVOICE_TORCH_VARIANT; false when inferred from the host. */
   explicit: boolean;
 }
 
@@ -300,7 +300,7 @@ function cpuTorchApplies(platform: NodeJS.Platform, arch: string): boolean {
 }
 
 /**
- * Pick the PyTorch flavour to install. `OMNIVOICE_TORCH_VARIANT` =
+ * Pick the PyTorch flavour to install. `ELEVENVOICE_TORCH_VARIANT` =
  * `cuda` | `cpu` | `rocm` | `auto` (default). Auto installs the CPU build on
  * Linux/Windows x64 hosts with no NVIDIA driver (no multi-GB CUDA download) and
  * always on Windows on ARM; every other host keeps the lock's default wheels
@@ -312,7 +312,7 @@ export function resolveTorchVariant(
   arch: string = process.arch,
   hasNvidia: () => boolean = () => nvidiaDriverPresent(platform),
 ): TorchChoice {
-  const raw = env.OMNIVOICE_TORCH_VARIANT?.trim().toLowerCase() ?? '';
+  const raw = env.ELEVENVOICE_TORCH_VARIANT?.trim().toLowerCase() ?? '';
   windowsRocmSelected(raw, platform, arch);
   if (raw === 'rocm' && rocmTorchApplies(platform)) return { variant: 'rocm', explicit: true };
   if (raw === 'cuda' || raw === 'default') return { variant: 'default', explicit: true };
@@ -343,7 +343,7 @@ export async function runtimeDownloadHosts(
   const rocmHost =
     platform === 'win32'
       ? 'repo.radeon.com'
-      : new URL(process.env.OMNIVOICE_TORCH_INDEX || ROCM_TORCH_INDEX).host;
+      : new URL(process.env.ELEVENVOICE_TORCH_INDEX || ROCM_TORCH_INDEX).host;
   const hosts = setupDownloadHosts(lock, {
     pytorchIndex: cpuTorchApplies(platform, arch),
     overrides: rocm
@@ -764,7 +764,7 @@ export function missingSystemLibraryError(libraries: readonly string[]): Error {
     new Error(
       `This Windows system is missing ${libraries.join(', ')}, which the PyTorch audio extension links ` +
         'against. Install the Microsoft Visual C++ 2015-2022 Redistributable (x64) and restart ' +
-        'VoiceStudio; reinstalling the Python packages cannot supply a system library.',
+        'ElevenVoice; reinstalling the Python packages cannot supply a system library.',
     ),
     { code: MISSING_SYSTEM_LIBRARY_CODE, missingSystemLibraries: [...libraries] },
   );
@@ -913,8 +913,8 @@ async function mirrorInPlace(source: string, target: string, fs: StageFileSystem
 function runtimeFilesLockedError(target: string, cause: unknown): Error {
   return Object.assign(
     new Error(
-      `Windows would not let VoiceStudio update ${target} because another program has a file in it ` +
-        'open (OneDrive or another sync app, antivirus, or a VoiceStudio backend that is still ' +
+      `Windows would not let ElevenVoice update ${target} because another program has a file in it ` +
+        'open (OneDrive or another sync app, antivirus, or a ElevenVoice backend that is still ' +
         'running). Close that program or pause syncing, then press Retry. ' +
         `(${String((cause as Error | null)?.message ?? cause)})`,
     ),
@@ -1469,7 +1469,7 @@ export async function installRuntime(
         'install',
         '--python',
         runtimePython(project),
-        ...rocmTorchInstallArgs(process.env.OMNIVOICE_TORCH_INDEX || ROCM_TORCH_INDEX),
+        ...rocmTorchInstallArgs(process.env.ELEVENVOICE_TORCH_INDEX || ROCM_TORCH_INDEX),
       ],
       project,
       env,
@@ -1506,7 +1506,7 @@ export async function installRuntime(
       throw outdatedSystemLibraryError(error, diagnosis) ?? importFailure(error);
     }
     if (torch.variant === 'rocm') {
-      // With an untagged OMNIVOICE_TORCH_INDEX mirror the bare pins can resolve
+      // With an untagged ELEVENVOICE_TORCH_INDEX mirror the bare pins can resolve
       // to ordinary wheels; never mark such a runtime ROCm-ready.
       try {
         await run(runtimePython(project), ['-c', ROCM_TORCH_PROBE], project);

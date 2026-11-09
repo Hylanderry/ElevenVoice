@@ -12,8 +12,8 @@ isolated from the parent's Python process.
 - **Runtime** (`omnivoice.cpp`, the C++ inference binary in `bin/`): MIT.
 - **Audio codec** (Higgs Audio v2, embedded in the tokenizer GGUF): Apache-2.0.
 
-The license chain is identical to the engine VoiceStudio already
-ships in v0.2.7 (`VoiceStudioBackend`); this engine is the same model
+The license chain is identical to the engine ElevenVoice already
+ships in v0.2.7 (`ElevenVoiceBackend`); this engine is the same model
 under a different runtime.
 
 ## Sources
@@ -69,7 +69,7 @@ arrive.
   zero-byte partial download do not.
 - The selected tier is used whenever its pair is installed. An explicit
   Settings override is strict — only that exact pair counts. An explicit
-  CPU choice (Settings, `OMNIVOICE_DEVICE=cpu`, `OMNIVOICE_GGUF_BACKEND=cpu`
+  CPU choice (Settings, `ELEVENVOICE_DEVICE=cpu`, `ELEVENVOICE_GGUF_BACKEND=cpu`
   or a native `GGML_BACKEND=CPU`) keeps the CPU tier's quant policy, so
   a larger cached quant is not substituted for it.
 - Only when the selected pair is absent, and the selection is not an
@@ -164,7 +164,7 @@ as the `.app` quarantine (issue #54).
 The workaround is identical:
 
 ```
-xattr -cr "/Applications/VoiceStudio.app"
+xattr -cr "/Applications/ElevenVoice.app"
 ```
 
 This clears the quarantine xattr recursively — including on the bundled
@@ -177,7 +177,7 @@ The macOS Apple Silicon Metal build compiles cleanly with `-DGGML_METAL=ON`
 at the pinned `omnivoice.cpp` SHA (#2105), enabling GPU-accelerated GGUF
 voice cloning when the packaged binary passes preflight and is permitted by
 macOS. Missing binaries, placeholders, or Gatekeeper rejection leave
-`VoiceStudioBackend` available as the in-process fallback.
+`ElevenVoiceBackend` available as the in-process fallback.
 
 ## Smoke test
 

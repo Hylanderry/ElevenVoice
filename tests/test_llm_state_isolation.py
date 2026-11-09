@@ -20,8 +20,8 @@ every surface to its pre-test baseline. Fails without the guard.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -31,7 +31,7 @@ import pytest
 # values at test start are what the guard restores to).
 _ENV_VARS = (
     "LLM_DEFAULT_PROVIDER",
-    "OMNIVOICE_LLM_BACKEND",
+    "ELEVENVOICE_LLM_BACKEND",
     "GROQ_API_KEY",
     "TRANSLATE_BASE_URL",
     "TRANSLATE_API_KEY",
@@ -63,7 +63,7 @@ def test_pollute_llm_state_without_cleanup():
     _baseline["prefs"] = _prefs_llm_backend()
 
     os.environ["LLM_DEFAULT_PROVIDER"] = "groq"
-    os.environ["OMNIVOICE_LLM_BACKEND"] = "openai-compat"
+    os.environ["ELEVENVOICE_LLM_BACKEND"] = "openai-compat"
     os.environ["GROQ_API_KEY"] = "gsk_leaked_by_test"
     os.environ["TRANSLATE_BASE_URL"] = "http://leak:11434/v1"
     os.environ["TRANSLATE_API_KEY"] = "leaked"

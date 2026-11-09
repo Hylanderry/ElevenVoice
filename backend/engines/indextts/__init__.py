@@ -1,7 +1,7 @@
 """IndexTTS 2.5/2 sidecar package (Phase 2 Plan 02-03).
 
 IndexTTS-2 runs in its own subprocess + dedicated venv with
-``transformers<5``, isolated from the VoiceStudio parent process which
+``transformers<5``, isolated from the ElevenVoice parent process which
 pins ``transformers>=5.3``. Closes issue #42 — the canonical
 ``OffloadedCache`` ImportError driven by the transformers v4 ↔ v5
 incompatibility — by making the two libraries live in separate OS
@@ -39,7 +39,7 @@ from services.subprocess_backend import SubprocessBackend
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.indextts")
+logger = logging.getLogger("elevenvoice.indextts")
 
 
 _LANGUAGE_ALIASES = {
@@ -60,7 +60,7 @@ _LANGUAGE_ALIASES = {
 
 
 def _normalize_indextts25_language(value, text: str) -> str:
-    """Map VoiceStudio locale labels to IndexTTS 2.5's required token."""
+    """Map ElevenVoice locale labels to IndexTTS 2.5's required token."""
     raw = str(value or "").strip().lower().replace("_", "-")
     base = raw.split("-", 1)[0]
     resolved = _LANGUAGE_ALIASES.get(raw) or _LANGUAGE_ALIASES.get(base)
@@ -78,7 +78,7 @@ def _normalize_indextts25_language(value, text: str) -> str:
 
 
 def _duration_factor(text: str, language: str, duration: float) -> float:
-    """Map VoiceStudio's absolute duration to IndexTTS 2.5's relative scale."""
+    """Map ElevenVoice's absolute duration to IndexTTS 2.5's relative scale."""
     from services.speech_rate import expected_duration
 
     natural_s = expected_duration(text, language)
@@ -105,7 +105,7 @@ class IndexTTS2Backend(SubprocessBackend):
     """IndexTTS 2.5 (Bilibili) — isolated subprocess with IndexTTS-2 fallback.
 
     Plan 02-03 migrated IndexTTS off the in-process import path because
-    IndexTTS pins ``transformers<5`` while VoiceStudio pins
+    IndexTTS pins ``transformers<5`` while ElevenVoice pins
     ``transformers>=5.3``. The two cannot share a Python interpreter
     without one of them blowing up at import time (issue #42 — the
     canonical ``OffloadedCache`` ImportError). Running IndexTTS in a
@@ -128,10 +128,10 @@ class IndexTTS2Backend(SubprocessBackend):
         cd index-tts && uv pip install -e .   # NOT uv sync --all-extras
         hf download IndexTeam/IndexTTS-2.5 --local-dir=checkpoints
 
-    Set ``OMNIVOICE_INDEXTTS_DIR`` to the repo root. VoiceStudio will
+    Set ``ELEVENVOICE_INDEXTTS_DIR`` to the repo root. ElevenVoice will
     create ``backend/engines/indextts/.venv`` lazily on first launch if
     no venv exists yet — the user's existing
-    ``${OMNIVOICE_INDEXTTS_DIR}/.venv`` is preferred if present, so no
+    ``${ELEVENVOICE_INDEXTTS_DIR}/.venv`` is preferred if present, so no
     re-install is needed.
 
     License: bilibili Model Use License. A separate license is required
@@ -165,15 +165,15 @@ class IndexTTS2Backend(SubprocessBackend):
         )
         if not is_indextts_installed():
             return False, (
-                "IndexTTS 2.5 venv not found. Set OMNIVOICE_INDEXTTS_DIR to "
+                "IndexTTS 2.5 venv not found. Set ELEVENVOICE_INDEXTTS_DIR to "
                 "your IndexTTS clone (the directory containing checkpoints/) "
-                "and restart VoiceStudio. See docs/engines/indextts.md for the "
+                "and restart ElevenVoice. See docs/engines/indextts.md for the "
                 "full install walk-through."
             )
         if not INDEXTTS_SIDECAR_SCRIPT.exists():
             return False, (
                 "IndexTTS sidecar script missing at "
-                f"{INDEXTTS_SIDECAR_SCRIPT} — reinstall VoiceStudio."
+                f"{INDEXTTS_SIDECAR_SCRIPT} — reinstall ElevenVoice."
             )
         return True, "ok"
 
@@ -194,7 +194,7 @@ class IndexTTS2Backend(SubprocessBackend):
 
         windows_rocm = (
             sys.platform == "win32"
-            and os.environ.get("OMNIVOICE_TORCH_VARIANT", "").strip().lower() == "rocm"
+            and os.environ.get("ELEVENVOICE_TORCH_VARIANT", "").strip().lower() == "rocm"
         )
         try:
             from engines.indextts import bootstrap
@@ -249,9 +249,9 @@ class IndexTTS2Backend(SubprocessBackend):
         # the parent's watchdog killed a healthy synthesis (#1611). main.py also
         # heartbeats during infer(), which is what actually proves liveness —
         # this deadline is the ceiling for a sidecar that has gone genuinely
-        # silent. OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S tunes it.
+        # silent. ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S tunes it.
         try:
-            v = float(os.environ.get("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", "900"))
         except (ValueError, TypeError):
             return 900.0
         if not math.isfinite(v):  # reject inf/nan so the deadline can't be disabled
@@ -272,7 +272,7 @@ class IndexTTS2Backend(SubprocessBackend):
 
     @property
     def supported_languages(self) -> list[str]:
-        configured = os.environ.get("OMNIVOICE_INDEXTTS_DIR")
+        configured = os.environ.get("ELEVENVOICE_INDEXTTS_DIR")
         if configured and not os.path.isfile(
             os.path.join(configured, "indextts", "infer_v2_5.py")
         ):

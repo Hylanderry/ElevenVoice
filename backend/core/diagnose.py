@@ -164,7 +164,7 @@ def _check_disk() -> dict:
     if free_gb < _DISK_FAIL_GB:
         return _check(
             "disk", "Disk space", FAIL, detail,
-            "Model downloads need several GB. Free up space or move OMNIVOICE_DATA_DIR to a larger volume.",
+            "Model downloads need several GB. Free up space or move ELEVENVOICE_DATA_DIR to a larger volume.",
         )
     if free_gb < _DISK_WARN_GB:
         return _check(
@@ -185,7 +185,7 @@ def _check_data_dir() -> dict:
         return _check(
             "data_dir", "Data directory", FAIL,
             f"not writable: {DATA_DIR} ({e})",
-            "Voices, projects, and logs all live here. Fix permissions or point OMNIVOICE_DATA_DIR somewhere writable.",
+            "Voices, projects, and logs all live here. Fix permissions or point ELEVENVOICE_DATA_DIR somewhere writable.",
         )
 
 
@@ -458,7 +458,7 @@ def format_text(report: dict) -> str:
     """
     tag = {OK: "[ OK ]", WARN: "[WARN]", FAIL: "[FAIL]"}
     lines = [
-        f"VoiceStudio self-check - v{report['app_version']} on {report['platform']}",
+        f"ElevenVoice self-check - v{report['app_version']} on {report['platform']}",
         "",
     ]
     for c in report["checks"]:

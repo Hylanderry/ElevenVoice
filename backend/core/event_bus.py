@@ -17,7 +17,7 @@ import logging
 import time
 from typing import Any
 
-logger = logging.getLogger("omnivoice.events")
+logger = logging.getLogger("elevenvoice.events")
 
 # All connected WebSocket listener queues
 _listeners: list[asyncio.Queue] = []

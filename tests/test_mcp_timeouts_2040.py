@@ -4,14 +4,14 @@ came back as an empty client-side timeout."""
 import pytest
 
 _BUDGET_VARS = (
-    "OMNIVOICE_MCP_TIMEOUT_S",
-    "OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S",
-    "OMNIVOICE_GENERATE_TIMEOUT_S",
-    "OMNIVOICE_CPU_GENERATE_TIMEOUT_S",
-    "OMNIVOICE_GPU_QUEUE_TIMEOUT_S",
-    "OMNIVOICE_MODEL_LOAD_TIMEOUT",
-    "OMNIVOICE_PROGRESS_EXTENSION_CAP_S",
-    "OMNIVOICE_MODEL_LOAD_TIMEOUT_S",
+    "ELEVENVOICE_MCP_TIMEOUT_S",
+    "ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S",
+    "ELEVENVOICE_GENERATE_TIMEOUT_S",
+    "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S",
+    "ELEVENVOICE_GPU_QUEUE_TIMEOUT_S",
+    "ELEVENVOICE_MODEL_LOAD_TIMEOUT",
+    "ELEVENVOICE_PROGRESS_EXTENSION_CAP_S",
+    "ELEVENVOICE_MODEL_LOAD_TIMEOUT_S",
 )
 QUEUE = 1800.0
 GRACE = 30.0
@@ -41,7 +41,7 @@ def test_transcribe_waits_past_the_backends_asr_budget(post_timeout):
 
 
 def test_a_raised_asr_budget_is_followed(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "900")
+    monkeypatch.setenv("ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "900")
     assert post_timeout("transcribe") == 900.0 + GRACE
 
 
@@ -56,7 +56,7 @@ def test_generation_covers_the_queue_and_the_length_scaled_budget(post_timeout):
 
 
 def test_the_larger_cpu_generation_budget_wins(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "900")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "900")
     assert post_timeout("generate", "short") == _generate_wait(900.0, reference_base=900.0)
     # An explicit CPU budget is authoritative and uncapped: no ceiling applies.
     assert post_timeout("generate", "x" * 1600) == _generate_wait(
@@ -65,20 +65,20 @@ def test_the_larger_cpu_generation_budget_wins(post_timeout, monkeypatch):
 
 
 def test_a_raised_gpu_generation_budget_wins_when_larger(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "1200")
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "600")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "1200")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "600")
     assert post_timeout("generate", "short") == _generate_wait(1200.0, reference_base=1200.0)
 
 
 def test_a_shorter_queue_budget_is_followed(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_GPU_QUEUE_TIMEOUT_S", "60")
+    monkeypatch.setenv("ELEVENVOICE_GPU_QUEUE_TIMEOUT_S", "60")
     from core.generate_budget import CPU_AUTO_CAP_S
 
     assert post_timeout("generate", "short") == _generate_wait(CPU_AUTO_CAP_S, queue=60.0)
 
 
 def test_an_explicit_mcp_timeout_still_wins(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MCP_TIMEOUT_S", "45")
+    monkeypatch.setenv("ELEVENVOICE_MCP_TIMEOUT_S", "45")
     assert post_timeout("transcribe") == 45.0
     assert post_timeout("generate", "x" * 5000) == 45.0
 
@@ -88,9 +88,9 @@ def test_other_posts_keep_the_old_default(post_timeout):
 
 
 def test_unusable_values_fall_back(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "soon")
+    monkeypatch.setenv("ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "soon")
     assert post_timeout("transcribe") == 300.0 + GRACE
-    monkeypatch.setenv("OMNIVOICE_MCP_TIMEOUT_S", "-5")
+    monkeypatch.setenv("ELEVENVOICE_MCP_TIMEOUT_S", "-5")
     assert post_timeout("transcribe") == 120.0
 
 
@@ -131,16 +131,16 @@ def test_cpu_generation_covers_cold_load_and_progress_extensions(post_timeout):
 
 
 def test_a_raised_model_load_budget_is_followed(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "2000")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "2000")
     assert post_timeout("generate", "short") == 36_850.0
 
 
 @pytest.mark.parametrize("primary", [None, "", "10000"])
 def test_progress_extension_cap_honors_the_legacy_alias(post_timeout, monkeypatch, primary):
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "900")
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT_S", "20000")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "900")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT_S", "20000")
     if primary is not None:
-        monkeypatch.setenv("OMNIVOICE_PROGRESS_EXTENSION_CAP_S", primary)
+        monkeypatch.setenv("ELEVENVOICE_PROGRESS_EXTENSION_CAP_S", primary)
     cap = 10000.0 if primary else 20000.0
     assert post_timeout("generate", "short") == _generate_wait(
         900.0, extension_cap=cap, reference_base=900.0,
@@ -156,23 +156,23 @@ def test_transcriptless_clone_covers_both_serial_jobs(post_timeout):
 
 
 def test_reference_transcription_uses_generation_not_standalone_asr_budget(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "2000")
-    monkeypatch.setenv("OMNIVOICE_GPU_QUEUE_TIMEOUT_S", "60")
-    monkeypatch.setenv("OMNIVOICE_PROGRESS_EXTENSION_CAP_S", "10000")
-    monkeypatch.setenv("OMNIVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "50000")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "2000")
+    monkeypatch.setenv("ELEVENVOICE_GPU_QUEUE_TIMEOUT_S", "60")
+    monkeypatch.setenv("ELEVENVOICE_PROGRESS_EXTENSION_CAP_S", "10000")
+    monkeypatch.setenv("ELEVENVOICE_ASR_TRANSCRIBE_TIMEOUT_S", "50000")
     assert post_timeout("generate", "short") == _generate_wait(
         2000.0, queue=60.0, extension_cap=10000.0, reference_base=2000.0,
     )
 
 
 def test_model_load_and_progress_settings_do_not_change_transcribe(post_timeout, monkeypatch):
-    for name in ("OMNIVOICE_MODEL_LOAD_TIMEOUT", "OMNIVOICE_PROGRESS_EXTENSION_CAP_S"):
+    for name in ("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "ELEVENVOICE_PROGRESS_EXTENSION_CAP_S"):
         monkeypatch.setenv(name, "20000")
     assert post_timeout("transcribe") == 300.0 + GRACE
 
 
 def test_explicit_mcp_timeout_still_wins_over_every_generate_phase(post_timeout, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MCP_TIMEOUT_S", "45")
-    for name in ("OMNIVOICE_MODEL_LOAD_TIMEOUT", "OMNIVOICE_PROGRESS_EXTENSION_CAP_S"):
+    monkeypatch.setenv("ELEVENVOICE_MCP_TIMEOUT_S", "45")
+    for name in ("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "ELEVENVOICE_PROGRESS_EXTENSION_CAP_S"):
         monkeypatch.setenv(name, "20000")
     assert post_timeout("generate", "x" * 5000) == 45.0

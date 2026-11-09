@@ -152,7 +152,7 @@ it('collapses unsupported languages behind one keyboard-reachable row', async ()
 it('puts recent choices first under a Recent heading', async () => {
   vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(320);
   vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(340);
-  localStorage.setItem('voicestudio.language-recents.recent-test.v1', JSON.stringify(['Japanese']));
+  localStorage.setItem('elevenvoice.language-recents.recent-test.v1', JSON.stringify(['Japanese']));
   render(
     <LanguagePicker
       options={['Auto', 'English', 'German', 'Japanese']}
@@ -169,7 +169,7 @@ it('puts recent choices first under a Recent heading', async () => {
     'German',
   ]);
   expect(screen.getByText('Recent')).toBeInTheDocument();
-  localStorage.removeItem('voicestudio.language-recents.recent-test.v1');
+  localStorage.removeItem('elevenvoice.language-recents.recent-test.v1');
 });
 
 it('does not select while an IME composition is in progress', async () => {

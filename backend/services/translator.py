@@ -28,7 +28,7 @@ via env:
     TRANSLATE_BASE_URL   # default: https://api.openai.com/v1
     TRANSLATE_API_KEY    # or OPENAI_API_KEY
     TRANSLATE_MODEL      # default: gpt-4o-mini
-    OMNIVOICE_LLM_TIMEOUT=45          # seconds per LLM call
+    ELEVENVOICE_LLM_TIMEOUT=45          # seconds per LLM call
 
 Works with real OpenAI, Ollama (base_url=http://localhost:11434/v1), LM Studio,
 Together, Anyscale — anything that speaks the OpenAI chat-completion shape.
@@ -42,7 +42,7 @@ import random
 import time
 from typing import Iterable, Optional
 
-logger = logging.getLogger("omnivoice.translator")
+logger = logging.getLogger("elevenvoice.translator")
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
 # Kept short + direct. These run N × 2 times per dub, so verbosity = wall time.
@@ -152,11 +152,11 @@ def _refine_ratio_bounds() -> tuple[float, float]:
     Anything outside is treated as divergence and the caller degrades to its
     input text. Defaults [0.4, 2.5]; env-tunable like the cinematic budget."""
     try:
-        lo = float(os.environ.get("OMNIVOICE_REFINE_RATIO_MIN", "0.4"))
+        lo = float(os.environ.get("ELEVENVOICE_REFINE_RATIO_MIN", "0.4"))
     except ValueError:
         lo = 0.4
     try:
-        hi = float(os.environ.get("OMNIVOICE_REFINE_RATIO_MAX", "2.5"))
+        hi = float(os.environ.get("ELEVENVOICE_REFINE_RATIO_MAX", "2.5"))
     except ValueError:
         hi = 2.5
     return lo, hi
@@ -209,7 +209,7 @@ def refine_output_ok(
       • script — candidate must look like the target language's script
         (``_looks_like_target_script``; Latin-script targets pass, as before);
       • length — ``len(candidate)/len(reference)`` must sit inside
-        [``OMNIVOICE_REFINE_RATIO_MIN``, ``OMNIVOICE_REFINE_RATIO_MAX``]
+        [``ELEVENVOICE_REFINE_RATIO_MIN``, ``ELEVENVOICE_REFINE_RATIO_MAX``]
         (default 0.4–2.5; ``max_ratio`` overrides the upper bound). References
         shorter than ~20 chars use an absolute cap (reference + 120 chars)
         instead — a two-word line legitimately doubles or halves;
@@ -273,7 +273,7 @@ def _llm_model() -> str:
 
 def _llm_timeout() -> float:
     try:
-        return float(os.environ.get("OMNIVOICE_LLM_TIMEOUT", "45"))
+        return float(os.environ.get("ELEVENVOICE_LLM_TIMEOUT", "45"))
     except ValueError:
         return 45.0
 
@@ -283,7 +283,7 @@ def _cinematic_budget() -> float:
     Unfinished segments degrade to their literal (Fast) translation once hit, so
     a slow provider can't hang the translate. Default 180s; <=0 disables."""
     try:
-        return float(os.environ.get("OMNIVOICE_CINEMATIC_BUDGET_S", "180"))
+        return float(os.environ.get("ELEVENVOICE_CINEMATIC_BUDGET_S", "180"))
     except ValueError:
         return 180.0
 
@@ -520,7 +520,7 @@ async def cinematic_refine_many(
     directions = directions or {}
 
     # Bound concurrency so we don't fan out 500 simultaneous requests.
-    sem = asyncio.Semaphore(concurrency or int(os.environ.get("OMNIVOICE_LLM_CONCURRENCY", "6")))
+    sem = asyncio.Semaphore(concurrency or int(os.environ.get("ELEVENVOICE_LLM_CONCURRENCY", "6")))
 
     async def _one(seg_id: str, src: str, lit: str) -> dict:
         async with sem:
@@ -553,7 +553,7 @@ async def cinematic_refine_many(
         logger.warning(
             "Cinematic pass hit its %.0fs budget with %d/%d segment(s) unfinished "
             "— falling back to the literal translation for those (slow LLM "
-            "provider?). Raise OMNIVOICE_CINEMATIC_BUDGET_S or pick a faster "
+            "provider?). Raise ELEVENVOICE_CINEMATIC_BUDGET_S or pick a faster "
             "provider.", budget, len(pending), len(tasks),
         )
     out: list[dict] = []

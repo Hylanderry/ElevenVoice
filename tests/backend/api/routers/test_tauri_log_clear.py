@@ -98,9 +98,9 @@ def test_clear_reports_nothing_when_there_is_no_plugin_log(system_mod, tmp_path,
             "darwin",
             [
                 "Library/Logs/{bid}/tauri.log",
-                "Library/Logs/{bid}/VoiceStudio.log",
-                "Library/Logs/OmniVoice/backend.log",
-                "Library/Logs/OmniVoice/backend_err.log",
+                "Library/Logs/{bid}/ElevenVoice.log",
+                "Library/Logs/ElevenVoice/backend.log",
+                "Library/Logs/ElevenVoice/backend_err.log",
             ],
         ),
         (
@@ -108,8 +108,8 @@ def test_clear_reports_nothing_when_there_is_no_plugin_log(system_mod, tmp_path,
             [
                 ".local/share/{bid}/logs/tauri.log",
                 ".config/{bid}/logs/tauri.log",
-                ".local/state/OmniVoice/backend.log",
-                ".local/state/OmniVoice/backend_err.log",
+                ".local/state/ElevenVoice/backend.log",
+                ".local/state/ElevenVoice/backend_err.log",
             ],
         ),
         (
@@ -117,8 +117,8 @@ def test_clear_reports_nothing_when_there_is_no_plugin_log(system_mod, tmp_path,
             [
                 "AppData/Local/{bid}/logs/tauri.log",
                 "AppData/Roaming/{bid}/logs/tauri.log",
-                "AppData/Local/OmniVoice/Logs/backend.log",
-                "AppData/Local/OmniVoice/Logs/backend_err.log",
+                "AppData/Local/ElevenVoice/Logs/backend.log",
+                "AppData/Local/ElevenVoice/Logs/backend_err.log",
             ],
         ),
     ],
@@ -129,11 +129,11 @@ def test_the_read_candidate_list_is_unchanged(system_mod, monkeypatch, platform,
     Same files, same order, on every platform — the composite is where a
     refactor slip would silently hide a log from the read path.
     """
-    bid = "com.debpalash.omnivoice-studio"
+    bid = "com.hylanderry.elevenvoice"
     home = "/home/tester"
     monkeypatch.setattr(system_mod.sys, "platform", platform)
     monkeypatch.setattr(os.path, "expanduser", lambda p: p.replace("~", home))
-    for var in ("XDG_DATA_HOME", "XDG_STATE_HOME", "APPDATA", "LOCALAPPDATA", "OMNIVOICE_LOG_DIR"):
+    for var in ("XDG_DATA_HOME", "XDG_STATE_HOME", "APPDATA", "LOCALAPPDATA", "ELEVENVOICE_LOG_DIR"):
         monkeypatch.delenv(var, raising=False)
     if platform == "win32":
         monkeypatch.setenv("APPDATA", f"{home}/AppData/Roaming")
@@ -145,7 +145,7 @@ def test_the_read_candidate_list_is_unchanged(system_mod, monkeypatch, platform,
 
 
 def test_the_backend_redirect_follows_the_writer_s_override(system_mod, monkeypatch, tmp_path):
-    """`OMNIVOICE_LOG_DIR` moves the files, so the resolver has to follow it.
+    """`ELEVENVOICE_LOG_DIR` moves the files, so the resolver has to follow it.
 
     `backend.rs::backend_log_path()` checks that variable before any per-OS
     default, and the backend is a child of the shell, so an ambient override
@@ -153,7 +153,7 @@ def test_the_backend_redirect_follows_the_writer_s_override(system_mod, monkeypa
     per-OS default while the writer wrote somewhere else — the same divergence
     that makes the desktop Logs panel read the wrong file in #1782.
     """
-    monkeypatch.setenv("OMNIVOICE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_LOG_DIR", str(tmp_path))
 
     assert system_mod._backend_redirect_log_candidates() == [
         os.path.join(str(tmp_path), "backend.log"),
@@ -163,18 +163,18 @@ def test_the_backend_redirect_follows_the_writer_s_override(system_mod, monkeypa
 
 def test_a_blank_override_falls_back_to_the_default(system_mod, monkeypatch):
     """Matches the writer's `!dir.trim().is_empty()` guard."""
-    monkeypatch.setenv("OMNIVOICE_LOG_DIR", "   ")
+    monkeypatch.setenv("ELEVENVOICE_LOG_DIR", "   ")
 
     paths = system_mod._backend_redirect_log_candidates()
 
     assert paths, "a blank override must not empty the candidate list"
-    assert all("OmniVoice" in p for p in paths)
+    assert all("ElevenVoice" in p for p in paths)
 
 
 def test_a_padded_override_resolves_the_same_place_the_writer_wrote(
     system_mod, monkeypatch, tmp_path
 ):
-    """A padded `OMNIVOICE_LOG_DIR` must not split the reader from the writer.
+    """A padded `ELEVENVOICE_LOG_DIR` must not split the reader from the writer.
 
     The Python side strips the variable before joining. `backend.rs` trimmed it
     only for the emptiness guard and then did `PathBuf::from(dir)` on the RAW
@@ -183,7 +183,7 @@ def test_a_padded_override_resolves_the_same_place_the_writer_wrote(
     the same reader/writer divergence #1782 is about, reintroduced through the
     override that exists to control it.
     """
-    monkeypatch.setenv("OMNIVOICE_LOG_DIR", f"  {tmp_path}  ")
+    monkeypatch.setenv("ELEVENVOICE_LOG_DIR", f"  {tmp_path}  ")
 
     assert system_mod._backend_redirect_log_candidates() == [
         os.path.join(str(tmp_path), "backend.log"),
@@ -201,7 +201,7 @@ def test_a_vanished_rotated_file_is_skipped_but_a_real_error_is_not(
     empty panel with no explanation. Only the race the guard exists for is
     silent now.
     """
-    base = tmp_path / "omnivoice.log"
+    base = tmp_path / "elevenvoice.log"
     base.write_text("line one\n", encoding="utf-8")
 
     def _vanished(path, remaining):

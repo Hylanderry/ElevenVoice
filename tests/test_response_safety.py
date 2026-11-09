@@ -206,7 +206,7 @@ def test_tailscale_command_exception_stays_in_local_log(monkeypatch, caplog):
         raise RuntimeError(private)
 
     monkeypatch.setattr(tailscale.subprocess, "run", fail_run)
-    with caplog.at_level(logging.ERROR, logger="omnivoice.tailscale"):
+    with caplog.at_level(logging.ERROR, logger="elevenvoice.tailscale"):
         result = tailscale._run(["tailscale", "serve"])
 
     assert result == {"ok": False, "error": "tailscale command failed"}
@@ -230,7 +230,7 @@ def test_tailscale_nonzero_output_stays_in_local_log(monkeypatch, caplog):
         ),
     )
 
-    with caplog.at_level(logging.ERROR, logger="omnivoice.tailscale"):
+    with caplog.at_level(logging.ERROR, logger="elevenvoice.tailscale"):
         result = tailscale._run(["tailscale", "serve"])
 
     assert result == {"ok": False, "error": "tailscale command failed"}

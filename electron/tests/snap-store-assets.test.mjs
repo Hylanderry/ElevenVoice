@@ -14,7 +14,7 @@ import test from 'node:test';
 import { createSnapStoreAssets } from '../../scripts/create_snap_store_assets.mjs';
 
 test('derives a bounded Snap Store media set from canonical listing assets', () => {
-  const outputDir = mkdtempSync(join(tmpdir(), 'voicestudio-snap-assets-'));
+  const outputDir = mkdtempSync(join(tmpdir(), 'elevenvoice-snap-assets-'));
   const manifest = createSnapStoreAssets({ outputDir });
 
   assert.equal(manifest.canonicalSource, 'store/assets.json');
@@ -56,7 +56,7 @@ for (const [label, size] of [
   ['almost 3:1 (722x240)', [722, 240]],
 ]) {
   test(`rejects a banner that is not exactly 3:1: ${label}`, () => {
-    const dir = mkdtempSync(join(tmpdir(), 'voicestudio-snap-banner-'));
+    const dir = mkdtempSync(join(tmpdir(), 'elevenvoice-snap-banner-'));
     const assets = JSON.parse(
       readFileSync(new URL('../../store/assets.json', import.meta.url), 'utf8'),
     );

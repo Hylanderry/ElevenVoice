@@ -33,12 +33,12 @@ function sha256File(path) {
 }
 
 function releaseArtifact(name, distribution) {
-  // Direct and Snap packages are `VoiceStudio-<version>-…`; store builds carry a label.
+  // Direct and Snap packages are `ElevenVoice-<version>-…`; store builds carry a label.
   const installer =
     {
-      "microsoft-store": /^VoiceStudio-MicrosoftStore-/,
-      "mac-app-store": /^VoiceStudio-MacAppStore-/,
-    }[distribution] ?? /^VoiceStudio-\d/;
+      "microsoft-store": /^ElevenVoice-MicrosoftStore-/,
+      "mac-app-store": /^ElevenVoice-MacAppStore-/,
+    }[distribution] ?? /^ElevenVoice-\d/;
   const updatePrefix =
     distribution === "microsoft-store"
       ? "electron-microsoft-store-stable-"
@@ -122,7 +122,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   createArtifactManifest({
     releaseDir,
     output,
-    distribution: option("distribution", process.env.VOICESTUDIO_DISTRIBUTION),
+    distribution: option("distribution", process.env.ELEVENVOICE_DISTRIBUTION),
     platform,
     arch,
     version: packageJson.version,

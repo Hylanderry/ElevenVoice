@@ -32,11 +32,11 @@ from pydantic import BaseModel
 from services.reference_transcript import stored_reference_transcript
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.tts_stream")
+logger = logging.getLogger("elevenvoice.tts_stream")
 
 # Chunk size for streaming PCM audio (in samples). At 24kHz, 4800 samples = 200ms.
 # Smaller chunks = lower latency but more WebSocket overhead.
-CHUNK_SAMPLES = int(os.environ.get("OMNIVOICE_STREAM_CHUNK", "4800"))
+CHUNK_SAMPLES = int(os.environ.get("ELEVENVOICE_STREAM_CHUNK", "4800"))
 
 # Module seam for deterministic latency-contract tests.  Keep every timing
 # sample on the same monotonic clock.
@@ -104,13 +104,13 @@ class StreamTTSRequest(BaseModel):
 
 
 EMO_AUDIO_DETAIL = (
-    "emo_audio must name an audio clip stored in VoiceStudio's voices or "
+    "emo_audio must name an audio clip stored in ElevenVoice's voices or "
     "outputs folder."
 )
 
 
 def resolve_emotion_clip(value: object) -> str:
-    """Resolve an ``emo_audio`` reference to a file VoiceStudio owns.
+    """Resolve an ``emo_audio`` reference to a file ElevenVoice owns.
 
     Accepts a bare filename in the voices folder, or a path inside the voices
     or outputs folders (voice-gallery imports live there). Anything else —

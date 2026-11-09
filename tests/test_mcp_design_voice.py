@@ -56,7 +56,7 @@ def voice_tools(monkeypatch):
         journal.generations.append(dict(await request.form()))
         return Response(b"WAVE", headers={"X-Audio-Id": "audio42"})
 
-    monkeypatch.delenv("OMNIVOICE_API_URL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_URL", raising=False)
     return mcp_server.create_mcp_server(app=backend), journal
 
 

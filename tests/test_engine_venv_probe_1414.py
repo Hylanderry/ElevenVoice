@@ -5,7 +5,7 @@ importing the engine package. That probe used to have two outcomes, and a
 bound that elapsed produced the *negative* one — so on the hosts where
 ``import indextts.infer_v2`` is slowest (cold page cache, spinning disk,
 Windows AV scanning every DLL of a torch import), a working
-``OMNIVOICE_INDEXTTS_DIR`` install was discarded and the user was told the
+``ELEVENVOICE_INDEXTTS_DIR`` install was discarded and the user was told the
 engine was not installed, or got a 500 on the first generation after launch.
 
 These pin the three properties that fix depends on:
@@ -83,8 +83,8 @@ def test_an_unrunnable_interpreter_is_no(probe, tmp_path):
 # ── the bound ──────────────────────────────────────────────────────────────
 
 def test_bound_defaults_generously(probe, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", raising=False)
-    monkeypatch.delenv("OMNIVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", raising=False)
     assert probe.probe_timeout_s("indextts") == probe.DEFAULT_PROBE_TIMEOUT_S
     # The old per-engine bound. A cold torch import routinely exceeds it, which
     # is the whole of #1414 — if this ever drops back, the bug is back.
@@ -92,8 +92,8 @@ def test_bound_defaults_generously(probe, monkeypatch):
 
 
 def test_per_engine_env_beats_global(probe, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", "30")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", "120")
+    monkeypatch.setenv("ELEVENVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", "30")
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", "120")
     assert probe.probe_timeout_s("indextts") == 120.0
     assert probe.probe_timeout_s("dots_tts") == 30.0
 
@@ -106,8 +106,8 @@ def test_a_useless_bound_is_ignored(probe, monkeypatch, bad):
     `inf` needs its own rejection: it parses cleanly and is positive, but
     `subprocess.run(timeout=inf)` raises OverflowError — from inside the one
     function that promises never to raise (CodeRabbit)."""
-    monkeypatch.delenv("OMNIVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", raising=False)
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", bad)
+    monkeypatch.delenv("ELEVENVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S", bad)
     assert probe.probe_timeout_s("indextts") == probe.DEFAULT_PROBE_TIMEOUT_S
 
 
@@ -123,7 +123,7 @@ def indextts_bootstrap(monkeypatch, tmp_path):
     for root in (user_venv, own_venv):
         (root / "bin").mkdir(parents=True, exist_ok=True)
         (root / "Scripts").mkdir(parents=True, exist_ok=True)
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(tmp_path / "user"))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(tmp_path / "user"))
     monkeypatch.setattr(bootstrap, "_ENGINES_VENV_DIR", own_venv)
     # Both candidates exist on disk; only the probe verdict decides.
     for root in (user_venv, own_venv):
@@ -165,7 +165,7 @@ def test_a_proven_candidate_still_beats_an_unproven_one(
 def test_proven_failures_alone_still_raise(indextts_bootstrap, monkeypatch):
     """No weakening of the real "you have not installed this" path."""
     bootstrap, user_py, own_py = indextts_bootstrap
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
     monkeypatch.setattr(bootstrap, "_venv_can_import_indextts", lambda p: "no")
     with pytest.raises(RuntimeError, match="not installed"):
         bootstrap.resolve_indextts_venv()

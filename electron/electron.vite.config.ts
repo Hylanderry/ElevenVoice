@@ -29,16 +29,16 @@ const define = {
     process.env.VITE_POSTHOG_KEY ?? process.env.POSTHOG_PROJECT_TOKEN ?? '',
   ),
   __POSTHOG_HOST__: JSON.stringify(process.env.VITE_POSTHOG_HOST ?? process.env.POSTHOG_HOST ?? ''),
-  // VoiceStudio Cloud sign-in ships dark in packaged builds until the vssaas production API is live.
-  __CLOUD_ACCOUNTS__: JSON.stringify(process.env.VOICESTUDIO_CLOUD_ACCOUNTS === '1'),
+  // ElevenVoice Cloud sign-in ships dark in packaged builds until the vssaas production API is live.
+  __CLOUD_ACCOUNTS__: JSON.stringify(process.env.ELEVENVOICE_CLOUD_ACCOUNTS === '1'),
   // The production Zitadel client ID of this app (vssaas assigns it); packaged builds need it to sign in.
-  __CLOUD_CLIENT_ID__: JSON.stringify(process.env.VOICESTUDIO_CLOUD_CLIENT_ID ?? ''),
+  __CLOUD_CLIENT_ID__: JSON.stringify(process.env.ELEVENVOICE_CLOUD_CLIENT_ID ?? ''),
 };
 
-// OMNIVOICE_UI_PORT is canonical (the backend reads it for its origin
-// allow-list); VOICESTUDIO_UI_PORT is the accepted legacy alias.
+// ELEVENVOICE_UI_PORT is canonical (the backend reads it for its origin
+// allow-list); ELEVENVOICE_UI_PORT is the accepted legacy alias.
 const rendererPort =
-  Number(process.env.OMNIVOICE_UI_PORT || process.env.VOICESTUDIO_UI_PORT) ||
+  Number(process.env.ELEVENVOICE_UI_PORT || process.env.ELEVENVOICE_UI_PORT) ||
   DEFAULT_ELECTRON_DEV_PORT;
 
 export default defineConfig({
@@ -115,7 +115,7 @@ export default defineConfig({
       // Dev counterpart of main's app:// proxy (CONTRACT.md, same-origin API rule).
       proxy: {
         '/api/ws': {
-          target: 'http://127.0.0.1:' + (process.env.OMNIVOICE_PORT || DEFAULT_BACKEND_PORT),
+          target: 'http://127.0.0.1:' + (process.env.ELEVENVOICE_PORT || DEFAULT_BACKEND_PORT),
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api/, ''),
           ws: true,
@@ -133,7 +133,7 @@ export default defineConfig({
         '/api': {
           target:
             'http://127.0.0.1:' +
-            (process.env.VOICESTUDIO_ELECTRON_PROXY_PORT || DEFAULT_ELECTRON_PROXY_PORT),
+            (process.env.ELEVENVOICE_ELECTRON_PROXY_PORT || DEFAULT_ELECTRON_PROXY_PORT),
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api/, ''),
           configure(proxy) {

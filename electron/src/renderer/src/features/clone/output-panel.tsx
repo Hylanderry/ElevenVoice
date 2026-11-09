@@ -40,7 +40,7 @@ export function OutputPanel() {
           <div className="flex shrink-0 items-center gap-1">
             <SaveAudioButton
               url={result.audioPath ? audioUrl(result.audioPath) : undefined}
-              suggestedName={`voicestudio-${result.id ?? stamp}.wav`}
+              suggestedName={`elevenvoice-${result.id ?? stamp}.wav`}
             />
             <Button
               variant="ghost"

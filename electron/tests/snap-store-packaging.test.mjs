@@ -4,7 +4,7 @@ import test from 'node:test';
 import config, { distributionPackaging } from '../electron-builder.config.mjs';
 import metadata from '../../store/metadata.json' with { type: 'json' };
 
-test('names direct downloads VoiceStudio-<version>-<os>-<arch> without an Electron label', () => {
+test('names direct downloads ElevenVoice-<version>-<os>-<arch> without an Electron label', () => {
   assert.equal(config.artifactName, 'ElevenVoice-${version}-${os}-${arch}.${ext}');
   assert.equal(config.linux.artifactName, 'ElevenVoice-${version}-linux-x64.${ext}');
 });
@@ -24,7 +24,7 @@ test('keeps direct Linux packaging and its updater unchanged', () => {
 test('builds the Snap Store distribution as a strictly confined store-owned package', () => {
   const packaging = distributionPackaging('snap-store');
   assert.deepEqual(packaging.linuxTargets, ['snap']);
-  assert.equal(packaging.linuxExecutableName, 'voicestudio');
+  assert.equal(packaging.linuxExecutableName, 'elevenvoice');
   assert.equal(packaging.snapcraft.base, 'core22');
   assert.equal(packaging.snapcraft.core22.confinement, 'strict');
   assert.equal(packaging.snapcraft.core22.grade, 'stable');

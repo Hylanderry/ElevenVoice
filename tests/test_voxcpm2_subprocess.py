@@ -131,7 +131,7 @@ def test_a_reference_without_its_transcript_is_not_a_prompt(monkeypatch, tmp_pat
 
 def test_loads_the_configured_checkpoint_without_the_denoiser(monkeypatch):
     calls = []
-    monkeypatch.setenv("OMNIVOICE_VOXCPM_MODEL", "local/ckpt")
+    monkeypatch.setenv("ELEVENVOICE_VOXCPM_MODEL", "local/ckpt")
     sidecar = _load_sidecar(monkeypatch, calls)
     sidecar._handle_synthesize({"text": "hi"}, io.BytesIO())
     assert calls[0] == {"from_pretrained": "local/ckpt", "load_denoiser": False, "optimize": False}
@@ -153,9 +153,9 @@ def test_recv_timeout_env_is_parsed_and_floored(monkeypatch, raw, expected):
     from engines.voxcpm2_subprocess import VoxCPM2SubprocessBackend
 
     if raw is None:
-        monkeypatch.delenv("OMNIVOICE_VOXCPM2_RECV_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_VOXCPM2_RECV_TIMEOUT_S", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_VOXCPM2_RECV_TIMEOUT_S", raw)
+        monkeypatch.setenv("ELEVENVOICE_VOXCPM2_RECV_TIMEOUT_S", raw)
     assert VoxCPM2SubprocessBackend().recv_timeout_s == expected
 
 
@@ -201,15 +201,15 @@ def test_the_class_switches_to_the_sidecar_once_its_venv_exists(monkeypatch, tmp
     from services import tts_backend
     from services.sidecar_install import _INSTALL_COMPLETE_MARKER, _venv_python
 
-    monkeypatch.setenv("OMNIVOICE_VOXCPM2_DIR", "")
-    monkeypatch.delenv("OMNIVOICE_VOXCPM2_DIR")
+    monkeypatch.setenv("ELEVENVOICE_VOXCPM2_DIR", "")
+    monkeypatch.delenv("ELEVENVOICE_VOXCPM2_DIR")
     assert tts_backend.get_backend_class("voxcpm2") is tts_backend.VoxCPM2Backend
 
     py = _venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
     (tmp_path / _INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_VOXCPM2_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_VOXCPM2_DIR", str(tmp_path))
 
     cls = tts_backend.get_backend_class("voxcpm2")
     assert cls is VoxCPM2SubprocessBackend
@@ -287,7 +287,7 @@ def test_a_failed_install_leaves_voxcpm2_in_process(monkeypatch, tmp_path):
     py = _venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
-    monkeypatch.setenv("OMNIVOICE_VOXCPM2_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_VOXCPM2_DIR", str(tmp_path))
     assert tts_backend.get_backend_class("voxcpm2") is tts_backend.VoxCPM2Backend
 
 

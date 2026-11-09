@@ -44,7 +44,7 @@ export function publicFailureFromEvent(
 
 /**
  * The remediation a classified API failure carries — the localized message for a
- * known `docs_topic`/`code`, else the backend's VoiceStudio-owned `hint` — or
+ * known `docs_topic`/`code`, else the backend's ElevenVoice-owned `hint` — or
  * undefined for an unclassified failure. Surfaces that show a short title and
  * tuck the raw detail behind "Technical details" render this visibly, so a
  * diagnosed cause (a full disk, a missing ffmpeg) is never hidden.

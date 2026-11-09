@@ -17,7 +17,7 @@
 # Hard exits:
 #   * exit 2 — macOS Apple Silicon + cmake -DGGML_METAL=ON failed. The
 #     caller (CI matrix) treats this as a documented Pitfall 1 fallback:
-#     macOS Apple Silicon stays on the in-process VoiceStudioBackend.
+#     macOS Apple Silicon stays on the in-process ElevenVoiceBackend.
 set -euo pipefail
 
 PLATFORM=""
@@ -67,7 +67,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # A bare `-j` runs every compile at once. With GGML_CPU_ALL_VARIANTS that is
 # dozens of cc1plus processes, which the kernel OOM-kills on a 16 GB runner
 # ("Killed signal terminated program cc1plus"). Bound it by the CPU count.
-BUILD_JOBS="${OMNIVOICE_BUILD_JOBS:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo "${NUMBER_OF_PROCESSORS:-2}")}"
+BUILD_JOBS="${ELEVENVOICE_BUILD_JOBS:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo "${NUMBER_OF_PROCESSORS:-2}")}"
 source "$REPO_ROOT/scripts/lib/omnivoice-vulkan.sh"
 BIN_DIR="$REPO_ROOT/bin"
 mkdir -p "$BIN_DIR"
@@ -118,8 +118,8 @@ copy_shared_libs() {
 # to the executable, as Microsoft documents for redistribution. These x64
 # copies also serve Windows on ARM, which runs this binary under emulation.
 copy_msvc_runtime() {
-    # OMNIVOICE_MSVC_RUNTIME_DIR overrides the source directory (tests).
-    local runtime_dir="${OMNIVOICE_MSVC_RUNTIME_DIR:-}" dll
+    # ELEVENVOICE_MSVC_RUNTIME_DIR overrides the source directory (tests).
+    local runtime_dir="${ELEVENVOICE_MSVC_RUNTIME_DIR:-}" dll
     if [[ -z "$runtime_dir" ]]; then
         runtime_dir="$(cygpath -u "${SYSTEMROOT:-C:\\Windows}")/System32"
     fi
@@ -213,11 +213,11 @@ case "$PLATFORM" in
                 cp -v build/omnivoice-tts "$BIN_DIR/$OUT_NAME"
                 copy_shared_libs
             else
-                echo "→ Metal build failed during compilation; macOS Apple Silicon falls back to in-process VoiceStudioBackend per Pitfall 1." >&2
+                echo "→ Metal build failed during compilation; macOS Apple Silicon falls back to in-process ElevenVoiceBackend per Pitfall 1." >&2
                 exit 2
             fi
         else
-            echo "→ Metal cmake configure failed; macOS Apple Silicon falls back to in-process VoiceStudioBackend per Pitfall 1." >&2
+            echo "→ Metal cmake configure failed; macOS Apple Silicon falls back to in-process ElevenVoiceBackend per Pitfall 1." >&2
             exit 2
         fi
         ;;

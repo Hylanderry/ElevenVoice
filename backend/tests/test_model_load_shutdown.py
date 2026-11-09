@@ -101,7 +101,7 @@ def test_shutdown_error_wrapped_in_cause_chain():
         try:
             raise root
         except RuntimeError as e:
-            raise ImportError("Could not import module VoiceStudio") from e
+            raise ImportError("Could not import module ElevenVoice") from e
     except ImportError as wrapped:
         assert _is_interpreter_shutdown_error(wrapped) is True
 
@@ -191,7 +191,7 @@ def test_load_sync_converts_interpreter_shutdown_to_benign(
         monkeypatch,
         RuntimeError("cannot schedule new futures after interpreter shutdown"),
     )
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         with pytest.raises(ModelLoadInterruptedByShutdown):
             mm._load_model_sync()
     # Benign: no ERROR record, no /model/status phantom error.
@@ -210,7 +210,7 @@ def test_load_sync_converts_wrapped_stringified_error(
             "futures after interpreter shutdown"
         ),
     )
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         with pytest.raises(ModelLoadInterruptedByShutdown):
             mm._load_model_sync()
     assert not [r for r in caplog.records if r.levelno >= logging.ERROR]
@@ -224,7 +224,7 @@ def test_load_sync_plain_pool_shutdown_benign_only_during_app_shutdown(
     rejection is benign — our own _reset_gpu_pool() caused it."""
     _stub_load(monkeypatch, RuntimeError("cannot schedule new futures after shutdown"))
     mm.begin_shutdown()
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         with pytest.raises(ModelLoadInterruptedByShutdown):
             mm._load_model_sync()
     assert not [r for r in caplog.records if r.levelno >= logging.ERROR]
@@ -237,7 +237,7 @@ def test_load_sync_plain_pool_shutdown_stays_loud_outside_shutdown(
     """Outside app shutdown the plain-pool rejection is the #589-class real
     fault: it must keep the ERROR log + /model/status error."""
     _stub_load(monkeypatch, RuntimeError("cannot schedule new futures after shutdown"))
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         with pytest.raises(RuntimeError):
             mm._load_model_sync()
     assert [r for r in caplog.records if r.levelno >= logging.ERROR]
@@ -246,7 +246,7 @@ def test_load_sync_plain_pool_shutdown_stays_loud_outside_shutdown(
 
 def test_load_sync_real_failure_stays_loud(monkeypatch, caplog, _loading_detail_guard):
     _stub_load(monkeypatch, ValueError("boom"))
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         with pytest.raises(ValueError):
             mm._load_model_sync()
     assert [r for r in caplog.records if r.levelno >= logging.ERROR]
@@ -280,7 +280,7 @@ def test_preload_interrupted_by_shutdown_logs_info_only(monkeypatch, caplog):
     monkeypatch.setattr(mm, "_model_lock", asyncio.Lock())
     monkeypatch.setattr(mm, "_checkpoint_in_local_cache", lambda c: True)
     monkeypatch.setattr(mm, "_load_model_with_timeout", _boom)
-    with caplog.at_level(logging.INFO, logger="omnivoice.model"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.model"):
         asyncio.run(mm.preload_model())
     assert not [r for r in caplog.records if r.levelno >= logging.WARNING]
     assert any("shutdown during load" in r.getMessage() for r in caplog.records)
@@ -333,7 +333,7 @@ def test_lifespan_shutdown_mid_load_is_clean_and_clears_sentinel(
 
         monkeypatch.setattr(run_sentinel, "SENTINEL_PATH", str(tmp_path / "run_sentinel.json"))
         monkeypatch.setattr(run_sentinel, "CRASH_RECORD_PATH", str(tmp_path / "last_run_crash.json"))
-        monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "omnivoice.log"))
+        monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "elevenvoice.log"))
         run_sentinel._reset_for_tests()
 
         fake_torch = types.SimpleNamespace(
@@ -345,7 +345,7 @@ def test_lifespan_shutdown_mid_load_is_clean_and_clears_sentinel(
         monkeypatch.setattr(live_mm, "model", None)
         monkeypatch.setattr(live_mm, "_model_lock", asyncio.Lock())
         monkeypatch.setattr(live_mm, "_checkpoint_in_local_cache", lambda c: True)
-        monkeypatch.setenv("OMNIVOICE_PRELOAD_CAPTURE_ASR", "0")
+        monkeypatch.setenv("ELEVENVOICE_PRELOAD_CAPTURE_ASR", "0")
         # A fresh import inherits nothing from the previous lifespan, but an
         # in-place one would: arm loads explicitly so a leaked shutdown flag
         # can't make the preload bail before it starts.

@@ -35,7 +35,7 @@ def test_opted_windows_indextts_does_not_infer_gpu_from_main_runtime(monkeypatch
     from engines.indextts import IndexTTS2Backend, bootstrap
 
     monkeypatch.setattr(sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     monkeypatch.setattr(bootstrap, "_resolved_python", tmp_path / ".venv/Scripts/python.exe")
     monkeypatch.setattr("services.sidecar_install.venv_torch_hip", lambda path: known_hip)
     assert IndexTTS2Backend._sidecar_torch_is_cuda_only() is expected

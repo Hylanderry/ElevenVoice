@@ -195,7 +195,7 @@ def resolve_routing(
 
     # 2a. The installed wheel has no kernels for this card (an sm_52 Maxwell on
     #     torch 2.8+cu128, #3067). The loader (model_manager.get_best_device)
-    #     already falls back to the CPU for it unless OMNIVOICE_FORCE_CUDA is
+    #     already falls back to the CPU for it unless ELEVENVOICE_FORCE_CUDA is
     #     set, so the badge must say so instead of "accelerated": a green GPU
     #     badge followed by CPU-speed (or crashing) generation is the
     #     silent-fallback this resolver exists to prevent. CUDA only: on Linux
@@ -214,7 +214,7 @@ def resolve_routing(
                     "effective_device": "cpu",
                     "routing_status": "cpu_fallback",
                     "routing_reason": (
-                        f"{note}; running on CPU (set OMNIVOICE_FORCE_CUDA=1 "
+                        f"{note}; running on CPU (set ELEVENVOICE_FORCE_CUDA=1 "
                         "to use the GPU anyway)"
                     ),
                 }

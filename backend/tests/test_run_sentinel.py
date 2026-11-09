@@ -3,7 +3,7 @@
 Fail-before/pass-after: before the sentinel module existed, a backend process
 death in a browser/dev/Docker deployment left NO backend-side evidence at all
 (crash_log.txt is only written on *caught* route exceptions), so the next run
-had nothing to report and "Can't reach the local VoiceStudio backend" arrived
+had nothing to report and "Can't reach the local ElevenVoice backend" arrived
 with zero diagnostics. These tests pin the whole forensics contract: a
 leftover sentinel with a dead pid becomes a crash record; a clean shutdown
 never does; a live second instance is never misreported; the record store
@@ -42,7 +42,7 @@ def sentinel_env(monkeypatch, tmp_path):
     monkeypatch.setattr(
         run_sentinel, "CRASH_RECORD_PATH", str(tmp_path / "last_run_crash.json")
     )
-    monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "omnivoice.log"))
+    monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "elevenvoice.log"))
     run_sentinel._reset_for_tests()
     yield tmp_path
     run_sentinel._reset_for_tests()
@@ -143,7 +143,7 @@ def test_shutdown_retires_sentinel_before_slow_teardown(pristine_backend, monkey
 
     monkeypatch.setattr(sentinel, "SENTINEL_PATH", str(tmp_path / "run_sentinel.json"))
     monkeypatch.setattr(sentinel, "CRASH_RECORD_PATH", str(tmp_path / "last_run_crash.json"))
-    monkeypatch.setattr(sentinel, "LOG_PATH", str(tmp_path / "omnivoice.log"))
+    monkeypatch.setattr(sentinel, "LOG_PATH", str(tmp_path / "elevenvoice.log"))
     sentinel._reset_for_tests()
 
     def explode():
@@ -252,7 +252,7 @@ def test_idle_shell_exit_is_retained_without_becoming_a_user_warning(sentinel_en
     record = {
         "last_activity": None,
         "log_tail": [
-            "INFO VoiceStudio model loaded successfully.",
+            "INFO ElevenVoice model loaded successfully.",
             "INFO Preload complete - model ready.",
         ],
     }

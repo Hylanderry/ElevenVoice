@@ -35,13 +35,13 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from services.expression import OMNIVOICE_INLINE_TAGS
+from services.expression import ELEVENVOICE_INLINE_TAGS
 from services.subprocess_backend import SubprocessBackend
 
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.omnivoice_subprocess")
+logger = logging.getLogger("elevenvoice.omnivoice_subprocess")
 
 
 class OmniVoiceSubprocessBackend(SubprocessBackend):
@@ -52,7 +52,7 @@ class OmniVoiceSubprocessBackend(SubprocessBackend):
     id = "omnivoice-subprocess"
     display_name = "OmniVoice (subprocess-isolated, killable on timeout)"
     instruct_vocabulary = "tags"
-    inline_tags = OMNIVOICE_INLINE_TAGS
+    inline_tags = ELEVENVOICE_INLINE_TAGS
     supports_voice_design = True
     _DEFAULT_SAMPLE_RATE = 24000
     gpu_compat = ("cuda", "rocm", "mps", "cpu")
@@ -134,7 +134,7 @@ class OmniVoiceSubprocessBackend(SubprocessBackend):
         engine lacks (it abandons but never frees the device).
         """
         try:
-            return max(30.0, float(os.environ.get("OMNIVOICE_SIDECAR_RECV_TIMEOUT_S", "300")))
+            return max(30.0, float(os.environ.get("ELEVENVOICE_SIDECAR_RECV_TIMEOUT_S", "300")))
         except (ValueError, TypeError):
             return 300.0
 
@@ -174,7 +174,7 @@ class OmniVoiceMPSSubprocessBackend(OmniVoiceSubprocessBackend):
             raise RuntimeError(
                 "The isolated OmniVoice engine stopped during generation, "
                 "usually because macOS reclaimed it under memory pressure. "
-                "The VoiceStudio backend is still running. Close memory-heavy "
+                "The ElevenVoice backend is still running. Close memory-heavy "
                 "apps or select a smaller TTS engine, then retry."
             ) from exc
 

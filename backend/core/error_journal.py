@@ -34,7 +34,7 @@ from collections import OrderedDict
 from core.config import DATA_DIR
 from core.scrub import scrub_text
 
-logger = logging.getLogger("omnivoice.error_journal")
+logger = logging.getLogger("elevenvoice.error_journal")
 
 JOURNAL_PATH = os.path.join(DATA_DIR, "error_journal.jsonl")
 

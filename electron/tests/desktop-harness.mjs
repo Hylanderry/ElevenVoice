@@ -44,7 +44,7 @@ export function electronExecutable() {
 }
 
 /** Latin non-ASCII plus a space, so path-encoding bugs in user-data handling surface per OS. */
-export const makeProfile = () => mkdtempSync(join(tmpdir(), 'VoiceStudio Tëst '));
+export const makeProfile = () => mkdtempSync(join(tmpdir(), 'ElevenVoice Tëst '));
 
 /** A loopback port with nothing listening on it. */
 export const freePort = () =>
@@ -98,12 +98,12 @@ async function launch({ profile, backendPort, seed }) {
     env: {
       ...inherited,
       ELECTRON_RENDERER_URL: '',
-      OMNIVOICE_PORT: String(backendPort),
-      VOICESTUDIO_SKIP_BACKEND: '1',
-      VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES: '1',
-      VOICESTUDIO_DISABLE_UPDATER: '1',
+      ELEVENVOICE_PORT: String(backendPort),
+      ELEVENVOICE_SKIP_BACKEND: '1',
+      ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES: '1',
+      ELEVENVOICE_DISABLE_UPDATER: '1',
       // The OS assigns it at bind time; a pre-picked port can be taken before the app binds it.
-      VOICESTUDIO_ELECTRON_PROXY_PORT: '0',
+      ELEVENVOICE_ELECTRON_PROXY_PORT: '0',
     },
     timeout: 60000,
   });
@@ -122,8 +122,8 @@ async function launch({ profile, backendPort, seed }) {
     await context.addInitScript(() => {
       try {
         for (const [key, value] of [
-          ['voicestudio.setup.complete.v1', '1'],
-          ['voicestudio.locale', 'en'],
+          ['elevenvoice.setup.complete.v1', '1'],
+          ['elevenvoice.locale', 'en'],
         ]) {
           if (localStorage.getItem(key) === null) localStorage.setItem(key, value);
         }

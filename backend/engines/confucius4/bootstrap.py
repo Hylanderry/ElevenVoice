@@ -8,7 +8,7 @@ dependency set, which we keep off the parent interpreter.
 
 Probe order (existing power-user installs win — zero migration):
 
-    1. ``${OMNIVOICE_CONFUCIUS4_TTS_DIR}/.venv/`` — the user's clone-level venv.
+    1. ``${ELEVENVOICE_CONFUCIUS4_TTS_DIR}/.venv/`` — the user's clone-level venv.
     2. ``backend/engines/confucius4/.venv/`` — this package's own venv.
     3. Bootstrap: ``uv venv`` then ``uv pip install -r <clone>/requirements.txt``
        (+ ``uv pip install -e <clone>`` only if upstream ever ships packaging).
@@ -17,7 +17,7 @@ Validated end-to-end 2026-07-02 (Apple Silicon, CPU): upstream ships **no
 pyproject.toml/setup.py**, so ``confuciustts`` is importable only with the
 clone root on ``sys.path`` — the import probe and the sidecar both handle
 that. The engine is opt-in (env-dir gated) and never touched unless
-``OMNIVOICE_CONFUCIUS4_TTS_DIR`` is set, so this can't affect the default
+``ELEVENVOICE_CONFUCIUS4_TTS_DIR`` is set, so this can't affect the default
 install on any platform.
 """
 from __future__ import annotations
@@ -32,7 +32,7 @@ from typing import Optional
 
 from engines._venv_probe import ProbeResult, log_safe, venv_can_import
 
-logger = logging.getLogger("omnivoice.confucius4.bootstrap")
+logger = logging.getLogger("elevenvoice.confucius4.bootstrap")
 
 #: Absolute path to the sidecar entrypoint.
 CONFUCIUS4_SIDECAR_SCRIPT: Path = Path(__file__).parent / "main.py"
@@ -51,7 +51,7 @@ def _uv_env() -> "dict[str, str] | None":
     return uv_subprocess_env(_ENGINES_VENV_DIR.parent.parent)
 
 #: Env var pointing at the user's Confucius4-TTS clone root.
-_CLONE_DIR_ENV: str = "OMNIVOICE_CONFUCIUS4_TTS_DIR"
+_CLONE_DIR_ENV: str = "ELEVENVOICE_CONFUCIUS4_TTS_DIR"
 
 #: The package importable from the clone (verify against upstream).
 _IMPORT_PROBE = "confuciustts"
@@ -134,7 +134,7 @@ def resolve_confucius4_venv() -> Path:
             "Confucius4-TTS is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your Confucius4-TTS clone "
             "(the directory that contains requirements.txt), then restart "
-            "VoiceStudio. See docs/engines/confucius4-tts.md."
+            "ElevenVoice. See docs/engines/confucius4-tts.md."
         )
 
     cand = _bootstrap_engines_venv(Path(clone_dir))
@@ -179,7 +179,7 @@ def _venv_can_import(python_path: Path) -> ProbeResult:
 
 
 def _locate_uv() -> Optional[str]:
-    bundled = os.environ.get("OMNIVOICE_BUNDLED_UV")
+    bundled = os.environ.get("ELEVENVOICE_BUNDLED_UV")
     if bundled and Path(bundled).is_file():
         return bundled
     return shutil.which("uv")
@@ -191,8 +191,8 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
     if not uv:
         raise RuntimeError(
             "uv is required to bootstrap the Confucius4-TTS venv but was not "
-            "found on PATH (and OMNIVOICE_BUNDLED_UV was not set). Install uv "
-            "from https://docs.astral.sh/uv/ and re-launch VoiceStudio."
+            "found on PATH (and ELEVENVOICE_BUNDLED_UV was not set). Install uv "
+            "from https://docs.astral.sh/uv/ and re-launch ElevenVoice."
         )
 
     logger.info(

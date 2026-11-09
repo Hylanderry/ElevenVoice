@@ -19,19 +19,19 @@ import uvicorn
 
 from core.app_config import DEFAULT_BACKEND_PORT, DEFAULT_WEB_PORT
 
-logger = logging.getLogger("omnivoice.network_share")
+logger = logging.getLogger("elevenvoice.network_share")
 
 
 def backend_port() -> int:
     """The port the main backend listens on.
 
-    Single source of truth is the ``OMNIVOICE_PORT`` env var (the Electron
+    Single source of truth is the ``ELEVENVOICE_PORT`` env var (the Electron
     shell sets it and passes the same value to uvicorn's ``--port``). LAN-share
     and Tailscale derive their target ports from this so a user who runs the
     backend on a custom port gets a consistent share/proxy port. Falls back to
     the default on a missing or malformed value — never throws.
     """
-    raw = os.environ.get("OMNIVOICE_PORT")
+    raw = os.environ.get("ELEVENVOICE_PORT")
     if raw is None:
         return DEFAULT_BACKEND_PORT
     try:
@@ -43,17 +43,17 @@ def backend_port() -> int:
 def backend_self_url() -> str:
     """Base URL for in-process callers that reach this backend over HTTP.
 
-    ``OMNIVOICE_API_URL`` wins when set (reverse proxy, remote worker).
+    ``ELEVENVOICE_API_URL`` wins when set (reverse proxy, remote worker).
     Otherwise the URL follows the host and port the backend actually binds —
-    ``OMNIVOICE_BIND_HOST`` + ``OMNIVOICE_PORT``, the same variables uvicorn
+    ``ELEVENVOICE_BIND_HOST`` + ``ELEVENVOICE_PORT``, the same variables uvicorn
     and the desktop shells use — so a backend moved off 3900 never calls back
     into a stale default port. Wildcard binds are reached over loopback,
     which the auth gates never challenge.
     """
-    override = os.environ.get("OMNIVOICE_API_URL", "").strip().rstrip("/")
+    override = os.environ.get("ELEVENVOICE_API_URL", "").strip().rstrip("/")
     if override:
         return override
-    host = os.environ.get("OMNIVOICE_BIND_HOST", "127.0.0.1").strip()
+    host = os.environ.get("ELEVENVOICE_BIND_HOST", "127.0.0.1").strip()
     try:
         ip = ipaddress.ip_address(host.strip("[]"))
     except ValueError:
@@ -71,14 +71,14 @@ def backend_self_url() -> str:
 def backend_auth_headers(base_url: str) -> dict:
     """Bearer header for an HTTP caller of this backend, if one is warranted.
 
-    ``OMNIVOICE_API_KEY`` is sent only over https or to a loopback host: a
+    ``ELEVENVOICE_API_KEY`` is sent only over https or to a loopback host: a
     remote plain-http target would expose the master key on the wire (the
     same rule ``backend.speech_client`` enforces). Loopback never needs it,
     but sending it there is harmless.
     """
     from urllib.parse import urlsplit
 
-    key = os.environ.get("OMNIVOICE_API_KEY", "").strip()
+    key = os.environ.get("ELEVENVOICE_API_KEY", "").strip()
     if not key:
         return {}
     target = urlsplit(base_url)
@@ -89,7 +89,7 @@ def backend_auth_headers(base_url: str) -> dict:
         loopback = False
     if target.scheme.lower() != "https" and not loopback:
         logger.warning(
-            "OMNIVOICE_API_KEY not sent to %s: remote API keys require https://",
+            "ELEVENVOICE_API_KEY not sent to %s: remote API keys require https://",
             f"{target.scheme}://{target.hostname}",
         )
         return {}
@@ -100,11 +100,11 @@ def share_port_base() -> int:
     """The first port LAN sharing tries to bind on 0.0.0.0.
 
     Defaults to ``backend_port() + 1`` (e.g. 3901 for the default 3900), but
-    can be overridden with ``OMNIVOICE_SHARE_PORT``. ``enable()`` probes
+    can be overridden with ``ELEVENVOICE_SHARE_PORT``. ``enable()`` probes
     upward from here for a free port. Falls back to the default on a missing
     or malformed value — never throws.
     """
-    raw = os.environ.get("OMNIVOICE_SHARE_PORT")
+    raw = os.environ.get("ELEVENVOICE_SHARE_PORT")
     if raw is None:
         return DEFAULT_WEB_PORT if backend_port() == DEFAULT_BACKEND_PORT else backend_port() + 1
     try:

@@ -34,7 +34,7 @@ from services.ffmpeg_utils import find_ffprobe, spawn_subprocess
 from api.dependencies import require_native_access
 from core.path_security import UnsafePath, resolve_within
 
-logger = logging.getLogger("omnivoice.tools")
+logger = logging.getLogger("elevenvoice.tools")
 router = APIRouter()
 
 

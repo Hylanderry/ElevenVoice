@@ -73,7 +73,7 @@ export function isNewItem(item: CommunityItem, now = Date.now()): boolean {
 export function authorProfileUrl(author?: unknown): string | null {
   // Remote data: an older backend may still pass a non-string through.
   if (typeof author !== 'string' || !GITHUB_HANDLE.test(author)) return null;
-  if (author.toLowerCase() === 'voicestudio') return null;
+  if (author.toLowerCase() === 'elevenvoice') return null;
   return 'https://github.com/' + author;
 }
 

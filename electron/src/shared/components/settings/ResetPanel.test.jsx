@@ -86,7 +86,7 @@ const SCOPES = [
   },
   {
     key: 'logs',
-    paths: ['/d/omnivoice.log'],
+    paths: ['/d/elevenvoice.log'],
     size_bytes: 1024,
     exists: true,
     shared: false,
@@ -107,7 +107,7 @@ describe('reset planning', () => {
   });
 
   it('skips the history endpoints when the whole database is going anyway', () => {
-    // `content` deletes omnivoice.db outright, so clearing history rows first is a
+    // `content` deletes elevenvoice.db outright, so clearing history rows first is a
     // pointless round-trip against records that are about to cease to exist.
     const steps = plan(['history', 'content']);
     expect(steps.history).toBe(false);
@@ -201,7 +201,7 @@ describe('ResetPanel', () => {
   });
 
   it('sends only disk scopes to the shell and clears preferences here', async () => {
-    localStorage.setItem('omnivoice.app', '{"state":{}}');
+    localStorage.setItem('elevenvoice.app', '{"state":{}}');
     localStorage.setItem('omni_transcriptions', '[{"text":"note"}]');
 
     render(<ResetPanel />);
@@ -214,7 +214,7 @@ describe('ResetPanel', () => {
       expect(invoke).toHaveBeenCalledWith('reset_purge', { scopes: ['settings'] }),
     );
     // The zustand blob goes; dictation history — user data, not a preference — stays.
-    expect(localStorage.getItem('omnivoice.app')).toBeNull();
+    expect(localStorage.getItem('elevenvoice.app')).toBeNull();
     expect(localStorage.getItem('omni_transcriptions')).toBe('[{"text":"note"}]');
   });
 
@@ -223,7 +223,7 @@ describe('ResetPanel', () => {
       version: 9,
       state: { theme: 'dark', currentProjectId: 'p_a' },
     });
-    localStorage.setItem('omnivoice.app', compactA);
+    localStorage.setItem('elevenvoice.app', compactA);
     let finishFlush = () => {};
     flushLongformPendingWrites.mockImplementationOnce(
       () =>
@@ -232,7 +232,7 @@ describe('ResetPanel', () => {
             // The pending B write lost IndexedDB, so its only full copy lands
             // in localStorage when the awaited flush completes.
             localStorage.setItem(
-              'omnivoice.app',
+              'elevenvoice.app',
               JSON.stringify({
                 version: 9,
                 longformFallbackRevision: 2,
@@ -253,11 +253,11 @@ describe('ResetPanel', () => {
     fireEvent.click(screen.getByTestId('factory-reset-confirm'));
 
     await waitFor(() => expect(flushLongformPendingWrites).toHaveBeenCalledOnce());
-    expect(localStorage.getItem('omnivoice.app')).toBe(compactA);
+    expect(localStorage.getItem('elevenvoice.app')).toBe(compactA);
     finishFlush();
 
     await waitFor(() =>
-      expect(JSON.parse(localStorage.getItem('omnivoice.app'))).toEqual({
+      expect(JSON.parse(localStorage.getItem('elevenvoice.app'))).toEqual({
         version: 9,
         longformFallbackRevision: 2,
         state: {
@@ -305,7 +305,7 @@ describe('ResetPanel', () => {
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
-        'VoiceStudio couldn’t safely clear saved projects. Your project data was left intact; free some storage or restart the app, then try again.',
+        'ElevenVoice couldn’t safely clear saved projects. Your project data was left intact; free some storage or restart the app, then try again.',
       ),
     );
     expect(toast.error).not.toHaveBeenCalledWith(expect.stringContaining('LongformLocalFallback'));

@@ -3,11 +3,11 @@
 Status: private Apple silicon development-signed sandbox validation is in
 progress. App Store distribution remains blocked; no package has been submitted.
 
-App Store Connect: [VoiceStudio Pro for Mac](https://appstoreconnect.apple.com/apps/6829361961/distribution/macos/version/inflight).
+App Store Connect: [ElevenVoice Pro for Mac](https://appstoreconnect.apple.com/apps/6829361961/distribution/macos/version/inflight).
 
-Bundle identifier: `sh.voicestudio.pro`, recorded in
+Bundle identifier: `sh.elevenvoice.pro`, recorded in
 `store/metadata.json` → `identity.macAppStore`. Only MAS packages use this
-identifier; other distribution targets retain `com.voicestudio.desktop`.
+identifier; other distribution targets retain `com.elevenvoice.desktop`.
 Provisioning profiles must authorize the MAS identifier.
 
 The manual `mac-app-store.yml` workflow prepares private, signed MAS packages
@@ -44,7 +44,7 @@ execute model-supplied Python still need packaged code and sandbox validation;
 do not silently remove those capabilities or declare that catalogue ready.
 
 The private development candidate has passed deep/strict signature validation
-and an offline backend startup from its own `sh.voicestudio.pro` container on
+and an offline backend startup from its own `sh.elevenvoice.pro` container on
 2026-11-01. An explicit KittenTTS weight download followed by UI generation
 produced a finite, non-silent 9.14-second WAV at 24 kHz. This does not establish
 Apple Distribution signing, receipt
@@ -80,7 +80,7 @@ silicon and builds the GGUF helper at the pinned source revision. For an
 equivalent private local runtime input:
 
 ```bash
-export UV_PROJECT_ENVIRONMENT=/private/tmp/voicestudio-mas-python
+export UV_PROJECT_ENVIRONMENT=/private/tmp/elevenvoice-mas-python
 export UV_PYTHON_PREFERENCE=only-managed
 uv python install 3.11
 uv sync --frozen --no-dev --no-editable --no-install-project --python 3.11
@@ -109,7 +109,7 @@ Local checks that do not require Apple credentials:
 ```bash
 node scripts/validate_store_foundation.mjs --distribution=mac-app-store
 bun run --cwd electron typecheck
-VOICESTUDIO_DISTRIBUTION=mac-app-store node electron/tests/packaging-contract.mjs
+ELEVENVOICE_DISTRIBUTION=mac-app-store node electron/tests/packaging-contract.mjs
 uv run pytest tests/test_mac_app_store_workflow.py -q
 uv run pytest tests/test_mas_python_runtime.py tests/test_mas_media_runtime.py \
   tests/test_bundled_code_policy.py tests/test_bundled_espeak.py \
@@ -119,7 +119,7 @@ uv run pytest tests/test_mas_python_runtime.py tests/test_mas_media_runtime.py \
 The first command is expected to fail while the bundled-runtime ledger remains
 unresolved. A successful signed workflow must retain:
 
-- `VoiceStudio-MacAppStore-<version>-mac-<arch>.pkg`;
+- `ElevenVoice-MacAppStore-<version>-mac-<arch>.pkg`;
 - `apple-signing-darwin-<arch>.json`;
 - `store-artifact-manifest-darwin-<arch>.json`.
 

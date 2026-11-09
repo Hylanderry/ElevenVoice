@@ -7,7 +7,7 @@
       "display_name": "openai-compat-asr",
       "available": false,
       "reason": "This engine's package isn't installed yet. Install it from Settings → Models.",
-      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points VoiceStudio at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
+      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points ElevenVoice at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
     }
   },
   {
@@ -18,7 +18,7 @@
       "display_name": "openai-compat-asr",
       "available": false,
       "reason": "A file this engine needs is missing or unreadable. Reinstall it from Settings → Models.",
-      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points VoiceStudio at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
+      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points ElevenVoice at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
     }
   },
   {
@@ -73,7 +73,7 @@
       "display_name": "openai-compat-asr",
       "available": false,
       "reason": "This engine needs to be configured before it can run. Open Settings → Models to finish setting it up.",
-      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points VoiceStudio at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
+      "install_hint": "No install needed — configure a server endpoint in Settings → Models → ASR. Points ElevenVoice at any OpenAI-compatible server (a self-hosted Qwen3-ASR/FunASR/SenseVoice server, OpenAI's own Whisper API, or similar) — a path to Qwen3-ASR today, without waiting on a direct transformers integration."
     }
   },
   {
@@ -94,7 +94,7 @@
       "id": "mlx-whisper",
       "display_name": "mlx-whisper",
       "available": false,
-      "reason": "This engine needs Apple's GPU (MPS), and this installation's PyTorch can't use it. Updating macOS or reinstalling VoiceStudio usually restores it.",
+      "reason": "This engine needs Apple's GPU (MPS), and this installation's PyTorch can't use it. Updating macOS or reinstalling ElevenVoice usually restores it.",
       "install_hint": "pip install mlx-whisper  (Apple Silicon only)"
     }
   },
@@ -106,7 +106,7 @@
       "display_name": "nemo-parakeet",
       "available": false,
       "reason": "This engine's package isn't installed yet. Install it from Settings → Models.",
-      "install_hint": "No safe install path in this app yet — nemo_toolkit's ASR extras pin transformers>=4.57,<4.58, which conflicts with VoiceStudio's own transformers>=5.3 requirement and WILL break the backend (ImportError on startup) if installed into this shared venv. Do NOT install nemo_toolkit here. If you want to try Parakeet TDT, set it up in a separate/dedicated Python environment — not the one VoiceStudio manages; in-app isolation for this engine is tracked separately."
+      "install_hint": "No safe install path in this app yet — nemo_toolkit's ASR extras pin transformers>=4.57,<4.58, which conflicts with ElevenVoice's own transformers>=5.3 requirement and WILL break the backend (ImportError on startup) if installed into this shared venv. Do NOT install nemo_toolkit here. If you want to try Parakeet TDT, set it up in a separate/dedicated Python environment — not the one ElevenVoice manages; in-app isolation for this engine is tracked separately."
     }
   },
   {
@@ -139,7 +139,7 @@
       "display_name": "nemo-parakeet",
       "available": false,
       "reason": "A file this engine needs is missing or unreadable. Reinstall it from Settings → Models.",
-      "install_hint": "No safe install path in this app yet — nemo_toolkit's ASR extras pin transformers>=4.57,<4.58, which conflicts with VoiceStudio's own transformers>=5.3 requirement and WILL break the backend (ImportError on startup) if installed into this shared venv. Do NOT install nemo_toolkit here. If you want to try Parakeet TDT, set it up in a separate/dedicated Python environment — not the one VoiceStudio manages; in-app isolation for this engine is tracked separately."
+      "install_hint": "No safe install path in this app yet — nemo_toolkit's ASR extras pin transformers>=4.57,<4.58, which conflicts with ElevenVoice's own transformers>=5.3 requirement and WILL break the backend (ImportError on startup) if installed into this shared venv. Do NOT install nemo_toolkit here. If you want to try Parakeet TDT, set it up in a separate/dedicated Python environment — not the one ElevenVoice manages; in-app isolation for this engine is tracked separately."
     }
   },
   {

@@ -44,7 +44,7 @@ MAX_FRAME_BYTES = 64 * 1024 * 1024
 
 #: OmniVoice's canonical output rate. The real value is re-read from the loaded
 #: model on each generate.
-OMNIVOICE_SAMPLE_RATE = 24000
+ELEVENVOICE_SAMPLE_RATE = 24000
 
 #: kwargs model.generate accepts. The parent forwards JSON-safe kwargs from
 #: backend.generate(); allowlist the known surface so an unexpected key never
@@ -345,7 +345,7 @@ def _handle_synthesize(msg: dict, stdout) -> None:
             text=text, ref_audio=ref_audio, ref_text=ref_text, **gen_kw
         )
     audio = audios[0] if isinstance(audios, (list, tuple)) else audios
-    sample_rate = int(getattr(model, "sampling_rate", OMNIVOICE_SAMPLE_RATE))
+    sample_rate = int(getattr(model, "sampling_rate", ELEVENVOICE_SAMPLE_RATE))
 
     audio_format = msg.get("audio_format", "s16le")
     pcm_b64, sr, n_samples = _tensor_to_pcm_b64(audio, sample_rate, audio_format)
@@ -386,7 +386,7 @@ def main() -> int:
     _send(stdout, {
         "op": "ready",
         "engine": "omnivoice-subprocess",
-        "sample_rate": OMNIVOICE_SAMPLE_RATE,
+        "sample_rate": ELEVENVOICE_SAMPLE_RATE,
     })
 
     while True:

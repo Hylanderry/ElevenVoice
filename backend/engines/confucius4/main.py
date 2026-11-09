@@ -1,7 +1,7 @@
 """Confucius4-TTS sidecar entry point (issue #590).
 
 Runs inside ``engines/confucius4/.venv`` (or the user's
-``${OMNIVOICE_CONFUCIUS4_TTS_DIR}/.venv``), isolated from the OmniVoice parent.
+``${ELEVENVOICE_CONFUCIUS4_TTS_DIR}/.venv``), isolated from the OmniVoice parent.
 Same isolation rationale as the IndexTTS / MOSS-TTS-v1.5 / dots.tts sidecars.
 
 Stdlib-only at import time; ``confuciustts`` + torch are imported lazily on the
@@ -86,10 +86,10 @@ _model = None
 def _config_path() -> str:
     """Locate Confucius4's inference config (``config/inference_config.yaml``)
     under the clone, or an explicit override."""
-    explicit = os.environ.get("OMNIVOICE_CONFUCIUS4_CONFIG")
+    explicit = os.environ.get("ELEVENVOICE_CONFUCIUS4_CONFIG")
     if explicit:
         return explicit
-    clone = os.environ.get("OMNIVOICE_CONFUCIUS4_TTS_DIR", "")
+    clone = os.environ.get("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "")
     return os.path.join(clone, "config", "inference_config.yaml")
 
 
@@ -102,7 +102,7 @@ def _ensure_clone_on_sys_path() -> None:
     ``uv pip install -r requirements.txt`` venv. Inserted at position 0 so the
     clone the user pointed at always wins over any stale installed copy.
     """
-    clone = os.environ.get("OMNIVOICE_CONFUCIUS4_TTS_DIR", "")
+    clone = os.environ.get("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "")
     if clone and clone not in sys.path:
         sys.path.insert(0, clone)
 
@@ -118,15 +118,15 @@ def _chdir_to_clone_if_available() -> None:
     is configured (#2099). Anchoring cwd once at start-up keeps the
     rest of the sidecar's relative-path behaviour identical to upstream.
     """
-    clone = os.environ.get("OMNIVOICE_CONFUCIUS4_TTS_DIR", "").strip()
+    clone = os.environ.get("ELEVENVOICE_CONFUCIUS4_TTS_DIR", "").strip()
     if not clone:
         return
     clone_path = os.path.abspath(os.path.expanduser(clone))
     # These values were relative to the parent launch directory. Canonicalize
     # before chdir so imports, explicit config, cache reuse, and retries agree.
-    os.environ["OMNIVOICE_CONFUCIUS4_TTS_DIR"] = clone_path
+    os.environ["ELEVENVOICE_CONFUCIUS4_TTS_DIR"] = clone_path
     for name in (
-        "OMNIVOICE_CONFUCIUS4_CONFIG", "HF_HOME", "HF_HUB_CACHE",
+        "ELEVENVOICE_CONFUCIUS4_CONFIG", "HF_HOME", "HF_HUB_CACHE",
         "HUGGINGFACE_HUB_CACHE", "TRANSFORMERS_CACHE", "XDG_CACHE_HOME",
     ):
         value = os.environ.get(name)

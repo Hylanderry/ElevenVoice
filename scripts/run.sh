@@ -1,5 +1,5 @@
 #!/bin/sh
-# VoiceStudio — universal launcher.
+# ElevenVoice — universal launcher.
 #
 # Works on macOS, Linux, and WSL. Starts the FastAPI backend, waits for it
 # to become healthy, then opens the web UI in the default browser.
@@ -62,15 +62,15 @@ fi
 # ── Log directory (platform-aware) ─────────────────────────────────────────
 case "$OS" in
     macos)   LOG_DIR="$HOME/Library/Application Support/OmniVoice" ;;
-    windows) LOG_DIR="${LOCALAPPDATA:-$HOME/AppData/Local}/VoiceStudio" ;;
-    *)       LOG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/VoiceStudio" ;;
+    windows) LOG_DIR="${LOCALAPPDATA:-$HOME/AppData/Local}/ElevenVoice" ;;
+    *)       LOG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/ElevenVoice" ;;
 esac
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/omnivoice-run.log"
 
 # ── Start backend ──────────────────────────────────────────────────────────
-PORT="${OMNIVOICE_PORT:-$(python3 -c 'import json; print(json.load(open("config/app.json", encoding="utf-8"))["ports"]["backend"])')}"
-export OMNIVOICE_PORT="$PORT"
+PORT="${ELEVENVOICE_PORT:-$(python3 -c 'import json; print(json.load(open("config/app.json", encoding="utf-8"))["ports"]["backend"])')}"
+export ELEVENVOICE_PORT="$PORT"
 echo "${C_OK}▸${C_RST} Starting backend on port ${PORT} (log: ${C_DIM}${LOG_FILE}${C_RST})…"
 
 uv run uvicorn main:app --app-dir backend --host 127.0.0.1 --port "$PORT" \
@@ -148,7 +148,7 @@ if [ "$NO_OPEN" != true ]; then
 fi
 
 echo ""
-echo "VoiceStudio is running."
+echo "ElevenVoice is running."
 echo "Press Ctrl+C to shut down."
 
 # Block until user hits Ctrl+C or backend exits.

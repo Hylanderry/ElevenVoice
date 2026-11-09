@@ -68,7 +68,7 @@ class _CredentialCandidate:
 
 def remote_api_key() -> str | None:
     """Normalized remote operator key, read dynamically for rotation support."""
-    return os.environ.get("OMNIVOICE_API_KEY", "").strip() or None
+    return os.environ.get("ELEVENVOICE_API_KEY", "").strip() or None
 
 
 def credential_matches(supplied: str | None, configured: str | None) -> bool:
@@ -89,7 +89,7 @@ def _active_admin_session_store() -> AdminSessionStore:
 
 def _trusted_networks() -> tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...]:
     networks = []
-    for value in os.environ.get("OMNIVOICE_TRUSTED_NETWORKS", "").split(","):
+    for value in os.environ.get("ELEVENVOICE_TRUSTED_NETWORKS", "").split(","):
         value = value.strip()
         if not value:
             continue
@@ -110,7 +110,7 @@ def is_loopback(host: str | None) -> bool:
 # through Docker's proxy, so it arrives from the container's default gateway
 # (the bridge gateway, e.g. 172.17.0.1), never from 127.0.0.1. With this set,
 # requests from exactly that address skip the share PIN, and nothing more.
-TRUST_HOST_LOOPBACK_ENV = "OMNIVOICE_TRUST_HOST_LOOPBACK"
+TRUST_HOST_LOOPBACK_ENV = "ELEVENVOICE_TRUST_HOST_LOOPBACK"
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
 _PROC_ROUTE_V4 = "/proc/net/route"
 _PROC_ROUTE_V6 = "/proc/net/ipv6_route"
@@ -175,15 +175,15 @@ def _arrived_on_share_listener(connection) -> bool:
 def is_trusted_host_loopback(connection) -> bool:
     """Whether a request is the Docker host's own traffic and may skip the PIN.
 
-    Off unless both the Docker image's ``OMNIVOICE_SERVER_MODE`` and the
-    explicit ``OMNIVOICE_TRUST_HOST_LOOPBACK`` opt-in are set. The client must
+    Off unless both the Docker image's ``ELEVENVOICE_SERVER_MODE`` and the
+    explicit ``ELEVENVOICE_TRUST_HOST_LOOPBACK`` opt-in are set. The client must
     then be exactly the container's default gateway as seen on the socket
     (``scope["client"]``); forwarded headers are never read here, and Uvicorn
     only rewrites the client from them for peers in ``FORWARDED_ALLOW_IPS``.
     Requests on the LAN-share listener never qualify, because Docker Desktop
     presents every published-port client from the same gateway address.
     """
-    if not (_env_truthy("OMNIVOICE_SERVER_MODE") and _env_truthy(TRUST_HOST_LOOPBACK_ENV)):
+    if not (_env_truthy("ELEVENVOICE_SERVER_MODE") and _env_truthy(TRUST_HOST_LOOPBACK_ENV)):
         return False
     host = _client_host(connection)
     try:
@@ -388,7 +388,7 @@ def _valid_pin(connection) -> bool:
     query = getattr(connection, "query_params", None) or {}
     cookies = getattr(connection, "cookies", None) or {}
     supplied = (
-        _mapping_get(headers, "x-omnivoice-pin").strip()
+        _mapping_get(headers, "x-elevenvoice-pin").strip()
         or _mapping_get(query, "pin").strip()
         or _mapping_get(cookies, "ov_pin").strip()
     )

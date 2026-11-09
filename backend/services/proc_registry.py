@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 import threading
 
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 _active_procs: dict[str, list] = {}
 _active_procs_lock = threading.Lock()

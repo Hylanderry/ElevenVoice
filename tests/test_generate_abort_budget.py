@@ -32,12 +32,12 @@ def test_client_budget_mirrors_backend_defaults(monkeypatch):
     from core import generate_budget
     import mcp_server
 
-    monkeypatch.delenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", raising=False)
     manager = ROOT / "backend/services/model_manager.py"
     client = _client_budget()
 
     assert client["modelLoad"] == model_manager._model_load_timeout()
-    assert client["queueWait"] == _source_default(manager, "OMNIVOICE_GPU_QUEUE_TIMEOUT_S")
+    assert client["queueWait"] == _source_default(manager, "ELEVENVOICE_GPU_QUEUE_TIMEOUT_S")
     assert client["progressExtensionCap"] == model_manager.progress_extension_cap_s({})
     assert client["progressExtensionBudgets"] == model_manager.PROGRESS_EXTENSION_BUDGETS
     assert mcp_server._GENERATE_PROGRESS_BUDGETS == model_manager.PROGRESS_EXTENSION_BUDGETS
@@ -58,8 +58,8 @@ def test_client_execution_base_covers_every_default_execution_budget():
     """The largest of the host budgets and every sidecar's receive timeout."""
     manager = ROOT / "backend/services/model_manager.py"
     bases = [
-        _source_default(manager, "OMNIVOICE_GENERATE_TIMEOUT_S"),
-        _source_default(manager, "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"),
+        _source_default(manager, "ELEVENVOICE_GENERATE_TIMEOUT_S"),
+        _source_default(manager, "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"),
     ]
     from services.subprocess_backend import GENERATE_RECV_TIMEOUT_S
 
@@ -68,7 +68,7 @@ def test_client_execution_base_covers_every_default_execution_budget():
         bases += [
             float(value)
             for value in re.findall(
-                r'"OMNIVOICE_\w+_RECV_TIMEOUT_S",\s*"([\d.]+)"', path.read_text(encoding="utf-8")
+                r'"ELEVENVOICE_\w+_RECV_TIMEOUT_S",\s*"([\d.]+)"', path.read_text(encoding="utf-8")
             )
         ]
     assert len(bases) > 3, "receive-timeout scan found nothing; fix the regex"

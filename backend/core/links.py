@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.core.links")
+logger = logging.getLogger("elevenvoice.core.links")
 _THIS = Path(__file__).resolve()
 
 
@@ -38,7 +38,7 @@ def _from_pyproject() -> Optional[str]:
 
 
 def _resolve() -> str:
-    return _from_pyproject() or "https://github.com/debpalash/VoiceStudio"
+    return _from_pyproject() or "https://github.com/Hylanderry/ElevenVoice"
 
 
 PROJECT_REPO_URL: str = _resolve()

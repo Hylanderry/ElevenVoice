@@ -95,7 +95,7 @@ def _with_retries(load):
     """Run ``load``, retrying a transient download failure with a short
     backoff, the way the app's own loader does for in-process engines."""
     try:
-        attempts = max(1, int(os.environ.get("OMNIVOICE_MODEL_LOAD_RETRIES", "3")))
+        attempts = max(1, int(os.environ.get("ELEVENVOICE_MODEL_LOAD_RETRIES", "3")))
     except ValueError:
         attempts = 3
     for attempt in range(1, attempts + 1):
@@ -144,7 +144,7 @@ def _load_model(stdout):
     with _heartbeating(stdout, "loading_model"):
         from voxcpm import VoxCPM  # type: ignore[import-not-found]  # noqa: PLC0415
 
-        checkpoint = os.environ.get("OMNIVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
+        checkpoint = os.environ.get("ELEVENVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
         _MODEL = _with_retries(
             lambda: VoxCPM.from_pretrained(
                 checkpoint, load_denoiser=False, optimize=False

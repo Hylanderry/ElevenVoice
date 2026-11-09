@@ -59,7 +59,7 @@ export function PauseFillSettings() {
       </SettingsRow>
       {state?.env_pinned && (
         <p className="p-4 text-sm text-muted-foreground">
-          {t('pauseFill.env_pinned', { env: 'OMNIVOICE_PAUSE_FILL' })}
+          {t('pauseFill.env_pinned', { env: 'ELEVENVOICE_PAUSE_FILL' })}
         </p>
       )}
       {(action.error || query.isError) && (

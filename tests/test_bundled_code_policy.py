@@ -19,8 +19,8 @@ def run_policy(code: str, enabled: bool = True, resources: Path | None = None, b
         "policy=importlib.util.module_from_spec(spec); spec.loader.exec_module(policy); "
         + before + "\npolicy.install(); "
     )
-    env = {**os.environ, "VOICESTUDIO_BUNDLED_CODE_ONLY": "1" if enabled else "0",
-           "VOICESTUDIO_BUNDLED_RESOURCES": str(resources or sys.base_prefix)}
+    env = {**os.environ, "ELEVENVOICE_BUNDLED_CODE_ONLY": "1" if enabled else "0",
+           "ELEVENVOICE_BUNDLED_RESOURCES": str(resources or sys.base_prefix)}
     return subprocess.run([sys.executable, "-I", "-c", setup + code], env=env, capture_output=True, text=True)
 
 
@@ -99,7 +99,7 @@ def test_encrypted_credentials_round_trip_with_the_bundled_policy_enabled(tmp_pa
     backend = POLICY.parents[1]
     before = f"""
 import os
-os.environ['OMNIVOICE_DATA_DIR'] = {str(tmp_path)!r}
+os.environ['ELEVENVOICE_DATA_DIR'] = {str(tmp_path)!r}
 sys.path.insert(0, {str(backend)!r})
 from core import db
 from services import settings_store, _secret_key

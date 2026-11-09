@@ -51,7 +51,7 @@ def _load_fixture(name: str) -> dict:
 @pytest.fixture
 def app_client(tmp_path, monkeypatch):
     """TestClient w/ isolated data dir; seeded fake model + no diarization."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
 
     # Force module reloads so core.config rebinds DATA_DIR to the tmp dir.
@@ -167,7 +167,7 @@ def test_transcribe_stream_surfaces_model_load_failure(tmp_path, monkeypatch):
     drop the connection (the UI renders a dropped stream as a misleading generic
     "Transcribe stream dropped … Likely ASR backend failed to load").
 
-    Scoped to OMNIVOICE_PRELOAD_TTS_ASR, because that is now the only case in
+    Scoped to ELEVENVOICE_PRELOAD_TTS_ASR, because that is now the only case in
     which transcribe loads the TTS core at all: the preflight used to load it
     unconditionally just to read an `_asr_pipe` that is None unless preloaded, and
     then free it again (see tests/test_dub_no_tts_load_for_asr.py). With preload
@@ -736,7 +736,7 @@ def test_wedged_chunk_does_not_overlap_a_native_retry(tmp_path, monkeypatch, sta
     assert _WedgedASR.calls == 1, "the timed-out native call must not overlap a retry"
     # The user-facing chunk error is the guard's actionable message …
     assert "backend is running" in body, body
-    assert "OMNIVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S" in body, body
+    assert "ELEVENVOICE_TRANSCRIBE_CHUNK_TIMEOUT_S" in body, body
     # … not the old parallel mechanism's dead-end advice.
     assert "Try restarting the server" not in body, body
     # Terminal error followed by done — stream still closes via named events.

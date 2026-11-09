@@ -8,7 +8,7 @@ import json
 import os
 import time
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from core import job_store
@@ -178,7 +178,7 @@ def test_route_handler_returns_jobs_envelope():
 
 def test_route_survives_leaked_module_world_purge(monkeypatch):
     """Full-suite flake regression: some suites purge and re-import the whole
-    ``core``/``services`` module tree under a temporary OMNIVOICE_DATA_DIR
+    ``core``/``services`` module tree under a temporary ELEVENVOICE_DATA_DIR
     without restoring the previous modules. The route used to run
     ``from core import job_store`` at CALL time, re-resolving through
     ``sys.modules`` into that leaked stale world — whose DB_PATH was a

@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 
 from services.telephony import config
 
-logger = logging.getLogger("omnivoice.telephony.calls")
+logger = logging.getLogger("elevenvoice.telephony.calls")
 
 TERMINAL_STATUSES = ("completed", "busy", "no_answer", "failed", "canceled")
 _STATUS_RANK = {"queued": 0, "initiated": 1, "ringing": 2, "in_progress": 3}
@@ -326,7 +326,7 @@ def _mark_orphans(conn) -> None:
         if cid not in live:
             conn.execute(
                 "UPDATE call_sessions SET status='failed', outcome=COALESCE(outcome,'failed'), "
-                "error=CASE WHEN error='' THEN 'VoiceStudio stopped during the call' ELSE error END, "
+                "error=CASE WHEN error='' THEN 'ElevenVoice stopped during the call' ELSE error END, "
                 "ended_at=COALESCE(ended_at, created_at) WHERE id=?",
                 (cid,),
             )

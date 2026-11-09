@@ -16,7 +16,7 @@ import os
 
 
 _LEAK_KEY = "dictation.model_id"
-_LEAK_ENV = "OMNIVOICE_TEST_SETTINGS_LEAK"
+_LEAK_ENV = "ELEVENVOICE_TEST_SETTINGS_LEAK"
 
 
 def _prefs():
@@ -31,7 +31,7 @@ def _user_env():
 
 def test_a_test_persists_a_pref_and_a_user_env_var():
     assert _prefs()._PREFS_PATH == os.path.join(
-        os.environ["OMNIVOICE_DATA_DIR"], "prefs.json"
+        os.environ["ELEVENVOICE_DATA_DIR"], "prefs.json"
     )
     _prefs().set_(_LEAK_KEY, "sherpa-leaked-by-an-earlier-test")
     _user_env().set_user_env(_LEAK_ENV, "leaked")
@@ -46,7 +46,7 @@ def test_the_next_test_starts_from_the_same_persisted_settings():
 
 def test_a_test_leaves_prefs_bound_to_its_own_tmp_dir(tmp_path):
     # The shape of a first `core.prefs` import inside a test that pointed
-    # OMNIVOICE_DATA_DIR at tmp_path: the module-level path is frozen there
+    # ELEVENVOICE_DATA_DIR at tmp_path: the module-level path is frozen there
     # and nothing undoes it.
     _prefs()._PREFS_PATH = str(tmp_path / "prefs.json")
     _prefs().set_(_LEAK_KEY, "sherpa-in-a-dead-tmp-dir")
@@ -54,6 +54,6 @@ def test_a_test_leaves_prefs_bound_to_its_own_tmp_dir(tmp_path):
 
 def test_the_next_test_uses_the_session_prefs_store_again():
     assert _prefs()._PREFS_PATH == os.path.join(
-        os.environ["OMNIVOICE_DATA_DIR"], "prefs.json"
+        os.environ["ELEVENVOICE_DATA_DIR"], "prefs.json"
     )
     assert _prefs().get(_LEAK_KEY) is None

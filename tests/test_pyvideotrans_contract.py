@@ -23,8 +23,8 @@ only runs in CI (local torch/Triton segfault, see project memory).
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 
@@ -95,7 +95,7 @@ def _bridge_request(client, **overrides):
 def test_bridge_shape_returns_wav(client, monkeypatch):
     fake = _make_fake_engine()
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-bridge-engine", fake)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-bridge-engine")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-bridge-engine")
 
     res = _bridge_request(client)
 
@@ -123,7 +123,7 @@ def test_bridge_shape_returns_wav(client, monkeypatch):
 def test_bridge_auto_language_passes_none(client, monkeypatch):
     fake = _make_fake_engine("fake-bridge-auto")
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-bridge-auto", fake)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-bridge-auto")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-bridge-auto")
 
     res = _bridge_request(client, language="Auto")
     assert res.status_code == 200, res.text
@@ -138,7 +138,7 @@ def test_bridge_long_line_still_single_wav(client, monkeypatch):
     still receive ONE WAV response (chunking is server-internal)."""
     fake = _make_fake_engine("fake-bridge-long")
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-bridge-long", fake)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-bridge-long")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-bridge-long")
 
     long_line = ("A very long dubbed line that keeps going. " * 30).strip()
     res = _bridge_request(client, text=long_line)

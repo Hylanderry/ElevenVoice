@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[1]
-_BARE = re.compile(r"irm\s+https://voicestudio\.sh/install\s*\|")
+_BARE = re.compile(r"irm\s+https://elevenvoice\.sh/install\s*\|")
 # Release history records what older docs said; it is not instructions.
 _SKIP = {"CHANGELOG.md"}
 

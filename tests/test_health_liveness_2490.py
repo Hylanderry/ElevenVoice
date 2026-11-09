@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.normpath(_BACKEND_DIR))
 
 @pytest.fixture
 def main(monkeypatch, tmp_path):
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     module = importlib.import_module("main")
     monkeypatch.setattr(module, "_health_device", None, raising=False)
     monkeypatch.setattr(module, "_health_device_thread", None, raising=False)

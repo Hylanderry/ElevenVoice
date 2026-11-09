@@ -26,8 +26,8 @@ import sqlite3
 import time
 import zlib
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 import torch
@@ -453,7 +453,7 @@ def test_stream_native_model_path(client, monkeypatch, tmp_path):
 
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
 
     mock_model = MagicMock()
     mock_model.sampling_rate = 24000

@@ -1318,7 +1318,7 @@
     "compute_device_auto": "Auto (recommandé)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "Périphérique de calcul",
-    "compute_device_env_pinned": "Épinglé par la variable d'environnement OMNIVOICE_DEVICE",
+    "compute_device_env_pinned": "Épinglé par la variable d'environnement ELEVENVOICE_DEVICE",
     "perf_title": "Performances",
     "generate_timeout_cpu_note": "Utilisé lorsque la génération s'exécute sur le processeur. Une fois enregistrée ici, cette valeur régit toujours la génération sur processeur — indépendamment du budget accéléré ci-dessus.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1472,7 +1472,7 @@
     "audio_tools_open": "Ouvrir les outils audio",
     "remote_backend_title": "Back-end distant",
     "remote_backend_desc": "Exécutez l'inférence sur une autre machine ; laissez l'URL vide pour le backend local. L'enregistrement recharge l'application à appliquer.",
-    "remote_backend_hint": "Démarrez le backend sur l'autre machine avec <1>OMNIVOICE_API_KEY</1> défini, atteignez-le via votre tailnet et pointez cette application vers elle.",
+    "remote_backend_hint": "Démarrez le backend sur l'autre machine avec <1>ELEVENVOICE_API_KEY</1> défini, atteignez-le via votre tailnet et pointez cette application vers elle.",
     "remote_backend_url": "URL du serveur principal",
     "remote_backend_probe_ok": "OK — {{detail}}",
     "remote_backend_probe_fail": "Échec — {{detail}}",
@@ -1517,8 +1517,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}} a été trouvé, mais cette version de PyTorch ({{torch}}) ne contient aucun kernel pour son architecture de calcul, les moteurs s'exécutent donc sur le CPU.",
     "gpu_report_state_unknown": "L'état du GPU n'a pas pu être déterminé.",
     "gpu_report_option_vulkan_engines": "Utilisez un moteur doté de son propre runtime GPU : audio.cpp s'exécute sur les GPU AMD Radeon via Vulkan (Réglages → Modèles → installer le runtime).",
-    "gpu_report_option_rocm_windows_manual": "Sur le matériel AMD compatible avec Windows 11 x64, activez l'installation de ROCm 7.2.1 par ElevenVoice avec OMNIVOICE_TORCH_VARIANT=rocm. S'il est déjà installé, relancez l'installation et vérifiez la matrice des pilotes et du matériel AMD. Les moteurs facultatifs ont leurs propres limites ; consultez le guide d'installation Windows.",
-    "gpu_report_option_rocm_variant_linux": "Définissez OMNIVOICE_TORCH_VARIANT=rocm et relancez la configuration pour installer la version ROCm de PyTorch.",
+    "gpu_report_option_rocm_windows_manual": "Sur le matériel AMD compatible avec Windows 11 x64, activez l'installation de ROCm 7.2.1 par ElevenVoice avec ELEVENVOICE_TORCH_VARIANT=rocm. S'il est déjà installé, relancez l'installation et vérifiez la matrice des pilotes et du matériel AMD. Les moteurs facultatifs ont leurs propres limites ; consultez le guide d'installation Windows.",
+    "gpu_report_option_rocm_variant_linux": "Définissez ELEVENVOICE_TORCH_VARIANT=rocm et relancez la configuration pour installer la version ROCm de PyTorch.",
     "gpu_report_option_rocm_device_access": "Vérifiez que le pilote amdgpu est chargé et que votre utilisateur peut ouvrir /dev/kfd (groupes render et video).",
     "gpu_report_option_reinstall_cuda_torch": "Réinstallez le runtime pour qu'il installe la version CUDA de PyTorch.",
     "gpu_report_option_update_nvidia_driver": "Mettez à jour le pilote NVIDIA (R525 ou plus récent sous Linux, R528.33 ou plus récent sous Windows) et redémarrez ElevenVoice.",
@@ -2244,7 +2244,7 @@
     "failed": "Impossible de démarrer le moteur local.",
     "idle": "En attente du moteur local…",
     "log_label": "Journal du moteur",
-    "port_in_use": "Le port {{port}} est déjà utilisé par un autre programme. Fermez-le ou définissez OMNIVOICE_PORT sur un port libre, puis réessayez.",
+    "port_in_use": "Le port {{port}} est déjà utilisé par un autre programme. Fermez-le ou définissez ELEVENVOICE_PORT sur un port libre, puis réessayez.",
     "elapsed": "{{seconds}} s écoulées",
     "first_run_hint": "Le premier démarrage peut prendre plusieurs minutes pendant la préparation de l’environnement Python.",
     "port_in_use_short": "Le port {{port}} est utilisé",
@@ -3223,7 +3223,7 @@
     "sourceRejected": {
       "installed_app": "C'est l'app installée, qui n'est pas modifiable. Choisissez plutôt un git clone.",
       "not_git": "Ce dossier n'est pas un git clone. Un téléchargement ZIP ne suffit pas ; utilisez git clone.",
-      "not_voicestudio": "Aucun clone de ElevenVoice trouvé dans ce dossier.",
+      "not_elevenvoice": "Aucun clone de ElevenVoice trouvé dans ce dossier.",
       "read_only": "ElevenVoice ne peut pas écrire dans ce dossier. Choisissez un dossier qui vous appartient."
     },
     "chooseFailed": "Impossible d'utiliser ce dossier. Réessayez ou choisissez-en un autre.",
@@ -3313,10 +3313,10 @@
       "workflow": "Workflow n8n",
       "dockerRunPowerShell": "Lancer le conteneur (Windows PowerShell)"
     },
-    "apiBearerHint": "Ce backend est distant : définissez OMNIVOICE_API_KEY dans votre shell avec sa clé API. Les exemples la lisent depuis là et ne la contiennent jamais.",
+    "apiBearerHint": "Ce backend est distant : définissez ELEVENVOICE_API_KEY dans votre shell avec sa clé API. Les exemples la lisent depuis là et ne la contiennent jamais.",
     "apiInsecureHint": "Les clés API exigent https:// sur un backend distant. Placez ce backend derrière https (par exemple Tailscale Serve) avant d'utiliser une clé.",
     "dockerGpuHint": "GPU : NVIDIA nécessite --gpus all (dans Compose, une réservation de périphérique GPU). AMD utilise le tag :stable-rocm avec /dev/kfd et /dev/dri. Voir le guide d'installation Docker.",
-    "openaiAgentsHint": "Dirigez le pipeline vocal du OpenAI Agents SDK vers ElevenVoice pour la reconnaissance et la synthèse vocales. Laissez ElevenVoice en marche. Pour un backend distant, définissez OMNIVOICE_API_KEY avant l'exécution. Définissez AGENT_LLM_BASE_URL et AGENT_LLM_MODEL sur le serveur de modèle de langage que votre agent doit utiliser.",
+    "openaiAgentsHint": "Dirigez le pipeline vocal du OpenAI Agents SDK vers ElevenVoice pour la reconnaissance et la synthèse vocales. Laissez ElevenVoice en marche. Pour un backend distant, définissez ELEVENVOICE_API_KEY avant l'exécution. Définissez AGENT_LLM_BASE_URL et AGENT_LLM_MODEL sur le serveur de modèle de langage que votre agent doit utiliser.",
     "category": {
       "all": "Tout",
       "comms": "Appels et agents vocaux",
@@ -3782,7 +3782,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "PIN d'accès",
       "api_key_label": "Clé API (facultatif)",
-      "api_key_help": "Nécessaire uniquement si le serveur définit OMNIVOICE_API_KEY. La clé est échangée contre une session et n'est jamais enregistrée.",
+      "api_key_help": "Nécessaire uniquement si le serveur définit ELEVENVOICE_API_KEY. La clé est échangée contre une session et n'est jamais enregistrée.",
       "connect": "Se connecter",
       "connecting": "Connexion…",
       "connected_to": "Connecté à {{host}}",
@@ -3791,9 +3791,9 @@
       "last_seen": "Dernière connexion {{time}}",
       "forget": "Oublier",
       "error_unreachable": "Impossible de joindre {{host}}. Vérifiez que ElevenVoice est lancé, que le partage réseau est activé et que ce téléphone est sur le même réseau ou sur Tailscale.",
-      "error_not_voicestudio": "{{host}} a répondu, mais ce n'est pas un serveur ElevenVoice. Vérifiez l'adresse et le port.",
+      "error_not_elevenvoice": "{{host}} a répondu, mais ce n'est pas un serveur ElevenVoice. Vérifiez l'adresse et le port.",
       "error_pin": "Le PIN a été refusé. Le partage génère un nouveau PIN à chaque activation — scannez de nouveau le code QR.",
-      "error_api_key": "La clé API a été refusée. Vérifiez la clé définie dans OMNIVOICE_API_KEY sur le serveur.",
+      "error_api_key": "La clé API a été refusée. Vérifiez la clé définie dans ELEVENVOICE_API_KEY sur le serveur.",
       "error_session_expired": "Votre session a expiré. Saisissez à nouveau la clé API pour vous reconnecter.",
       "error_insecure": "http:// non chiffré n'est autorisé que pour les adresses de votre réseau local ou de Tailscale. Utilisez https:// pour les autres serveurs.",
       "error_invalid_url": "Cela ne ressemble pas à une adresse de serveur. Exemple : http://192.168.1.20:3900",
@@ -4556,5 +4556,15 @@
     "clipping_issue": "{{percent}} % de l’audio sature",
     "duration_ok": "Tient dans la durée d’origine",
     "duration_issue": "{{track_seconds}} s, plus long que l’original de {{source_seconds}} s"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

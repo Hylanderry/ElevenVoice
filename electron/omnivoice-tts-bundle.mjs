@@ -28,9 +28,9 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const OMNIVOICE_TTS_STAGING_DIR = resolve(here, 'build/omnivoice-tts');
-export const OMNIVOICE_TTS_RESOURCE_DIR = 'bin';
-export const OMNIVOICE_TTS_MANIFEST = 'checksums.sha256';
+export const ELEVENVOICE_TTS_STAGING_DIR = resolve(here, 'build/omnivoice-tts');
+export const ELEVENVOICE_TTS_RESOURCE_DIR = 'bin';
+export const ELEVENVOICE_TTS_MANIFEST = 'checksums.sha256';
 
 /**
  * Binary slug the backend's `_platform_slug()` resolves on this installer
@@ -55,11 +55,11 @@ function stagedFiles(dir) {
 }
 
 /** extraResources entry for a staged runtime; empty when nothing was staged. */
-export function omnivoiceTtsResources(dir = OMNIVOICE_TTS_STAGING_DIR) {
+export function omnivoiceTtsResources(dir = ELEVENVOICE_TTS_STAGING_DIR) {
   const files = stagedFiles(dir);
   return files.some((name) => name.startsWith('omnivoice-tts-')) &&
-    files.includes(OMNIVOICE_TTS_MANIFEST)
-    ? [{ from: dir, to: OMNIVOICE_TTS_RESOURCE_DIR, filter: ['**/*'] }]
+    files.includes(ELEVENVOICE_TTS_MANIFEST)
+    ? [{ from: dir, to: ELEVENVOICE_TTS_RESOURCE_DIR, filter: ['**/*'] }]
     : [];
 }
 
@@ -74,7 +74,7 @@ export function readManifest(path) {
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;
     const match = line.match(/^([0-9a-fA-F]{64})\s+\*?(.+)$/);
-    if (!match) throw new Error(`Malformed ${OMNIVOICE_TTS_MANIFEST} line: ${line}`);
+    if (!match) throw new Error(`Malformed ${ELEVENVOICE_TTS_MANIFEST} line: ${line}`);
     entries.set(match[2].trim(), match[1].toLowerCase());
   }
   return entries;
@@ -82,12 +82,12 @@ export function readManifest(path) {
 
 /** Recompute every manifest entry from the files as they will ship. */
 export function rewriteManifest(binDir) {
-  const manifest = join(binDir, OMNIVOICE_TTS_MANIFEST);
+  const manifest = join(binDir, ELEVENVOICE_TTS_MANIFEST);
   const names = [...readManifest(manifest).keys()].sort();
   const lines = names.map((name) => {
     const file = join(binDir, name);
     if (!existsSync(file))
-      throw new Error(`${OMNIVOICE_TTS_MANIFEST} lists a missing file: ${name}`);
+      throw new Error(`${ELEVENVOICE_TTS_MANIFEST} lists a missing file: ${name}`);
     return `${sha256File(file)}  ${name}\n`;
   });
   writeFileSync(manifest, lines.join(''));
@@ -96,7 +96,7 @@ export function rewriteManifest(binDir) {
 /** Files the manifest lists whose bytes no longer match it. */
 export function manifestMismatches(binDir) {
   const mismatches = [];
-  for (const [name, digest] of readManifest(join(binDir, OMNIVOICE_TTS_MANIFEST))) {
+  for (const [name, digest] of readManifest(join(binDir, ELEVENVOICE_TTS_MANIFEST))) {
     const file = join(binDir, name);
     if (!existsSync(file) || sha256File(file) !== digest) mismatches.push(name);
   }
@@ -104,7 +104,7 @@ export function manifestMismatches(binDir) {
 }
 
 function packagedBinDir(context) {
-  return join(context.packager.getResourcesDir(context.appOutDir), OMNIVOICE_TTS_RESOURCE_DIR);
+  return join(context.packager.getResourcesDir(context.appOutDir), ELEVENVOICE_TTS_RESOURCE_DIR);
 }
 
 /**
@@ -115,10 +115,10 @@ function packagedBinDir(context) {
  */
 export function finalizeOmnivoiceTts(context) {
   const binDir = packagedBinDir(context);
-  if (!existsSync(join(binDir, OMNIVOICE_TTS_MANIFEST))) return;
+  if (!existsSync(join(binDir, ELEVENVOICE_TTS_MANIFEST))) return;
   if (context.electronPlatformName !== 'win32') {
     for (const name of stagedFiles(binDir)) {
-      if (name !== OMNIVOICE_TTS_MANIFEST) chmodSync(join(binDir, name), 0o755);
+      if (name !== ELEVENVOICE_TTS_MANIFEST) chmodSync(join(binDir, name), 0o755);
     }
   }
   rewriteManifest(binDir);
@@ -170,9 +170,9 @@ export function codesignArgs(opts, file) {
  * manifest the bundle seal now covers).
  */
 export async function signMac(opts, packager) {
-  const binDir = join(opts.app, 'Contents', 'Resources', OMNIVOICE_TTS_RESOURCE_DIR);
+  const binDir = join(opts.app, 'Contents', 'Resources', ELEVENVOICE_TTS_RESOURCE_DIR);
   let ignore = opts.ignore;
-  if (opts.identity && existsSync(join(binDir, OMNIVOICE_TTS_MANIFEST))) {
+  if (opts.identity && existsSync(join(binDir, ELEVENVOICE_TTS_MANIFEST))) {
     for (const name of stagedFiles(binDir)) {
       const file = join(binDir, name);
       if (isMachO(file)) execFileSync('codesign', codesignArgs(opts, file), { stdio: 'inherit' });

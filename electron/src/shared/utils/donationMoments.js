@@ -50,13 +50,13 @@ export const DONATE_LINE_COUNT = 4;
 export const DONATION_MOMENT_EVENT = 'omnivoice:donation-moment';
 
 // ── localStorage keys (omnivoice.donate.*) ─────────────────────────────────
-export const LS_MOMENT_COUNT = 'omnivoice.donate.momentCount';
-export const LS_FIRST_MOMENT_AT = 'omnivoice.donate.firstMomentAt';
-export const LS_LAST_PROMPT_AT = 'omnivoice.donate.lastPromptAt';
-export const LS_PROMPT_COUNT = 'omnivoice.donate.promptCount';
-export const LS_OPT_OUT = 'omnivoice.donate.optOut';
+export const LS_MOMENT_COUNT = 'elevenvoice.donate.momentCount';
+export const LS_FIRST_MOMENT_AT = 'elevenvoice.donate.firstMomentAt';
+export const LS_LAST_PROMPT_AT = 'elevenvoice.donate.lastPromptAt';
+export const LS_PROMPT_COUNT = 'elevenvoice.donate.promptCount';
+export const LS_OPT_OUT = 'elevenvoice.donate.optOut';
 /** zustand persist blob — the postcard-era `optedOut` flag lives in here. */
-const LEGACY_STORE_KEY = 'omnivoice.app';
+const LEGACY_STORE_KEY = 'elevenvoice.app';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

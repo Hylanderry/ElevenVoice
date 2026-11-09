@@ -43,7 +43,7 @@ from core.audio_validation import is_playable_wav, resolve_regular_file
 from core.config import DATA_DIR, VOICES_DIR
 from core.browser_guard import reject_cross_site_get
 
-logger = logging.getLogger("omnivoice.community")
+logger = logging.getLogger("elevenvoice.community")
 router = APIRouter()
 
 _CACHE_DIR = Path(DATA_DIR) / "gallery_cache"
@@ -85,7 +85,7 @@ _ATTR_NAMES = (
 # ── Config: which content repos to load ───────────────────────────────────────
 def configured_sources() -> list[str]:
     """Gallery sources, in priority order. Env var > config file > default."""
-    env = os.environ.get("OMNIVOICE_GALLERY_SOURCES")
+    env = os.environ.get("ELEVENVOICE_GALLERY_SOURCES")
     if env:
         sources = [s.strip() for s in env.split(",")]
         valid = [s for s in sources if _SOURCE_RE.fullmatch(s)]
@@ -716,7 +716,7 @@ async def community_preview(
         ) from exc
     return FileResponse(
         path, media_type="audio/wav",
-        headers={"Cache-Control": "no-cache", "X-OmniVoice-Preview-Source": "community"},
+        headers={"Cache-Control": "no-cache", "X-ElevenVoice-Preview-Source": "community"},
     )
 
 

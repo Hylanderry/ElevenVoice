@@ -21,7 +21,7 @@ const viewports = [
   { width: 800, height: 700 },
   { width: 420, height: 800 },
 ];
-const baseUrl = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const baseUrl = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 
 const browser = await chromium.launch({
   ...(process.env.CHROME_PATH
@@ -38,7 +38,7 @@ try {
     );
     await page.route('**/api/setup/preflight', (route) => route.fulfill({ json: { ok: false } }));
     await page.addInitScript(
-      (selected) => localStorage.setItem('voicestudio.locale', selected),
+      (selected) => localStorage.setItem('elevenvoice.locale', selected),
       locale,
     );
     await page.goto(`${baseUrl}/#/clone`);

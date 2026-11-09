@@ -44,7 +44,7 @@ for (const variant of ["cpu", "cuda", "rocm"]) {
   test(`honors explicit ${variant} without probing`, async () => {
     assert.equal(
       await selectTorchVariant({
-        env: { OMNIVOICE_TORCH_VARIANT: ` ${variant.toUpperCase()} ` },
+        env: { ELEVENVOICE_TORCH_VARIANT: ` ${variant.toUpperCase()} ` },
         platform: "linux",
         arch: "x64",
         nvidiaAvailable: () => {
@@ -64,21 +64,21 @@ test("explicit compute CPU selects CPU wheels, with explicit wheel choice taking
       throw Error("unexpected probe");
     },
   };
-  assert.equal(await selectTorchVariant({ ...options, env: { OMNIVOICE_DEVICE: " cpu " } }), "cpu");
+  assert.equal(await selectTorchVariant({ ...options, env: { ELEVENVOICE_DEVICE: " cpu " } }), "cpu");
   assert.equal(
     await selectTorchVariant({
       ...options,
-      env: { OMNIVOICE_DEVICE: "cpu", OMNIVOICE_TORCH_VARIANT: "cuda" },
+      env: { ELEVENVOICE_DEVICE: "cpu", ELEVENVOICE_TORCH_VARIANT: "cuda" },
     }),
     "cuda",
   );
-  assert.throws(() => requestedTorchVariant({ OMNIVOICE_TORCH_VARIANT: "typo" }), /must be/);
+  assert.throws(() => requestedTorchVariant({ ELEVENVOICE_TORCH_VARIANT: "typo" }), /must be/);
 });
 
 test("source setup syncs the locked CPU graph and post-install cannot re-sync CUDA", async () => {
   const calls = [];
   let repaired = false;
-  const env = { OMNIVOICE_TORCH_VARIANT: "cpu" };
+  const env = { ELEVENVOICE_TORCH_VARIANT: "cpu" };
   assert.equal(
     await setupApi({
       env,
@@ -178,14 +178,14 @@ test("root dev prepares the API before launch", () => {
 });
 
 test("root dev leaves external-backend and Intel Mac launches usable", () => {
-  assert.equal(needsLocalBackendSetup({ env: { VOICESTUDIO_SKIP_BACKEND: "1" } }), false);
-  assert.equal(needsLocalBackendSetup({ env: { OMNIVOICE_BACKEND_CMD: '["python"]' } }), false);
+  assert.equal(needsLocalBackendSetup({ env: { ELEVENVOICE_SKIP_BACKEND: "1" } }), false);
+  assert.equal(needsLocalBackendSetup({ env: { ELEVENVOICE_BACKEND_CMD: '["python"]' } }), false);
   assert.equal(needsLocalBackendSetup({ env: {}, platform: "darwin", arch: "x64" }), false);
 });
 
 test("every backend restart preserves the chosen CPU environment", () => {
   for (const variant of ["", "auto", "cpu", "cuda", "rocm"]) {
-    assert.ok(uvRunArgs({ OMNIVOICE_TORCH_VARIANT: variant }).includes("--no-sync"));
+    assert.ok(uvRunArgs({ ELEVENVOICE_TORCH_VARIANT: variant }).includes("--no-sync"));
   }
 });
 
@@ -194,7 +194,7 @@ for (const platform of ["darwin", "linux"]) {
     test(`${platform} ARM64 keeps native wheels with ${variant}`, async () => {
       assert.equal(
         await selectTorchVariant({
-          env: { OMNIVOICE_TORCH_VARIANT: variant },
+          env: { ELEVENVOICE_TORCH_VARIANT: variant },
           platform,
           arch: "arm64",
           nvidiaAvailable: () => {
@@ -211,7 +211,7 @@ test("Windows ROCm opt-in preserves the explicit recipe regardless of NVIDIA", a
   for (const hasGpu of [false, true]) {
     assert.equal(
       await selectTorchVariant({
-        env: { OMNIVOICE_TORCH_VARIANT: "rocm" },
+        env: { ELEVENVOICE_TORCH_VARIANT: "rocm" },
         platform: "win32",
         arch: "x64",
         nvidiaAvailable: async () => hasGpu,
@@ -219,7 +219,7 @@ test("Windows ROCm opt-in preserves the explicit recipe regardless of NVIDIA", a
       "rocm",
     );
   }
-  assert.equal(requestedTorchVariant({ OMNIVOICE_TORCH_VARIANT: "default" }), "cuda");
+  assert.equal(requestedTorchVariant({ ELEVENVOICE_TORCH_VARIANT: "default" }), "cuda");
 });
 
 test("Windows ARM64 selects CPU wheels and an emulated x64 Python", async () => {

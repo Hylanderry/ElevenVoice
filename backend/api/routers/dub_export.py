@@ -40,7 +40,7 @@ from schemas.requests import ProsodyMirrorRequest
 from core.browser_guard import reject_cross_site_get
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 
 async def _preserved_background(job: dict, job_id: str, lang: str, *, prepare: bool = True) -> str:
@@ -698,7 +698,7 @@ async def dub_download(
     bed_level: BedLevel = DEFAULT_BED_LEVEL,
     default_track: str = Query("", description="Default audio track; omitted selects the first dubbed track"),
     include_tracks: str = Query("", description="Comma-separated list of tracks to include (e.g. 'original,de,es'). Empty = include all."),
-    save_authorization: str = Header("", alias="X-VoiceStudio-Path-Authorization"),
+    save_authorization: str = Header("", alias="X-ElevenVoice-Path-Authorization"),
     burn_subs: bool = Query(False, description="Burn subtitles into the video stream (forces re-encode). Uses dual-subtitle layout when dual=1."),
     dual: bool = Query(False, description="When burn_subs=1, render translated on top of italicised original."),
     karaoke: bool = Query(False, description="When burn_subs=1, burn a word-timed karaoke highlight (ASS) instead of line subtitles. Ignored when dual=1 (dual karaoke is unsupported — the line burn renders instead)."),
@@ -1898,7 +1898,7 @@ async def dub_download_audio(
     lang: str = Query(None),
     preserve_bg: bool = Query(True),
     bed_level: BedLevel = DEFAULT_BED_LEVEL,
-    save_authorization: str = Header("", alias="X-VoiceStudio-Path-Authorization"),
+    save_authorization: str = Header("", alias="X-ElevenVoice-Path-Authorization"),
 ):
     job_dir = _existing_job_dir_or_404(job_id)
     lang = _safe_lang_or_400(lang)
@@ -2192,7 +2192,7 @@ async def dub_download_mp3(
     lang: str = Query(None),
     preserve_bg: bool = Query(True),
     bed_level: BedLevel = DEFAULT_BED_LEVEL,
-    save_authorization: str = Header("", alias="X-VoiceStudio-Path-Authorization"),
+    save_authorization: str = Header("", alias="X-ElevenVoice-Path-Authorization"),
     bitrate: str = Query("192k"),
 ):
     job_dir = _existing_job_dir_or_404(job_id)

@@ -68,8 +68,8 @@ import {
 import { saveLocalFile } from '@/lib/local-export';
 import { formatShortcut } from '@shared/utils/dictationShortcut';
 
-const TRANSCRIPTION_MODE_KEY = 'voicestudio.transcription.mode';
-const TRANSCRIPTION_DIARIZE_KEY = 'voicestudio.transcription.diarize';
+const TRANSCRIPTION_MODE_KEY = 'elevenvoice.transcription.mode';
+const TRANSCRIPTION_DIARIZE_KEY = 'elevenvoice.transcription.diarize';
 
 function initialDiarize(): boolean {
   try {

@@ -17,8 +17,8 @@ import os
 import zipfile
 from types import SimpleNamespace
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -303,7 +303,7 @@ def settings_mod(monkeypatch, tmp_path):
     monkeypatch.setattr(ue, "unset_user_env", lambda k, path=None: store.pop(k, None))
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     monkeypatch.setattr(hf_auth, "_implicit_disabled_in", {})
-    for key in ("HF_ENDPOINT", "OMNIVOICE_HF_ENDPOINT_MODE", "HF_HUB_DISABLE_IMPLICIT_TOKEN"):
+    for key in ("HF_ENDPOINT", "ELEVENVOICE_HF_ENDPOINT_MODE", "HF_HUB_DISABLE_IMPLICIT_TOKEN"):
         monkeypatch.delenv(key, raising=False)
     yield importlib.import_module("api.routers.settings")
     for key in ("HF_ENDPOINT", "HF_HUB_DISABLE_IMPLICIT_TOKEN"):
@@ -495,10 +495,10 @@ def gguf(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_HUB_CACHE", str(cache))
     # A clean compute environment: an ambient CPU pin or native backend
     # would change which quant the engine looks for.
-    for variable in ("OMNIVOICE_DEVICE", "OMNIVOICE_GGUF_BACKEND",
-                     "OMNIVOICE_GGUF_DEVICE", "GGML_BACKEND"):
+    for variable in ("ELEVENVOICE_DEVICE", "ELEVENVOICE_GGUF_BACKEND",
+                     "ELEVENVOICE_GGUF_DEVICE", "GGML_BACKEND"):
         monkeypatch.delenv(variable, raising=False)
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     return gguf_backend, root / "bin" / "checksums.sha256", fake_bin
 
 

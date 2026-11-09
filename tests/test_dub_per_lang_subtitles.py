@@ -20,7 +20,7 @@ import uuid
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 
 @pytest.fixture()

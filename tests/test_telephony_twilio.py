@@ -5,8 +5,8 @@ engine; only the settings store is in-memory and the watermark is identity.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import base64
@@ -349,7 +349,7 @@ def test_webhook_answers_with_stream_twiml(store, gw):
 
 
 def test_webhook_rejects_as_busy_at_capacity(store, gw, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TWILIO_MAX_CALLS", "1")
+    monkeypatch.setenv("ELEVENVOICE_TWILIO_MAX_CALLS", "1")
     _configure()
     assert _post_voice(gw).status_code == 200  # holds the only slot (pending token)
     busy = _post_voice(gw)
@@ -430,7 +430,7 @@ def test_cache_follows_the_resolved_engine_and_voice_not_saved_settings(store, f
     """A blank engine means "the active engine": switching it, or editing the
     saved voice behind the same profile id, must re-render — never replay."""
     stream = importlib.import_module("api.routers.tts_stream")
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-phone")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-phone")
     profile = {"ref_text": "first take"}
     real = stream.build_stream_kwargs
     monkeypatch.setattr(
@@ -447,7 +447,7 @@ def test_cache_follows_the_resolved_engine_and_voice_not_saved_settings(store, f
     render()
     assert len(fake_engine.calls) == 2
     key = session._speech_key("Hello.", "p1", "", "")
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "another-engine")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "another-engine")
     assert session._speech_key("Hello.", "p1", "", "") != key  # engine switch
 
 
@@ -684,11 +684,11 @@ def test_admin_api_is_not_reachable_from_remote_clients(store):
 def test_gateway_host_is_loopback_unless_an_ip_literal_is_configured(monkeypatch):
     for raw in (None, "", "  ", "localhost", "example.com"):
         if raw is None:
-            monkeypatch.delenv("OMNIVOICE_TWILIO_HOST", raising=False)
+            monkeypatch.delenv("ELEVENVOICE_TWILIO_HOST", raising=False)
         else:
-            monkeypatch.setenv("OMNIVOICE_TWILIO_HOST", raw)
+            monkeypatch.setenv("ELEVENVOICE_TWILIO_HOST", raw)
         assert gateway.gateway_host() == "127.0.0.1"
-    monkeypatch.setenv("OMNIVOICE_TWILIO_HOST", "0.0.0.0")
+    monkeypatch.setenv("ELEVENVOICE_TWILIO_HOST", "0.0.0.0")
     assert gateway.gateway_host() == "0.0.0.0"
 
 
@@ -712,7 +712,7 @@ def test_preferred_port_skips_a_taken_base_port_like_start_does(monkeypatch):
     with socket.socket() as taken:
         taken.bind(("127.0.0.1", 0))
         base = taken.getsockname()[1]
-        monkeypatch.setenv("OMNIVOICE_TWILIO_PORT", str(base))
+        monkeypatch.setenv("ELEVENVOICE_TWILIO_PORT", str(base))
         preferred = gateway.state()["preferred_port"]
         assert preferred != base
         assert preferred == gateway._free_port("127.0.0.1", base)
@@ -721,7 +721,7 @@ def test_preferred_port_skips_a_taken_base_port_like_start_does(monkeypatch):
 def test_gateway_listener_exposes_only_twilio_routes(store, monkeypatch):
     import httpx
 
-    monkeypatch.setenv("OMNIVOICE_TWILIO_PORT", str(_free_port()))
+    monkeypatch.setenv("ELEVENVOICE_TWILIO_PORT", str(_free_port()))
     _configure()
 
     async def scenario():

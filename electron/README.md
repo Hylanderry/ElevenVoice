@@ -1,6 +1,6 @@
-# VoiceStudio — Electron desktop app
+# ElevenVoice — Electron desktop app
 
-![VoiceStudio in its default dark theme, using the demo workspace.](../docs/media/electron/overview.png)
+![ElevenVoice in its default dark theme, using the demo workspace.](../docs/media/electron/overview.png)
 
 Electron is the only maintained desktop app for voice cloning, stories, dubbing,
 transcription, voice design, and workflows. Tauri is archived at v0.5.3. For
@@ -44,10 +44,10 @@ otherwise it checks the prepared `.venv` imports, **spawns** its Python interpre
 supervises it (restart on crash, exit code 78 = port already in use). The
 child's stdin is the liveness signal — closing it makes the backend exit.
 
-Environment knobs: `OMNIVOICE_PORT` (backend port), `OMNIVOICE_UI_PORT`
-(renderer dev server, default 3902; `VOICESTUDIO_UI_PORT` is still accepted), `VOICESTUDIO_SKIP_BACKEND=1` (never
-spawn, only attach), `OMNIVOICE_BACKEND_CMD` (argv override, JSON array or
-whitespace-separated), `OMNIVOICE_STARTUP_BUDGET_S` (default 300, or 600 on a
+Environment knobs: `ELEVENVOICE_PORT` (backend port), `ELEVENVOICE_UI_PORT`
+(renderer dev server, default 3902; `ELEVENVOICE_UI_PORT` is still accepted), `ELEVENVOICE_SKIP_BACKEND=1` (never
+spawn, only attach), `ELEVENVOICE_BACKEND_CMD` (argv override, JSON array or
+whitespace-separated), `ELEVENVOICE_STARTUP_BUDGET_S` (default 300, or 600 on a
 host with four or fewer cores or 8 GB of RAM or less; measured from the spawn so
 a slow launch never spends the backend's window, and extended while the backend
 is still printing, up to three times the budget).
@@ -63,19 +63,19 @@ emulation, matching the packaged runtime.
 To choose CPU wheels explicitly on Linux:
 
 ```sh
-OMNIVOICE_TORCH_VARIANT=cpu bun run setup:api
+ELEVENVOICE_TORCH_VARIANT=cpu bun run setup:api
 ```
 
 On Windows PowerShell:
 
 ```powershell
-$env:OMNIVOICE_TORCH_VARIANT = "cpu"
+$env:ELEVENVOICE_TORCH_VARIANT = "cpu"
 bun run setup:api
 ```
 
 Set the variant to `cuda` for an undetected NVIDIA GPU or a GPU-enabled
 container, or opt into `rocm` on Linux. Source setup also honors
-`OMNIVOICE_DEVICE=cpu` unless an explicit wheel variant overrides it. The
+`ELEVENVOICE_DEVICE=cpu` unless an explicit wheel variant overrides it. The
 Settings device selection still controls where inference runs.
 
 For direct uv use on Linux/Windows x64, choose the locked CPU graph with
@@ -85,7 +85,7 @@ For direct uv use on Linux/Windows x64, choose the locked CPU graph with
 CUDA wheels on startup or restart.
 
 CPU inference still needs model downloads and enough system RAM. OmniVoice
-uses float32 on CPU by default; the existing `OMNIVOICE_CPU_DTYPE` override
+uses float32 on CPU by default; the existing `ELEVENVOICE_CPU_DTYPE` override
 is unchanged. An unusable NVIDIA driver produces a setup warning so
 CPU-capable engines remain available; GPU-only engines remain unavailable.
 Linux source setup applies the same CTranslate2 executable-stack compatibility
@@ -97,7 +97,7 @@ The renderer never fetches `127.0.0.1:3900` directly (no CORS games). It calls
 app-relative `/api/...`:
 
 - dev — the renderer dev server proxies `/api` to the backend;
-- prod — the renderer is served from the privileged `app://voicestudio/`
+- prod — the renderer is served from the privileged `app://elevenvoice/`
   scheme and the main process proxies `/api/*` with `net.fetch`.
 
 ## Quality gates
@@ -120,7 +120,7 @@ source of truth.
 
 ```
 src/main/       backend supervisor, app:// protocol + /api proxy, IPC, window
-src/preload/    contextBridge → window.voicestudio (typed in index.d.ts)
+src/preload/    contextBridge → window.elevenvoice (typed in index.d.ts)
 src/renderer/   React app: routes/, features/clone/, components/, lib/, hooks/
 CONTRACT.md     module contracts shared by main, preload and renderer
 ```
@@ -142,7 +142,7 @@ Layout references: T3 Code's `AppSidebarLayout`, `PreviewPanelShell`,
 The sidebar extends through the native title-bar row. Pane headers provide window
 drag regions and reserve space for native caption controls; engine status and
 theme switching live at the foot of the sidebar. The Electron shell reuses the
-canonical VoiceStudio artwork and platform icons retained with the archived shell;
+canonical ElevenVoice artwork and platform icons retained with the archived shell;
 its packaged uv tool is staged under `electron/build/uv`.
 
 Typography uses locally bundled Inter Variable with system UI fallbacks with shared roles: 14px/20px interface text,
@@ -165,7 +165,7 @@ Theme control row, with a labeled Settings link on the left and Theme on the rig
 
 The workspace footer shows Integrations, Become a Sponsor, and a right-aligned X.
 They open the integration directory, partner inquiry form, and dedicated
-VoiceStudio Pro page respectively. The sponsor hover/focus card shows dated
+ElevenVoice Pro page respectively. The sponsor hover/focus card shows dated
 GitHub reach data. The Pro page compares Free and Pro, opens website pricing,
 and leaves licence activation to the separate Pro distribution. Checkout remains
 gated until the paid tools and terms are ready.
@@ -179,18 +179,18 @@ Appearance and General have direct routes and share a breadcrumb header, searcha
 sidebar, max-w-4xl scroll frame, grouped sections, and consistent setting rows.
 Sidebar active/hover surfaces use the shared T3 theme tokens.
 
-The local palette library includes VoiceStudio Original, Canopy, Current, Hearth, and Orchid, with
-upstream light/dark color definitions with VoiceStudio display names from T3 Code (MIT). Each appearance keeps
+The local palette library includes ElevenVoice Original, Canopy, Current, Hearth, and Orchid, with
+upstream light/dark color definitions with ElevenVoice display names from T3 Code (MIT). Each appearance keeps
 its own selected palette. System mode follows live OS appearance changes; the
 sidebar toggle explicitly switches to light or dark. Choices persist under
-`voicestudio.theme.v2`, migrating the older light/dark setting. Studio restores
+`elevenvoice.theme.v2`, migrating the older light/dark setting. Studio restores
 the neutral palette. Semantic roles drive chrome, sidebar, overlays, controls,
 text, and waveform colors. No network request is needed to select a theme.
 
 Glass mode is an opt-in, persisted appearance setting for translucent in-app
 surfaces with palette-tinted background depth. It does not make the native window
 transparent to the desktop. Reduced-transparency preferences or missing backdrop
-filter support retain opaque surfaces. voicestudio-classic maps the original
+filter support retain opaque surfaces. elevenvoice-classic maps the original
 Tauri Gruvbox dark palette, with a complementary light variant.
 
 Glass materials use static palette lighting, fine edge highlights, and separate

@@ -36,7 +36,7 @@ class SystemInfoResponse(BaseModel):
 
     app_version: str = ""
     # First 9 characters of the commit this backend was built from (the desktop app
-    # and Docker image set OMNIVOICE_BUILD_COMMIT), "unknown" when it cannot be told.
+    # and Docker image set ELEVENVOICE_BUILD_COMMIT), "unknown" when it cannot be told.
     build_commit: str = "unknown"
     # Effective compute-time budgets (seconds) for one synthesis job — the
     # values services/model_manager.py's GPU_JOB_TIMEOUT_S / CPU_JOB_TIMEOUT_S
@@ -49,7 +49,7 @@ class SystemInfoResponse(BaseModel):
     generate_timeout_shadowed: bool = False
     cpu_generate_timeout_shadowed: bool = False
     # #1770: the desktop attach handshake's code fingerprint — whatever
-    # Tauri set OMNIVOICE_BUILD_FINGERPRINT to when it spawned this process,
+    # Tauri set ELEVENVOICE_BUILD_FINGERPRINT to when it spawned this process,
     # echoed back verbatim. Blank when unset (dev mode, a manually started
     # backend). See frontend/src-tauri/src/backend.rs::code_fingerprint_is_current.
     code_fingerprint: str = ""

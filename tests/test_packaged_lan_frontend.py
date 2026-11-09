@@ -82,7 +82,7 @@ def boot(monkeypatch):
 
     def _boot(dist: Path):
         monkeypatch.setenv(FRONTEND_DIST_ENV, str(dist))
-        monkeypatch.setenv("OMNIVOICE_MCP_DISABLE", "1")
+        monkeypatch.setenv("ELEVENVOICE_MCP_DISABLE", "1")
         importlib.reload(main)
         return main.app
 

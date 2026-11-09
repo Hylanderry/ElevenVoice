@@ -67,7 +67,7 @@ export const timeSample: SampleTimer = async (url, signal) => {
       // mirrors.aliyun.com refuses requests without a User-Agent.
       headers: {
         Range: `bytes=0-${PYPI_SPEED_SAMPLE_BYTES - 1}`,
-        'User-Agent': 'VoiceStudio-setup',
+        'User-Agent': 'ElevenVoice-setup',
       },
     });
     if ((response.status !== 206 && response.status !== 200) || !response.body) return null;

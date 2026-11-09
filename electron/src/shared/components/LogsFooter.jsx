@@ -53,8 +53,8 @@ const SOURCES = [
   // Updates tab moved to Settings → Updates (see Settings.jsx).
 ];
 
-const LS_HEIGHT = 'omnivoice.logs.height';
-const LS_ACTIVE = 'omnivoice.logs.active';
+const LS_HEIGHT = 'elevenvoice.logs.height';
+const LS_ACTIVE = 'elevenvoice.logs.active';
 
 const MIN_H = 180;
 const MAX_H = 720;
@@ -223,7 +223,7 @@ export default function LogsFooter() {
   // but nothing persists. Kill the legacy key on the way out so users
   // who had it stored as "open" before aren't stuck on the next load.
   if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem('omnivoice.logs.collapsed');
+    localStorage.removeItem('elevenvoice.logs.collapsed');
   }
   const [collapsed, setCollapsed] = useState(true);
   const { t } = useTranslation();
@@ -446,7 +446,7 @@ export default function LogsFooter() {
     // + user agent — onto the clipboard so the user can paste into a
     // GitHub issue without hand-collecting files.
     const header = [
-      `VoiceStudio — diagnostic report`,
+      `ElevenVoice — diagnostic report`,
       `When: ${new Date().toISOString()}`,
       `UA: ${navigator.userAgent}`,
       `Counts: backend err=${counts.backend.error}/warn=${counts.backend.warn}, ` +

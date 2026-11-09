@@ -10,7 +10,7 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def crash_support(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_DISABLE_FAULTHANDLER", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DISABLE_FAULTHANDLER", raising=False)
     return importlib.reload(importlib.import_module("core.crash_diagnostics"))
 
 
@@ -23,7 +23,7 @@ def test_handler_is_enabled_in_the_ordinary_case(crash_support, monkeypatch):
 
 @pytest.mark.parametrize("switch", ["1", " TRUE ", "yes", "On"])
 def test_documented_opt_out_spellings_skip_activation(crash_support, monkeypatch, switch):
-    monkeypatch.setenv("OMNIVOICE_DISABLE_FAULTHANDLER", switch)
+    monkeypatch.setenv("ELEVENVOICE_DISABLE_FAULTHANDLER", switch)
     monkeypatch.setattr(
         crash_support.faulthandler,
         "enable",
@@ -35,7 +35,7 @@ def test_documented_opt_out_spellings_skip_activation(crash_support, monkeypatch
 @pytest.mark.parametrize("setting", ["", "0", "false", "no", "off"])
 def test_non_opt_out_values_do_not_disable_diagnostics(crash_support, monkeypatch, setting):
     observed = []
-    monkeypatch.setenv("OMNIVOICE_DISABLE_FAULTHANDLER", setting)
+    monkeypatch.setenv("ELEVENVOICE_DISABLE_FAULTHANDLER", setting)
     monkeypatch.setattr(crash_support.faulthandler, "enable", lambda **kw: observed.append(kw))
     assert crash_support.enable_fault_handler() is True
     assert observed
@@ -63,7 +63,7 @@ if {activate!r}:
 trigger_native_fault()
 """
     environment = os.environ.copy()
-    environment.pop("OMNIVOICE_DISABLE_FAULTHANDLER", None)
+    environment.pop("ELEVENVOICE_DISABLE_FAULTHANDLER", None)
     completed = subprocess.run(
         [sys.executable, "-c", program],
         cwd=os.path.join(os.path.dirname(__file__), "..", "backend"),

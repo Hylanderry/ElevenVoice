@@ -19,7 +19,7 @@ def test_precision_matches_runtime_device(monkeypatch, family):
     loader = Mock()
     monkeypatch.setitem(sys.modules, 'dots_tts.runtime', SimpleNamespace(DotsTtsRuntime=loader))
     monkeypatch.setattr(main, '_runtime', None)
-    monkeypatch.delenv('OMNIVOICE_DOTS_TTS_PRECISION', raising=False)
+    monkeypatch.delenv('ELEVENVOICE_DOTS_TTS_PRECISION', raising=False)
     main._load_runtime(io.BytesIO())
     assert loader.from_pretrained.call_args.kwargs['precision'] == ('bfloat16' if family == 'cuda' else 'float32')
 
@@ -34,8 +34,8 @@ def test_precision_probe_failure_uses_safe_default_or_explicit_override(monkeypa
     monkeypatch.setitem(sys.modules, "dots_tts.runtime", SimpleNamespace(DotsTtsRuntime=loader))
     monkeypatch.setattr(main, "_runtime", None)
     if override is None:
-        monkeypatch.delenv("OMNIVOICE_DOTS_TTS_PRECISION", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_DOTS_TTS_PRECISION", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_DOTS_TTS_PRECISION", override)
+        monkeypatch.setenv("ELEVENVOICE_DOTS_TTS_PRECISION", override)
     main._load_runtime(io.BytesIO())
     assert loader.from_pretrained.call_args.kwargs["precision"] == (override or "float32")

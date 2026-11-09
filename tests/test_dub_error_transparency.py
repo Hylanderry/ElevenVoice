@@ -13,7 +13,7 @@ import logging
 import os
 import uuid
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -95,7 +95,7 @@ def test_worker_failure_emits_structured_nonempty_reason():
             records.append(record)
 
     handler = _Capture(level=logging.ERROR)
-    tlog = logging.getLogger("omnivoice.tasks")
+    tlog = logging.getLogger("elevenvoice.tasks")
     # The app may have run dictConfig(disable_existing_loggers=True) on import,
     # which leaves this logger disabled in the test process. Force it live so we
     # can assert the worker actually logs the traceback.

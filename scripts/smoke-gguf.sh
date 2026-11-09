@@ -69,14 +69,14 @@ OUT_JSON="$REPO_ROOT/tmp/smoke-gguf-$CLASS.json"
 # reads these as overrides during the probe.
 case "$CLASS" in
     cpu)
-        export OMNIVOICE_GGUF_FORCE_CLASS=cpu
+        export ELEVENVOICE_GGUF_FORCE_CLASS=cpu
         export CUDA_VISIBLE_DEVICES=""
         ;;
     mid)
-        export OMNIVOICE_GGUF_FORCE_CLASS=mid-vram
+        export ELEVENVOICE_GGUF_FORCE_CLASS=mid-vram
         ;;
     high)
-        export OMNIVOICE_GGUF_FORCE_CLASS=high-vram
+        export ELEVENVOICE_GGUF_FORCE_CLASS=high-vram
         ;;
 esac
 

@@ -4,7 +4,7 @@ Two independent defects, both reported against a working upstream install:
 
 1. **Install always failed.** ``IndexTeam/IndexTTS-2.5`` ships ``config.yaml``
    — at the pinned revision and at HEAD; ``config_v2_5.yaml`` exists in no
-   upstream revision. VoiceStudio demanded that name, so ``_weights_floor_ok``
+   upstream revision. ElevenVoice demanded that name, so ``_weights_floor_ok``
    never found it and the install died claiming "the download was likely
    interrupted" when the download had been perfect. The only way through was
    to hand-rename the file, which is what the reporter did.
@@ -155,7 +155,7 @@ def test_the_recv_deadline_outlasts_a_long_passage():
 def test_the_recv_deadline_is_tunable_but_bounded(monkeypatch, raw, expected):
     from engines.indextts import IndexTTS2Backend
 
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", raw)
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", raw)
     assert IndexTTS2Backend().recv_timeout_s == expected
 
 

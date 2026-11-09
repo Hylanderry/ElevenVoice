@@ -25,14 +25,14 @@ export async function setupApi({
   if (platform === "darwin" && arch === "x64")
     throw new Error(
       "Intel Macs cannot install the local backend: PyTorch publishes no Intel-Mac (macOS x86_64) wheels. " +
-        "Connect the app to a VoiceStudio backend on another computer (docs/install/macos.md). " +
+        "Connect the app to a ElevenVoice backend on another computer (docs/install/macos.md). " +
         "On an Apple Silicon Mac, run this from a native arm64 terminal with an arm64 Bun or Node.",
     );
   const variant = await selectVariant({ env, platform, arch });
   const windowsRocm = platform === "win32" && variant === "rocm";
   if (windowsRocm && arch !== "x64")
     throw new Error("Windows ROCm requires Windows x64 Python 3.12 (cp312).");
-  const environment = windowsRocm ? { ...env, OMNIVOICE_TORCH_VARIANT: "rocm" } : env;
+  const environment = windowsRocm ? { ...env, ELEVENVOICE_TORCH_VARIANT: "rocm" } : env;
   // The matched torch stack has no native Windows ARM64 torchaudio wheel.
   const pythonArgs = windowsRocm
     ? ["--python", "cpython-3.12-windows-x86_64"]

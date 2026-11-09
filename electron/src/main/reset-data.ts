@@ -105,7 +105,7 @@ export function within(path: string, root: string): boolean {
 }
 
 async function hasAppSignature(path: string, allowModelCache = false): Promise<boolean> {
-  for (const marker of ['omnivoice.db', 'prefs.json', 'voices', 'outputs', 'engines']) {
+  for (const marker of ['elevenvoice.db', 'prefs.json', 'voices', 'outputs', 'engines']) {
     if (await stat(join(path, marker))) return true;
   }
   if (!allowModelCache) return false;
@@ -129,8 +129,8 @@ async function canonical(path: string): Promise<string | null> {
 const APP_NAMES = new Set([
   'omnivoice',
   '.omnivoice',
-  'voicestudio',
-  'com.debpalash.omnivoice-studio',
+  'elevenvoice',
+  'com.hylanderry.elevenvoice',
 ]);
 const MANAGED_CHILDREN = new Set([
   'data',
@@ -145,7 +145,7 @@ const MANAGED_CHILDREN = new Set([
 ]);
 
 // Folders the OS (or the installer) keeps per-app directories in. A bare app-named
-// directory anywhere else, such as ~/Documents/VoiceStudio, is the user's own unless it
+// directory anywhere else, such as ~/Documents/ElevenVoice, is the user's own unless it
 // carries the app's signature.
 const APP_PARENTS = new Set([
   'application support',
@@ -196,7 +196,7 @@ function exactModelLayout(path: string): boolean {
   );
 }
 
-export async function isValidVoiceStudioRoot(
+export async function isValidElevenVoiceRoot(
   path: string,
   home: string | null = homedir(),
   allowModelCache = false,
@@ -216,7 +216,7 @@ export async function isValidVoiceStudioRoot(
 export async function modelsAreShared(models: string, data: string): Promise<boolean> {
   const [physicalModels, physicalData] = await Promise.all([canonical(models), canonical(data)]);
   if (!physicalModels || !physicalData) return true;
-  if (!(await isValidVoiceStudioRoot(physicalData))) return true;
+  if (!(await isValidElevenVoiceRoot(physicalData))) return true;
   return !within(physicalModels, physicalData);
 }
 
@@ -231,7 +231,7 @@ async function scopeTargets(key: DiskResetScope, roots: ResetRoots): Promise<str
         join(roots.data, 'dub_jobs'),
         join(roots.data, 'batch'),
         join(roots.data, 'preview'),
-        ...(await prefixedChildren(roots.data, 'omnivoice.db')),
+        ...(await prefixedChildren(roots.data, 'elevenvoice.db')),
       ];
     case 'engines':
       return [join(roots.data, 'engines')];
@@ -249,7 +249,7 @@ async function scopeTargets(key: DiskResetScope, roots: ResetRoots): Promise<str
       return [
         join(roots.data, 'crash_log.txt'),
         join(roots.data, 'error_journal.jsonl'),
-        ...(await prefixedChildren(roots.data, 'omnivoice.log')),
+        ...(await prefixedChildren(roots.data, 'elevenvoice.log')),
         ...(roots.logs ? [roots.logs] : []),
       ];
   }
@@ -280,7 +280,7 @@ async function authorizedTarget(
   const allowed = Boolean(
     physicalRoot &&
     within(physicalTarget, physicalRoot) &&
-    (await isValidVoiceStudioRoot(physicalRoot, home, key === 'models')),
+    (await isValidElevenVoiceRoot(physicalRoot, home, key === 'models')),
   );
   return allowed ? physicalTarget : null;
 }

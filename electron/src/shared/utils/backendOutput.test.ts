@@ -8,7 +8,7 @@ const TRACE = [
   '  File "site-packages/torchaudio/_extension/utils.py", line 38, in _load_lib',
   '    torch.ops.load_library(dll_path)',
   'FileNotFoundError: Could not find module',
-  "'C:\\\\Users\\\\me\\\\AppData\\\\Roaming\\\\VoiceStudio\\\\runtime\\\\project\\\\.venv\\\\Lib\\\\site-packages\\\\torchaudio\\\\lib\\\\libtorchaudio.pyd' (or one of its dependencies).",
+  "'C:\\\\Users\\\\me\\\\AppData\\\\Roaming\\\\ElevenVoice\\\\runtime\\\\project\\\\.venv\\\\Lib\\\\site-packages\\\\torchaudio\\\\lib\\\\libtorchaudio.pyd' (or one of its dependencies).",
 ];
 
 describe('backendStartupFailure', () => {

@@ -62,8 +62,8 @@ def test_source_main_dispatches_supervisor_before_heavy_imports(monkeypatch):
 @pytest.mark.skipif(os.name != "posix", reason="Unix drain pipe contract")
 def test_drain_fd_is_explicitly_inherited_by_wrapper_but_not_operation(monkeypatch):
     drain_read, drain_write = os.pipe()
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_DRAIN_FD", str(drain_write))
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_DRAIN_FD", str(drain_write))
     owned.secure_backend_drain_fd()
     assert not os.get_inheritable(drain_write)
     implicit_probe = subprocess.check_output(
@@ -71,7 +71,7 @@ def test_drain_fd_is_explicitly_inherited_by_wrapper_but_not_operation(monkeypat
             sys.executable,
             "-c",
             "import os; "
-            "fd=int(os.environ['OMNIVOICE_DESKTOP_DRAIN_FD']); "
+            "fd=int(os.environ['ELEVENVOICE_DESKTOP_DRAIN_FD']); "
             "\ntry: os.fstat(fd); print('leaked')"
             "\nexcept OSError: print('closed')",
         ],
@@ -80,8 +80,8 @@ def test_drain_fd_is_explicitly_inherited_by_wrapper_but_not_operation(monkeypat
     )
     assert implicit_probe.strip() == "closed"
     script = (
-        "import os,time; token=os.environ.get('OMNIVOICE_DESKTOP_DRAIN_FD'); "
-        "marker=os.environ.get('OMNIVOICE_DESKTOP_CONTAINED'); "
+        "import os,time; token=os.environ.get('ELEVENVOICE_DESKTOP_DRAIN_FD'); "
+        "marker=os.environ.get('ELEVENVOICE_DESKTOP_CONTAINED'); "
         "\nif token is None and marker is None: state='stripped'"
         "\nelse:"
         "\n try: os.fstat(int(token)); state='leaked'"
@@ -122,16 +122,16 @@ def test_drain_fd_is_explicitly_inherited_by_wrapper_but_not_operation(monkeypat
 
 @pytest.mark.skipif(os.name != "posix", reason="Unix drain pipe contract")
 def test_invalid_or_missing_desktop_drain_fd_fails_safe(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_DRAIN_FD", "not-an-fd")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_DRAIN_FD", "not-an-fd")
     with pytest.raises(RuntimeError, match="missing its live.*drain descriptor"):
         owned.spawn_owned([sys.executable, "-c", "print('unsafe')"])
 
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_DRAIN_FD")
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_DRAIN_FD")
     with pytest.raises(RuntimeError, match="missing its live.*drain descriptor"):
         owned.secure_backend_drain_fd()
 
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_CONTAINED")
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_CONTAINED")
     assert owned.backend_drain_fd(required=True) is None
     proc = owned.spawn_owned(
         [sys.executable, "-c", "print('standalone')"],
@@ -313,8 +313,8 @@ def test_windows_direct_job_owner_assigns_before_resume(monkeypatch):
         {
             "env": {
                 "KEEP": "yes",
-                "OMNIVOICE_DESKTOP_CONTAINED": "1",
-                "OMNIVOICE_DESKTOP_DRAIN_FD": "42",
+                "ELEVENVOICE_DESKTOP_CONTAINED": "1",
+                "ELEVENVOICE_DESKTOP_DRAIN_FD": "42",
             },
             "creationflags": 0x00000200,
         },

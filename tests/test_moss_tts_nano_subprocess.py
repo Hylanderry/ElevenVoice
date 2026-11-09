@@ -451,15 +451,15 @@ def test_the_class_switches_to_the_sidecar_once_its_venv_exists(monkeypatch, tmp
     from services import tts_backend
     from services.sidecar_install import _INSTALL_COMPLETE_MARKER, _venv_python
 
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_NANO_DIR", "")
-    monkeypatch.delenv("OMNIVOICE_MOSS_TTS_NANO_DIR")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_NANO_DIR", "")
+    monkeypatch.delenv("ELEVENVOICE_MOSS_TTS_NANO_DIR")
     assert tts_backend.get_backend_class("moss-tts-nano") is tts_backend.MossTTSNanoBackend
 
     py = _venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
     (tmp_path / _INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_NANO_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_NANO_DIR", str(tmp_path))
 
     cls = tts_backend.get_backend_class("moss-tts-nano")
     assert cls is MossTTSNanoSubprocessBackend

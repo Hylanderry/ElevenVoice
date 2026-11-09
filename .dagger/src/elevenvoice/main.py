@@ -1,4 +1,4 @@
-"""Local + CI pipeline for VoiceStudio.
+"""Local + CI pipeline for ElevenVoice.
 
 Mirrors the checks in .github/workflows/ci.yml so they run identically on a
 laptop and in CI. Every step is content-addressed: unchanged inputs are a cache
@@ -32,7 +32,7 @@ IGNORE = [
     "electron/dist",
     "electron/out",
     "electron/release",
-    "omnivoice_data",
+    "elevenvoice_data",
     "*.ses",
     ":memory:.ses",
 ]
@@ -50,10 +50,10 @@ Source = Annotated[dagger.Directory, DefaultPath("/"), Ignore(IGNORE)]
 
 
 @object_type
-class Voicestudio:
+class Elevenvoice:
     def _node(self, src: dagger.Directory) -> dagger.Container:
         """Node 22 + Bun with deps installed from the frozen root bun.lock."""
-        bun_cache = dag.cache_volume("voicestudio-bun")
+        bun_cache = dag.cache_volume("elevenvoice-bun")
         return (
             dag.container()
             .from_("node:22-bookworm")
@@ -100,7 +100,7 @@ class Voicestudio:
             .with_exec(["apt-get", "update"])
             .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "ffmpeg", "squashfs-tools", "git"])
             .with_exec(["pip", "install", "uv"])
-            .with_mounted_cache("/root/.cache/uv", dag.cache_volume("voicestudio-uv"))
+            .with_mounted_cache("/root/.cache/uv", dag.cache_volume("elevenvoice-uv"))
             .with_workdir("/app")
             .with_env_variable("UV_HTTP_TIMEOUT", "120")
             .with_env_variable("UV_HTTP_RETRIES", "5")

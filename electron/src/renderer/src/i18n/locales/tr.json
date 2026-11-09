@@ -1316,7 +1316,7 @@
     "compute_device_auto": "Auto (önerilen)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "Hesaplama aygıtı",
-    "compute_device_env_pinned": "OMNIVOICE_DEVICE ortam değişkeniyle sabitlendi",
+    "compute_device_env_pinned": "ELEVENVOICE_DEVICE ortam değişkeniyle sabitlendi",
     "perf_title": "Performans",
     "generate_timeout_cpu_note": "Üretim CPU üzerinde çalıştığında kullanılır. Burada kaydedildikten sonra bu değer, yukarıdaki hızlandırılmış bütçeden bağımsız olarak her zaman CPU üretimini yönetir.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1483,7 +1483,7 @@
     "llm_skills": "Yüksek Lisans Becerileri",
     "audio_tools_ytdlp_desc": "Video/klip içe aktarmayı destekler. Site desteği, uygulama sürümlerinden daha hızlı değişir; içe aktarma başarısız olmaya başladığında buradan güncelleyin.",
     "audio_tools_open": "Ses araçlarını açın",
-    "remote_backend_hint": "Diğer makinedeki arka ucu <1> ile başlatınOMNIVOICE_API_KEY</1> ayarlayın, kuyruk ağınız üzerinden ona ulaşın ve bu uygulamayı ona doğrultun.",
+    "remote_backend_hint": "Diğer makinedeki arka ucu <1> ile başlatınELEVENVOICE_API_KEY</1> ayarlayın, kuyruk ağınız üzerinden ona ulaşın ve bu uygulamayı ona doğrultun.",
     "review_mode": "İnceleme modu",
     "review_mode_desc": "ASR / çeviri çıktısını gözden geçirebilmek için ardışık düzen aşamaları arasında duraklayın.",
     "review_mode_on": "İncele",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}} bulundu, ancak bu PyTorch derlemesi ({{torch}}) kendi hesaplama mimarisine uygun çekirdek içermediği için motorlar CPU'da çalışır.",
     "gpu_report_state_unknown": "GPU durumu belirlenemedi.",
     "gpu_report_option_vulkan_engines": "Kendi GPU çalışma zamanına sahip bir motor kullanın: audio.cpp, AMD Radeon GPU'larda Vulkan üzerinden çalışır (Ayarlar → Modeller → çalışma zamanını kur).",
-    "gpu_report_option_rocm_windows_manual": "Desteklenen Windows 11 x64 AMD donanımında, OMNIVOICE_TORCH_VARIANT=rocm ile ElevenVoice'nun ROCm 7.2.1 kurulumunu etkinleştirin. Zaten kuruluysa kurulumu yeniden çalıştırın ve AMD'nin sürücü ve donanım uyumluluk tablosunu kontrol edin. İsteğe bağlı motorların ayrı sınırlamaları vardır; Windows kurulum kılavuzuna bakın.",
-    "gpu_report_option_rocm_variant_linux": "PyTorch'un ROCm derlemesini kurmak için OMNIVOICE_TORCH_VARIANT=rocm ayarlayın ve kurulumu yeniden çalıştırın.",
+    "gpu_report_option_rocm_windows_manual": "Desteklenen Windows 11 x64 AMD donanımında, ELEVENVOICE_TORCH_VARIANT=rocm ile ElevenVoice'nun ROCm 7.2.1 kurulumunu etkinleştirin. Zaten kuruluysa kurulumu yeniden çalıştırın ve AMD'nin sürücü ve donanım uyumluluk tablosunu kontrol edin. İsteğe bağlı motorların ayrı sınırlamaları vardır; Windows kurulum kılavuzuna bakın.",
+    "gpu_report_option_rocm_variant_linux": "PyTorch'un ROCm derlemesini kurmak için ELEVENVOICE_TORCH_VARIANT=rocm ayarlayın ve kurulumu yeniden çalıştırın.",
     "gpu_report_option_rocm_device_access": "amdgpu sürücüsünün yüklü olduğunu ve kullanıcınızın /dev/kfd'yi açabildiğini kontrol edin (render ve video grupları).",
     "gpu_report_option_reinstall_cuda_torch": "Çalışma zamanını yeniden kurun; böylece PyTorch'un CUDA derlemesi kurulur.",
     "gpu_report_option_update_nvidia_driver": "NVIDIA sürücüsünü güncelleyin (Linux'ta R525 veya üzeri, Windows'ta R528.33 veya üzeri) ve ElevenVoice'yu yeniden başlatın.",
@@ -2242,7 +2242,7 @@
     "failed": "Yerel motor başlatılamadı.",
     "idle": "Yerel motor bekleniyor…",
     "log_label": "Motor günlüğü",
-    "port_in_use": "{{port}} bağlantı noktası başka bir program tarafından kullanılıyor. Programı kapatın veya OMNIVOICE_PORT değerini boş bir bağlantı noktasına ayarlayıp yeniden deneyin.",
+    "port_in_use": "{{port}} bağlantı noktası başka bir program tarafından kullanılıyor. Programı kapatın veya ELEVENVOICE_PORT değerini boş bir bağlantı noktasına ayarlayıp yeniden deneyin.",
     "elapsed": "{{seconds}} sn geçti",
     "first_run_hint": "Python ortamı hazırlanırken ilk çalıştırma birkaç dakika sürebilir.",
     "port_in_use_short": "{{port}} bağlantı noktası kullanımda",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "Bu, düzenlenemeyen yüklü uygulama. Bunun yerine bir git clone seçin.",
       "not_git": "Bu klasör bir git clone değil. ZIP indirmesi çalışmaz; git clone kullanın.",
-      "not_voicestudio": "Bu klasörde ElevenVoice kopyası bulunamadı.",
+      "not_elevenvoice": "Bu klasörde ElevenVoice kopyası bulunamadı.",
       "read_only": "ElevenVoice bu klasöre yazamıyor. Size ait bir klasör seçin."
     },
     "chooseFailed": "Bu klasör kullanılamadı. Tekrar deneyin veya başka bir klasör seçin.",
@@ -3311,10 +3311,10 @@
       "workflow": "n8n iş akışı",
       "dockerRunPowerShell": "Konteyneri çalıştır (Windows PowerShell)"
     },
-    "apiBearerHint": "Bu arka uç uzakta: kabuğunuzda OMNIVOICE_API_KEY değerini API anahtarına ayarlayın. Örnekler anahtarı oradan okur ve asla içermez.",
+    "apiBearerHint": "Bu arka uç uzakta: kabuğunuzda ELEVENVOICE_API_KEY değerini API anahtarına ayarlayın. Örnekler anahtarı oradan okur ve asla içermez.",
     "apiInsecureHint": "Uzak bir arka uçta API anahtarları https:// gerektirir. Anahtar kullanmadan önce bu arka ucu https arkasına alın (örneğin Tailscale Serve).",
     "dockerGpuHint": "GPU: NVIDIA için --gpus all gerekir (Compose'da bir GPU cihaz rezervasyonu). AMD, /dev/kfd ve /dev/dri ile :stable-rocm etiketini kullanır. Docker kurulum kılavuzuna bakın.",
-    "openaiAgentsHint": "Konuşmadan metne ve metinden konuşmaya için OpenAI Agents SDK ses hattını ElevenVoice'ya yönlendirin. ElevenVoice'yu açık tutun. Uzak bir arka uç için çalıştırmadan önce OMNIVOICE_API_KEY ayarlayın. AGENT_LLM_BASE_URL ve AGENT_LLM_MODEL değerlerini ajanınızın kullanacağı dil modeli sunucusuna ayarlayın.",
+    "openaiAgentsHint": "Konuşmadan metne ve metinden konuşmaya için OpenAI Agents SDK ses hattını ElevenVoice'ya yönlendirin. ElevenVoice'yu açık tutun. Uzak bir arka uç için çalıştırmadan önce ELEVENVOICE_API_KEY ayarlayın. AGENT_LLM_BASE_URL ve AGENT_LLM_MODEL değerlerini ajanınızın kullanacağı dil modeli sunucusuna ayarlayın.",
     "category": {
       "all": "Tümü",
       "comms": "Arama ve ses temsilcileri",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "Erişim PIN'i",
       "api_key_label": "API anahtarı (isteğe bağlı)",
-      "api_key_help": "Yalnızca sunucuda OMNIVOICE_API_KEY ayarlıysa gerekir. Anahtar bir oturumla değiştirilir ve asla saklanmaz.",
+      "api_key_help": "Yalnızca sunucuda ELEVENVOICE_API_KEY ayarlıysa gerekir. Anahtar bir oturumla değiştirilir ve asla saklanmaz.",
       "connect": "Bağlan",
       "connecting": "Bağlanıyor…",
       "connected_to": "{{host}} ile bağlantı kuruldu",
@@ -3789,9 +3789,9 @@
       "last_seen": "Son görülme {{time}}",
       "forget": "Unut",
       "error_unreachable": "{{host}} adresine ulaşılamıyor. ElevenVoice'nun çalıştığından, Ağ paylaşımının açık olduğundan ve bu telefonun aynı ağda ya da Tailscale'de olduğundan emin olun.",
-      "error_not_voicestudio": "{{host}} yanıt verdi ama bir ElevenVoice sunucusu değil. Adresi ve portu kontrol edin.",
+      "error_not_elevenvoice": "{{host}} yanıt verdi ama bir ElevenVoice sunucusu değil. Adresi ve portu kontrol edin.",
       "error_pin": "PIN reddedildi. Paylaşım her açıldığında yeni bir PIN üretir — QR kodunu yeniden tarayın.",
-      "error_api_key": "API anahtarı reddedildi. Sunucuda OMNIVOICE_API_KEY olarak ayarlanan anahtarı kontrol edin.",
+      "error_api_key": "API anahtarı reddedildi. Sunucuda ELEVENVOICE_API_KEY olarak ayarlanan anahtarı kontrol edin.",
       "error_session_expired": "Oturumunuzun süresi doldu. Yeniden bağlanmak için API anahtarını tekrar girin.",
       "error_insecure": "Düz http:// yalnızca yerel ağınızdaki veya Tailscale üzerindeki adreslere izin verilir. Diğer sunucular için https:// kullanın.",
       "error_invalid_url": "Bu bir sunucu adresine benzemiyor. Örnek: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "Sesin %{{percent}} kadarı patlıyor",
     "duration_ok": "Orijinal süreye sığıyor",
     "duration_issue": "{{track_seconds}} sn, orijinal {{source_seconds}} sn’den uzun"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

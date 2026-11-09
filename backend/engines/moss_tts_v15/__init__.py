@@ -47,7 +47,7 @@ from services.subprocess_backend import SubprocessBackend
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.moss_tts_v15")
+logger = logging.getLogger("elevenvoice.moss_tts_v15")
 
 #: 1 second of audio ≈ 12.5 codec tokens (MOSS-TTS-v1.5 model card). Used to
 #: translate OmniVoice's ``duration`` (seconds) into the model's ``tokens``
@@ -72,7 +72,7 @@ class MossTTSV15Backend(SubprocessBackend):
         uv venv && uv pip install -e ".[torch-runtime]"
         # non-CUDA host (CPU): install plain torch/transformers instead of +cu128
 
-    Set ``OMNIVOICE_MOSS_TTS_V15_DIR`` to the clone root. OmniVoice creates
+    Set ``ELEVENVOICE_MOSS_TTS_V15_DIR`` to the clone root. OmniVoice creates
     ``backend/engines/moss_tts_v15/.venv`` lazily on first launch if no venv
     exists yet (CUDA hosts only — the upstream ``torch-runtime`` extra is
     ``+cu128``); the user's existing ``${DIR}/.venv`` is preferred if
@@ -107,15 +107,15 @@ class MossTTSV15Backend(SubprocessBackend):
         )
         if not is_moss_tts_v15_installed():
             return False, (
-                "MOSS-TTS-v1.5 venv not found. Set OMNIVOICE_MOSS_TTS_V15_DIR "
+                "MOSS-TTS-v1.5 venv not found. Set ELEVENVOICE_MOSS_TTS_V15_DIR "
                 "to your MOSS-TTS clone (the directory containing pyproject.toml) "
-                "and restart VoiceStudio. Install the matching PyTorch runtime. See "
+                "and restart ElevenVoice. Install the matching PyTorch runtime. See "
                 "docs/engines/moss-tts-v15.md for the full install walk-through."
             )
         if not MOSS_TTS_V15_SIDECAR_SCRIPT.exists():
             return False, (
                 "MOSS-TTS-v1.5 sidecar script missing at "
-                f"{MOSS_TTS_V15_SIDECAR_SCRIPT} — reinstall VoiceStudio."
+                f"{MOSS_TTS_V15_SIDECAR_SCRIPT} — reinstall ElevenVoice."
             )
         return True, "ok (runtime-available accelerator or CPU; no MPS)"
 
@@ -133,9 +133,9 @@ class MossTTSV15Backend(SubprocessBackend):
     def recv_timeout_s(self) -> float:
         """Receive timeout in seconds for the MOSS-TTS-v1.5 sidecar process (#2103)."""
         # MOSS-TTS-v1.5 is an 8B model; synthesis legitimately outruns the
-        # 60s class default. OMNIVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S tunes it (#2103).
+        # 60s class default. ELEVENVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S tunes it (#2103).
         try:
-            v = float(os.environ.get("OMNIVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_MOSS_TTS_V15_RECV_TIMEOUT_S", "900"))
         except (ValueError, TypeError):
             return 900.0
         if not math.isfinite(v):

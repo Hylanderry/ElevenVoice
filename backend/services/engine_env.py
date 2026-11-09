@@ -19,14 +19,14 @@ import logging
 import os
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.engine_env")
+logger = logging.getLogger("elevenvoice.engine_env")
 
 _TORCH_COMPILE_KEY = "perf.torch_compile_disabled"
 
 # #278: explicit opt-in override — set to 1/true to attempt torch.compile even
 # when the GPU's compute capability is not in this PyTorch build's arch list
 # (e.g. a brand-new architecture running through PTX forward-compat).
-_FORCE_COMPILE_ENV = "OMNIVOICE_FORCE_TORCH_COMPILE"
+_FORCE_COMPILE_ENV = "ELEVENVOICE_FORCE_TORCH_COMPILE"
 
 _COMPILE_OPT_OUT_VARIABLES = (
     "TORCH_COMPILE_DISABLE",
@@ -84,18 +84,18 @@ def _force_compile_requested() -> bool:
 
 
 # ── FlashInfer opt-in (upstream k2-fsa port) ────────────────────────────────
-# Explicit power-user opt-in, CUDA-only: OMNIVOICE_FLASHINFER=1 patches the
+# Explicit power-user opt-in, CUDA-only: ELEVENVOICE_FLASHINFER=1 patches the
 # OmniVoice model with flashinfer packed attention (~2x per upstream's
 # benchmarks); =graph additionally captures CUDA graphs (best at batch=1).
 # Off by default — `flashinfer` is not a shipped dependency, and an
 # optimization must never be a point of failure. Session-sticky failure
 # latch mirrors torch.compile's (#278).
-_FLASHINFER_ENV = "OMNIVOICE_FLASHINFER"
+_FLASHINFER_ENV = "ELEVENVOICE_FLASHINFER"
 _flashinfer_runtime_failure: Optional[str] = None
 
 
 def flashinfer_mode() -> str:
-    """The user's ``OMNIVOICE_FLASHINFER`` request: 'off' | 'on' | 'graph'.
+    """The user's ``ELEVENVOICE_FLASHINFER`` request: 'off' | 'on' | 'graph'.
 
     Unknown values normalize to 'off' with a log line naming the env var, so
     a typo degrades to the default path instead of half-applying.
@@ -117,7 +117,7 @@ def flashinfer_mode() -> str:
 def should_flashinfer(device: str) -> str:
     """Resolve the FlashInfer request against this host: 'off' | 'on' | 'graph'.
 
-    Requires all of: the ``OMNIVOICE_FLASHINFER`` opt-in, device == "cuda"
+    Requires all of: the ``ELEVENVOICE_FLASHINFER`` opt-in, device == "cuda"
     (flashinfer is CUDA-only), the ``flashinfer`` package importable, and no
     earlier runtime failure this session. Every refusal is logged with the
     reason and the knob's name — the user asked for it, so silence would read
@@ -269,7 +269,7 @@ def should_torch_compile(device: str) -> bool:
       - the user has NOT set the ``perf.torch_compile_disabled`` escape hatch,
       - compile has NOT already failed at runtime in this process (#278),
       - the GPU's compute capability is in this torch build's arch list (#278)
-        — overridable via ``OMNIVOICE_FORCE_TORCH_COMPILE=1``.
+        — overridable via ``ELEVENVOICE_FORCE_TORCH_COMPILE=1``.
 
     Returns False (→ eager mode) on any of those, logging the reason at INFO.
     torch.compile is an optimization, never a requirement — generation must

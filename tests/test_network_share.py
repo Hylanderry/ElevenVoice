@@ -42,7 +42,7 @@ def test_mcp_lan_hosts_exist_only_while_pin_gated_sharing_is_enabled():
 
         ns._set_mcp_lan_hosts(app, [], enabled=False)
         # Entries supplied independently (for example through
-        # OMNIVOICE_MCP_ALLOWED_HOSTS) survive the sharing lifecycle.
+        # ELEVENVOICE_MCP_ALLOWED_HOSTS) survive the sharing lifecycle.
         assert security.allowed_hosts == ["localhost:*", "10.0.0.9:*"]
         assert security.allowed_origins == ["http://localhost:*", "http://10.0.0.9:*"]
     finally:
@@ -53,35 +53,35 @@ def test_mcp_lan_hosts_exist_only_while_pin_gated_sharing_is_enabled():
 # ── Configurable ports (issue: user-configurable network ports) ──────────────
 
 def test_backend_port_defaults_to_3900(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_PORT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PORT", raising=False)
     assert ns.backend_port() == 3900
 
 
 def test_backend_port_honors_env(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_PORT", "4000")
+    monkeypatch.setenv("ELEVENVOICE_PORT", "4000")
     assert ns.backend_port() == 4000
 
 
 def test_backend_port_bad_env_falls_back(monkeypatch):
     for value in ("", "not-a-number"):
-        monkeypatch.setenv("OMNIVOICE_PORT", value)
+        monkeypatch.setenv("ELEVENVOICE_PORT", value)
         assert ns.backend_port() == 3900
 
 
 def test_share_port_base_defaults_to_backend_plus_one(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_SHARE_PORT", raising=False)
-    monkeypatch.setenv("OMNIVOICE_PORT", "4000")
+    monkeypatch.delenv("ELEVENVOICE_SHARE_PORT", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_PORT", "4000")
     assert ns.share_port_base() == 4001
 
 
 def test_share_port_base_honors_env(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_SHARE_PORT", "5500")
+    monkeypatch.setenv("ELEVENVOICE_SHARE_PORT", "5500")
     assert ns.share_port_base() == 5500
 
 
 def test_share_port_base_bad_env_falls_back(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_PORT", raising=False)
-    monkeypatch.setenv("OMNIVOICE_SHARE_PORT", "garbage")
+    monkeypatch.delenv("ELEVENVOICE_PORT", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SHARE_PORT", "garbage")
     assert ns.share_port_base() == 3901
 
 
@@ -110,8 +110,8 @@ def test_pin_only_remote_discovery_never_returns_share_pin(monkeypatch):
     # ``ns`` test helper may no longer be the endpoint's dependency.
     live_network_share = importlib.import_module("api.routers.system").network_share
 
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     monkeypatch.setattr(live_network_share._runtime, "state",
                         live_network_share.ShareState(True, 3901, "123456", ["192.168.1.10"]))
     # Keep the consumption middleware inert: this endpoint is testing the
@@ -152,44 +152,44 @@ def test_system_info_has_port_fields():
 
 def test_set_env_share_port_rejects_non_numeric():
     c = _loopback_client()
-    r = c.post("/system/set-env", json={"key": "OMNIVOICE_SHARE_PORT", "value": "abc"})
+    r = c.post("/system/set-env", json={"key": "ELEVENVOICE_SHARE_PORT", "value": "abc"})
     assert r.status_code == 400
 
 
 def test_set_env_share_port_rejects_out_of_range():
     c = _loopback_client()
-    r = c.post("/system/set-env", json={"key": "OMNIVOICE_SHARE_PORT", "value": "80"})
+    r = c.post("/system/set-env", json={"key": "ELEVENVOICE_SHARE_PORT", "value": "80"})
     assert r.status_code == 400
-    r = c.post("/system/set-env", json={"key": "OMNIVOICE_SHARE_PORT", "value": "70000"})
+    r = c.post("/system/set-env", json={"key": "ELEVENVOICE_SHARE_PORT", "value": "70000"})
     assert r.status_code == 400
 
 
 def test_set_env_share_port_accepts_valid(monkeypatch):
     c = _loopback_client()
-    r = c.post("/system/set-env", json={"key": "OMNIVOICE_SHARE_PORT", "value": "5050"})
+    r = c.post("/system/set-env", json={"key": "ELEVENVOICE_SHARE_PORT", "value": "5050"})
     assert r.status_code == 200
     assert r.json()["set"] is True
     # Clean up the process-level env mutation so other tests aren't affected.
     import os
-    os.environ.pop("OMNIVOICE_SHARE_PORT", None)
+    os.environ.pop("ELEVENVOICE_SHARE_PORT", None)
 
 
 def test_system_info_reports_no_ui_port_for_the_packaged_desktop(monkeypatch):
-    """The packaged app serves app://voicestudio; there is no UI port to show."""
-    for name in ("OMNIVOICE_UI_PORT", "VOICESTUDIO_UI_PORT"):
+    """The packaged app serves app://elevenvoice; there is no UI port to show."""
+    for name in ("ELEVENVOICE_UI_PORT", "ELEVENVOICE_UI_PORT"):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     assert _loopback_client().get("/system/info").json()["ui_port"] is None
 
     # The Electron dev shell passes its renderer port explicitly.
-    monkeypatch.setenv("OMNIVOICE_UI_PORT", "3902")
+    monkeypatch.setenv("ELEVENVOICE_UI_PORT", "3902")
     assert _loopback_client().get("/system/info").json()["ui_port"] == 3902
 
 
 def test_system_info_reports_the_ui_port_alias(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_UI_PORT", raising=False)
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_CONTAINED", raising=False)
-    monkeypatch.setenv("VOICESTUDIO_UI_PORT", "4100")
+    monkeypatch.delenv("ELEVENVOICE_UI_PORT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_CONTAINED", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_UI_PORT", "4100")
     assert _loopback_client().get("/system/info").json()["ui_port"] == 4100
 
 
@@ -197,7 +197,7 @@ def test_ports_bound_by_other_processes_are_not_persisted():
     """The desktop shell, dev script and Docker bind these from their own
     environment; a saved value only made the backend misreport its ports."""
     c = _loopback_client()
-    for key in ("OMNIVOICE_PORT", "OMNIVOICE_UI_PORT"):
+    for key in ("ELEVENVOICE_PORT", "ELEVENVOICE_UI_PORT"):
         r = c.post("/system/set-env", json={"key": key, "value": "4000"})
         assert r.status_code == 400
 
@@ -205,17 +205,17 @@ def test_ports_bound_by_other_processes_are_not_persisted():
 def test_stale_saved_bound_ports_are_not_restored(monkeypatch):
     from core import prefs
 
-    for key in ("OMNIVOICE_PORT", "OMNIVOICE_UI_PORT", "OMNIVOICE_SHARE_PORT"):
+    for key in ("ELEVENVOICE_PORT", "ELEVENVOICE_UI_PORT", "ELEVENVOICE_SHARE_PORT"):
         monkeypatch.delenv(key, raising=False)
     prefs.restore_env({
-        "env.OMNIVOICE_PORT": "4000",
-        "env.OMNIVOICE_UI_PORT": "4100",
-        "env.OMNIVOICE_SHARE_PORT": "5050",
+        "env.ELEVENVOICE_PORT": "4000",
+        "env.ELEVENVOICE_UI_PORT": "4100",
+        "env.ELEVENVOICE_SHARE_PORT": "5050",
     })
     import os
     try:
-        assert "OMNIVOICE_PORT" not in os.environ
-        assert "OMNIVOICE_UI_PORT" not in os.environ
-        assert os.environ["OMNIVOICE_SHARE_PORT"] == "5050"
+        assert "ELEVENVOICE_PORT" not in os.environ
+        assert "ELEVENVOICE_UI_PORT" not in os.environ
+        assert os.environ["ELEVENVOICE_SHARE_PORT"] == "5050"
     finally:
-        os.environ.pop("OMNIVOICE_SHARE_PORT", None)
+        os.environ.pop("ELEVENVOICE_SHARE_PORT", None)

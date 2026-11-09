@@ -75,7 +75,7 @@ async function refreshLicenceQueries(client: ReturnType<typeof useQueryClient>, 
 }
 
 /**
- * Use-time licence acceptance. VoiceStudio is not the licensor and cannot grant
+ * Use-time licence acceptance. ElevenVoice is not the licensor and cannot grant
  * model access, so the user confirms, separately for every model, that they hold
  * the rights its licence needs. Each acceptance records the exact terms
  * fingerprint the user was shown, with a timestamp, on the backend.

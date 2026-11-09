@@ -49,7 +49,7 @@ from services.tts_backend import TTSBackend, TTSInputError
 if TYPE_CHECKING:
     import torch
 
-logger = logging.getLogger("omnivoice.audiocpp")
+logger = logging.getLogger("elevenvoice.audiocpp")
 
 #: Engine id in the TTS registry.
 ENGINE_ID = "audiocpp"

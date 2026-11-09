@@ -21,12 +21,12 @@ import os
 from typing import Optional
 from core.logging_utils import log_safe
 
-logger = logging.getLogger("omnivoice.memory_budget")
+logger = logging.getLogger("elevenvoice.memory_budget")
 
 # Below this much free RAM, a heavy model load is at real risk of tipping the
 # machine into the OOM-kill territory behind the 16 GB-Mac "Can't reach the
 # backend" reports. Tunable for smaller/larger boxes.
-_LOW_RAM_HEADROOM_GB = float(os.environ.get("OMNIVOICE_LOW_MEMORY_HEADROOM_GB", "2.0"))
+_LOW_RAM_HEADROOM_GB = float(os.environ.get("ELEVENVOICE_LOW_MEMORY_HEADROOM_GB", "2.0"))
 
 
 def available_memory() -> dict:

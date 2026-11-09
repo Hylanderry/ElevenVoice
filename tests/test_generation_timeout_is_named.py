@@ -31,8 +31,8 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -110,7 +110,7 @@ def test_an_ordinary_failure_is_not_a_timeout(gen):
 
 def test_a_config_failure_is_not_a_timeout(gen):
     assert gen._is_timeout_failure(
-        RuntimeError("OMNIVOICE_SHERPA_MODEL not set. Point it to the model dir")
+        RuntimeError("ELEVENVOICE_SHERPA_MODEL not set. Point it to the model dir")
     ) is False
 
 
@@ -150,7 +150,7 @@ def test_the_message_explains_the_first_run_download_case(gen):
 def test_the_message_names_the_override(gen):
     """Someone on slow CPU-only hardware needs a way through, not just an
     explanation."""
-    assert "OMNIVOICE_GENERATE_TIMEOUT_S" in _reraise(gen, TimeoutError())
+    assert "ELEVENVOICE_GENERATE_TIMEOUT_S" in _reraise(gen, TimeoutError())
 
 
 def test_an_empty_timeout_message_does_not_end_the_sentence_in_a_colon(gen):

@@ -23,8 +23,8 @@ def local_inventory(monkeypatch):
     from core import prefs
     from services import tts_backend, engine_routing, sherpa_dictation, translation_engines, diarization_runtime
 
-    for key in ("OMNIVOICE_TTS_BACKEND", "OMNIVOICE_MODEL", "OMNIVOICE_KITTENTTS_MODEL",
-                "OMNIVOICE_ASR_BACKEND", "OMNIVOICE_SHERPA_ASR_MODEL", "OMNIVOICE_DIARIZATION_BACKEND"):
+    for key in ("ELEVENVOICE_TTS_BACKEND", "ELEVENVOICE_MODEL", "ELEVENVOICE_KITTENTTS_MODEL",
+                "ELEVENVOICE_ASR_BACKEND", "ELEVENVOICE_SHERPA_ASR_MODEL", "ELEVENVOICE_DIARIZATION_BACKEND"):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(prefs, "get", lambda key, default=None: default)
     monkeypatch.setattr(prefs, "is_env_shadowed", lambda key: False)
@@ -104,7 +104,7 @@ def test_low_does_not_remove_voice_cloning(local_inventory):
 
 
 def test_env_pinned_tts_is_preserved(local_inventory, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "kittentts")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "kittentts")
     entry = inventory.profile_plan("max", {}, local_inventory)["families"]["tts"]
     assert entry["selection"]["engine"] == "kittentts"
     assert entry["reason"] == "kept"
@@ -231,7 +231,7 @@ def test_family_preset_does_not_pin_faster_whisper_over_mlx(monkeypatch):
     from core import prefs
     from services import asr_backend
 
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr(prefs, "is_env_shadowed", lambda key: False)
     monkeypatch.setattr(asr_backend, "active_backend_id", lambda: "mlx-whisper")
     pinned = Mock()
@@ -262,7 +262,7 @@ def test_family_preset_on_mlx_keeps_to_mlx_models(monkeypatch):
     from core import prefs
     from services import asr_backend
 
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr(prefs, "is_env_shadowed", lambda key: False)
     monkeypatch.setattr(asr_backend, "active_backend_id", lambda: "mlx-whisper")
     pinned = Mock()

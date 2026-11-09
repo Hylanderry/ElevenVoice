@@ -70,9 +70,9 @@ describe('StorageTab', () => {
   it('factory reset clears every registered preference key, not just the zustand blob', async () => {
     mockFetch();
     // Preferences scattered across the app (the pre-registry bug left these behind):
-    localStorage.setItem('omnivoice.app', '{"state":{}}');
-    localStorage.setItem('omnivoice.navRailSide', 'right');
-    localStorage.setItem('omnivoice.settings.category', 'storage');
+    localStorage.setItem('elevenvoice.app', '{"state":{}}');
+    localStorage.setItem('elevenvoice.navRailSide', 'right');
+    localStorage.setItem('elevenvoice.settings.category', 'storage');
     localStorage.setItem('omni_capture_live_typing', '1');
     localStorage.setItem('ov_stories_global_speed', '1.4');
     localStorage.setItem('omni_ui', '{"uiScale":1.2}');
@@ -87,9 +87,9 @@ describe('StorageTab', () => {
     await waitFor(() => expect(screen.getByTestId('factory-reset-confirm')).toBeInTheDocument());
     fireEvent.click(screen.getByTestId('factory-reset-confirm'));
 
-    await waitFor(() => expect(localStorage.getItem('omnivoice.app')).toBeNull());
-    expect(localStorage.getItem('omnivoice.navRailSide')).toBeNull();
-    expect(localStorage.getItem('omnivoice.settings.category')).toBeNull();
+    await waitFor(() => expect(localStorage.getItem('elevenvoice.app')).toBeNull());
+    expect(localStorage.getItem('elevenvoice.navRailSide')).toBeNull();
+    expect(localStorage.getItem('elevenvoice.settings.category')).toBeNull();
     expect(localStorage.getItem('omni_capture_live_typing')).toBeNull();
     expect(localStorage.getItem('ov_stories_global_speed')).toBeNull();
     expect(localStorage.getItem('omni_ui')).toBeNull();

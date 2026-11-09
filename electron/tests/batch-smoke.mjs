@@ -4,7 +4,7 @@ const browser = await launchSmokeBrowser({ fallbackChannel: 'msedge' });
 try {
   const page = await browser.newPage();
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
   });
   let submits = 0;
   let cancels = 0;
@@ -91,7 +91,7 @@ try {
     deletes++;
     return route.fulfill({ json: { deleted: true } });
   });
-  await page.goto((process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902') + '/#/batch');
+  await page.goto((process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902') + '/#/batch');
   // #3628: exercise the actual browser interactions, including the scrollable
   // menu; a DOM-only test cannot detect a modal blocking pointer/focus events.
   const language = page.getByRole('button', { name: 'Language', exact: true });

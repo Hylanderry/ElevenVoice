@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { startCloudSyncRuntime } from './cloud-sync-runtime';
 
 const SHORTCUT = 'voicestudio.shortcut.dictation';
-const LOCALE = 'voicestudio.locale';
+const LOCALE = 'elevenvoice.locale';
 
 type Pull = { seq: number; values: Array<{ key: string; value: unknown; raw: boolean }> };
 function fakeApi(pulls: Pull[]) {

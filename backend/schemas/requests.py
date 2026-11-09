@@ -58,7 +58,7 @@ class FitOptions(BaseModel):
     video_slow_cap: Optional[float] = Field(default=None, ge=1, allow_inf_nan=False)       # default 2.0
     gap_guard_s: Optional[float] = Field(default=None, ge=0, allow_inf_nan=False)          # default 0.05
     # Floor for slowing a short line toward its slot; 1.0 turns the fill off.
-    # Default is the server's OMNIVOICE_UNDERRUN_MIN_RATE (0.85).
+    # Default is the server's ELEVENVOICE_UNDERRUN_MIN_RATE (0.85).
     min_audio_rate: Optional[float] = Field(default=None, ge=0.5, le=1.0, allow_inf_nan=False)
     allow_video_retime: Optional[bool] = None    # default True
 
@@ -295,7 +295,7 @@ class DubIngestUrlRequest(BaseModel):
     sub_langs: Optional[List[str]] = None
     # Explicit, per-import Netscape cookie export. This is never populated
     # automatically: browser cookie stores contain unrelated login secrets and
-    # VoiceStudio must not inspect them without a deliberate user action.
+    # ElevenVoice must not inspect them without a deliberate user action.
     cookie_file: Optional[str] = None
 
 class ProjectSaveRequest(BaseModel):

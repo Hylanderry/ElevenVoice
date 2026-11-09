@@ -1,4 +1,4 @@
-// Live smoke for VoiceStudio Cloud sign-in against the dev realm. Needs a built app
+// Live smoke for ElevenVoice Cloud sign-in against the dev realm. Needs a built app
 // (`bun run build`), a display (xvfb-run on Linux) and network access to dev-app.voicestudio.sh.
 // It stops at the sign-in page (Zitadel + idlogin): finishing sign-in needs a dev test account.
 import { _electron as electron } from "playwright";
@@ -39,15 +39,15 @@ const app = await electron.launch({
   executablePath: executable,
   args: [
     join(workspaceRoot, "electron/out/main/index.js"),
-    "--user-data-dir=" + mkdtempSync(join(tmpdir(), "voicestudio-account-")),
+    "--user-data-dir=" + mkdtempSync(join(tmpdir(), "elevenvoice-account-")),
   ],
   env: {
     ...launchEnvironment,
     ELECTRON_RENDERER_URL: "",
-    VOICESTUDIO_CLOUD_ENV: "dev",
-    VOICESTUDIO_ELECTRON_PROXY_PORT: "0",
-    VOICESTUDIO_SKIP_BACKEND: "1",
-    VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES: "1",
+    ELEVENVOICE_CLOUD_ENV: "dev",
+    ELEVENVOICE_ELECTRON_PROXY_PORT: "0",
+    ELEVENVOICE_SKIP_BACKEND: "1",
+    ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES: "1",
   },
 });
 
@@ -61,9 +61,9 @@ try {
 
   const page = await app.firstWindow();
   page.setDefaultTimeout(20000);
-  await page.waitForFunction(() => Boolean(window.voicestudio?.account));
+  await page.waitForFunction(() => Boolean(window.elevenvoice?.account));
   const account = (fn, arg) =>
-    page.evaluate(([f, a]) => window.voicestudio.account[f](a), [fn, arg]);
+    page.evaluate(([f, a]) => window.elevenvoice.account[f](a), [fn, arg]);
 
   // Off by default: nothing in the corner, sign-in refuses to start.
   let state = await account("get");
@@ -113,7 +113,7 @@ try {
   // Sign in: discovery against the dev Zitadel, then a PKCE authorize URL to a loopback redirect.
   await signIn.click();
   await page.waitForFunction(
-    async () => (await window.voicestudio.account.get()).signingIn,
+    async () => (await window.elevenvoice.account.get()).signingIn,
   );
   await assert.doesNotReject(async () => {
     for (let i = 0; i < 100 && !(await opened()).length; i++)

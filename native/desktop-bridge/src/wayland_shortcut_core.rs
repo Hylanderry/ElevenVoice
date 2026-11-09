@@ -123,7 +123,7 @@ struct DesktopIdentity {
 impl Default for DesktopIdentity {
     fn default() -> Self {
         Self {
-            desktop_id: "com.debpalash.omnivoice-studio",
+            desktop_id: "com.hylanderry.elevenvoice",
             executable: None,
         }
     }
@@ -208,7 +208,7 @@ fn desktop_exec_path() -> Result<std::path::PathBuf, String> {
     if let Some(path) = std::env::var_os("APPIMAGE").filter(|path| !path.is_empty()) {
         return Ok(path.into());
     }
-    std::env::current_exe().map_err(|error| format!("could not locate VoiceStudio: {error}"))
+    std::env::current_exe().map_err(|error| format!("could not locate ElevenVoice: {error}"))
 }
 
 fn desktop_exec_value(path: &std::path::Path) -> String {
@@ -248,7 +248,7 @@ fn ensure_desktop_identity(identity: &DesktopIdentity) -> Result<(), String> {
             .map_err(|error| format!("could not create applications directory: {error}"))?;
     }
     let entry = format!(
-        "[Desktop Entry]\nType=Application\nName=VoiceStudio\nExec={}\nTerminal=false\nNoDisplay=true\nStartupWMClass=VoiceStudio\nX-VoiceStudio-Generated=true\n",
+        "[Desktop Entry]\nType=Application\nName=ElevenVoice\nExec={}\nTerminal=false\nNoDisplay=true\nStartupWMClass=ElevenVoice\nX-ElevenVoice-Generated=true\n",
         desktop_exec_value(&identity.executable.clone().map(Ok).unwrap_or_else(desktop_exec_path)?)
     );
     std::fs::write(&path, entry)
@@ -558,7 +558,7 @@ fn bind(
     };
 
     let mut shortcut_info = VariantMap::new();
-    shortcut_info.insert("description".into(), variant_string("VoiceStudio"));
+    shortcut_info.insert("description".into(), variant_string("ElevenVoice"));
     if let Some(trigger) = portal_trigger(&accelerator) {
         shortcut_info.insert("preferred_trigger".into(), variant_string(&trigger));
     }
@@ -725,12 +725,12 @@ mod tests {
         // had been moved. GLib then resolves the entry to NULL and the portal
         // refuses the bind with "App info not found" — system-wide dictation
         // silently dead for the whole session.
-        let stale = "[Desktop Entry]\nType=Application\nExec=/gone/omnivoice-studio\n";
+        let stale = "[Desktop Entry]\nType=Application\nExec=/gone/elevenvoice\n";
         assert!(super::entry_needs_rewrite(stale, |_| false));
 
-        let healthy = "[Desktop Entry]\nType=Application\nExec=\"/opt/VoiceStudio.AppImage\"\n";
+        let healthy = "[Desktop Entry]\nType=Application\nExec=\"/opt/ElevenVoice.AppImage\"\n";
         assert!(!super::entry_needs_rewrite(healthy, |path| {
-            path == std::path::Path::new("/opt/VoiceStudio.AppImage")
+            path == std::path::Path::new("/opt/ElevenVoice.AppImage")
         }));
     }
 
@@ -739,15 +739,15 @@ mod tests {
         use super::entry_exec_target;
         // Current writer: quoted.
         assert_eq!(
-            entry_exec_target("[Desktop Entry]\nExec=\"/tmp/Voice Studio/app\"\n").as_deref(),
-            Some(std::path::Path::new("/tmp/Voice Studio/app"))
+            entry_exec_target("[Desktop Entry]\nExec=\"/tmp/ElevenVoice/app\"\n").as_deref(),
+            Some(std::path::Path::new("/tmp/ElevenVoice/app"))
         );
         // Pre-quoting entries from older builds still parse.
         assert_eq!(
-            entry_exec_target("[Desktop Entry]\nExec=/home/u/target/debug/omnivoice-studio\n")
+            entry_exec_target("[Desktop Entry]\nExec=/home/u/target/debug/elevenvoice\n")
                 .as_deref(),
             Some(std::path::Path::new(
-                "/home/u/target/debug/omnivoice-studio"
+                "/home/u/target/debug/elevenvoice"
             ))
         );
         // No Exec at all resolves to NULL in GLib — treat as needing rewrite.
@@ -768,8 +768,8 @@ mod tests {
     #[test]
     fn desktop_exec_paths_are_quoted_and_escaped() {
         assert_eq!(
-            desktop_exec_value(Path::new("/tmp/Voice Studio/$build")),
-            "\"/tmp/Voice Studio/\\$build\""
+            desktop_exec_value(Path::new("/tmp/ElevenVoice/$build")),
+            "\"/tmp/ElevenVoice/\\$build\""
         );
     }
 

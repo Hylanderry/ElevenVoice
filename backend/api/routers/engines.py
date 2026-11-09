@@ -11,8 +11,8 @@ render an engine picker + availability reasons.
                                           subclasses; ``is_available()`` for
                                           in-process backends (Plan 02-04)
 
-Environment variables (`OMNIVOICE_TTS_BACKEND`, `OMNIVOICE_ASR_BACKEND`,
-`OMNIVOICE_LLM_BACKEND`) still win over the UI choice so power-users can pin
+Environment variables (`ELEVENVOICE_TTS_BACKEND`, `ELEVENVOICE_ASR_BACKEND`,
+`ELEVENVOICE_LLM_BACKEND`) still win over the UI choice so power-users can pin
 a backend without Settings silently undoing it.
 """
 import asyncio
@@ -35,7 +35,7 @@ from api.schemas import EffectPresetsResponse
 from api.public_engine_metadata import public_backends, public_unavailability
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.engines_api")
+logger = logging.getLogger("elevenvoice.engines_api")
 
 _FAMILIES = {
     "tts": (tts_backend, "tts_backend"),
@@ -75,7 +75,7 @@ def _family_payload(family: str, module):
         elif active == "mlx-audio":
             from core import prefs
             cls = tts_backend.MLXAudioBackend
-            key = prefs.resolve("mlx_audio_model_id", env="OMNIVOICE_MLX_AUDIO_MODEL", default=cls.DEFAULT_MODEL_KEY)
+            key = prefs.resolve("mlx_audio_model_id", env="ELEVENVOICE_MLX_AUDIO_MODEL", default=cls.DEFAULT_MODEL_KEY)
             model = cls.CURATED_MODELS.get(key, key)
         else:
             instance = getattr(tts_backend, "_active_instance", None)
@@ -111,7 +111,7 @@ def _family_payload(family: str, module):
     return {
         "active": active,
         "active_model": model,
-        "env_override": bool(os.environ.get(f"OMNIVOICE_{family.upper()}_BACKEND")),
+        "env_override": bool(os.environ.get(f"ELEVENVOICE_{family.upper()}_BACKEND")),
         "backends": backends,
     }
 
@@ -266,7 +266,7 @@ def select_diarisation_engine(request: DiarisationSelection):
         model_manager.unload_diarization_pipeline()
     return {
         "active": selected_backend(),
-        "env_override": bool(os.environ.get("OMNIVOICE_DIARIZATION_BACKEND")),
+        "env_override": bool(os.environ.get("ELEVENVOICE_DIARIZATION_BACKEND")),
     }
 
 
@@ -568,7 +568,7 @@ def answer_omnivoice_gguf_gpu_offer(req: GGUFGpuOfferAnswer):
 # editable environment. An API key does not make that supply-chain path safe to
 # trigger remotely. The job runs fine in packaged builds: the venv lives under
 # the user data dir, not inside the signed app bundle, and uv resolves via
-# OMNIVOICE_BUNDLED_UV/PATH.
+# ELEVENVOICE_BUNDLED_UV/PATH.
 
 
 @router.post(
@@ -588,7 +588,7 @@ def install_sidecar_engine(engine_id: str):
     except sidecar_install.HostUnsupported as exc:
         # The engine has an installer, but not one that can work on this
         # machine. 409, not 404: the route is right, the host is the problem,
-        # and the message (a VoiceStudio-owned sentence) says what to do.
+        # and the message (a ElevenVoice-owned sentence) says what to do.
         raise HTTPException(status_code=409, detail=str(exc))
     except KeyError:
         raise HTTPException(
@@ -803,7 +803,7 @@ def engine_health(engine_id: str):
 #   * TTS family + available + in-process only. Subprocess engines keep their
 #     spawn-and-ping ``health_check`` (a real synth there is a sidecar
 #     cold-start — out of scope for a click-to-test affordance).
-#   * Bounded wall-clock timeout (``OMNIVOICE_SELFTEST_TIMEOUT_S``, default 90s):
+#   * Bounded wall-clock timeout (``ELEVENVOICE_SELFTEST_TIMEOUT_S``, default 90s):
 #     a runaway synth returns ``ok=False`` / ``timed_out=True`` instead of
 #     hanging the Settings panel. The orphaned worker is best-effort daemon.
 #   * A process-wide lock serialises self-tests so a click-storm can't stack
@@ -812,13 +812,13 @@ def engine_health(engine_id: str):
 
 # Deliberately short + ASCII so the synth stays CPU-cheap and the phrase never
 # trips the no-hardcoded-CJK guard.
-_SELFTEST_PHRASE = "VoiceStudio engine self test."
+_SELFTEST_PHRASE = "ElevenVoice engine self test."
 _SELFTEST_LOCK = threading.Lock()
 
 
 def _selftest_timeout_s() -> float:
     try:
-        return max(1.0, float(os.environ.get("OMNIVOICE_SELFTEST_TIMEOUT_S", "90")))
+        return max(1.0, float(os.environ.get("ELEVENVOICE_SELFTEST_TIMEOUT_S", "90")))
     except (TypeError, ValueError):
         return 90.0
 
@@ -1047,7 +1047,7 @@ def select_engine(req: SelectEngineRequest):
     return {
         "family": req.family,
         "active": module.active_backend_id(),
-        "env_override": bool(__import__("os").environ.get(f"OMNIVOICE_{req.family.upper()}_BACKEND")),
+        "env_override": bool(__import__("os").environ.get(f"ELEVENVOICE_{req.family.upper()}_BACKEND")),
         # Echo the routing verdict so the UI can warn on a cpu_fallback pick.
         "routing_status": entry.get("routing_status", "cpu_only"),
         "effective_device": entry.get("effective_device", "cpu"),

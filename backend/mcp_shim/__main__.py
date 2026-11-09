@@ -5,18 +5,18 @@ Copyright (c) voicebox contributors.
 
 Some MCP clients only speak stdio. They spawn this binary; we pipe each
 JSON-RPC message to ``http://127.0.0.1:<port>/mcp/`` (the FastMCP app mounted
-on the running VoiceStudio backend) and stream the server's response back.
+on the running ElevenVoice backend) and stream the server's response back.
 
 Environment variables:
-  OMNIVOICE_URL        full backend base URL (http or https, may carry a
-                       path prefix, e.g. https://gpu-box/voicestudio). Wins
-                       over OMNIVOICE_HOST / OMNIVOICE_PORT.
-  OMNIVOICE_PORT       backend port (default from config/app.json).
-  OMNIVOICE_HOST       host (default 127.0.0.1).
-  OMNIVOICE_API_KEY    sent as a Bearer token when set (remote backends that
+  ELEVENVOICE_URL        full backend base URL (http or https, may carry a
+                       path prefix, e.g. https://gpu-box/elevenvoice). Wins
+                       over ELEVENVOICE_HOST / ELEVENVOICE_PORT.
+  ELEVENVOICE_PORT       backend port (default from config/app.json).
+  ELEVENVOICE_HOST       host (default 127.0.0.1).
+  ELEVENVOICE_API_KEY    sent as a Bearer token when set (remote backends that
                        require an API key; loopback never needs one). Refused
                        for a remote plain-http URL: use https:// there.
-  OMNIVOICE_CLIENT_ID  forwarded as X-OmniVoice-Client-Id on every request
+  ELEVENVOICE_CLIENT_ID  forwarded as X-ElevenVoice-Client-Id on every request
                        (drives per-agent voice binding).
 
 Stdout is JSON-RPC only. Diagnostics go to stderr.
@@ -25,7 +25,7 @@ Exit 0 on clean EOF, 1 on transport error, 2 if the backend never answers.
 Usage in an MCP client config (stdio):
     command: python
     args: ["-m", "backend.mcp_shim"]
-    env: { OMNIVOICE_CLIENT_ID: "claude-code" }
+    env: { ELEVENVOICE_CLIENT_ID: "claude-code" }
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ try:
 except ModuleNotFoundError:  # ``python -m backend.mcp_shim`` from the repo root
     from backend.core.app_config import DEFAULT_BACKEND_PORT
 
-CLIENT_ID_HEADER = "X-OmniVoice-Client-Id"
+CLIENT_ID_HEADER = "X-ElevenVoice-Client-Id"
 SESSION_HEADER = "mcp-session-id"
 HEALTH_TIMEOUT_S = 30.0
 DEFAULT_PORT = DEFAULT_BACKEND_PORT
@@ -56,10 +56,10 @@ def _err(msg: str) -> None:
 
 
 def _base_url() -> tuple[str, str]:
-    base = os.environ.get("OMNIVOICE_URL", "").strip().rstrip("/")
+    base = os.environ.get("ELEVENVOICE_URL", "").strip().rstrip("/")
     if not base:
-        host = os.environ.get("OMNIVOICE_HOST", "127.0.0.1")
-        port = int(os.environ.get("OMNIVOICE_PORT", str(DEFAULT_PORT)))
+        host = os.environ.get("ELEVENVOICE_HOST", "127.0.0.1")
+        port = int(os.environ.get("ELEVENVOICE_PORT", str(DEFAULT_PORT)))
         base = f"http://{host}:{port}"
     return f"{base}/mcp/", f"{base}/health"
 
@@ -143,7 +143,7 @@ async def _handle_request(
             _write_stdout({
                 "jsonrpc": "2.0",
                 "id": message.get("id"),
-                "error": {"code": -32000, "message": f"VoiceStudio MCP proxy got HTTP {response.status_code}"},
+                "error": {"code": -32000, "message": f"ElevenVoice MCP proxy got HTTP {response.status_code}"},
             })
             return
 
@@ -169,13 +169,13 @@ async def _handle_request(
 async def _run() -> int:
     url, health_url = _base_url()
     forward_headers: dict[str, str] = {}
-    client_id = os.environ.get("OMNIVOICE_CLIENT_ID")
+    client_id = os.environ.get("ELEVENVOICE_CLIENT_ID")
     if client_id:
         forward_headers[CLIENT_ID_HEADER] = client_id
-    api_key = os.environ.get("OMNIVOICE_API_KEY", "").strip()
+    api_key = os.environ.get("ELEVENVOICE_API_KEY", "").strip()
     if api_key:
         if not _credentials_allowed(url):
-            _err("remote VoiceStudio API keys require https:// (set OMNIVOICE_URL)")
+            _err("remote ElevenVoice API keys require https:// (set ELEVENVOICE_URL)")
             return 1
         forward_headers["Authorization"] = f"Bearer {api_key}"
 
@@ -183,7 +183,7 @@ async def _run() -> int:
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(300.0)) as client:
         if not await _wait_for_backend(client, health_url, forward_headers):
-            _err(f"timed out waiting for VoiceStudio at {health_url} — is the app running?")
+            _err(f"timed out waiting for ElevenVoice at {health_url} — is the app running?")
             return 2
         try:
             while True:

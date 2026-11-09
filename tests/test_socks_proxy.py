@@ -27,8 +27,8 @@ from pathlib import Path
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -215,7 +215,7 @@ def test_generate_500_detail_carries_socks_hint(client, monkeypatch):
     detail = r.json()["detail"]
     assert _SOCKS_MSG not in detail
     assert detail.startswith(
-        "VoiceStudio hit an internal error; check the backend log for details."
+        "ElevenVoice hit an internal error; check the backend log for details."
     )
     assert "unset ALL_PROXY/HTTPS_PROXY" in detail
     assert r.json()["docs_topic"] == "SOCKS_PROXY_SUPPORT_MISSING"

@@ -16,7 +16,7 @@ describe('commandMatches', () => {
   it('finds pages by short names and English aliases, not only the full label', () => {
     expect(commandMatches(item('Voice cloning', ['Clone', 'clone'], 'clone'), 'clone')).toBe(true);
     expect(commandMatches(item('Models', ['models'], 'models'), 'models')).toBe(true);
-    expect(commandMatches(item('VoiceStudio Pro', ['pro'], 'pro'), 'pro')).toBe(true);
+    expect(commandMatches(item('ElevenVoice Pro', ['pro'], 'pro'), 'pro')).toBe(true);
     expect(commandMatches(item('Switch to dark theme', ['dark', 'light'], 'theme'), 'dark')).toBe(
       true,
     );

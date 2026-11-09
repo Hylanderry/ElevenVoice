@@ -100,7 +100,7 @@ beforeEach(() => {
   if (process.platform === 'darwin') vi.spyOn(process, 'arch', 'get').mockReturnValue('arm64');
   // The baseline fixtures model an NVIDIA host (the lock's default wheels) whatever
   // the machine running the tests has; CPU/ARM hosts are pinned explicitly below.
-  vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cuda');
+  vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cuda');
 });
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -159,16 +159,16 @@ describe('packaged runtime setup', () => {
     async (platform) => {
       forcePlatform(platform);
       vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-      vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cpu');
+      vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cpu');
       const { bundle, project } = await fixture();
       const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
       const run = vi.fn(async (_command: string, args: string[]) => {
         if (args[0] === 'sync') await interpreter(project);
-        if (args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
+        if (args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
           if (args[1].includes('import torch')) {
             throw new Error('Runtime setup exited with code 3221225477');
           }
-          return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
+          return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
         }
         return undefined;
       });
@@ -189,18 +189,18 @@ describe('packaged runtime setup', () => {
   it('names the module whose native import crashed the final verification (#3293)', async () => {
     forcePlatform('win32');
     vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cpu');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cpu');
     const { bundle, project } = await fixture();
     const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
     const run = vi.fn(async (_command: string, args: string[]) => {
       if (args[0] === 'sync') await interpreter(project);
-      if (args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
-        return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
+      if (args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
+        return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
       }
       if (args[1] === RUNTIME_IMPORT_PROBE) {
         throw Object.assign(new Error('Runtime setup exited with code 3221225477'), {
           code: 3221225477,
-          stdout: 'VOICESTUDIO_IMPORT=fastapi\nVOICESTUDIO_IMPORT=faster_whisper\n',
+          stdout: 'ELEVENVOICE_IMPORT=fastapi\nELEVENVOICE_IMPORT=faster_whisper\n',
         });
       }
       return undefined;
@@ -220,15 +220,15 @@ describe('packaged runtime setup', () => {
     async (_name, printed) => {
       forcePlatform('win32');
       vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-      vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cuda');
+      vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cuda');
       const { bundle, project } = await fixture();
       const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
       const run = vi.fn(async (_command: string, args: string[]) => {
         if (args[0] === 'sync') await interpreter(project);
-        if (args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
+        if (args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
           throw Object.assign(new Error('Runtime setup exited with code 3221225477'), {
             stdout: printed
-              ? `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`
+              ? `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`
               : '',
           });
         }
@@ -469,8 +469,8 @@ describe('packaged runtime setup', () => {
   it('reinstalls the pinned ROCm stack only after an explicit opt-in', async () => {
     forcePlatform('linux');
     const { bundle, project } = await fixture();
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', ' ROCm ');
-    vi.stubEnv('OMNIVOICE_TORCH_INDEX', 'https://mirror.invalid/rocm');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', ' ROCm ');
+    vi.stubEnv('ELEVENVOICE_TORCH_INDEX', 'https://mirror.invalid/rocm');
     const run = vi.fn(
       async (_command: string, _args: string[], _cwd: string, _env?: NodeJS.ProcessEnv) => {
         await interpreter(project);
@@ -492,7 +492,7 @@ describe('packaged runtime setup', () => {
     async (existing) => {
       forcePlatform('linux');
       vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-      vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
+      vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'rocm');
       const { bundle, project } = await fixture();
       const sitePackages = join(project, '.venv', 'lib', 'python3.11', 'site-packages');
       const library = join(sitePackages, 'ctranslate2.libs', 'libctranslate2-d3638643.so.4.4.0');
@@ -517,9 +517,9 @@ describe('packaged runtime setup', () => {
             throw new Error('No solution found: only pillow<=12.3.0 is available');
           }
         }
-        if (args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
+        if (args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
           expect(args[1]).not.toContain('import torch');
-          return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'hip', sitePackages })}\n`;
+          return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'hip', sitePackages })}\n`;
         }
         // The torch-only native probe never imports faster_whisper/CTranslate2.
         if (args[1] === RUNTIME_IMPORT_PROBE) {
@@ -552,8 +552,8 @@ describe('packaged runtime setup', () => {
   it('refuses to mark a non-ROCm torch ready after a ROCm install', async () => {
     forcePlatform('linux');
     const { bundle, project } = await fixture();
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
-    vi.stubEnv('OMNIVOICE_TORCH_INDEX', 'https://mirror.invalid/simple');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'rocm');
+    vi.stubEnv('ELEVENVOICE_TORCH_INDEX', 'https://mirror.invalid/simple');
     const run = vi.fn(
       async (_command: string, args: string[], _cwd: string, _env?: NodeJS.ProcessEnv) => {
         await interpreter(project);
@@ -592,7 +592,7 @@ describe('packaged runtime setup', () => {
     forcePlatform('darwin');
     vi.spyOn(process, 'arch', 'get').mockReturnValue('arm64');
     const { bundle, project } = await fixture();
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'rocm');
     expect(rocmTorchOptIn('win32')).toBe(true);
     expect(rocmTorchOptIn('darwin')).toBe(false);
     expect(rocmTorchOptIn('linux')).toBe(true);
@@ -622,7 +622,7 @@ describe('packaged runtime setup', () => {
     expect(await runtimeReady(bundle, project)).toBe(true);
     expect(await runtimeCompatible(bundle, project)).toBe(true);
 
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'rocm');
     expect(await runtimeReady(bundle, project)).toBe(false);
     expect(await runtimeCompatible(bundle, project)).toBe(false);
   });
@@ -819,13 +819,13 @@ describe('packaged runtime setup', () => {
   it('keeps an installed CPU torch through a re-run instead of uninstalling it (#3475)', async () => {
     forcePlatform('win32');
     vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cpu');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cpu');
     const { bundle, project } = await fixture();
     const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
     const run = vi.fn(async (_command: string, args: string[]) => {
       if (args[0] === 'sync') await interpreter(project);
-      if (args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
-        return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
+      if (args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
+        return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'none', sitePackages })}\n`;
       }
       return undefined;
     });
@@ -922,7 +922,7 @@ describe('packaged runtime setup', () => {
   it('does not copy the web UI into the runtime project', async () => {
     const { bundle, project } = await fixture();
     await stageRuntimeSources(bundle, project);
-    // The backend serves the packaged build in place (OMNIVOICE_FRONTEND_DIST);
+    // The backend serves the packaged build in place (ELEVENVOICE_FRONTEND_DIST);
     // a staged copy would only ever be a stale second source of truth (#2599).
     expect(existsSync(join(project, 'frontend'))).toBe(false);
     expect(existsSync(join(project, 'backend', 'main.py'))).toBe(true);
@@ -1132,8 +1132,8 @@ describe('packaged runtime setup', () => {
       const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
       const run = vi.fn(async (command: string, args: string[]) => {
         if (args[0] === 'sync') await interpreter(project);
-        if (command === runtimePython(project) && args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
-          return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'cuda', sitePackages })}\n`;
+        if (command === runtimePython(project) && args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
+          return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'cuda', sitePackages })}\n`;
         }
         if (args[0] === 'pip') {
           const libDir = join(
@@ -1182,8 +1182,8 @@ describe('packaged runtime setup', () => {
       const sitePackages = join(project, '.venv', 'Lib', 'site-packages');
       const run = vi.fn(async (command: string, args: string[]) => {
         if (args[0] === 'sync') await interpreter(project);
-        if (command === runtimePython(project) && args[1]?.includes('VOICESTUDIO_CUDNN8_PROBE=')) {
-          return `VOICESTUDIO_CUDNN8_PROBE=${JSON.stringify({ device: 'cuda', sitePackages })}\n`;
+        if (command === runtimePython(project) && args[1]?.includes('ELEVENVOICE_CUDNN8_PROBE=')) {
+          return `ELEVENVOICE_CUDNN8_PROBE=${JSON.stringify({ device: 'cuda', sitePackages })}\n`;
         }
         return undefined;
       });
@@ -1292,27 +1292,27 @@ it('hands explicit download proxies and loopback bypasses to uv', async () => {
 describe('import verification names the module that crashed (#3293)', () => {
   it('announces each runtime module before importing it', () => {
     expect(RUNTIME_IMPORT_PROBE.split('\n')).toEqual([
-      "print('VOICESTUDIO_IMPORT=fastapi', flush=True)",
+      "print('ELEVENVOICE_IMPORT=fastapi', flush=True)",
       'import fastapi',
-      "print('VOICESTUDIO_IMPORT=uvicorn', flush=True)",
+      "print('ELEVENVOICE_IMPORT=uvicorn', flush=True)",
       'import uvicorn',
-      "print('VOICESTUDIO_IMPORT=omnivoice', flush=True)",
+      "print('ELEVENVOICE_IMPORT=omnivoice', flush=True)",
       'import omnivoice',
-      "print('VOICESTUDIO_IMPORT=faster_whisper', flush=True)",
+      "print('ELEVENVOICE_IMPORT=faster_whisper', flush=True)",
       'import faster_whisper',
-      "print('VOICESTUDIO_IMPORT=sentencepiece', flush=True)",
+      "print('ELEVENVOICE_IMPORT=sentencepiece', flush=True)",
       'import sentencepiece',
-      "print('VOICESTUDIO_IMPORT=torch', flush=True)",
+      "print('ELEVENVOICE_IMPORT=torch', flush=True)",
       'import torch',
-      "print('VOICESTUDIO_IMPORT=torchaudio', flush=True)",
+      "print('ELEVENVOICE_IMPORT=torchaudio', flush=True)",
       'import torchaudio',
-      "print('VOICESTUDIO_IMPORT=torchvision', flush=True)",
+      "print('ELEVENVOICE_IMPORT=torchvision', flush=True)",
       'import torchvision',
     ]);
   });
 
   it('reads the last announced module from partial output', () => {
-    expect(lastImportAttempted('VOICESTUDIO_IMPORT=fastapi\nVOICESTUDIO_IMPORT=torch\n')).toBe(
+    expect(lastImportAttempted('ELEVENVOICE_IMPORT=fastapi\nELEVENVOICE_IMPORT=torch\n')).toBe(
       'torch',
     );
     expect(lastImportAttempted('no markers here')).toBeNull();
@@ -1629,8 +1629,8 @@ describe('multi-connection download of large locked wheels (#3411)', () => {
     expect(await runtimeReady(bundle, project)).toBe(true);
   });
 
-  it('can be turned off with OMNIVOICE_SETUP_CONNECTIONS=1', async () => {
-    vi.stubEnv('OMNIVOICE_SETUP_CONNECTIONS', '1');
+  it('can be turned off with ELEVENVOICE_SETUP_CONNECTIONS=1', async () => {
+    vi.stubEnv('ELEVENVOICE_SETUP_CONNECTIONS', '1');
     const { seen, planning } = await install();
     expect(planning).toEqual([]);
     expect(seen).toEqual([LOCK]);
@@ -1641,7 +1641,7 @@ describe('outdated Visual C++ runtime behind a native import crash (#3293)', () 
   const crash = () =>
     Object.assign(new Error('Runtime setup exited with code 3221225477'), {
       code: 3221225477,
-      stdout: 'VOICESTUDIO_IMPORT=fastapi\nVOICESTUDIO_IMPORT=sentencepiece\n',
+      stdout: 'ELEVENVOICE_IMPORT=fastapi\nELEVENVOICE_IMPORT=sentencepiece\n',
     });
   const diagnosis = (version: string) =>
     `${NATIVE_DIAGNOSTIC_PREFIX}${JSON.stringify({

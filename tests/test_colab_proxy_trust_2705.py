@@ -19,7 +19,7 @@ from starlette.testclient import TestClient
 
 from core.browser_guard import BrowserGuardMiddleware
 
-NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks/OmniVoice_Studio_Colab.ipynb"
+NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks/ElevenVoice_Colab.ipynb"
 PROXY = "https://8ryeuvc2w3-496ff2e9c6d22116-3900-colab.googleusercontent.com"
 PROXY_HOST = PROXY.removeprefix("https://")
 
@@ -46,18 +46,18 @@ def proxy_trust_env():
 def test_trusts_exactly_the_session_proxy_origin(proxy_trust_env):
     env = proxy_trust_env(PROXY + "/?authuser=0", {})
     assert env == {
-        "OMNIVOICE_ALLOWED_ORIGINS": PROXY,
-        "OMNIVOICE_ALLOWED_HOSTS": PROXY_HOST,
+        "ELEVENVOICE_ALLOWED_ORIGINS": PROXY,
+        "ELEVENVOICE_ALLOWED_HOSTS": PROXY_HOST,
     }
 
 
 def test_existing_allow_lists_are_kept(proxy_trust_env):
     env = proxy_trust_env(PROXY, {
-        "OMNIVOICE_ALLOWED_ORIGINS": "http://localhost:3901",
-        "OMNIVOICE_ALLOWED_HOSTS": f"studio.example.com,{PROXY_HOST}",
+        "ELEVENVOICE_ALLOWED_ORIGINS": "http://localhost:3901",
+        "ELEVENVOICE_ALLOWED_HOSTS": f"studio.example.com,{PROXY_HOST}",
     })
-    assert env["OMNIVOICE_ALLOWED_ORIGINS"] == f"http://localhost:3901,{PROXY}"
-    assert env["OMNIVOICE_ALLOWED_HOSTS"] == f"studio.example.com,{PROXY_HOST}"
+    assert env["ELEVENVOICE_ALLOWED_ORIGINS"] == f"http://localhost:3901,{PROXY}"
+    assert env["ELEVENVOICE_ALLOWED_HOSTS"] == f"studio.example.com,{PROXY_HOST}"
 
 
 @pytest.mark.parametrize("bad", [
@@ -77,7 +77,7 @@ def test_launch_cell_applies_the_trust_before_starting_uvicorn():
     trust = source.index("env.update(colab_proxy_env(PORT, env))")
     assert trust < source.index("subprocess.Popen(")
     # A Drive data dir set per the troubleshooting cell is not overwritten.
-    assert 'env.setdefault("OMNIVOICE_DATA_DIR", "/content/omnivoice_data")' in source
+    assert 'env.setdefault("ELEVENVOICE_DATA_DIR", "/content/elevenvoice_data")' in source
 
 
 # ── The guard itself, in both proxy topologies ──────────────────────────────
@@ -94,8 +94,8 @@ def _client(host: str) -> TestClient:
 
 @pytest.fixture
 def clean_env(monkeypatch):
-    for name in ("OMNIVOICE_ALLOWED_ORIGINS", "OMNIVOICE_ALLOWED_HOSTS",
-                 "OMNIVOICE_API_KEY", "OMNIVOICE_PUBLIC_API_BASE"):
+    for name in ("ELEVENVOICE_ALLOWED_ORIGINS", "ELEVENVOICE_ALLOWED_HOSTS",
+                 "ELEVENVOICE_API_KEY", "ELEVENVOICE_PUBLIC_API_BASE"):
         monkeypatch.delenv(name, raising=False)
     return monkeypatch
 

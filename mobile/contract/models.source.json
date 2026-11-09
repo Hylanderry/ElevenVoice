@@ -484,7 +484,7 @@
       "id": "omnivoice-q4-k-m",
       "name": "OmniVoice",
       "capability": "clone",
-      "runtime": "omnivoice.cpp",
+      "runtime": "elevenvoice.cpp",
       "repo": "Serveurperso/OmniVoice-GGUF",
       "revision_policy": "desktop",
       "revision": "361609388ae572a820d085185bbbe2a2aac4b30e",

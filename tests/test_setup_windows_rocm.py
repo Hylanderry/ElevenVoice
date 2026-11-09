@@ -19,7 +19,7 @@ def load_setup():
 def test_direct_windows_opt_in_uses_shared_installer_before_torch(monkeypatch):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", " ROCm ")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", " ROCm ")
     monkeypatch.setattr(setup, "_ensure_vcredist_windows", Mock())
     native_probe = Mock(side_effect=AssertionError("native import before overlay"))
     monkeypatch.setattr(setup, "_installed_torch_is_rocm", native_probe)
@@ -36,7 +36,7 @@ def test_direct_windows_opt_in_uses_shared_installer_before_torch(monkeypatch):
 def test_direct_windows_opt_in_failure_is_fatal(monkeypatch):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     monkeypatch.setattr(setup, "_ensure_vcredist_windows", Mock())
     monkeypatch.setattr(setup.subprocess, "check_call", Mock(side_effect=subprocess.CalledProcessError(1, "installer")))
     with pytest.raises(subprocess.CalledProcessError):
@@ -46,7 +46,7 @@ def test_direct_windows_opt_in_failure_is_fatal(monkeypatch):
 def test_windows_prerequisites_mode_never_imports_or_installs_torch(monkeypatch):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     prerequisite = Mock()
     monkeypatch.setattr(setup, "_ensure_vcredist_windows", prerequisite)
     monkeypatch.setattr(setup.subprocess, "check_call", Mock(side_effect=AssertionError("overlay too early")))

@@ -191,7 +191,7 @@ def _rebind_log_handlers(pairs: list[tuple[object, object]]) -> int:
 
 def install(*, limit_bytes: int = DEFAULT_LIMIT_BYTES) -> list[DecoupledStream]:
     """Wrap ``sys.stdout``/``sys.stderr`` when they are pipes. Idempotent."""
-    if os.environ.get("OMNIVOICE_BLOCKING_STDIO", "").strip().lower() in ("1", "true", "yes", "on"):
+    if os.environ.get("ELEVENVOICE_BLOCKING_STDIO", "").strip().lower() in ("1", "true", "yes", "on"):
         return []
     wrapped: list[DecoupledStream] = []
     swapped: list[tuple[object, object]] = []

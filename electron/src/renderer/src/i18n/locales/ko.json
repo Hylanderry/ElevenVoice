@@ -1267,7 +1267,7 @@
     "device_family_mps": "Apple GPU (MPS)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "연산 장치",
-    "compute_device_env_pinned": "OMNIVOICE_DEVICE 환경 변수로 고정됨",
+    "compute_device_env_pinned": "ELEVENVOICE_DEVICE 환경 변수로 고정됨",
     "perf_title": "성능",
     "generate_timeout_cpu_note": "생성이 CPU에서 실행될 때 사용됩니다. 여기에 저장하면 위의 가속 예산과 관계없이 이 값이 항상 CPU 생성을 관리합니다.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1372,8 +1372,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}}을(를) 찾았지만, 이 PyTorch 빌드({{torch}})에는 해당 컴퓨트 아키텍처용 커널이 없어 엔진이 CPU에서 실행됩니다.",
     "gpu_report_state_unknown": "GPU 상태를 확인할 수 없습니다.",
     "gpu_report_option_vulkan_engines": "자체 GPU 런타임이 있는 엔진을 사용하세요. audio.cpp는 Vulkan을 통해 AMD Radeon GPU에서 실행됩니다(설정 → 모델 → 런타임 설치).",
-    "gpu_report_option_rocm_windows_manual": "지원되는 Windows 11 x64 AMD 하드웨어에서 OMNIVOICE_TORCH_VARIANT=rocm으로 ElevenVoice의 ROCm 7.2.1 설치를 활성화하세요. 이미 설치했다면 설치를 다시 실행하고 AMD 드라이버 및 하드웨어 호환성 표를 확인하세요. 선택적 엔진에는 별도의 제한이 있습니다. Windows 설치 가이드를 참고하세요.",
-    "gpu_report_option_rocm_variant_linux": "OMNIVOICE_TORCH_VARIANT=rocm을 설정하고 설정을 다시 실행하면 ROCm 빌드 PyTorch가 설치됩니다.",
+    "gpu_report_option_rocm_windows_manual": "지원되는 Windows 11 x64 AMD 하드웨어에서 ELEVENVOICE_TORCH_VARIANT=rocm으로 ElevenVoice의 ROCm 7.2.1 설치를 활성화하세요. 이미 설치했다면 설치를 다시 실행하고 AMD 드라이버 및 하드웨어 호환성 표를 확인하세요. 선택적 엔진에는 별도의 제한이 있습니다. Windows 설치 가이드를 참고하세요.",
+    "gpu_report_option_rocm_variant_linux": "ELEVENVOICE_TORCH_VARIANT=rocm을 설정하고 설정을 다시 실행하면 ROCm 빌드 PyTorch가 설치됩니다.",
     "gpu_report_option_rocm_device_access": "amdgpu 드라이버가 로드되어 있고 사용자가 /dev/kfd를 열 수 있는지(render, video 그룹) 확인하세요.",
     "gpu_report_option_reinstall_cuda_torch": "런타임을 다시 설치해 CUDA 빌드 PyTorch가 설치되도록 하세요.",
     "gpu_report_option_update_nvidia_driver": "NVIDIA 드라이버를 업데이트(Linux는 R525 이상, Windows는 R528.33 이상)하고 ElevenVoice를 다시 시작하세요.",
@@ -1455,7 +1455,7 @@
     "remote_backend_confirm_title": "검증되지 않은 백엔드를 사용할까요?",
     "remote_backend_confirm_unverified": "이 백엔드 URL은 연결 테스트를 통과하지 않았습니다. 그래도 저장하고 새로고침할까요? 주소가 잘못되면 여기서 다시 변경할 때까지 앱이 어떤 백엔드에도 연결하지 못합니다.",
     "remote_backend_desc": "다른 컴퓨터에서 추론을 실행합니다. 로컬 백엔드를 사용하려면 URL을 비워 두세요. 저장하면 적용을 위해 앱이 새로고침됩니다.",
-    "remote_backend_hint": "다른 컴퓨터에서 <1>OMNIVOICE_API_KEY</1>를 설정하여 백엔드를 시작하고 tailnet으로 연결한 뒤 이 앱이 해당 주소를 사용하도록 지정하세요.",
+    "remote_backend_hint": "다른 컴퓨터에서 <1>ELEVENVOICE_API_KEY</1>를 설정하여 백엔드를 시작하고 tailnet으로 연결한 뒤 이 앱이 해당 주소를 사용하도록 지정하세요.",
     "remote_backend_invalid_url": "http:// 또는 https://로 시작하는 올바른 URL을 입력하세요(예: http://gpu-box:3900).",
     "remote_backend_key": "API 키",
     "remote_backend_test": "연결 테스트",
@@ -2241,7 +2241,7 @@
     "failed": "로컬 엔진을 시작할 수 없습니다.",
     "idle": "로컬 엔진 대기 중…",
     "log_label": "엔진 로그",
-    "port_in_use": "다른 프로그램이 포트 {{port}}을(를) 사용 중입니다. 해당 프로그램을 닫거나 OMNIVOICE_PORT를 사용 가능한 포트로 설정한 후 다시 시도하세요.",
+    "port_in_use": "다른 프로그램이 포트 {{port}}을(를) 사용 중입니다. 해당 프로그램을 닫거나 ELEVENVOICE_PORT를 사용 가능한 포트로 설정한 후 다시 시도하세요.",
     "elapsed": "{{seconds}}초 경과",
     "first_run_hint": "처음 실행할 때 Python 환경을 준비하는 데 몇 분 정도 걸릴 수 있습니다.",
     "port_in_use_short": "포트 {{port}} 사용 중",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "설치된 앱이라 편집할 수 없습니다. 대신 git clone 폴더를 선택하세요.",
       "not_git": "이 폴더는 git clone이 아닙니다. ZIP 다운로드는 사용할 수 없으니 git clone을 사용하세요.",
-      "not_voicestudio": "이 폴더에서 ElevenVoice 클론을 찾지 못했습니다.",
+      "not_elevenvoice": "이 폴더에서 ElevenVoice 클론을 찾지 못했습니다.",
       "read_only": "ElevenVoice가 이 폴더에 쓸 수 없습니다. 본인 소유 폴더를 선택하세요."
     },
     "chooseFailed": "이 폴더를 사용할 수 없습니다. 다시 시도하거나 다른 폴더를 선택하세요.",
@@ -3311,10 +3311,10 @@
       "workflow": "n8n 워크플로",
       "dockerRunPowerShell": "컨테이너 실행 (Windows PowerShell)"
     },
-    "apiBearerHint": "이 백엔드는 원격입니다. 셸에서 OMNIVOICE_API_KEY를 해당 API 키로 설정하세요. 예제는 거기서 키를 읽으며 키를 포함하지 않습니다.",
+    "apiBearerHint": "이 백엔드는 원격입니다. 셸에서 ELEVENVOICE_API_KEY를 해당 API 키로 설정하세요. 예제는 거기서 키를 읽으며 키를 포함하지 않습니다.",
     "apiInsecureHint": "원격 백엔드에서 API 키를 쓰려면 https://가 필요합니다. 키를 사용하기 전에 이 백엔드를 https(예: Tailscale Serve) 뒤에 두세요.",
     "dockerGpuHint": "GPU: NVIDIA는 --gpus all이 필요합니다(Compose에서는 GPU 장치 예약). AMD는 /dev/kfd, /dev/dri와 함께 :stable-rocm 태그를 사용합니다. Docker 설치 가이드를 참고하세요.",
-    "openaiAgentsHint": "음성-텍스트 변환과 텍스트-음성 변환을 위해 OpenAI Agents SDK 음성 파이프라인이 ElevenVoice를 사용하도록 설정하세요. ElevenVoice를 계속 실행해 두세요. 원격 백엔드는 실행 전에 OMNIVOICE_API_KEY를 설정하세요. 에이전트가 사용할 언어 모델 서버를 AGENT_LLM_BASE_URL과 AGENT_LLM_MODEL에 설정하세요.",
+    "openaiAgentsHint": "음성-텍스트 변환과 텍스트-음성 변환을 위해 OpenAI Agents SDK 음성 파이프라인이 ElevenVoice를 사용하도록 설정하세요. ElevenVoice를 계속 실행해 두세요. 원격 백엔드는 실행 전에 ELEVENVOICE_API_KEY를 설정하세요. 에이전트가 사용할 언어 모델 서버를 AGENT_LLM_BASE_URL과 AGENT_LLM_MODEL에 설정하세요.",
     "category": {
       "all": "전체",
       "comms": "통화 및 음성 에이전트",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "접속 PIN",
       "api_key_label": "API 키(선택 사항)",
-      "api_key_help": "서버에 OMNIVOICE_API_KEY가 설정된 경우에만 필요합니다. 키는 세션으로 교환되며 저장되지 않습니다.",
+      "api_key_help": "서버에 ELEVENVOICE_API_KEY가 설정된 경우에만 필요합니다. 키는 세션으로 교환되며 저장되지 않습니다.",
       "connect": "연결",
       "connecting": "연결 중…",
       "connected_to": "{{host}}에 연결됨",
@@ -3789,9 +3789,9 @@
       "last_seen": "마지막 확인: {{time}}",
       "forget": "삭제",
       "error_unreachable": "{{host}}에 연결할 수 없습니다. ElevenVoice가 실행 중인지, 네트워크 공유가 켜져 있는지, 이 휴대폰이 같은 네트워크 또는 Tailscale에 있는지 확인하세요.",
-      "error_not_voicestudio": "{{host}}에서 응답했지만 ElevenVoice 서버가 아닙니다. 주소와 포트를 확인하세요.",
+      "error_not_elevenvoice": "{{host}}에서 응답했지만 ElevenVoice 서버가 아닙니다. 주소와 포트를 확인하세요.",
       "error_pin": "PIN이 거부되었습니다. 공유를 켤 때마다 새 PIN이 생성되므로 QR 코드를 다시 스캔하세요.",
-      "error_api_key": "API 키가 거부되었습니다. 서버의 OMNIVOICE_API_KEY에 설정한 키를 확인하세요.",
+      "error_api_key": "API 키가 거부되었습니다. 서버의 ELEVENVOICE_API_KEY에 설정한 키를 확인하세요.",
       "error_session_expired": "세션이 만료되었습니다. 다시 연결하려면 API 키를 다시 입력하세요.",
       "error_insecure": "http://는 로컬 네트워크 또는 Tailscale의 주소에만 사용할 수 있습니다. 다른 서버에는 https://를 사용하세요.",
       "error_invalid_url": "서버 주소 형식이 올바르지 않습니다. 예: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "오디오의 {{percent}}%가 클리핑됨",
     "duration_ok": "원본 길이에 맞음",
     "duration_issue": "{{track_seconds}}초, 원본 {{source_seconds}}초보다 김"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

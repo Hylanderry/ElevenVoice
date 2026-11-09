@@ -350,7 +350,7 @@ def test_reference_asr_precision_per_device(monkeypatch, device, dtype):
 
 def test_release_is_reported_before_synthesis(monkeypatch, tmp_path, capsys):
     """With diagnostics on, the `[diag]` trail shows the recognizer leaving memory."""
-    monkeypatch.setenv("OMNIVOICE_DIAG", "1")
+    monkeypatch.setenv("ELEVENVOICE_DIAG", "1")
     model = _model()
     monkeypatch.setattr("huggingface_hub.snapshot_download", Mock(return_value=_asr_snapshot(tmp_path)))
     model.load_asr_model = Mock(side_effect=lambda **_: setattr(model, "_asr_pipe", object()))
@@ -363,7 +363,7 @@ def test_release_is_reported_before_synthesis(monkeypatch, tmp_path, capsys):
 
 
 def test_diagnostics_are_silent_unless_enabled(monkeypatch, tmp_path, capsys):
-    monkeypatch.delenv("OMNIVOICE_DIAG", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DIAG", raising=False)
     model = _model()
     monkeypatch.setattr("huggingface_hub.snapshot_download", Mock(return_value=_asr_snapshot(tmp_path)))
     model.load_asr_model = Mock(side_effect=lambda **_: setattr(model, "_asr_pipe", object()))
@@ -377,7 +377,7 @@ def test_diagnostics_are_silent_unless_enabled(monkeypatch, tmp_path, capsys):
 def test_diagnostics_never_log_the_spoken_reference_text(monkeypatch, tmp_path, capsys):
     """The sidecar's stderr reaches backend logs and crash dialogs, so the
     reference transcript (the user's speech) must never appear in it."""
-    monkeypatch.setenv("OMNIVOICE_DIAG", "1")
+    monkeypatch.setenv("ELEVENVOICE_DIAG", "1")
     model = _model()
     spoken = "private words nobody should read"
     monkeypatch.setattr("huggingface_hub.snapshot_download", Mock(return_value=_asr_snapshot(tmp_path)))

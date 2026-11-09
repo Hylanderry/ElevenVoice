@@ -43,9 +43,9 @@ def test_sidecar_metadata_routing_preserves_defaults_and_explicit_optin(
 
     monkeypatch.setattr(sys, "platform", platform)
     if variant is None:
-        monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", variant)
+        monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", variant)
     venv = tmp_path / ".venv"
     python = venv / "Scripts/python.exe"
     monkeypatch.setattr(bootstrap, "_resolved_python", None if state in {"unresolved", "probe_error"} else python)
@@ -73,8 +73,8 @@ def test_windows_opted_sidecar_respects_user_cpu_override(monkeypatch, tmp_path)
     from engines.indextts import IndexTTS2Backend, bootstrap
 
     monkeypatch.setattr(sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     monkeypatch.setattr(bootstrap, "_resolved_python", tmp_path / ".venv/Scripts/python.exe")
     monkeypatch.setattr("services.sidecar_install.venv_torch_hip", lambda path: True)
     caps = HostCaps(family="cpu", available_families=("rocm", "cpu"), requested_family="cpu")

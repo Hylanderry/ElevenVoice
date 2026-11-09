@@ -19,8 +19,8 @@ import types
 import numpy as np
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 # ── A fake sherpa_onnx module ────────────────────────────────────────────────
@@ -402,7 +402,7 @@ def test_capture_backend_honors_dictation_model_id(fake_sherpa, no_download, mon
     prefs_store = {"dictation.enabled": True, "dictation.model_id": "sherpa-whisper-tiny"}
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "get", lambda k, d=None: prefs_store.get(k, d))
-    monkeypatch.delenv("OMNIVOICE_SHERPA_ASR_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_ASR_MODEL", raising=False)
 
     b = ab.get_capture_asr_backend()
     assert isinstance(b, ab.SherpaDictationBackend)
@@ -495,7 +495,7 @@ def test_capture_backend_falls_back_when_dictation_disabled(monkeypatch):
     prefs_store = {"dictation.enabled": False, "dictation.model_id": "sherpa-whisper-tiny"}
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "get", lambda k, d=None: prefs_store.get(k, d))
-    monkeypatch.delenv("OMNIVOICE_SHERPA_ASR_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_ASR_MODEL", raising=False)
 
     # dictation_model_id() returns None → not a sherpa backend.
     assert ab.dictation_model_id() is None
@@ -519,7 +519,7 @@ def test_sherpa_engine_defaults_to_dictation_model_pref(fake_sherpa, no_download
     prefs_store = {"dictation.enabled": False, "dictation.model_id": "sherpa-parakeet-tdt-v3"}
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "get", lambda k, d=None: prefs_store.get(k, d))
-    monkeypatch.delenv("OMNIVOICE_SHERPA_ASR_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_ASR_MODEL", raising=False)
     monkeypatch.setattr(sd, "is_demoted", lambda mid: False)
 
     assert ab.sherpa_engine_model_id() == "sherpa-parakeet-tdt-v3"
@@ -537,5 +537,5 @@ def test_sherpa_engine_defaults_to_dictation_model_pref(fake_sherpa, no_download
 
     # Explicit env pin beats the pref.
     prefs_store["dictation.model_id"] = "sherpa-parakeet-tdt-v3"
-    monkeypatch.setenv("OMNIVOICE_SHERPA_ASR_MODEL", "sherpa-zipformer-en-20m")
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_ASR_MODEL", "sherpa-zipformer-en-20m")
     assert ab.SherpaDictationBackend().spec.id == "sherpa-zipformer-en-20m"

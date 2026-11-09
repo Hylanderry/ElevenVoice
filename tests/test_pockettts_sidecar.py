@@ -343,23 +343,23 @@ def test_recv_timeout_rejects_non_finite_values(backend, monkeypatch):
     """inf would disable the deadline entirely, so a wedged sidecar would never
     be reaped — the watchdog is the whole reason this engine is a subprocess."""
     for raw in ("inf", "-inf", "nan", "NaN"):
-        monkeypatch.setenv("OMNIVOICE_POCKETTTS_RECV_TIMEOUT_S", raw)
+        monkeypatch.setenv("ELEVENVOICE_POCKETTTS_RECV_TIMEOUT_S", raw)
         assert backend().recv_timeout_s == 600.0
 
 
 def test_recv_timeout_rejects_garbage(backend, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_RECV_TIMEOUT_S", "soon")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_RECV_TIMEOUT_S", "soon")
     assert backend().recv_timeout_s == 600.0
 
 
 def test_recv_timeout_has_a_floor(backend, monkeypatch):
     """A 1s deadline kills every cold load before it can finish."""
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_RECV_TIMEOUT_S", "1")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_RECV_TIMEOUT_S", "1")
     assert backend().recv_timeout_s == 30.0
 
 
 def test_recv_timeout_honours_a_sane_override(backend, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_RECV_TIMEOUT_S", "900")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_RECV_TIMEOUT_S", "900")
     assert backend().recv_timeout_s == 900.0
 
 
@@ -408,7 +408,7 @@ def test_the_sidecar_script_path_resolves(backend):
     assert backend.sidecar_script().is_file()
 
 
-# ── 24-layer opt-in (OMNIVOICE_POCKETTTS_24L) ────────────────────────────
+# ── 24-layer opt-in (ELEVENVOICE_POCKETTTS_24L) ────────────────────────────
 
 class _NullStdout:
     """Absorbs the sidecar's length-prefixed frames (bytes, not str)."""
@@ -421,13 +421,13 @@ class _NullStdout:
 
 
 def test_24l_opt_in_is_off_by_default(sc, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_POCKETTTS_24L", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_POCKETTTS_24L", raising=False)
     monkeypatch.setattr(sc, "_has_24l_config", lambda lang: True)
     assert sc._model_config_name("italian") == "italian"
 
 
 def test_24l_opt_in_selects_the_24_layer_config_when_available(sc, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_24L", "1")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_24L", "1")
     monkeypatch.setattr(sc, "_has_24l_config", lambda lang: lang == "italian")
     assert sc._model_config_name("italian") == "italian_24l"
     # No 24-layer checkpoint for this language (e.g. english): unchanged.
@@ -437,15 +437,15 @@ def test_24l_opt_in_selects_the_24_layer_config_when_available(sc, monkeypatch):
 def test_24l_opt_in_accepts_the_usual_truthy_spellings(sc, monkeypatch):
     monkeypatch.setattr(sc, "_has_24l_config", lambda lang: True)
     for val in ("true", "YES", " on ", "1"):
-        monkeypatch.setenv("OMNIVOICE_POCKETTTS_24L", val)
+        monkeypatch.setenv("ELEVENVOICE_POCKETTTS_24L", val)
         assert sc._model_config_name("german") == "german_24l", val
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_24L", "0")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_24L", "0")
     assert sc._model_config_name("german") == "german"
 
 
 def test_load_model_applies_the_24l_suffix_to_load_model(sc, monkeypatch):
     """The load path must honour the opt-in, not just the name helper."""
-    monkeypatch.setenv("OMNIVOICE_POCKETTTS_24L", "1")
+    monkeypatch.setenv("ELEVENVOICE_POCKETTTS_24L", "1")
     monkeypatch.setattr(sc, "_has_24l_config", lambda lang: True)
 
     calls = {}
@@ -476,8 +476,8 @@ def test_french_always_maps_to_french_24l(sc, monkeypatch):
 
     monkeypatch.setattr(sc, "_has_24l_config", _probe_must_not_run)
     # Env unset, falsy, and truthy — all identical for French.
-    monkeypatch.delenv("OMNIVOICE_POCKETTTS_24L", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_POCKETTTS_24L", raising=False)
     assert sc._model_config_name("french") == "french_24l"
     for env in ("0", "off", "1", "true"):
-        monkeypatch.setenv("OMNIVOICE_POCKETTTS_24L", env)
+        monkeypatch.setenv("ELEVENVOICE_POCKETTTS_24L", env)
         assert sc._model_config_name("french") == "french_24l", env

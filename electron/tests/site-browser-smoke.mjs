@@ -9,7 +9,7 @@ import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const scratch = mkdtempSync(join(tmpdir(), 'voicestudio-site-browser-'));
+const scratch = mkdtempSync(join(tmpdir(), 'elevenvoice-site-browser-'));
 const server = createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.end(
@@ -53,7 +53,7 @@ try {
     });
     const parent = new BrowserWindow({ show:false, webPreferences:{ preload:${JSON.stringify(join(scratch, 'preload/index.mjs'))}, sandbox:false, contextIsolation:true, nodeIntegration:false } });
     registerSiteBrowser(() => parent);
-    await parent.loadURL('app://voicestudio/index.html');
+    await parent.loadURL('app://elevenvoice/index.html');
     });
   `,
   );
@@ -86,7 +86,7 @@ try {
     anchor.focus();
   });
   const originalUrl = parent.url();
-  await parent.evaluate((url) => window.voicestudio.browser.open(url), origin + '/one');
+  await parent.evaluate((url) => window.elevenvoice.browser.open(url), origin + '/one');
   const toolbar = parent;
   assert.equal(await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length), 1);
   toolbar.setDefaultTimeout(10000);
@@ -104,7 +104,7 @@ try {
     console.error('Browser document:', await toolbar.content());
     throw error;
   }
-  const state = () => toolbar.evaluate(() => window.voicestudio.browser.state());
+  const state = () => toolbar.evaluate(() => window.elevenvoice.browser.state());
   await toolbar.waitForFunction(() =>
     document.querySelector('.site-browser-navigation input')?.value.endsWith('/one'),
   );
@@ -113,7 +113,7 @@ try {
       const child = BrowserWindow.getAllWindows()[0];
       return child.contentView.children[0].webContents.executeJavaScript(script);
     }, code);
-  assert.equal(await remote('typeof window.voicestudio'), 'undefined');
+  assert.equal(await remote('typeof window.elevenvoice'), 'undefined');
   assert.equal(await remote('typeof require'), 'undefined');
   await remote("document.querySelector('a').click()");
   await toolbar.waitForFunction(() =>
@@ -134,7 +134,7 @@ try {
   );
   await toolbar.getByRole('button', { name: 'Open in browser', exact: true }).click();
   await toolbar.getByRole('button', { name: 'Default browser', exact: true }).waitFor();
-  const installed = await toolbar.evaluate(() => window.voicestudio.browser.installed());
+  const installed = await toolbar.evaluate(() => window.elevenvoice.browser.installed());
   for (const browser of installed)
     await toolbar.getByRole('button', { name: browser.name, exact: true }).waitFor();
   const bounds = await app.evaluate(({ BrowserWindow }) => {
@@ -194,16 +194,16 @@ try {
   }
   assert.equal((await state()).url, origin + '/typed');
   // Optional owner-triggered live-site check; normal CI remains local-only.
-  if (process.env.VOICESTUDIO_BROWSER_LIVE_CHECK === '1') {
+  if (process.env.ELEVENVOICE_BROWSER_LIVE_CHECK === '1') {
     await toolbar.evaluate(() => window.voicestudio.browser.navigate('https://voicestudio.sh/'));
     let live = await state();
     for (let attempt = 0; attempt < 120; attempt++) {
-      if (live.error || (!live.loading && live.title.includes('VoiceStudio'))) break;
+      if (live.error || (!live.loading && live.title.includes('ElevenVoice'))) break;
       await toolbar.waitForTimeout(250);
       live = await state();
     }
     assert.equal(live.loading, false, 'official website finishes loading');
-    assert.match(live.title, /VoiceStudio/);
+    assert.match(live.title, /ElevenVoice/);
     assert.equal(live.error, false, 'official website loads in the isolated native view');
     assert.equal(await toolbar.getByRole('alert').count(), 0, 'no browser action or bounds errors');
     assert.equal(await remote('location.hostname'), 'voicestudio.sh');
@@ -235,6 +235,6 @@ try {
   await app?.close();
   await new Promise((resolve) => server.close(resolve));
   // scratch is the exact directory returned by mkdtemp, never a caller-supplied path.
-  if (scratch.startsWith(join(tmpdir(), 'voicestudio-site-browser-')))
+  if (scratch.startsWith(join(tmpdir(), 'elevenvoice-site-browser-')))
     rmSync(scratch, { recursive: true, force: true, maxRetries: 3 });
 }

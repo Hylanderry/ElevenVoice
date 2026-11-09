@@ -20,7 +20,7 @@ test('installer isolates the app version from generic tooling variables', () => 
 for (const mac of [false, true]) {
   test(`uninstall preserves data and a recoverable app (${mac ? 'macOS' : 'Linux'})`, (t) => {
     const f = fixture(t, { mac });
-    const app = mac ? join(f.home, 'Applications/VoiceStudio.app') : join(f.home, '.local/bin/VoiceStudio');
+    const app = mac ? join(f.home, 'Applications/ElevenVoice.app') : join(f.home, '.local/bin/ElevenVoice');
     if (mac) {
       mkdirSync(join(app, 'Contents/Resources'), { recursive: true });
       writeFileSync(join(app, 'Contents/Resources/app.asar'), 'app');
@@ -34,9 +34,9 @@ for (const mac of [false, true]) {
     const recovery = result.stdout.match(/Recoverable copy: (.+)/)[1];
     if (mac) {
       assert.ok(recovery.startsWith(join(f.home, '.Trash') + '/'));
-      assert.match(readFileSync(join(f.root, 'registration'), 'utf8'), /-u .*VoiceStudio\.app/);
+      assert.match(readFileSync(join(f.root, 'registration'), 'utf8'), /-u .*ElevenVoice\.app/);
     }
-    assert.equal(existsSync(join(recovery, mac ? 'VoiceStudio.app' : 'VoiceStudio')), true);
+    assert.equal(existsSync(join(recovery, mac ? 'ElevenVoice.app' : 'ElevenVoice')), true);
     assert.equal(readFileSync(f.settings, 'utf8'), 'preserve me');
     assert.equal(existsSync(join(f.root, 'requests')), false);
     assert.equal(f.run(['--uninstall']).status, 0);
@@ -66,8 +66,8 @@ function fixture(t, options = {}) {
 if [ "$1" = attach ]; then
  [ "$TEST_ATTACH_FAIL" = 0 ] || exit 1
  while [ "$1" != -mountpoint ]; do shift; done
- shift; mkdir -p "$1/VoiceStudio.app/Contents"
- printf fixture > "$1/VoiceStudio.app/Contents/Info.plist"
+ shift; mkdir -p "$1/ElevenVoice.app/Contents"
+ printf fixture > "$1/ElevenVoice.app/Contents/Info.plist"
 fi
 `,
   );
@@ -89,10 +89,10 @@ case "$url" in
  */SHA256SUMS.txt)
    version=$(printf '%s' "$url" | sed 's|.*/download/v||; s|/.*||')
    : > "$out"
-   for brand in VoiceStudio VoiceStudio-Electron; do
+   for brand in ElevenVoice ElevenVoice-Electron; do
     printf '%s  %s-%s-${options.mac ? 'mac-arm64.dmg' : 'linux-x64.AppImage'}\\n%s  %s-%s-mac-x64.dmg\\n' "$TEST_DIGEST" "$brand" "$version" "$TEST_DIGEST" "$brand" "$version" >> "$out"
    done;;
- */VoiceStudio-*.AppImage|*/VoiceStudio-*.dmg)
+ */ElevenVoice-*.AppImage|*/ElevenVoice-*.dmg)
    [ "$TEST_MISSING" = 0 ] || exit 22
    printf '${payload}' > "$out";;
  *) exit 22;;
@@ -117,14 +117,14 @@ else echo fixture-commit; fi
     `
 printf 'bun %s\\n' "$*" >> "$TEST_ROOT/commands"
 [ "$TEST_BUILD_FAIL" = 0 ] || exit 1
-if [ "$1 $2" = 'run electron-builder' ]; then printf '${payload}' > release/VoiceStudio-1.2.4-linux-x64.AppImage; fi
+if [ "$1 $2" = 'run electron-builder' ]; then printf '${payload}' > release/ElevenVoice-1.2.4-linux-x64.AppImage; fi
 `,
   );
   shim('cargo', 'exit 0\n');
   shim('readelf', 'exit 0\n');
   shim('zsyncmake', 'exit 0\n');
   shim('pgrep', options.linuxRunning
-    ? `case "$*" in *voicestudio-electron*) exit 0;; *) exit 1;; esac\n`
+    ? `case "$*" in *elevenvoice-electron*) exit 0;; *) exit 1;; esac\n`
     : options.running ? 'exit 0\n' : 'exit 1\n');
   shim('lsregister', 'printf "%s\\n" "$*" >> "$TEST_ROOT/registration"\n' + (options.registrationFails ? 'exit 1\n' : ''));
   const settings = join(home, 'settings');
@@ -144,7 +144,7 @@ if [ "$1 $2" = 'run electron-builder' ]; then printf '${payload}' > release/Voic
           TMPDIR: root,
           TEST_ROOT: root,
           TEST_DIGEST: options.badChecksum ? '0'.repeat(64) : digest,
-          VOICESTUDIO_INSTALL_DIR: options.installDir ?? (options.mac
+          ELEVENVOICE_INSTALL_DIR: options.installDir ?? (options.mac
             ? join(home, 'Applications')
             : join(home, '.local/bin')),
           TEST_ROSETTA: options.rosetta ? '1' : '0',
@@ -158,19 +158,19 @@ if [ "$1 $2" = 'run electron-builder' ]; then printf '${payload}' > release/Voic
   };
 }
 
-// Releases up to v0.5.7-beta.3 named their packages VoiceStudio-Electron-*.
+// Releases up to v0.5.7-beta.3 named their packages ElevenVoice-Electron-*.
 for (const [name, args, version, brand] of [
-  ['latest', [], '1.2.3', 'VoiceStudio'],
-  ['older release', ['--version', 'v1.0.0'], '1.0.0', 'VoiceStudio'],
-  ['next beta', ['--version', '0.5.7-beta.4'], '0.5.7-beta.4', 'VoiceStudio'],
-  ['legacy-named beta', ['--version', '0.5.7-beta.3'], '0.5.7-beta.3', 'VoiceStudio-Electron'],
-  ['legacy-named release', ['--version', '0.5.6'], '0.5.6', 'VoiceStudio-Electron'],
+  ['latest', [], '1.2.3', 'ElevenVoice'],
+  ['older release', ['--version', 'v1.0.0'], '1.0.0', 'ElevenVoice'],
+  ['next beta', ['--version', '0.5.7-beta.4'], '0.5.7-beta.4', 'ElevenVoice'],
+  ['legacy-named beta', ['--version', '0.5.7-beta.3'], '0.5.7-beta.3', 'ElevenVoice-Electron'],
+  ['legacy-named release', ['--version', '0.5.6'], '0.5.6', 'ElevenVoice-Electron'],
 ]) {
   test(`installs ${name} Electron package and preserves data`, (t) => {
     const f = fixture(t);
     const r = f.run(args);
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(f.home, '.local/bin/VoiceStudio'), 'utf8'), payload);
+    assert.equal(readFileSync(join(f.home, '.local/bin/ElevenVoice'), 'utf8'), payload);
     assert.equal(readFileSync(f.settings, 'utf8'), 'preserve me');
     const requests = readFileSync(join(f.root, 'requests'), 'utf8');
     assert.match(requests, new RegExp(`download/v${version}/${brand}-${version.replaceAll('.', '\\.')}-linux-x64\\.AppImage`));
@@ -183,7 +183,7 @@ for (const options of [{ badChecksum: true }, { missing: true }]) {
     const f = fixture(t, options);
     const r = f.run();
     assert.notEqual(r.status, 0);
-    assert.equal(existsSync(join(f.home, '.local/bin/VoiceStudio')), false);
+    assert.equal(existsSync(join(f.home, '.local/bin/ElevenVoice')), false);
   });
 }
 for (const option of ['--main', '--source']) {
@@ -191,7 +191,7 @@ for (const option of ['--main', '--source']) {
     const f = fixture(t);
     const r = f.run([option]);
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(f.home, '.local/bin/VoiceStudio'), 'utf8'), payload);
+    assert.equal(readFileSync(join(f.home, '.local/bin/ElevenVoice'), 'utf8'), payload);
     const commands = readFileSync(join(f.root, 'commands'), 'utf8');
     assert.match(commands, /git clone --depth 1 --branch main --single-branch/);
     assert.match(commands, /bun install --frozen-lockfile/);
@@ -203,9 +203,9 @@ for (const option of ['--main', '--source']) {
 test('build failure does not replace an existing installation', (t) => {
   const f = fixture(t, { buildFails: true });
   mkdirSync(join(f.home, '.local/bin'), { recursive: true });
-  writeFileSync(join(f.home, '.local/bin/VoiceStudio'), 'old app');
+  writeFileSync(join(f.home, '.local/bin/ElevenVoice'), 'old app');
   assert.notEqual(f.run(['--main']).status, 0);
-  assert.equal(readFileSync(join(f.home, '.local/bin/VoiceStudio'), 'utf8'), 'old app');
+  assert.equal(readFileSync(join(f.home, '.local/bin/ElevenVoice'), 'utf8'), 'old app');
 });
 test('rejects invalid arguments before downloading', (t) => {
   const f = fixture(t);
@@ -216,7 +216,7 @@ test('rejects invalid arguments before downloading', (t) => {
 });
 test('macOS installs the verified Electron bundle and replaces only the app', (t) => {
   const f = fixture(t, { mac: true });
-  const app = join(f.home, 'Applications/VoiceStudio.app');
+  const app = join(f.home, 'Applications/ElevenVoice.app');
   mkdirSync(app);
   writeFileSync(join(app, 'old-file'), 'old');
   const result = f.run();
@@ -224,7 +224,7 @@ test('macOS installs the verified Electron bundle and replaces only the app', (t
   assert.equal(readFileSync(join(app, 'Contents/Info.plist'), 'utf8'), 'fixture');
   assert.equal(existsSync(join(app, 'old-file')), false);
   assert.equal(readFileSync(f.settings, 'utf8'), 'preserve me');
-  assert.match(readFileSync(join(f.root, 'registration'), 'utf8'), /-f .*VoiceStudio\.app/);
+  assert.match(readFileSync(join(f.root, 'registration'), 'utf8'), /-f .*ElevenVoice\.app/);
 });
 
 for (const [name, options, asset, intel] of [
@@ -236,7 +236,7 @@ for (const [name, options, asset, intel] of [
     const f = fixture(t, options);
     const r = f.run();
     assert.equal(r.status, 0, r.stderr);
-    assert.match(readFileSync(join(f.root, 'requests'), 'utf8'), new RegExp(`/VoiceStudio-1\\.2\\.3-${asset.replace('.', '\\.')}`));
+    assert.match(readFileSync(join(f.root, 'requests'), 'utf8'), new RegExp(`/ElevenVoice-1\\.2\\.3-${asset.replace('.', '\\.')}`));
     assert.equal(r.stdout.includes('Intel Mac'), intel);
   });
 }
@@ -245,8 +245,8 @@ test('macOS clears quarantine and repairs an invalid signature after install', (
   const f = fixture(t, { mac: true, sigInvalid: true });
   const r = f.run();
   assert.equal(r.status, 0, r.stderr);
-  assert.match(readFileSync(join(f.root, 'xattr'), 'utf8'), /-dr com\.apple\.quarantine .*VoiceStudio\.app/);
-  assert.match(readFileSync(join(f.root, 'codesign'), 'utf8'), /--force --deep --sign - .*VoiceStudio\.app/);
+  assert.match(readFileSync(join(f.root, 'xattr'), 'utf8'), /-dr com\.apple\.quarantine .*ElevenVoice\.app/);
+  assert.match(readFileSync(join(f.root, 'codesign'), 'utf8'), /--force --deep --sign - .*ElevenVoice\.app/);
   assert.match(r.stdout, /Repaired the app signature/);
 });
 
@@ -260,23 +260,23 @@ test('macOS reports an unreadable disk image clearly and installs nothing', (t) 
   const f = fixture(t, { mac: true, attachFails: true });
   const r = f.run();
   assert.notEqual(r.status, 0);
-  assert.match(r.stderr, /Could not open the disk image VoiceStudio-1\.2\.3-mac-arm64\.dmg/);
-  assert.equal(existsSync(join(f.home, 'Applications/VoiceStudio.app')), false);
+  assert.match(r.stderr, /Could not open the disk image ElevenVoice-1\.2\.3-mac-arm64\.dmg/);
+  assert.equal(existsSync(join(f.home, 'Applications/ElevenVoice.app')), false);
 });
 
-test('refuses replacement and uninstall while VoiceStudio is running', (t) => {
+test('refuses replacement and uninstall while ElevenVoice is running', (t) => {
   const f = fixture(t, { mac: true, running: true });
   for (const args of [[], ['--uninstall']]) {
     const result = f.run(args);
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /Quit VoiceStudio/);
+    assert.match(result.stderr, /Quit ElevenVoice/);
   }
   assert.equal(existsSync(join(f.root, 'requests')), false);
 });
 
 test('macOS still removes the launchable copy if stale registration refresh fails', (t) => {
   const f = fixture(t, { mac: true, registrationFails: true });
-  const app = join(f.home, 'Applications/VoiceStudio.app');
+  const app = join(f.home, 'Applications/ElevenVoice.app');
   mkdirSync(join(app, 'Contents/Resources'), { recursive: true });
   writeFileSync(join(app, 'Contents/Resources/app.asar'), 'app');
   const result = f.run(['--uninstall']);
@@ -291,12 +291,12 @@ test('Linux packaged process blocks installation and uninstall before downloads'
   for (const args of [[], ['--uninstall']]) {
     const r = f.run(args);
     assert.notEqual(r.status, 0);
-    assert.match(r.stderr, /Quit VoiceStudio/);
+    assert.match(r.stderr, /Quit ElevenVoice/);
   }
   assert.equal(existsSync(join(f.root, 'requests')), false);
 });
 for (const mac of [true, false]) {
-  for (const installDir of ['relative', '/nonexistent-voicestudio-test-directory']) {
+  for (const installDir of ['relative', '/nonexistent-elevenvoice-test-directory']) {
     test(`rejects invalid custom install directory ${installDir} mac=${mac}`, (t) => {
       const f = fixture(t, { mac, installDir });
       assert.notEqual(f.run().status, 0);

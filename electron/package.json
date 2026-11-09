@@ -1,12 +1,12 @@
 {
-  "name": "voicestudio-electron",
+  "name": "elevenvoice-electron",
   "version": "0.0.0-electron",
   "private": true,
-  "description": "VoiceStudio desktop shell (Electron) - local voice cloning, no cloud.",
+  "description": "ElevenVoice desktop shell (Electron) - local voice cloning, no cloud.",
   "homepage": "https://github.com/debpalash/VoiceStudio",
   "license": "AGPL-3.0-only",
   "author": {
-    "name": "VoiceStudio contributors",
+    "name": "ElevenVoice contributors",
     "email": "hi@voicestudio.sh"
   },
   "type": "module",

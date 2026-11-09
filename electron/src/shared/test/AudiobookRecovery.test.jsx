@@ -7,7 +7,7 @@ const doubles = vi.hoisted(() => ({ jobs: vi.fn(), reveal: vi.fn() }));
 vi.mock('../api/audiobook', () => ({ audiobookListJobs: doubles.jobs }));
 vi.mock('../api/exports', () => ({ exportReveal: doubles.reveal }));
 vi.mock('../api/hooks', () => ({
-  useSystemInfo: () => ({ data: { outputs_dir: 'D:\\VoiceStudio\\renders\\' } }),
+  useSystemInfo: () => ({ data: { outputs_dir: 'D:\\ElevenVoice\\renders\\' } }),
 }));
 
 import AudiobookRecovery from '../components/audiobook/AudiobookRecovery';
@@ -96,7 +96,7 @@ describe('recovery card inventory', () => {
     fireEvent.click(screen.getByRole('button', { name: 'show audio files' }));
     await waitFor(() =>
       expect(doubles.reveal).toHaveBeenCalledWith({
-        path: 'D:\\VoiceStudio\\renders/longform_cache',
+        path: 'D:\\ElevenVoice\\renders/longform_cache',
       }),
     );
   });

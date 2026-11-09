@@ -1,7 +1,7 @@
 """voxcpm2-subprocess: VoxCPM2 from its own venv (one-click install).
 
 VoxCPM2 used to run only in-process, which meant installing ``voxcpm``, and a
-torch of its choosing, into VoiceStudio's own environment. The one-click
+torch of its choosing, into ElevenVoice's own environment. The one-click
 installer now gives it a venv under ``DATA_DIR/engines/voxcpm2/``, and this
 class runs the model there in a sidecar, so nothing it installs can touch the
 app or another engine.
@@ -26,7 +26,7 @@ from services.subprocess_backend import SubprocessBackend
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-VENV_ENV_VAR = "OMNIVOICE_VOXCPM2_DIR"
+VENV_ENV_VAR = "ELEVENVOICE_VOXCPM2_DIR"
 
 
 def own_venv_python() -> "Path | None":
@@ -83,7 +83,7 @@ class VoxCPM2SubprocessBackend(SubprocessBackend):
         # progress frames meanwhile (also while generating, so a slow CPU render is
         # not mistaken for a hang), and each one re-arms this deadline.
         try:
-            v = float(os.environ.get("OMNIVOICE_VOXCPM2_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_VOXCPM2_RECV_TIMEOUT_S", "900"))
         except (TypeError, ValueError):
             return 900.0
         if not math.isfinite(v):  # reject inf/nan so the deadline can't be disabled

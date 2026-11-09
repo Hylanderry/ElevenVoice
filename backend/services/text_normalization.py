@@ -51,8 +51,8 @@ audiobook ``apply_lexicon`` overlay). Rationale from the code:
 
 Pinned by ``tests/test_text_normalization.py`` (dictionary-order test).
 
-Gate: default ON; the ``OMNIVOICE_TEXT_NORMALIZATION`` env var disables it,
-the same contract as ``OMNIVOICE_PRONUNCIATION`` ("0"/"false"/"no"/"off").
+Gate: default ON; the ``ELEVENVOICE_TEXT_NORMALIZATION`` env var disables it,
+the same contract as ``ELEVENVOICE_PRONUNCIATION`` ("0"/"false"/"no"/"off").
 :func:`normalize_for_tts` is the gated entry point every pipeline calls; it
 never raises — normalization is never allowed to break synthesis.
 """
@@ -67,9 +67,9 @@ import unicodedata
 from functools import partial
 from typing import Callable, Optional
 
-logger = logging.getLogger("omnivoice.text_normalization")
+logger = logging.getLogger("elevenvoice.text_normalization")
 
-ENV_VAR = "OMNIVOICE_TEXT_NORMALIZATION"
+ENV_VAR = "ELEVENVOICE_TEXT_NORMALIZATION"
 
 
 # ── Language resolution ───────────────────────────────────────────────────────

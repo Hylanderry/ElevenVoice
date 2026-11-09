@@ -71,7 +71,7 @@ export default function SharingPanel() {
     }
     setSavingPort(true);
     try {
-      await apiPost('/system/set-env', { key: 'OMNIVOICE_SHARE_PORT', value: String(n) });
+      await apiPost('/system/set-env', { key: 'ELEVENVOICE_SHARE_PORT', value: String(n) });
       setPorts((p) => (p ? { ...p, share_port_base: n } : p));
       toast.success(t('sharing.port_saved'));
     } catch (e) {
@@ -204,7 +204,7 @@ export default function SharingPanel() {
             title={t('sharing.backend_port')}
             subtitle={
               <code className="rounded-[4px] [border:1px_solid_var(--chrome-border)] bg-[var(--chrome-hover-bg)] px-[6px] py-[2px] font-mono text-[length:var(--text-xs)] text-[var(--chrome-fg-muted)]">
-                OMNIVOICE_PORT
+                ELEVENVOICE_PORT
               </code>
             }
             control={
@@ -221,7 +221,7 @@ export default function SharingPanel() {
             title={t('sharing.ui_port')}
             subtitle={
               <code className="rounded-[4px] [border:1px_solid_var(--chrome-border)] bg-[var(--chrome-hover-bg)] px-[6px] py-[2px] font-mono text-[length:var(--text-xs)] text-[var(--chrome-fg-muted)]">
-                OMNIVOICE_UI_PORT
+                ELEVENVOICE_UI_PORT
               </code>
             }
             control={
@@ -238,7 +238,7 @@ export default function SharingPanel() {
             title={<label htmlFor="share-port-input">{t('sharing.lan_share_port')}</label>}
             subtitle={
               <code className="rounded-[4px] [border:1px_solid_var(--chrome-border)] bg-[var(--chrome-hover-bg)] px-[6px] py-[2px] font-mono text-[length:var(--text-xs)] text-[var(--chrome-fg-muted)]">
-                OMNIVOICE_SHARE_PORT
+                ELEVENVOICE_SHARE_PORT
               </code>
             }
             control={

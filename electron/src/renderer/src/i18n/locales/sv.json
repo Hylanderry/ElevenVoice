@@ -1316,7 +1316,7 @@
     "compute_device_auto": "Auto (rekommenderas)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "Beräkningsenhet",
-    "compute_device_env_pinned": "Låst av miljövariabeln OMNIVOICE_DEVICE",
+    "compute_device_env_pinned": "Låst av miljövariabeln ELEVENVOICE_DEVICE",
     "perf_title": "Prestanda",
     "generate_timeout_cpu_note": "Används när genereringen körs på CPU:n. När den väl sparats här styr detta värde alltid CPU-generering — oberoende av den accelererade budgeten ovan.",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1462,7 +1462,7 @@
     "audio_tools_ytdlp_restored": "Testade yt-dlp återställd – starta om backend för att tillämpa.",
     "audio_tools_open": "Öppna ljudverktyg",
     "remote_backend_desc": "Kör slutledning på en annan maskin; lämna URL:en tom för den lokala backend. Om du sparar laddas appen om för att tillämpas.",
-    "remote_backend_hint": "Starta backend på den andra maskinen med <1>OMNIVOICE_API_KEY</1> inställd, nå den över ditt tailnet och rikta den här appen mot den.",
+    "remote_backend_hint": "Starta backend på den andra maskinen med <1>ELEVENVOICE_API_KEY</1> inställd, nå den över ditt tailnet och rikta den här appen mot den.",
     "remote_backend_url": "Backend-URL",
     "remote_backend_probe_ok": "OK — {{detail}}",
     "remote_backend_probe_fail": "Misslyckades – {{detail}}",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}} hittades, men den här PyTorch-byggnaden ({{torch}}) har inga kärnor för sin beräkningsarkitektur, så motorerna körs på CPU:n.",
     "gpu_report_state_unknown": "GPU-statusen kunde inte fastställas.",
     "gpu_report_option_vulkan_engines": "Använd en motor med egen GPU-runtime: audio.cpp körs på AMD Radeon-GPU:er via Vulkan (Inställningar → Modeller → installera runtime).",
-    "gpu_report_option_rocm_windows_manual": "På AMD-maskinvara som stöds med Windows 11 x64 aktiverar du ElevenVoices ROCm 7.2.1-installation med OMNIVOICE_TORCH_VARIANT=rocm. Om det redan är installerat kör du installationen igen och kontrollerar AMD:s tabell för drivrutiner och maskinvara. Valfria motorer har egna begränsningar; se installationsguiden för Windows.",
-    "gpu_report_option_rocm_variant_linux": "Ange OMNIVOICE_TORCH_VARIANT=rocm och kör installationen igen för att installera ROCm-bygget av PyTorch.",
+    "gpu_report_option_rocm_windows_manual": "På AMD-maskinvara som stöds med Windows 11 x64 aktiverar du ElevenVoices ROCm 7.2.1-installation med ELEVENVOICE_TORCH_VARIANT=rocm. Om det redan är installerat kör du installationen igen och kontrollerar AMD:s tabell för drivrutiner och maskinvara. Valfria motorer har egna begränsningar; se installationsguiden för Windows.",
+    "gpu_report_option_rocm_variant_linux": "Ange ELEVENVOICE_TORCH_VARIANT=rocm och kör installationen igen för att installera ROCm-bygget av PyTorch.",
     "gpu_report_option_rocm_device_access": "Kontrollera att amdgpu-drivrutinen är laddad och att din användare kan öppna /dev/kfd (grupperna render och video).",
     "gpu_report_option_reinstall_cuda_torch": "Installera om runtime så att CUDA-bygget av PyTorch installeras.",
     "gpu_report_option_update_nvidia_driver": "Uppdatera NVIDIA-drivrutinen (R525 eller nyare på Linux, R528.33 eller nyare på Windows) och starta om ElevenVoice.",
@@ -2242,7 +2242,7 @@
     "failed": "Den lokala motorn kunde inte startas.",
     "idle": "Väntar på den lokala motorn…",
     "log_label": "Motorlogg",
-    "port_in_use": "Port {{port}} används redan av ett annat program. Stäng det eller ställ in OMNIVOICE_PORT på en ledig port och försök igen.",
+    "port_in_use": "Port {{port}} används redan av ett annat program. Stäng det eller ställ in ELEVENVOICE_PORT på en ledig port och försök igen.",
     "elapsed": "{{seconds}} s har gått",
     "first_run_hint": "Den första starten kan ta flera minuter medan Python-miljön förbereds.",
     "port_in_use_short": "Port {{port}} används",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "Det är den installerade appen, som inte kan redigeras. Välj en git clone i stället.",
       "not_git": "Mappen är ingen git clone. En ZIP-nedladdning fungerar inte; använd git clone.",
-      "not_voicestudio": "Ingen ElevenVoice-klon hittades i mappen.",
+      "not_elevenvoice": "Ingen ElevenVoice-klon hittades i mappen.",
       "read_only": "ElevenVoice kan inte skriva till mappen. Välj en mapp du äger."
     },
     "chooseFailed": "Mappen kunde inte användas. Försök igen eller välj en annan.",
@@ -3311,10 +3311,10 @@
       "workflow": "n8n-arbetsflöde",
       "dockerRunPowerShell": "Kör containern (Windows PowerShell)"
     },
-    "apiBearerHint": "Den här backenden är fjärransluten: sätt OMNIVOICE_API_KEY i ditt skal till dess API-nyckel. Exemplen läser den därifrån och innehåller den aldrig.",
+    "apiBearerHint": "Den här backenden är fjärransluten: sätt ELEVENVOICE_API_KEY i ditt skal till dess API-nyckel. Exemplen läser den därifrån och innehåller den aldrig.",
     "apiInsecureHint": "API-nycklar kräver https:// för en fjärrbackend. Placera backenden bakom https (till exempel Tailscale Serve) innan du använder en nyckel.",
     "dockerGpuHint": "GPU: NVIDIA kräver --gpus all (i Compose en GPU-enhetsreservation). AMD använder taggen :stable-rocm med /dev/kfd och /dev/dri. Se installationsguiden för Docker.",
-    "openaiAgentsHint": "Peka OpenAI Agents SDK:s röstpipeline mot ElevenVoice för tal-till-text och text-till-tal. Låt ElevenVoice vara igång. För en fjärrbackend, ange OMNIVOICE_API_KEY innan du kör. Ange AGENT_LLM_BASE_URL och AGENT_LLM_MODEL till den språkmodellserver som agenten ska använda.",
+    "openaiAgentsHint": "Peka OpenAI Agents SDK:s röstpipeline mot ElevenVoice för tal-till-text och text-till-tal. Låt ElevenVoice vara igång. För en fjärrbackend, ange ELEVENVOICE_API_KEY innan du kör. Ange AGENT_LLM_BASE_URL och AGENT_LLM_MODEL till den språkmodellserver som agenten ska använda.",
     "category": {
       "all": "Alla",
       "comms": "Samtal och röstagenter",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "Åtkomst-PIN",
       "api_key_label": "API-nyckel (valfritt)",
-      "api_key_help": "Behövs bara när servern anger OMNIVOICE_API_KEY. Nyckeln byts mot en session och sparas aldrig.",
+      "api_key_help": "Behövs bara när servern anger ELEVENVOICE_API_KEY. Nyckeln byts mot en session och sparas aldrig.",
       "connect": "Anslut",
       "connecting": "Ansluter…",
       "connected_to": "Ansluten till {{host}}",
@@ -3789,9 +3789,9 @@
       "last_seen": "Senast sedd {{time}}",
       "forget": "Glöm",
       "error_unreachable": "Kan inte nå {{host}}. Kontrollera att ElevenVoice körs, att delning över nätverk är på och att telefonen är på samma nätverk eller Tailscale.",
-      "error_not_voicestudio": "{{host}} svarade, men är ingen ElevenVoice-server. Kontrollera adressen och porten.",
+      "error_not_elevenvoice": "{{host}} svarade, men är ingen ElevenVoice-server. Kontrollera adressen och porten.",
       "error_pin": "PIN-koden avvisades. Delning skapar en ny PIN varje gång den slås på — skanna QR-koden igen.",
-      "error_api_key": "API-nyckeln avvisades. Kontrollera nyckeln som anges i OMNIVOICE_API_KEY på servern.",
+      "error_api_key": "API-nyckeln avvisades. Kontrollera nyckeln som anges i ELEVENVOICE_API_KEY på servern.",
       "error_session_expired": "Sessionen har gått ut. Ange API-nyckeln igen för att ansluta på nytt.",
       "error_insecure": "Vanlig http:// tillåts bara för adresser på ditt lokala nätverk eller Tailscale. Använd https:// för andra servrar.",
       "error_invalid_url": "Det där ser inte ut som en serveradress. Exempel: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "{{percent}} % av ljudet klipper",
     "duration_ok": "Ryms i originallängden",
     "duration_issue": "{{track_seconds}} s, längre än originalets {{source_seconds}} s"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

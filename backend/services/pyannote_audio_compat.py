@@ -15,7 +15,7 @@ class AudioMetaData(NamedTuple):
 
 
 _INSTALL_LOCK = RLock()
-_WRAPPER_MARKER = "_voicestudio_pyannote_soundfile_adapter"
+_WRAPPER_MARKER = "_elevenvoice_pyannote_soundfile_adapter"
 
 
 def _sample_width(subtype: str) -> int:

@@ -346,7 +346,7 @@ export function ConvertVoice() {
             <h3 className="text-sm font-medium">{t('convert.result_kicker')}</h3>
             <SaveAudioButton
               url={apiPath(result.audio_url)}
-              suggestedName={`voicestudio-${result.id}.wav`}
+              suggestedName={`elevenvoice-${result.id}.wav`}
             />
           </div>
           <WaveformPlayer src={apiPath(result.audio_url)} source="convert-result" height={40} />

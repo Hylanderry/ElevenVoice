@@ -59,7 +59,7 @@ export function dubExportRequest(options: DubExportOptions) {
   }
   return {
     path: `/dub/${endpoint}/${encodeURIComponent(jobId)}?${query}`,
-    name: `voicestudio-${jobId.replace(/[^a-zA-Z0-9_-]/g, '_')}-${track.replace(/[^a-zA-Z0-9_-]/g, '_')}-${format}.${extension}`,
+    name: `elevenvoice-${jobId.replace(/[^a-zA-Z0-9_-]/g, '_')}-${track.replace(/[^a-zA-Z0-9_-]/g, '_')}-${format}.${extension}`,
   };
 }
 

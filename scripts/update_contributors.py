@@ -42,9 +42,9 @@ AVATAR_SIZE = 128  # 2x the largest Electron render (56px), 3x the iOS 34pt clus
 HOME = ROOT / "electron/src/renderer/src/features/home"
 DATA_TS = HOME / "home-contributors-data.ts"
 AVATARS = HOME / "contributors"
-XCASSETS = ROOT / "mobile/ios/VoiceStudio/Resources/Contributors.xcassets"
-SWIFT = ROOT / "mobile/ios/VoiceStudio/Features/HomeContributors.swift"
-KOTLIN = ROOT / "mobile/android/features/src/main/kotlin/com/voicestudio/mobile/features/HomeContributors.kt"
+XCASSETS = ROOT / "mobile/ios/ElevenVoice/Resources/Contributors.xcassets"
+SWIFT = ROOT / "mobile/ios/ElevenVoice/Features/HomeContributors.swift"
+KOTLIN = ROOT / "mobile/android/features/src/main/kotlin/com/elevenvoice/mobile/features/HomeContributors.kt"
 READMES = (ROOT / "README.md", *sorted((ROOT / "docs/readme").glob("README_*.md")))
 
 # Automation accounts that GitHub reports as ``type: User``.
@@ -59,7 +59,7 @@ Fetch = Callable[[str], bytes]
 
 
 def http_get(url: str) -> bytes:
-    headers = {"User-Agent": "voicestudio-contributors-refresh", "Accept": "application/vnd.github+json"}
+    headers = {"User-Agent": "elevenvoice-contributors-refresh", "Accept": "application/vnd.github+json"}
     token = os.environ.get("GITHUB_TOKEN")
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"

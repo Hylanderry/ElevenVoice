@@ -54,7 +54,7 @@ export default function AudiobookVoicesPanel({
             value={language}
             options={ALL_LANGUAGES}
             popular={POPULAR_LANGS}
-            recentsKey="omnivoice.recents.audiobookLang"
+            recentsKey="elevenvoice.recents.audiobookLang"
             onChange={setLanguage}
             ariaLabel={t('audiobook.language')}
           />

@@ -34,8 +34,8 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -70,7 +70,7 @@ def test_a_missing_reference_is_still_passed_to_the_engine(dg, tmp_path):
 def test_a_missing_reference_is_logged(dg, tmp_path, caplog):
     """The reported case: the path survived in the saved job, the file did not."""
     gone = str(tmp_path / "cleaned-up" / "speaker1.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing(gone, job_id="job7", seg_id=42)
     assert "segment 42" in caplog.text, caplog.text
     assert gone in caplog.text, "the log must name the path that vanished"
@@ -83,7 +83,7 @@ def test_a_missing_reference_is_logged(dg, tmp_path, caplog):
 def test_no_reference_at_all_is_not_a_warning(dg, caplog):
     """A segment with no clone binding is the ordinary case — designed voices,
     preset voices, plain TTS. Warning there would bury the real one."""
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         assert dg.warn_if_ref_missing(None, job_id="j", seg_id=1) is None
         assert dg.warn_if_ref_missing("", job_id="j", seg_id=2) == ""
     assert caplog.text == ""
@@ -93,7 +93,7 @@ def test_each_segment_warns_once(dg, tmp_path, caplog):
     """A 300-segment dub whose clip directory was cleaned should produce one
     line per segment, not one per retry of that segment."""
     gone = str(tmp_path / "gone.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         for _ in range(5):
             dg.warn_if_ref_missing(gone, job_id="job7", seg_id=42)
     assert caplog.text.count("segment 42") == 1
@@ -103,7 +103,7 @@ def test_different_segments_each_warn(dg, tmp_path, caplog):
     """...but per-segment, since which lines lost their reference is the
     diagnostic — "some of them" is not actionable."""
     gone = str(tmp_path / "gone.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing(gone, job_id="job7", seg_id=1)
         dg.warn_if_ref_missing(gone, job_id="job7", seg_id=2)
     assert "segment 1" in caplog.text and "segment 2" in caplog.text
@@ -112,7 +112,7 @@ def test_different_segments_each_warn(dg, tmp_path, caplog):
 def test_jobs_do_not_share_the_warning_memo(dg, tmp_path, caplog):
     """Two dubs can legitimately use the same segment ids."""
     gone = str(tmp_path / "gone.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing(gone, job_id="jobA", seg_id=1)
         dg.warn_if_ref_missing(gone, job_id="jobB", seg_id=1)
     assert caplog.text.count("segment 1") == 2
@@ -122,7 +122,7 @@ def test_forgetting_a_job_lets_it_warn_again(dg, tmp_path, caplog):
     gone = str(tmp_path / "gone.wav")
     dg.warn_if_ref_missing(gone, job_id="job7", seg_id=1)
     dg.forget_missing_ref_warnings("job7")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing(gone, job_id="job7", seg_id=1)
     assert "segment 1" in caplog.text
 
@@ -132,7 +132,7 @@ def test_an_unreadable_path_is_treated_as_missing(dg, monkeypatch, caplog):
     same way a deleted file does, so it must not escape through an OSError."""
     monkeypatch.setattr(dg.os.path, "exists",
                         lambda p: (_ for _ in ()).throw(OSError("stale NFS handle")))
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing("/mnt/gone/clip.wav", job_id="j", seg_id=3)
     assert "segment 3" in caplog.text
 
@@ -161,7 +161,7 @@ def test_distinct_paths_each_warn_even_under_one_segment_key(dg, tmp_path, caplo
     """
     a = str(tmp_path / "speaker1.wav")
     b = str(tmp_path / "speaker2.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         dg.warn_if_ref_missing(a, job_id="job7", seg_id="preview")
         dg.warn_if_ref_missing(b, job_id="job7", seg_id="preview")
     assert a in caplog.text and b in caplog.text, (
@@ -172,7 +172,7 @@ def test_distinct_paths_each_warn_even_under_one_segment_key(dg, tmp_path, caplo
 def test_the_same_path_under_one_key_still_warns_once(dg, tmp_path, caplog):
     """...without giving up the de-duplication it exists for."""
     same = str(tmp_path / "speaker1.wav")
-    with caplog.at_level(logging.WARNING, logger="omnivoice.dub"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.dub"):
         for _ in range(4):
             dg.warn_if_ref_missing(same, job_id="job7", seg_id="preview")
     assert caplog.text.count(same) == 1

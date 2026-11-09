@@ -16,7 +16,7 @@ The route list is computed in a SUBPROCESS (`scripts/dump_api_routes.py
 --print`) so importing the app never pollutes this pytest process's
 `sys.modules` — which would break later DB-touching tests. The subprocess uses
 the same code path as snapshot generation, so the comparison is deterministic
-(no in-process / cross-platform skew). `OMNIVOICE_MODEL=test` skips the 2.4 GB
+(no in-process / cross-platform skew). `ELEVENVOICE_MODEL=test` skips the 2.4 GB
 model load.
 """
 import os
@@ -34,7 +34,7 @@ from dump_api_routes import SNAPSHOT  # noqa: E402
 @pytest.fixture(scope="module")
 def live_routes():
     """Route lines from a fresh subprocess — fully isolated from this process."""
-    env = dict(os.environ, OMNIVOICE_MODEL="test", OMNIVOICE_DISABLE_FILE_LOG="1")
+    env = dict(os.environ, ELEVENVOICE_MODEL="test", ELEVENVOICE_DISABLE_FILE_LOG="1")
     proc = subprocess.run(
         [sys.executable, str(_REPO / "scripts" / "dump_api_routes.py"), "--print"],
         cwd=str(_REPO), env=env, capture_output=True, text=True, timeout=180,
@@ -57,7 +57,7 @@ _CRITICAL = [
     "POST /audiobook", "POST /stories/encode", "POST /batch/enqueue",
     "POST /transcribe", "GET /api/settings/hf-token/state",
     "POST /v1/audio/speech", "POST /v1/audio/transcriptions",
-    "GET /.well-known/voicestudio-speech", "GET /v1/audio/capabilities",
+    "GET /.well-known/elevenvoice-speech", "GET /v1/audio/capabilities",
     "WS /ws/events", "WS /ws/tts", "WS /ws/transcribe",
     "WS /v1/audio/transcriptions/stream",
 ]
@@ -84,7 +84,7 @@ def test_route_inventory_matches_snapshot(live_routes):
     if msg:
         msg.append(
             "\nIf this change is intentional, regenerate the snapshot:\n"
-            "  OMNIVOICE_MODEL=test uv run python scripts/dump_api_routes.py\n"
+            "  ELEVENVOICE_MODEL=test uv run python scripts/dump_api_routes.py\n"
             "and commit tests/fixtures/api_routes.txt."
         )
         pytest.fail("\n\n".join(msg))

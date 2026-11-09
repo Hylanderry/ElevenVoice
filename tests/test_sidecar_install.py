@@ -1,7 +1,7 @@
 """One-click sidecar-engine provisioner (services.sidecar_install).
 
 The provisioner replaces IndexTTS-2's four manual terminal steps (clone,
-venv, `uv pip install -e .`, set OMNIVOICE_INDEXTTS_DIR) with a resumable
+venv, `uv pip install -e .`, set ELEVENVOICE_INDEXTTS_DIR) with a resumable
 background job. These tests run the job with git/uv/httpx/HF mocked and
 cover: the happy path, the disk-space preflight, the git-absent tarball
 fallback, partial-install repair, already-installed detection, uninstall
@@ -17,8 +17,8 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -46,9 +46,9 @@ def _clean_state(monkeypatch, tmp_path):
     si = importlib.import_module("services.sidecar_install")
     monkeypatch.setattr(si, "DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setattr(si, "_jobs", {})
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
-    monkeypatch.delenv("OMNIVOICE_FAKE_SIDE_DIR", raising=False)
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_CONTAINED", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FAKE_SIDE_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_CONTAINED", raising=False)
     # Set-then-delete: a bare delenv of an unset var records nothing to
     # restore, so a path an install test persists would leak into later
     # suites (an engine would then find a venv that no longer exists).
@@ -66,7 +66,7 @@ def _mk_spec(**over) -> si.SidecarSpec:
         repo_url="https://github.com/example/fake-side.git",
         tarball_url="https://github.com/example/fake-side/archive/refs/heads/main.tar.gz",
         checkout_dirname="fake-side",
-        env_var="OMNIVOICE_FAKE_SIDE_DIR",
+        env_var="ELEVENVOICE_FAKE_SIDE_DIR",
         probe_module="fake_side.infer",
         weights_repo_id=None,
         required_bytes=1 * _GIB,
@@ -149,9 +149,9 @@ def test_happy_path_installs_and_persists(monkeypatch):
     assert states["persist"] == "done"
     checkout = si.managed_checkout(spec)
     # Engine usable immediately: env var set in THIS process…
-    assert os.environ["OMNIVOICE_FAKE_SIDE_DIR"] == str(checkout)
+    assert os.environ["ELEVENVOICE_FAKE_SIDE_DIR"] == str(checkout)
     # …and persisted for the next launch via the env.* prefs mechanism.
-    assert prefs_written == {"env.OMNIVOICE_FAKE_SIDE_DIR": str(checkout)}
+    assert prefs_written == {"env.ELEVENVOICE_FAKE_SIDE_DIR": str(checkout)}
     # Memoised venv resolution invalidated so it re-probes without restart.
     assert calls.get("invalidated") == 1
     # uv pip install targeted the sidecar venv's own python (isolation
@@ -358,20 +358,20 @@ def test_legacy_kill_fallback_uses_only_direct_stable_handle(monkeypatch):
 
 
 def test_desktop_installer_needs_no_unmanaged_spawn_flags(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     monkeypatch.setattr(si.os, "name", "posix")
     assert si._install_containment_kwargs() == {}
 
 
 def test_standalone_installer_also_delegates_to_nested_owner(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_CONTAINED", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_CONTAINED", raising=False)
     monkeypatch.setattr(si.os, "name", "posix")
     assert si._install_containment_kwargs() == {}
 
 
 def test_desktop_windows_timeout_never_taskkills_a_reusable_pid(monkeypatch):
     calls = {}
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     monkeypatch.setattr(si.os, "name", "nt")
     monkeypatch.setattr(
         si.subprocess,
@@ -412,12 +412,12 @@ def test_desktop_installer_timeout_kills_nested_helper_before_it_can_mutate(
 ):
     """A timed-out uv/git root must not leave its pipe-owning helpers alive."""
     marker = tmp_path / "late-mutation"
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     drain_read, drain_write = os.pipe()
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_DRAIN_FD", str(drain_write))
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_DRAIN_FD", str(drain_write))
     child_script = (
         "import os,time; time.sleep(1); "
-        "open(os.environ['OMNIVOICE_TIMEOUT_MARKER'], 'w').write('bad')"
+        "open(os.environ['ELEVENVOICE_TIMEOUT_MARKER'], 'w').write('bad')"
     )
     script = (
         "import subprocess,sys,time; "
@@ -425,7 +425,7 @@ def test_desktop_installer_timeout_kills_nested_helper_before_it_can_mutate(
         "time.sleep(60)"
     )
     env = os.environ.copy()
-    env["OMNIVOICE_TIMEOUT_MARKER"] = str(marker)
+    env["ELEVENVOICE_TIMEOUT_MARKER"] = str(marker)
     job = si._new_job("fake-side")
 
     try:
@@ -442,7 +442,7 @@ def test_backend_death_closes_control_pipe_and_kills_nested_operation(tmp_path):
     marker = tmp_path / "mutation-after-backend-death"
     operation = (
         "import os,time; time.sleep(1); "
-        "open(os.environ['OMNIVOICE_TIMEOUT_MARKER'], 'w').write('bad')"
+        "open(os.environ['ELEVENVOICE_TIMEOUT_MARKER'], 'w').write('bad')"
     )
     backend = (
         "import os,sys,time; "
@@ -451,15 +451,15 @@ def test_backend_death_closes_control_pipe_and_kills_nested_operation(tmp_path):
         "time.sleep(.2); os._exit(0)"
     )
     env = os.environ.copy()
-    env["OMNIVOICE_DESKTOP_CONTAINED"] = "1"
-    env["OMNIVOICE_TIMEOUT_MARKER"] = str(marker)
+    env["ELEVENVOICE_DESKTOP_CONTAINED"] = "1"
+    env["ELEVENVOICE_TIMEOUT_MARKER"] = str(marker)
     env["PYTHONPATH"] = str(Path(__file__).parents[1] / "backend")
 
     run_kwargs = {}
     drain_fds = None
     if os.name == "posix":
         drain_fds = os.pipe()
-        env["OMNIVOICE_DESKTOP_DRAIN_FD"] = str(drain_fds[1])
+        env["ELEVENVOICE_DESKTOP_DRAIN_FD"] = str(drain_fds[1])
         run_kwargs["pass_fds"] = (drain_fds[1],)
     assert subprocess.run([sys.executable, "-c", backend], env=env, **run_kwargs).returncode == 0
     if drain_fds is not None:
@@ -788,19 +788,19 @@ def test_healthy_managed_install_reheals_lost_env_var(monkeypatch):
     (checkout / si._INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
     prefs_written = {}
     monkeypatch.setattr("core.prefs.set_", lambda k, v: prefs_written.update({k: v}))
-    assert "OMNIVOICE_FAKE_SIDE_DIR" not in os.environ
+    assert "ELEVENVOICE_FAKE_SIDE_DIR" not in os.environ
 
     res = si.start_install("fake-side")
 
     assert res["status"] == "already_installed"
-    assert os.environ["OMNIVOICE_FAKE_SIDE_DIR"] == str(checkout)
-    assert prefs_written == {"env.OMNIVOICE_FAKE_SIDE_DIR": str(checkout)}
+    assert os.environ["ELEVENVOICE_FAKE_SIDE_DIR"] == str(checkout)
+    assert prefs_written == {"env.ELEVENVOICE_FAKE_SIDE_DIR": str(checkout)}
 
 
 def test_start_install_reports_already_installed_for_user_clone(monkeypatch):
     spec = _mk_spec(installed_probe=lambda: True)
     monkeypatch.setitem(si.SPECS, "fake-side", spec)
-    monkeypatch.setenv("OMNIVOICE_FAKE_SIDE_DIR", "/home/user/own-clone")
+    monkeypatch.setenv("ELEVENVOICE_FAKE_SIDE_DIR", "/home/user/own-clone")
     res = si.start_install("fake-side")
     assert res["status"] == "already_installed"
 
@@ -846,7 +846,7 @@ def test_uninstall_removes_managed_install_and_prefs(monkeypatch):
     py = si._venv_python(checkout / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
-    monkeypatch.setenv("OMNIVOICE_FAKE_SIDE_DIR", str(checkout))
+    monkeypatch.setenv("ELEVENVOICE_FAKE_SIDE_DIR", str(checkout))
     deleted = []
     monkeypatch.setattr("core.prefs.get", lambda k, d=None: str(checkout))
     monkeypatch.setattr("core.prefs.delete", lambda k: deleted.append(k))
@@ -855,8 +855,8 @@ def test_uninstall_removes_managed_install_and_prefs(monkeypatch):
 
     assert res["status"] == "uninstalled"
     assert not si.managed_root(spec).exists()
-    assert "OMNIVOICE_FAKE_SIDE_DIR" not in os.environ
-    assert deleted == ["env.OMNIVOICE_FAKE_SIDE_DIR"]
+    assert "ELEVENVOICE_FAKE_SIDE_DIR" not in os.environ
+    assert deleted == ["env.ELEVENVOICE_FAKE_SIDE_DIR"]
 
 
 def test_uninstall_refuses_user_managed_clone(monkeypatch, tmp_path):
@@ -864,11 +864,11 @@ def test_uninstall_refuses_user_managed_clone(monkeypatch, tmp_path):
     monkeypatch.setitem(si.SPECS, "fake-side", spec)
     user_clone = tmp_path / "my-own-clone"
     user_clone.mkdir()
-    monkeypatch.setenv("OMNIVOICE_FAKE_SIDE_DIR", str(user_clone))
+    monkeypatch.setenv("ELEVENVOICE_FAKE_SIDE_DIR", str(user_clone))
     res = si.uninstall("fake-side")
     assert res["status"] == "not_managed"
     assert user_clone.exists()                      # never deleted
-    assert os.environ["OMNIVOICE_FAKE_SIDE_DIR"] == str(user_clone)  # never cleared
+    assert os.environ["ELEVENVOICE_FAKE_SIDE_DIR"] == str(user_clone)  # never cleared
 
 
 def test_uninstall_clears_legacy_managed_preference(monkeypatch):
@@ -900,7 +900,7 @@ def test_indextts2_spec_matches_bootstrap_contract():
     assert spec is not None
     # The env var must be the one engines/indextts/bootstrap.py actually
     # reads — anything else would install into a dir the engine never finds.
-    assert spec.env_var == "OMNIVOICE_INDEXTTS_DIR"
+    assert spec.env_var == "ELEVENVOICE_INDEXTTS_DIR"
     assert spec.probe_module == "indextts.infer_v2_5"
     # main.py loads from <dir>/checkpoints/, resolving whichever accepted
     # config name is on disk — the installer must put the weights there.
@@ -983,7 +983,7 @@ def test_managed_indextts2_source_is_preserved_during_25_install(monkeypatch):
 
 def test_indextts2_env_var_in_settings_allowlist():
     from api.routers.system import PERSISTENT_KEYS
-    assert "OMNIVOICE_INDEXTTS_DIR" in PERSISTENT_KEYS
+    assert "ELEVENVOICE_INDEXTTS_DIR" in PERSISTENT_KEYS
 
 
 def test_list_backends_flags_indextts2_one_click():
@@ -1039,7 +1039,7 @@ def test_router_uninstall_maps_refusals_to_http_errors(monkeypatch):
         engines_router.uninstall_sidecar_engine("fake-side")
     assert ei.value.status_code == 409
     si._jobs.pop("fake-side")
-    monkeypatch.setenv("OMNIVOICE_FAKE_SIDE_DIR", "/somewhere/else")
+    monkeypatch.setenv("ELEVENVOICE_FAKE_SIDE_DIR", "/somewhere/else")
     with pytest.raises(HTTPException) as ei:
         engines_router.uninstall_sidecar_engine("fake-side")
     assert ei.value.status_code == 400
@@ -1122,19 +1122,19 @@ def test_uninstalling_one_engine_leaves_every_other_engine_intact(monkeypatch):
     [
         ("moss-tts-v15", ["--python", "3.11"],
          ["-e", "{c}[torch-runtime]", "torchcodec===0.8.1"],
-         "OMNIVOICE_MOSS_TTS_V15_DIR"),
+         "ELEVENVOICE_MOSS_TTS_V15_DIR"),
         ("confucius4-tts", ["--python", "3.10"], ["-r", "{c}/requirements.txt"],
-         "OMNIVOICE_CONFUCIUS4_TTS_DIR"),
+         "ELEVENVOICE_CONFUCIUS4_TTS_DIR"),
         ("dots-tts", ["--python", "3.11"],
          ["-e", "{c}", "-c", "{uri}/constraints/recommended.txt"],
-         "OMNIVOICE_DOTS_TTS_DIR"),
+         "ELEVENVOICE_DOTS_TTS_DIR"),
         # moss-tts-nano installs soundfile alongside the editable install so
         # torchaudio 2.7's I/O backend is present inside this engine's own
         # venv — upstream's pyproject pins torchaudio but no backend
         # (#2100). Without soundfile the engine's first load() crashes with
         # "Couldn't find appropriate backend to handle uri …".
         ("moss-tts-nano", ["--python", "3.11"],
-         ["-e", "{c}", "soundfile"], "OMNIVOICE_MOSS_TTS_NANO_DIR"),
+         ["-e", "{c}", "soundfile"], "ELEVENVOICE_MOSS_TTS_NANO_DIR"),
     ],
 )
 def test_new_specs_install_recipe(monkeypatch, engine_id, venv_args, install_args, env_var):
@@ -1292,8 +1292,8 @@ def test_list_backends_offers_install_only_where_it_can_work(monkeypatch):
 @pytest.mark.parametrize(
     ("engine_id", "package", "env_var"),
     [
-        ("supertonic3", "supertonic==1.3.1", "OMNIVOICE_SUPERTONIC3_DIR"),
-        ("pockettts", "pocket-tts==2.1.0", "OMNIVOICE_POCKETTTS_DIR"),
+        ("supertonic3", "supertonic==1.3.1", "ELEVENVOICE_SUPERTONIC3_DIR"),
+        ("pockettts", "pocket-tts==2.1.0", "ELEVENVOICE_POCKETTTS_DIR"),
     ],
 )
 def test_pypi_engines_install_the_apps_own_pin_without_fetching_source(
@@ -1340,7 +1340,7 @@ def test_an_extra_already_in_the_app_env_counts_as_installed(monkeypatch):
     """A `uv sync --extra supertonic` install keeps working and is never
     provisioned over."""
     import importlib.util as ilu
-    monkeypatch.delenv("OMNIVOICE_SUPERTONIC3_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SUPERTONIC3_DIR", raising=False)
     real = ilu.find_spec
     monkeypatch.setattr(
         ilu, "find_spec", lambda name, *a: object() if name == "supertonic" else real(name, *a)
@@ -1350,17 +1350,17 @@ def test_an_extra_already_in_the_app_env_counts_as_installed(monkeypatch):
 
 
 def test_engine_venv_python_needs_a_real_interpreter(monkeypatch, tmp_path):
-    monkeypatch.delenv("OMNIVOICE_FAKE_SIDE_DIR", raising=False)
-    assert si.engine_venv_python("OMNIVOICE_FAKE_SIDE_DIR") is None
-    monkeypatch.setenv("OMNIVOICE_FAKE_SIDE_DIR", str(tmp_path))
-    assert si.engine_venv_python("OMNIVOICE_FAKE_SIDE_DIR") is None  # no venv yet
+    monkeypatch.delenv("ELEVENVOICE_FAKE_SIDE_DIR", raising=False)
+    assert si.engine_venv_python("ELEVENVOICE_FAKE_SIDE_DIR") is None
+    monkeypatch.setenv("ELEVENVOICE_FAKE_SIDE_DIR", str(tmp_path))
+    assert si.engine_venv_python("ELEVENVOICE_FAKE_SIDE_DIR") is None  # no venv yet
     py = si._venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
     # An interpreter without the marker is a failed or unfinished install.
-    assert si.engine_venv_python("OMNIVOICE_FAKE_SIDE_DIR") is None
+    assert si.engine_venv_python("ELEVENVOICE_FAKE_SIDE_DIR") is None
     (tmp_path / si._INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
-    assert si.engine_venv_python("OMNIVOICE_FAKE_SIDE_DIR") == py
+    assert si.engine_venv_python("ELEVENVOICE_FAKE_SIDE_DIR") == py
 
 
 # The root of each pinned upstream commit, as GitHub lists it (2026-09-10).
@@ -1517,9 +1517,9 @@ def _capture_rocm_install(monkeypatch, family, variant=None):
     from core.torch_indexes import PYTORCH_ROCM_INDEX_URL
 
     if variant is None:
-        monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", variant)
+        monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", variant)
     monkeypatch.setattr(si.sys, "platform", "linux")
     argvs = _capture_install_argvs(monkeypatch, family=family)
     spec = si.get_spec("indextts2")
@@ -1546,7 +1546,7 @@ def test_rocm_host_installs_rocm_torch_for_indextts2(monkeypatch):
 
 
 def test_rocm_variant_env_opts_in_before_the_family_probe_reports_rocm(monkeypatch):
-    """`OMNIVOICE_TORCH_VARIANT=rocm` is the documented opt-in; it can be set
+    """`ELEVENVOICE_TORCH_VARIANT=rocm` is the documented opt-in; it can be set
     while the main venv swap has not landed yet (family still cpu)."""
     pip, _ = _capture_rocm_install(monkeypatch, family="cpu", variant=" ROCm ")
     assert "--no-sources" in pip
@@ -1571,7 +1571,7 @@ def test_rocm_args_never_reach_engines_that_did_not_opt_in(monkeypatch):
     change any other spec's install."""
     from core.torch_indexes import PYTORCH_ROCM_INDEX_URL
 
-    monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     monkeypatch.setattr(si.sys, "platform", "linux")
     argvs = _capture_install_argvs(monkeypatch, family="rocm")
     for engine_id in _ALL_SPEC_IDS:
@@ -1588,12 +1588,12 @@ def test_rocm_args_never_reach_engines_that_did_not_opt_in(monkeypatch):
 
 
 def test_rocm_index_env_is_the_index_uv_resolves_against(monkeypatch):
-    """Fail-before/pass-after: `OMNIVOICE_TORCH_INDEX` derived the pin tag
+    """Fail-before/pass-after: `ELEVENVOICE_TORCH_INDEX` derived the pin tag
     but the index appended to uv stayed the hard-coded public one — a
     mirror's pins looked up on someone else's server, bypassing the mirror
     a restricted network depends on."""
     mirror = "https://mirror.example.com/pytorch/rocm6.4"
-    monkeypatch.setenv("OMNIVOICE_TORCH_INDEX", mirror)
+    monkeypatch.setenv("ELEVENVOICE_TORCH_INDEX", mirror)
     pip, public = _capture_rocm_install(monkeypatch, family="rocm")
     assert "--no-sources" in pip
     assert "torch==2.8.0+rocm6.4" in pip  # tag still from the mirror's tail
@@ -1620,8 +1620,8 @@ _ROCM_TORCH_VERSION_PY = (
 def _mk_complete_indextts2_install(monkeypatch, torch_version_py: str):
     """A COMPLETE managed indextts2 install whose venv's torch `version.py`
     says which build it carries."""
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
-    monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     spec = si.get_spec("indextts2")
     checkout = si.managed_checkout(spec)
     (checkout / "indextts").mkdir(parents=True, exist_ok=True)
@@ -1732,7 +1732,7 @@ def test_a_submodule_tree_is_fetched_at_its_pinned_revision(monkeypatch):
     assert urls == []
 
     # At another revision: only the submodule is fetched again.
-    (sub / ".voicestudio_source_revision").write_text("old\n", encoding="utf-8")
+    (sub / ".elevenvoice_source_revision").write_text("old\n", encoding="utf-8")
     si._step_fetch_source(spec, si._new_job(spec.engine_id))
     assert urls == [extra.tarball_url]
 
@@ -1810,7 +1810,7 @@ def test_a_tarball_with_an_absolute_link_still_extracts(monkeypatch, tmp_path):
     dest.parent.mkdir(parents=True)
     job = si._new_job("fake-side")
 
-    si._download_and_extract(job, "https://example.test/m.tar.gz", dest, tmp_path, "OMNIVOICE_FAKE_SIDE_DIR")
+    si._download_and_extract(job, "https://example.test/m.tar.gz", dest, tmp_path, "ELEVENVOICE_FAKE_SIDE_DIR")
 
     assert (dest / "matcha" / "__init__.py").is_file()
     assert not (dest / "data").exists() and not (dest / "data").is_symlink()
@@ -2053,12 +2053,12 @@ def test_corrupt_non_utf8_markers_read_as_absent_not_crash(monkeypatch):
 
 
 def test_engines_dir_env_relocates_managed_roots(monkeypatch, tmp_path):
-    """#2683: OMNIVOICE_ENGINES_DIR moves engine venvs off the data drive."""
+    """#2683: ELEVENVOICE_ENGINES_DIR moves engine venvs off the data drive."""
     spec = next(iter(si.SPECS.values()))
     default_root = si.managed_root(spec)
     assert default_root == Path(si.DATA_DIR) / "engines" / spec.engine_id
     elsewhere = tmp_path / "bigdrive"
-    monkeypatch.setenv("OMNIVOICE_ENGINES_DIR", str(elsewhere))
+    monkeypatch.setenv("ELEVENVOICE_ENGINES_DIR", str(elsewhere))
     assert si.managed_root(spec) == elsewhere / spec.engine_id
 
 

@@ -94,7 +94,7 @@ beforeEach(() => {
     'fetch',
     vi.fn(async () => ({ ok: true })),
   );
-  vi.stubEnv('OMNIVOICE_TORCH_VARIANT', '');
+  vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', '');
 });
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -132,24 +132,24 @@ describe('resolveTorchVariant', () => {
   });
   it('honours an explicit variant over detection', () => {
     expect(
-      resolveTorchVariant({ OMNIVOICE_TORCH_VARIANT: ' CUDA ' }, 'linux', 'x64', noGpu),
+      resolveTorchVariant({ ELEVENVOICE_TORCH_VARIANT: ' CUDA ' }, 'linux', 'x64', noGpu),
     ).toEqual({ variant: 'default', explicit: true });
-    expect(resolveTorchVariant({ OMNIVOICE_TORCH_VARIANT: 'cpu' }, 'linux', 'x64', gpu)).toEqual({
+    expect(resolveTorchVariant({ ELEVENVOICE_TORCH_VARIANT: 'cpu' }, 'linux', 'x64', gpu)).toEqual({
       variant: 'cpu',
       explicit: true,
     });
-    expect(resolveTorchVariant({ OMNIVOICE_TORCH_VARIANT: 'rocm' }, 'linux', 'x64', noGpu)).toEqual(
+    expect(resolveTorchVariant({ ELEVENVOICE_TORCH_VARIANT: 'rocm' }, 'linux', 'x64', noGpu)).toEqual(
       { variant: 'rocm', explicit: true },
     );
   });
   it('ignores an explicit cpu request where the lock already ships CPU/MPS wheels', () => {
     expect(
-      resolveTorchVariant({ OMNIVOICE_TORCH_VARIANT: 'cpu' }, 'darwin', 'arm64', noGpu).variant,
+      resolveTorchVariant({ ELEVENVOICE_TORCH_VARIANT: 'cpu' }, 'darwin', 'arm64', noGpu).variant,
     ).toBe('default');
   });
   it('treats unknown values like auto', () => {
     expect(
-      resolveTorchVariant({ OMNIVOICE_TORCH_VARIANT: 'auto' }, 'linux', 'x64', noGpu).variant,
+      resolveTorchVariant({ ELEVENVOICE_TORCH_VARIANT: 'auto' }, 'linux', 'x64', noGpu).variant,
     ).toBe('cpu');
   });
 });
@@ -253,7 +253,7 @@ describe('CPU-only runtime install', () => {
   });
   it('keeps the lock wheels on an NVIDIA host', async () => {
     host('linux', 'x64');
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cuda');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cuda');
     const { bundle, project } = await fixture();
     const run = fakeRun(project);
     await installRuntime(bundle, project, 'uv', run, new AbortController().signal);
@@ -312,13 +312,13 @@ describe('runtime markers across torch flavours', () => {
   it('keeps a pre-existing CUDA runtime on a host that now infers CPU', async () => {
     host('linux', 'x64');
     const { bundle, project } = await fixture();
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cuda');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cuda');
     await installRuntime(bundle, project, 'uv', fakeRun(project), new AbortController().signal);
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', '');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', '');
     expect(await runtimeReady(bundle, project)).toBe(true);
     expect(await runtimeCompatible(bundle, project)).toBe(true);
     // ...but an explicit CPU request is a deliberate reinstall.
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cpu');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cpu');
     expect(await runtimeReady(bundle, project)).toBe(false);
   });
   it('flags a CPU runtime stale once the host gains an NVIDIA driver', async () => {
@@ -327,7 +327,7 @@ describe('runtime markers across torch flavours', () => {
     await installRuntime(bundle, project, 'uv', fakeRun(project), new AbortController().signal);
     expect(await readFile(join(project, '.runtime-ready'), 'utf8')).toHaveLength(64);
     expect(await runtimeReady(bundle, project)).toBe(true);
-    vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cuda');
+    vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cuda');
     expect(await runtimeReady(bundle, project)).toBe(false);
     expect(await runtimeCompatible(bundle, project)).toBe(false);
   });

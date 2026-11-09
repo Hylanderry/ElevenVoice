@@ -3,7 +3,7 @@
 `core.db._run_alembic_upgrade` must:
 
 - snapshot the DB *before* pending migrations run (and name the snapshot
-  ``omnivoice.db.backup-<version>-<n>``),
+  ``elevenvoice.db.backup-<version>-<n>``),
 - NOT snapshot when the DB is already at head (no churn on every launch),
 - keep the pre-existing non-fatal behavior for the "nothing was applied"
   classes (#552/#547: stamped at a removed revision → warn + reconcile),
@@ -57,7 +57,7 @@ def _profile_names(path):
 
 def test_pending_migrations_snapshot_first_then_upgrade(tmp_path, monkeypatch):
     """A DB behind head (here: never stamped) gets a backup, then migrates."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
 
@@ -82,7 +82,7 @@ def test_pending_migrations_apply_from_any_cwd(tmp_path, monkeypatch):
     repo root. alembic resolves a bare relative script_location against the
     CWD, so alembic.ini must use %(here)s — otherwise the first pending
     migration kills startup with "Path doesn't exist: backend/migrations"."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
     monkeypatch.chdir(tmp_path)  # anywhere but the repo root
@@ -133,7 +133,7 @@ def test_alembic_ini_paths_survive_spaces_and_drive_letters(tmp_path, monkeypatc
 
 def test_up_to_date_db_is_not_resnapshotted(tmp_path, monkeypatch):
     """Once at head, later launches must not churn new backups."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
 
@@ -149,7 +149,7 @@ def test_unknown_revision_stays_nonfatal_and_makes_no_backup(tmp_path, monkeypat
     """#552/#547 class: stamped at a revision this build doesn't ship
     (preview→stable). Nothing would be applied → keep the old warn+continue
     behavior, and don't churn a pointless backup every launch."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db, stamp="9999_from_a_newer_build")
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
 
@@ -163,7 +163,7 @@ def test_midflight_failure_stops_startup_and_names_backup(tmp_path, monkeypatch)
     """The data-loss case this PR closes: a migration that fails while
     executing must raise MigrationError (startup stops), leave the original
     data reachable, and point the user at the pre-migration backup."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
 
@@ -184,7 +184,7 @@ def test_midflight_failure_stops_startup_and_names_backup(tmp_path, monkeypatch)
     assert backups, "the pre-migration backup must exist on failure"
     assert backups[0] in msg, "the error must name the backup path"
     assert str(db) in msg, "the error must name the live DB path"
-    assert "github.com/debpalash/VoiceStudio/issues" in msg
+    assert "github.com/Hylanderry/ElevenVoice/issues" in msg
     # Original data still present in BOTH the live DB and the backup —
     # and nothing was auto-restored (the backup file is separate).
     assert _profile_names(db) == ["Alice"]
@@ -194,7 +194,7 @@ def test_midflight_failure_stops_startup_and_names_backup(tmp_path, monkeypatch)
 def test_midflight_failure_without_backup_says_so(tmp_path, monkeypatch):
     """If the snapshot was skipped (oversized DB), the failure message must
     say a backup wasn't written instead of naming a phantom path."""
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
     monkeypatch.setattr(db_backup, "MAX_BACKUP_DB_BYTES", 1)
@@ -220,13 +220,13 @@ def test_startup_migration_leaves_app_logging_intact(tmp_path, monkeypatch):
     disable_existing_loggers=False — used to replace the root logger's
     handlers with alembic.ini's console handler and apply its
     `[logger_root] level=WARN`. Every boot that actually migrated (every
-    FIRST RUN, every upgrade) then lost the omnivoice.log file handler and
+    FIRST RUN, every upgrade) then lost the elevenvoice.log file handler and
     all INFO logging for the rest of the process — including the entire
     graceful-shutdown trace, so a SIGTERM'd clean quit read as a silent
     crash. Fail-before/pass-after."""
     import logging
 
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     _seed_user_db(db)
     monkeypatch.setattr(db_module, "DB_PATH", str(db))
 

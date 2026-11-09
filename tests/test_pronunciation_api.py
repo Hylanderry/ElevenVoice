@@ -15,8 +15,8 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 def _repo_root() -> str:
@@ -174,7 +174,7 @@ def test_existing_data_dir_upgrades_cleanly(tmp_path, monkeypatch):
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import importlib
     for m in ("core.config", "core.db"):
         if m in sys.modules:
@@ -220,8 +220,8 @@ def test_crud_roundtrip(client):
 def test_server_mode_pronunciation_mutations_require_api_key(client, monkeypatch):
     from fastapi.testclient import TestClient
 
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     remote = TestClient(client.app, client=("172.17.0.1", 50000))
 
     assert remote.get("/pronunciation").status_code == 200

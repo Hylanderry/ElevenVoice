@@ -34,7 +34,7 @@ def uvicorn_arguments(arguments: Sequence[str], port: int | None = None) -> list
     supplied = list(arguments)
     resolved = ["-m", "uvicorn", "backend.main:app"]
     if not _has_option(supplied, "--host"):
-        resolved.extend(["--host", os.environ.get("OMNIVOICE_BIND_HOST", _DEFAULT_DOCKER_HOST)])
+        resolved.extend(["--host", os.environ.get("ELEVENVOICE_BIND_HOST", _DEFAULT_DOCKER_HOST)])
     if not _has_option(supplied, "--port"):
         resolved.extend(["--port", str(port if port is not None else effective_port(supplied))])
     return [*resolved, *supplied]
@@ -75,7 +75,7 @@ def main() -> None:
         healthcheck()
         return
     port = effective_port(supplied)
-    os.environ["OMNIVOICE_PORT"] = str(port)
+    os.environ["ELEVENVOICE_PORT"] = str(port)
     os.execv(sys.executable, [sys.executable, *uvicorn_arguments(supplied, port)])
 
 

@@ -8,7 +8,7 @@ own venv.
 
 Probe order (priority — existing power-user installs win, zero migration):
 
-    1. ``${OMNIVOICE_DOTS_TTS_DIR}/.venv/`` — the user's clone-level venv.
+    1. ``${ELEVENVOICE_DOTS_TTS_DIR}/.venv/`` — the user's clone-level venv.
     2. ``backend/engines/dots_tts/.venv/`` — this package's own venv.
     3. Bootstrap: ``uv venv`` then ``uv pip install -e <clone> -c
        <clone>/constraints/recommended.txt`` (the upstream-pinned stack:
@@ -32,7 +32,7 @@ from typing import Optional
 
 from engines._venv_probe import ProbeResult, log_safe, venv_can_import
 
-logger = logging.getLogger("omnivoice.dots_tts.bootstrap")
+logger = logging.getLogger("elevenvoice.dots_tts.bootstrap")
 
 #: Absolute path to the sidecar entrypoint.
 DOTS_TTS_SIDECAR_SCRIPT: Path = Path(__file__).parent / "main.py"
@@ -51,7 +51,7 @@ def _uv_env() -> "dict[str, str] | None":
     return uv_subprocess_env(_ENGINES_VENV_DIR.parent.parent)
 
 #: Env var pointing at the user's dots.tts clone root.
-_CLONE_DIR_ENV: str = "OMNIVOICE_DOTS_TTS_DIR"
+_CLONE_DIR_ENV: str = "ELEVENVOICE_DOTS_TTS_DIR"
 
 #: Per-process resolution cache. Cleared by :func:`invalidate` for tests.
 _resolved_python: Optional[Path] = None
@@ -138,7 +138,7 @@ def resolve_dots_tts_venv() -> Path:
             "dots.tts is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your dots.tts clone "
             "(the directory that contains pyproject.toml and constraints/), "
-            "then restart VoiceStudio. See docs/engines/dots-tts.md for the "
+            "then restart ElevenVoice. See docs/engines/dots-tts.md for the "
             "full install walk-through."
         )
 
@@ -178,7 +178,7 @@ def _venv_can_import_dots(python_path: Path) -> ProbeResult:
 
 
 def _locate_uv() -> Optional[str]:
-    bundled = os.environ.get("OMNIVOICE_BUNDLED_UV")
+    bundled = os.environ.get("ELEVENVOICE_BUNDLED_UV")
     if bundled and Path(bundled).is_file():
         return bundled
     return shutil.which("uv")
@@ -191,9 +191,9 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
     if not uv:
         raise RuntimeError(
             "uv is required to bootstrap the dots.tts venv but was not found "
-            "on PATH (and OMNIVOICE_BUNDLED_UV was not set). Install uv from "
-            "https://docs.astral.sh/uv/ and re-launch VoiceStudio, or set "
-            "OMNIVOICE_BUNDLED_UV to the absolute path of a uv binary."
+            "on PATH (and ELEVENVOICE_BUNDLED_UV was not set). Install uv from "
+            "https://docs.astral.sh/uv/ and re-launch ElevenVoice, or set "
+            "ELEVENVOICE_BUNDLED_UV to the absolute path of a uv binary."
         )
 
     logger.info(

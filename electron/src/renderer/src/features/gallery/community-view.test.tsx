@@ -122,7 +122,7 @@ it('marks items added in the last 30 days as new', () => {
 
 it('links only real GitHub handles, never the house author', () => {
   expect(authorProfileUrl('iluucasz')).toBe('https://github.com/iluucasz');
-  expect(authorProfileUrl('VoiceStudio')).toBeNull();
+  expect(authorProfileUrl('ElevenVoice')).toBeNull();
   expect(authorProfileUrl('Jane Doe')).toBeNull();
   expect(authorProfileUrl('-bad')).toBeNull();
   expect(authorProfileUrl('a'.repeat(40))).toBeNull();

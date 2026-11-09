@@ -17,7 +17,7 @@ Today we ship:
       so callers fail fast with a clear message instead of a KeyError.
 
 Selection: auto — if env is configured, return OpenAICompatBackend; else
-OffBackend. Callers can override with `OMNIVOICE_LLM_BACKEND`.
+OffBackend. Callers can override with `ELEVENVOICE_LLM_BACKEND`.
 
 NOTE: cloud providers stay **opt-in** per the ROADMAP's privacy policy.
 Even with `TRANSLATE_API_KEY` set, the flag only turns on this backend;
@@ -32,7 +32,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Iterator, Optional
 
-logger = logging.getLogger("omnivoice.llm")
+logger = logging.getLogger("elevenvoice.llm")
 
 _REASONING_NAMES = r"think|thinking|reasoning"
 _OPEN_REASONING_TAG = re.compile(rf"<({_REASONING_NAMES})>", re.IGNORECASE)
@@ -253,7 +253,7 @@ class OpenAICompatBackend(LLMBackend):
         """
         if timeout is None:
             try:
-                timeout = float(os.environ.get("OMNIVOICE_LLM_TIMEOUT", "45"))
+                timeout = float(os.environ.get("ELEVENVOICE_LLM_TIMEOUT", "45"))
             except ValueError:
                 timeout = 45.0
         selected_model = self.model_name
@@ -294,7 +294,7 @@ class OpenAICompatBackend(LLMBackend):
                              temperature: Optional[float] = None) -> Iterator[str]:
         if timeout is None:
             try:
-                timeout = float(os.environ.get("OMNIVOICE_LLM_TIMEOUT", "45"))
+                timeout = float(os.environ.get("ELEVENVOICE_LLM_TIMEOUT", "45"))
             except ValueError:
                 timeout = 45.0
         kw = {} if temperature is None else {"temperature": temperature}
@@ -416,7 +416,7 @@ def _provider_hint(bid: str) -> str | None:
 
 
 def active_backend_id() -> str:
-    explicit = os.environ.get("OMNIVOICE_LLM_BACKEND")
+    explicit = os.environ.get("ELEVENVOICE_LLM_BACKEND")
     if explicit:
         return explicit
     from core import prefs

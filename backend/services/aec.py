@@ -1,6 +1,6 @@
 """Acoustic echo cancellation for dictate-over-playback (parity Action 8b).
 
-When the user dictates while VoiceStudio is *playing* audio (a TTS preview, a
+When the user dictates while ElevenVoice is *playing* audio (a TTS preview, a
 dub render, a video), the loudspeaker signal leaks back into the microphone.
 The streaming ASR on ``/ws/transcribe`` then transcribes that bleed as if it
 were speech — the "it typed back what the app just said" symptom. A browser's
@@ -34,7 +34,7 @@ from typing import Final
 
 import numpy as np
 
-logger = logging.getLogger("omnivoice.aec")
+logger = logging.getLogger("elevenvoice.aec")
 
 
 _DEFAULT_FILTER_TAPS: Final[int] = 512

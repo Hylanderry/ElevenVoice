@@ -65,7 +65,7 @@ def test_small_models_not_over_evicted():
 
 
 def test_env_opt_out(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_VRAM_PREFLIGHT", "0")
+    monkeypatch.setenv("ELEVENVOICE_ASR_VRAM_PREFLIGHT", "0")
     assert _degrade(_backend(), 0.5) == ("cuda", "float16")
 
 

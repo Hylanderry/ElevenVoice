@@ -164,7 +164,7 @@ def test_explicit_cpu_choice_keeps_the_cpu_tier(
     gguf_cache, gguf_binary, gguf_engine, monkeypatch
 ):
     """A CPU pin keeps the CPU tier as the target."""
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     install_pair(gguf_cache, CPU_PAIR)
     base, _tokenizer, _entry = gguf_engine.OmniVoiceGGUFBackend()._resolve_quant_paths()
     assert base.name == CPU_PAIR[0]

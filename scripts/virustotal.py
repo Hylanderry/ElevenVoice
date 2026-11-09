@@ -181,7 +181,7 @@ def summarize(attributes: dict) -> int:
 def source_archive(destination: Path) -> None:
     # Match GitHub's committed tree and export-ignore rules. Local changes are
     # deliberately excluded; use an explicit file to scan a prepared candidate.
-    subprocess.run(["git", "archive", "--format=zip", "--prefix=VoiceStudio-main/",
+    subprocess.run(["git", "archive", "--format=zip", "--prefix=ElevenVoice-main/",
                     "-o", str(destination), "HEAD"], cwd=ROOT, check=True)
 
 
@@ -205,8 +205,8 @@ def main(argv=None) -> int:
         print("Set VIRUSTOTAL_API_KEY or run interactively to enter it at the hidden prompt.", file=sys.stderr)
         return 2
     try:
-        with tempfile.TemporaryDirectory(prefix="voicestudio-virustotal-") as temporary:
-            path = Path(args.file).expanduser().resolve() if args.file else Path(temporary) / "VoiceStudio-main.zip"
+        with tempfile.TemporaryDirectory(prefix="elevenvoice-virustotal-") as temporary:
+            path = Path(args.file).expanduser().resolve() if args.file else Path(temporary) / "ElevenVoice-main.zip"
             if args.file is None:
                 source_archive(path)
                 print("Source: committed HEAD (local changes excluded).")

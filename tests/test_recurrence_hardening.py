@@ -12,7 +12,7 @@ import os
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _FAKE_AUDIO = b"RIFF" + b"\x00" * 2000
 
@@ -22,7 +22,7 @@ _FAKE_AUDIO = b"RIFF" + b"\x00" * 2000
 
 @pytest.fixture()
 def profiles_client(tmp_path, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import importlib
     import core.config as _cfg
     importlib.reload(_cfg)
@@ -74,18 +74,18 @@ def test_user_env_drops_unusable_path_keys(tmp_path, monkeypatch):
     blocker.write_text("a file, so a directory cannot be created beneath it")
     env_file = tmp_path / "env"
     env_file.write_text(
-        f"OMNIVOICE_CACHE_DIR={blocker}/impossible/cache\n"
-        f"OMNIVOICE_DATA_DIR={tmp_path}/fine\n"
+        f"ELEVENVOICE_CACHE_DIR={blocker}/impossible/cache\n"
+        f"ELEVENVOICE_DATA_DIR={tmp_path}/fine\n"
     )
-    monkeypatch.delenv("OMNIVOICE_CACHE_DIR", raising=False)
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", "sentinel-overwritten-by-load")
+    monkeypatch.delenv("ELEVENVOICE_CACHE_DIR", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", "sentinel-overwritten-by-load")
 
     from core import user_env
     assert user_env.load_into_environ(str(env_file)) is True
-    assert "OMNIVOICE_CACHE_DIR" not in os.environ, "dead path was exported anyway"
-    assert os.environ["OMNIVOICE_DATA_DIR"] == f"{tmp_path}/fine"  # valid path honored
+    assert "ELEVENVOICE_CACHE_DIR" not in os.environ, "dead path was exported anyway"
+    assert os.environ["ELEVENVOICE_DATA_DIR"] == f"{tmp_path}/fine"  # valid path honored
     assert os.path.isdir(f"{tmp_path}/fine")
-    monkeypatch.delenv("OMNIVOICE_DATA_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DATA_DIR", raising=False)
 
 
 # ── Class 7: cross-device moves (Windows D:-drive class) ─────────────────────
@@ -184,7 +184,7 @@ def test_generate_timeout_scales_with_text_length(monkeypatch):
 
 def test_generate_timeout_env_floor_respected(monkeypatch):
     import importlib
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "900")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "900")
     import services.model_manager as mm
     monkeypatch.setattr(mm, "GPU_JOB_TIMEOUT_S", 900.0)
     from api.routers import generation as g
@@ -214,12 +214,12 @@ def test_user_env_drops_read_only_path(tmp_path, monkeypatch):
         ro.chmod(0o700)
         pytest.skip("this host writes into a mode-0500 directory; no read-only path to test")
     env_file = tmp_path / "env"
-    env_file.write_text(f"OMNIVOICE_CACHE_DIR={ro}\n")
-    monkeypatch.delenv("OMNIVOICE_CACHE_DIR", raising=False)
+    env_file.write_text(f"ELEVENVOICE_CACHE_DIR={ro}\n")
+    monkeypatch.delenv("ELEVENVOICE_CACHE_DIR", raising=False)
     try:
         from core import user_env
         assert user_env.load_into_environ(str(env_file)) is True
-        assert "OMNIVOICE_CACHE_DIR" not in os.environ, (
+        assert "ELEVENVOICE_CACHE_DIR" not in os.environ, (
             "read-only path was kept — downloads would fail on first use"
         )
     finally:

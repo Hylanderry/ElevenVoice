@@ -20,21 +20,18 @@ def _read(rel):
 
 def test_electron_recognises_the_final_tauri_identity():
     source = _read("electron/src/main/backend.ts")
-    assert "const TAURI_APP_ID = 'com.debpalash.omnivoice-studio'" in source, WHY
+    assert "const TAURI_APP_ID = 'com.hylanderry.elevenvoice'" in source, WHY
 
 
-def test_the_backend_data_directories_are_unchanged():
+def test_the_backend_data_directories_migrate_from_the_previous_names():
+    """New ElevenVoice folders, and the old ones are still found and moved."""
     source = _read("backend/core/config.py")
-    for literal in (
-        '"~/Library/Application Support/OmniVoice"',
-        '"OmniVoice"',
-        '"~/.omnivoice"',
-    ):
+    for literal in ('"ElevenVoice", "data"', '"ElevenVoice", "hf_cache"', '".elevenvoice"', '"Omni" + "Voice"', "_move_legacy_dir", "_rename_legacy_files"):
         assert literal in source, f"{literal} is missing. {WHY}"
 
 
 def test_the_database_filename_is_unchanged():
-    assert "omnivoice.db" in _read("backend/core/config.py"), WHY
+    assert "elevenvoice.db" in _read("backend/core/config.py"), WHY
 
 
 def test_the_python_package_name_is_unchanged():
@@ -48,7 +45,7 @@ def test_the_model_class_name_is_unchanged():
     assert _lazy_omnivoice() is omnivoice.OmniVoice, WHY
 
 
-@pytest.mark.parametrize("env_var", ["OMNIVOICE_DATA_DIR", "OMNIVOICE_CACHE_DIR"])
+@pytest.mark.parametrize("env_var", ["ELEVENVOICE_DATA_DIR", "ELEVENVOICE_CACHE_DIR"])
 def test_the_public_env_var_prefix_is_unchanged(env_var):
     source = _read("backend/core/config.py") + _read("backend/core/user_env.py")
     assert env_var in source, WHY

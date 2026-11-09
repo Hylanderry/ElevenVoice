@@ -8,7 +8,7 @@ from core import job_store
 from core import failure
 from core import run_sentinel
 
-logger = logging.getLogger("omnivoice.tasks")
+logger = logging.getLogger("elevenvoice.tasks")
 
 
 def _stream_payload(update):

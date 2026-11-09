@@ -67,10 +67,10 @@ def vk(monkeypatch):
     """vulkan_auto with the probe inputs replaced; the cache is cleared."""
     mod = importlib.import_module("engines.omnivoice_gguf.vulkan_auto")
     compute = importlib.import_module("engines.omnivoice_gguf.compute")
-    for name in ("OMNIVOICE_DEVICE", "OMNIVOICE_GGUF_BACKEND", "OMNIVOICE_GGUF_DEVICE",
-                 "GGML_BACKEND", "OMNIVOICE_GGUF_QUANT", "OMNIVOICE_TTS_BACKEND"):
+    for name in ("ELEVENVOICE_DEVICE", "ELEVENVOICE_GGUF_BACKEND", "ELEVENVOICE_GGUF_DEVICE",
+                 "GGML_BACKEND", "ELEVENVOICE_GGUF_QUANT", "ELEVENVOICE_TTS_BACKEND"):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     monkeypatch.setattr(compute, "binary_has_vulkan_module", lambda bin_dir=None: True)
     state = SimpleNamespace(text=None, ram=31.3, loader=False, gpus=())
     monkeypatch.setattr(mod, "_run_vulkaninfo", lambda: state.text)
@@ -162,10 +162,10 @@ def test_discrete_arc_beats_the_igpu_at_gpu0(vk, monkeypatch, card, size_gb):
     assert (adapter.name, adapter.ggml_name) == (card, "Vulkan1")
     assert _auto_base() == "omnivoice-base-Q8_0.gguf"
     # The explicit device index names the same adapter.
-    monkeypatch.setenv("OMNIVOICE_GGUF_BACKEND", "vulkan")
-    monkeypatch.setenv("OMNIVOICE_GGUF_DEVICE", "1")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_BACKEND", "vulkan")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_DEVICE", "1")
     assert vk.compute.selected_vulkan_adapter().name == card
-    monkeypatch.setenv("OMNIVOICE_GGUF_DEVICE", "0")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_DEVICE", "0")
     assert vk.compute.selected_vulkan_adapter().name == "Intel(R) UHD Graphics 770"
 
 
@@ -213,8 +213,8 @@ def test_binary_has_vulkan_module_reads_the_bundle(tmp_path):
     assert compute.binary_has_vulkan_module(tmp_path) is True
 
 
-@pytest.mark.parametrize("variable,value", [("OMNIVOICE_DEVICE", "cpu"),
-                                            ("OMNIVOICE_GGUF_BACKEND", "cpu"),
+@pytest.mark.parametrize("variable,value", [("ELEVENVOICE_DEVICE", "cpu"),
+                                            ("ELEVENVOICE_GGUF_BACKEND", "cpu"),
                                             ("GGML_BACKEND", "CPU")])
 def test_explicit_cpu_locks_q4_and_blocks_the_gpu_offer(vk, monkeypatch, variable, value):
     vk.state.text = RADEON_890M
@@ -330,7 +330,7 @@ def test_no_offer_when_pytorch_has_a_gpu(eligible, monkeypatch):
 ])
 def test_quant_env_override(monkeypatch, value, expected):
     gguf = importlib.import_module("engines.omnivoice_gguf.backend")
-    monkeypatch.setenv("OMNIVOICE_GGUF_QUANT", value)
+    monkeypatch.setenv("ELEVENVOICE_GGUF_QUANT", value)
     assert gguf.env_quant_override() == expected
 
 
@@ -340,7 +340,7 @@ def test_env_override_beats_settings_and_hardware(vk, monkeypatch):
     monkeypatch.setattr(gguf, "_persisted_quant_override", lambda: "omnivoice-base-F32.gguf")
     engine = gguf.OmniVoiceGGUFBackend()
     assert engine._select_quant_entry()["base"] == "omnivoice-base-F32.gguf"
-    monkeypatch.setenv("OMNIVOICE_GGUF_QUANT", "Q4_K_M")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_QUANT", "Q4_K_M")
     assert engine._select_quant_entry()["base"] == "omnivoice-base-Q4_K_M.gguf"
 
 
@@ -423,10 +423,10 @@ def test_runtime_check_is_cached_until_the_binary_changes(quants, monkeypatch, t
 
 
 def test_bad_backend_pin_does_not_break_the_picker(vk, quants, monkeypatch):
-    """An invalid OMNIVOICE_GGUF_BACKEND is generate's error, not a 500 here."""
+    """An invalid ELEVENVOICE_GGUF_BACKEND is generate's error, not a 500 here."""
     vk.state.text = RX_6700_XT
-    monkeypatch.setenv("OMNIVOICE_GGUF_BACKEND", "vulkan")
-    monkeypatch.setenv("OMNIVOICE_GGUF_DEVICE", "not-a-number")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_BACKEND", "vulkan")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_DEVICE", "not-a-number")
     status = quants.quant_status()
     assert status["recommended"] == "omnivoice-base-Q4_K_M.gguf"
     vk.compute._promotion_for.cache_clear()
@@ -435,7 +435,7 @@ def test_bad_backend_pin_does_not_break_the_picker(vk, quants, monkeypatch):
 
 def test_unknown_env_quant_is_shown_as_itself(vk, quants, monkeypatch):
     vk.state.text = RX_6700_XT
-    monkeypatch.setenv("OMNIVOICE_GGUF_QUANT", "BF17")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_QUANT", "BF17")
     status = quants.quant_status()
     assert status["selected"] == "omnivoice-base-BF17.gguf"
     assert status["selection_valid"] is False
@@ -443,7 +443,7 @@ def test_unknown_env_quant_is_shown_as_itself(vk, quants, monkeypatch):
 
 
 def test_no_offer_while_the_environment_pins_another_engine(eligible, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "omnivoice")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "omnivoice")
     status = eligible.offer.offer_status()
     assert (status["eligible"], status["show"], status["blocked_by_environment"]) == (False, False, True)
     with pytest.raises(ValueError):

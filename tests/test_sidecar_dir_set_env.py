@@ -1,4 +1,4 @@
-"""Sidecar engine install folders (OMNIVOICE_*_DIR) name a folder whose
+"""Sidecar engine install folders (ELEVENVOICE_*_DIR) name a folder whose
 interpreter the backend runs, so /system/set-env accepts a new value only
 through a one-shot desktop authorization; clearing stays a plain request and
 the in-app installer keeps persisting its own folders server-side.
@@ -11,7 +11,7 @@ import os
 import pytest
 from fastapi.testclient import TestClient
 
-KEY = "OMNIVOICE_INDEXTTS_DIR"
+KEY = "ELEVENVOICE_INDEXTTS_DIR"
 
 
 @pytest.fixture

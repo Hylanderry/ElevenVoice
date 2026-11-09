@@ -218,7 +218,7 @@ def _activate_asr_model(tier: str) -> dict | None:
     from core import prefs
     from services import asr_backend
 
-    if os.environ.get("OMNIVOICE_ASR_BACKEND") or prefs.is_env_shadowed(
+    if os.environ.get("ELEVENVOICE_ASR_BACKEND") or prefs.is_env_shadowed(
         "ASR_MODEL_FASTER"
     ):
         return None
@@ -243,7 +243,7 @@ def _activate_dictation_model(tier: str) -> dict | None:
     from core import prefs
     from services import asr_backend, sherpa_dictation
 
-    if os.environ.get("OMNIVOICE_SHERPA_ASR_MODEL"):
+    if os.environ.get("ELEVENVOICE_SHERPA_ASR_MODEL"):
         return None
     available, _ = sherpa_dictation.sherpa_available()
     if not available:
@@ -478,7 +478,7 @@ def activate_performance_tier(tier: str, family: str | None = None) -> dict:
     activated = _activate_installed_models(tier, family)
 
     if "diarisation" in requested and not os.environ.get(
-        "OMNIVOICE_DIARIZATION_BACKEND"
+        "ELEVENVOICE_DIARIZATION_BACKEND"
     ):
         from services import diarization_runtime
 

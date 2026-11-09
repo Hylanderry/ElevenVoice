@@ -46,7 +46,7 @@ export function SharingPorts({ sharing }: { sharing: boolean }) {
     try {
       await apiJson('/system/set-env', {
         method: 'POST',
-        body: JSON.stringify({ key: 'OMNIVOICE_SHARE_PORT', value: String(value) }),
+        body: JSON.stringify({ key: 'ELEVENVOICE_SHARE_PORT', value: String(value) }),
       });
       client.setQueryData<PortInfo>(['system-info'], (current) =>
         current ? { ...current, share_port_base: value } : current,

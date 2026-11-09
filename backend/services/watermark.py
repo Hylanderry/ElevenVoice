@@ -1,10 +1,10 @@
 """
-Invisible + visible audio watermarking for VoiceStudio.
+Invisible + visible audio watermarking for ElevenVoice.
 
 Two layers:
   1. **Invisible** — AudioSeal (Meta) embeds imperceptible neural watermarks
      that survive compression, resampling, and editing. Encodes a 16-bit
-     message identifying VoiceStudio as the source.
+     message identifying ElevenVoice as the source.
   2. **Visible** — Optional audio signature tone prepended to exports;
      ffmpeg-based logo overlay for video exports.
 
@@ -35,7 +35,7 @@ import torch
 
 from core.prefs import resolve
 
-logger = logging.getLogger("omnivoice.watermark")
+logger = logging.getLogger("elevenvoice.watermark")
 
 
 # ── Lazy-loaded AudioSeal models ──────────────────────────────────────────
@@ -73,7 +73,7 @@ class _GeneratorLoadDeferred(RuntimeError):
     """The generator load failed recently and its retry is deferred."""
 
 # 16-bit message: "OM" in ASCII = 0x4F 0x4D = 0100_1111 0100_1101
-# This is our signature — every VoiceStudio-generated audio carries it.
+# This is our signature — every ElevenVoice-generated audio carries it.
 OMNI_MESSAGE = [0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1]
 
 # Watermark ops run chunk-by-chunk: AudioSeal's activation memory grows
@@ -267,7 +267,7 @@ def prefetch_generator(*, allow_download: bool = False) -> None:
     logs and leaves the lazy path to retry once the load cooldown has passed
     (``_GENERATOR_RETRY_SECONDS``). Default startup is
     also cache-only; a download is allowed only when the user explicitly set
-    ``OMNIVOICE_PRELOAD_WATERMARK=1``.
+    ``ELEVENVOICE_PRELOAD_WATERMARK=1``.
     """
     try:
         if not will_mark():
@@ -576,7 +576,7 @@ def detect_watermark(
     sample_rate: int,
 ) -> dict:
     """
-    Detect whether audio contains a VoiceStudio watermark.
+    Detect whether audio contains a ElevenVoice watermark.
 
     Args:
         waveform: Audio tensor of shape (channels, samples)
@@ -611,7 +611,7 @@ def detect_watermark(
 
         # Detect per chunk and keep the best hit: bounds memory the same way
         # embedding does, and a splice where only part of the file is
-        # VoiceStudio audio still registers (a whole-file average would dilute it).
+        # ElevenVoice audio still registers (a whole-file average would dilute it).
         best_conf, decoded_msg = -1.0, None
         with _eager_audioseal():
             for seg in _iter_chunks(audio, sample_rate):
@@ -641,7 +641,7 @@ def detect_watermark(
             "confidence": round(confidence, 4),
             "message_bits": message_bits,
             "is_omnivoice": is_omnivoice,
-            "source": "VoiceStudio" if is_omnivoice else "unknown",
+            "source": "ElevenVoice" if is_omnivoice else "unknown",
         }
 
     except Exception as e:
@@ -662,7 +662,7 @@ def generate_brand_tone(sample_rate: int = 24000, duration_s: float = 0.4) -> to
     Generate a short, distinctive audio signature tone.
 
     A soft ascending three-note chime (C5→E5→G5) that serves as the
-    VoiceStudio "sound logo". Gentle enough for professional use.
+    ElevenVoice "sound logo". Gentle enough for professional use.
 
     Returns:
         Tensor of shape (1, samples).
@@ -695,7 +695,7 @@ def apply_audio_brand(
     sample_rate: int,
 ) -> torch.Tensor:
     """
-    Prepend the VoiceStudio brand tone to a waveform (for final exports only).
+    Prepend the ElevenVoice brand tone to a waveform (for final exports only).
 
     Returns:
         Tensor with brand tone + original audio concatenated.
@@ -713,7 +713,7 @@ def apply_audio_brand(
 
 def get_ffmpeg_overlay_args(logo_path: str, duration_s: float = 5.0) -> list[str]:
     """
-    Build ffmpeg filter args to overlay the VoiceStudio logo in the bottom-right
+    Build ffmpeg filter args to overlay the ElevenVoice logo in the bottom-right
     corner with a fade-out after `duration_s` seconds.
 
     Returns:

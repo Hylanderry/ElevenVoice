@@ -24,7 +24,7 @@ def fresh_resolver(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGING_FACE_HUB_TOKEN", raising=False)
 

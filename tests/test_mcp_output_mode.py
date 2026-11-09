@@ -1,8 +1,8 @@
 """MCP output mode + the base-path boundary.
 
 Pure helpers, no MCP SDK needed: how generate_speech hands audio back
-(OMNIVOICE_MCP_OUTPUT_MODE) and how path-shaped inputs are confined to
-OMNIVOICE_MCP_BASE_PATH. The tool closures themselves are exercised through
+(ELEVENVOICE_MCP_OUTPUT_MODE) and how path-shaped inputs are confined to
+ELEVENVOICE_MCP_BASE_PATH. The tool closures themselves are exercised through
 the shape helpers they delegate to, so these run without a backend.
 """
 import base64
@@ -13,8 +13,8 @@ import math
 import struct
 import wave
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -23,7 +23,7 @@ import pytest
 
 def test_output_mode_defaults_to_resources(monkeypatch):
     from mcp_server import _output_mode
-    monkeypatch.delenv("OMNIVOICE_MCP_OUTPUT_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_OUTPUT_MODE", raising=False)
     assert _output_mode() == "resources"
 
 
@@ -36,7 +36,7 @@ def test_output_mode_defaults_to_resources(monkeypatch):
 ])
 def test_output_mode_parses_and_falls_back(monkeypatch, raw, expected):
     from mcp_server import _output_mode
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", raw)
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", raw)
     assert _output_mode() == expected
 
 
@@ -44,20 +44,20 @@ def test_output_mode_parses_and_falls_back(monkeypatch, raw, expected):
 
 def test_base_path_none_when_unset(monkeypatch):
     from mcp_server import _base_path
-    monkeypatch.delenv("OMNIVOICE_MCP_BASE_PATH", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_BASE_PATH", raising=False)
     assert _base_path() is None
 
 
 def test_resolve_refuses_paths_without_a_base(monkeypatch):
     from mcp_server import _resolve_under_base
-    monkeypatch.delenv("OMNIVOICE_MCP_BASE_PATH", raising=False)
-    with pytest.raises(ValueError, match="OMNIVOICE_MCP_BASE_PATH is not set"):
+    monkeypatch.delenv("ELEVENVOICE_MCP_BASE_PATH", raising=False)
+    with pytest.raises(ValueError, match="ELEVENVOICE_MCP_BASE_PATH is not set"):
         _resolve_under_base("clip.wav")
 
 
 def test_resolve_accepts_relative_and_absolute_inside(monkeypatch, tmp_path):
     from mcp_server import _resolve_under_base
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     inside = tmp_path / "sub" / "clip.wav"
     assert _resolve_under_base("sub/clip.wav") == os.path.realpath(str(inside))
     assert _resolve_under_base(str(inside)) == os.path.realpath(str(inside))
@@ -67,10 +67,10 @@ def test_resolve_refuses_escape(monkeypatch, tmp_path):
     from mcp_server import _resolve_under_base
     base = tmp_path / "base"
     base.mkdir()
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(base))
-    with pytest.raises(ValueError, match="outside OMNIVOICE_MCP_BASE_PATH"):
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(base))
+    with pytest.raises(ValueError, match="outside ELEVENVOICE_MCP_BASE_PATH"):
         _resolve_under_base("../secret.wav")
-    with pytest.raises(ValueError, match="outside OMNIVOICE_MCP_BASE_PATH"):
+    with pytest.raises(ValueError, match="outside ELEVENVOICE_MCP_BASE_PATH"):
         _resolve_under_base(str(tmp_path / "secret.wav"))
 
 
@@ -86,7 +86,7 @@ def test_read_input_requires_exactly_one_lane():
 
 def test_read_input_path_lane_reads_inside_base(monkeypatch, tmp_path):
     from mcp_server import _read_input_audio
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     (tmp_path / "clip.wav").write_bytes(b"RIFFxxxxWAVE")
     raw, err = _read_input_audio(None, "clip.wav")
     assert err is None and raw == b"RIFFxxxxWAVE"
@@ -94,7 +94,7 @@ def test_read_input_path_lane_reads_inside_base(monkeypatch, tmp_path):
 
 def test_read_input_path_lane_reports_missing_and_escaped(monkeypatch, tmp_path):
     from mcp_server import _read_input_audio
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     raw, err = _read_input_audio(None, "nope.wav")
     assert raw is None and "no such file" in err
     raw, err = _read_input_audio(None, "../nope.wav")
@@ -103,7 +103,7 @@ def test_read_input_path_lane_reports_missing_and_escaped(monkeypatch, tmp_path)
 
 def test_read_input_path_lane_refused_without_base(monkeypatch, tmp_path):
     from mcp_server import _read_input_audio
-    monkeypatch.delenv("OMNIVOICE_MCP_BASE_PATH", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_BASE_PATH", raising=False)
     raw, err = _read_input_audio(None, str(tmp_path / "clip.wav"))
     assert raw is None and "is not set" in err
 
@@ -158,7 +158,7 @@ def test_concurrent_parent_replacement_cannot_escape_base(
     outside.mkdir()
     (outside / "clip.wav").write_bytes(b"secret")
     parked = base / "parked"
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(base))
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(base))
     real_resolve = mcp_server._resolve_under_base
 
     def replace_parent_after_resolution(path):
@@ -182,7 +182,7 @@ def test_concurrent_parent_replacement_cannot_escape_base(
 
 def test_speech_result_resources_is_the_original_contract(monkeypatch):
     from mcp_server import _speech_result
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "resources")
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "resources")
     out = asyncio.run(_speech_result("ab12cd34", 1.5, 2.0, b"RIFF", "http://localhost:3900"))
     assert out["wav_base64"] == base64.b64encode(b"RIFF").decode()
     assert "audio_url" not in out and "output_path" not in out
@@ -191,8 +191,8 @@ def test_speech_result_resources_is_the_original_contract(monkeypatch):
 
 def test_speech_result_files_returns_url_and_writes_under_base(monkeypatch, tmp_path):
     from mcp_server import _speech_result
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     out = asyncio.run(_speech_result("ab12cd34", 1.5, 2.0, b"RIFF", "http://localhost:3900/"))
     assert out["audio_url"] == "http://localhost:3900/audio/ab12cd34.wav"
     assert "wav_base64" not in out
@@ -205,8 +205,8 @@ def test_speech_result_files_returns_url_and_writes_under_base(monkeypatch, tmp_
 def test_speech_result_rejects_traversal_audio_id(monkeypatch, tmp_path):
     from mcp_server import _speech_result
 
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     with pytest.raises(ValueError, match="invalid X-Audio-Id"):
         asyncio.run(_speech_result("../../escape", 1.5, 2.0, b"RIFF", "http://localhost:3900"))
     assert not (tmp_path.parent / "escape.wav").exists()
@@ -224,27 +224,27 @@ def test_speech_result_does_not_follow_existing_output_symlink(
         link.symlink_to(outside)
     except OSError as exc:  # Windows without Developer Mode/admin rights
         pytest.skip(f"file symlinks unavailable: {exc}")
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
-    with pytest.raises(ValueError, match="outside OMNIVOICE_MCP_BASE_PATH"):
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
+    with pytest.raises(ValueError, match="outside ELEVENVOICE_MCP_BASE_PATH"):
         asyncio.run(_speech_result("ab12cd34", 1.5, 2.0, b"replace", "http://localhost:3900"))
     assert outside.read_bytes() == b"keep"
 
 
 def test_speech_result_files_without_base_is_url_only_with_a_note(monkeypatch):
     from mcp_server import _speech_result
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.delenv("OMNIVOICE_MCP_BASE_PATH", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.delenv("ELEVENVOICE_MCP_BASE_PATH", raising=False)
     out = asyncio.run(_speech_result("ab12cd34", 1.5, 2.0, b"RIFF", "http://localhost:3900"))
     assert out["audio_url"].endswith("/audio/ab12cd34.wav")
-    assert "output_path" not in out and "OMNIVOICE_MCP_BASE_PATH" in out["note"]
+    assert "output_path" not in out and "ELEVENVOICE_MCP_BASE_PATH" in out["note"]
     assert "wav_base64" not in out
 
 
 def test_speech_result_both_carries_everything(monkeypatch, tmp_path):
     from mcp_server import _speech_result
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "both")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "both")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     out = asyncio.run(_speech_result("ab12cd34", "?", "?", b"RIFF", "http://localhost:3900"))
     assert {"wav_base64", "audio_url", "output_path"} <= set(out)
     assert out["generation_time_s"] == "?"   # header text passes through untouched
@@ -272,8 +272,8 @@ def test_files_format_is_encoded_opus_and_url_serves_same_codec(monkeypatch, tmp
     if not find_ffmpeg():
         pytest.skip("ffmpeg is not installed")
     raw = _sample_wav()
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path / "mcp"))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path / "mcp"))
     outputs = tmp_path / "outputs"
     outputs.mkdir()
     monkeypatch.setattr(generation, "OUTPUTS_DIR", str(outputs))
@@ -290,11 +290,11 @@ def test_files_format_is_encoded_opus_and_url_serves_same_codec(monkeypatch, tmp
     assert response.status_code == 200, response.text
     assert response.headers["content-type"] == "audio/ogg"
     assert response.content[:4] == b"OggS" and b"OpusHead" in response.content[:64]
-    monkeypatch.delenv("OMNIVOICE_MCP_BASE_PATH")
+    monkeypatch.delenv("ELEVENVOICE_MCP_BASE_PATH")
     url_only = asyncio.run(_speech_result("ab12cd34", 1.5, 0.5, raw, "http://testserver", fmt))
     assert url_only["audio_url"] == result["audio_url"]
     assert "output_path" not in url_only
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "both")
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "both")
     both = asyncio.run(_speech_result("ab12cd35", 1.5, 0.5, raw, "http://testserver", fmt))
     assert base64.b64decode(both["wav_base64"]) == raw
     assert both["audio_url"].endswith(f".{fmt}")
@@ -303,10 +303,10 @@ def test_files_format_is_encoded_opus_and_url_serves_same_codec(monkeypatch, tmp
 def test_compressed_format_requires_files_or_both_and_rejects_unknown(monkeypatch):
     from mcp_server import _speech_result
 
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "resources")
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "resources")
     with pytest.raises(ValueError, match="files or both"):
         asyncio.run(_speech_result("ab12cd34", 1, 1, b"RIFF", "http://localhost", "opus"))
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
     with pytest.raises(ValueError, match="unsupported speech format"):
         asyncio.run(_speech_result("ab12cd34", 1, 1, b"RIFF", "http://localhost", "mp3"))
 
@@ -316,8 +316,8 @@ def test_opus_conversion_missing_ffmpeg_does_not_write_mislabelled_wav(monkeypat
     from services import ffmpeg_utils
 
     monkeypatch.setattr(ffmpeg_utils, "find_ffmpeg", lambda: None)
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     with pytest.raises(RuntimeError, match="requires ffmpeg"):
         asyncio.run(_speech_result("ab12cd34", 1, 1, _sample_wav(), "http://localhost", "opus"))
     assert not (tmp_path / "ab12cd34.opus").exists()
@@ -333,8 +333,8 @@ def test_opus_encoder_failure_does_not_create_file(monkeypatch, tmp_path):
         return 1, b"", b"Unknown encoder 'libopus'"
 
     monkeypatch.setattr(ffmpeg_utils, "run_ffmpeg", failed_encode)
-    monkeypatch.setenv("OMNIVOICE_MCP_OUTPUT_MODE", "files")
-    monkeypatch.setenv("OMNIVOICE_MCP_BASE_PATH", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_MCP_OUTPUT_MODE", "files")
+    monkeypatch.setenv("ELEVENVOICE_MCP_BASE_PATH", str(tmp_path))
     with pytest.raises(RuntimeError, match="Unknown encoder"):
         asyncio.run(_speech_result("ab12cd34", 1, 1, _sample_wav(), "http://localhost", "opus"))
     assert not (tmp_path / "ab12cd34.opus").exists()
@@ -485,9 +485,9 @@ def test_slow_opus_encode_does_not_block_other_renders(monkeypatch, tmp_path):
 def test_post_timeout_reads_env_with_fallbacks(monkeypatch, raw, expected):
     from mcp_server import _post_timeout_s
     if raw is None:
-        monkeypatch.delenv("OMNIVOICE_MCP_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_MCP_TIMEOUT_S", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_MCP_TIMEOUT_S", raw)
+        monkeypatch.setenv("ELEVENVOICE_MCP_TIMEOUT_S", raw)
     assert _post_timeout_s() == expected
 
 

@@ -20,8 +20,8 @@ tests/test_dub_batch_engine_selection.py.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import importlib
@@ -81,7 +81,7 @@ def fake_engine(monkeypatch):
     tb.reset_active_backend()
     fake = _make_fake_engine()
     monkeypatch.setitem(tb._REGISTRY, "fake-norm-route", fake)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     yield fake
     tb.reset_active_backend()
 
@@ -260,7 +260,7 @@ def test_batch_applies_normalization_exactly_once(
     batch_env, fake_engine, norm_spy, monkeypatch,
 ):
     b, make_job = batch_env
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-norm-route")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-norm-route")
 
     job = make_job("jobN1")
     asyncio.run(b._run_batch_pipeline("jobN1", job))
@@ -274,7 +274,7 @@ def test_batch_applies_normalization_exactly_once(
 
 def test_batch_toggle_off_sends_raw_text(batch_env, fake_engine, monkeypatch):
     b, make_job = batch_env
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-norm-route")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-norm-route")
     monkeypatch.setenv(text_normalization.ENV_VAR, "0")
 
     job = make_job("jobN2")
@@ -321,7 +321,7 @@ def test_batch_uses_native_tts_batches(batch_env, monkeypatch):
 
     monkeypatch.setitem(tb._REGISTRY, "fake-native-batch", _NativeBatchEngine)
     tb.reset_active_backend()
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-native-batch")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-native-batch")
     # Pin the width: it is derived from the host's device headroom (#1620
     # review — an unconditional 8 would OOM 4-8 GB cards), so leaving it to
     # detection makes this assertion depend on the machine running the suite.

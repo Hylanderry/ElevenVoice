@@ -27,7 +27,7 @@ from api.dependencies import require_admin
 from services.telephony import calls, config, gateway, session
 from services.telephony import twilio as provider
 
-logger = logging.getLogger("omnivoice.telephony")
+logger = logging.getLogger("elevenvoice.telephony")
 
 router = APIRouter(
     prefix="/api/integrations/twilio",

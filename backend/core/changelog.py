@@ -39,10 +39,10 @@ def changelog_path() -> str | None:
 
     ``backend/core/changelog.py`` → two levels up is the project root: the
     repo root in dev, and ``<env>/project`` in packaged installs (where the
-    bootstrap copies CHANGELOG.md next to README.md). ``OMNIVOICE_CHANGELOG``
+    bootstrap copies CHANGELOG.md next to README.md). ``ELEVENVOICE_CHANGELOG``
     overrides for tests/containers.
     """
-    override = os.environ.get("OMNIVOICE_CHANGELOG")
+    override = os.environ.get("ELEVENVOICE_CHANGELOG")
     if override:
         return override if os.path.isfile(override) else None
     here = os.path.dirname(os.path.abspath(__file__))

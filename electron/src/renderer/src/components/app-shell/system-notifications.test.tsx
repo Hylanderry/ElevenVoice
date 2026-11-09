@@ -126,7 +126,7 @@ describe('SystemNotifications desktop updates', () => {
           id: 'disk-low',
           level: 'warn',
           title: 'Low disk space (1.8 GB free)',
-          message: 'VoiceStudio needs disk space for models, audio, and temp files.',
+          message: 'ElevenVoice needs disk space for models, audio, and temp files.',
           action: { type: 'settings-tab', target: 'storage' },
         },
       ],

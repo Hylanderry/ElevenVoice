@@ -55,7 +55,7 @@ def test_diarisation_is_applicable_only_with_a_real_runtime_choice(monkeypatch):
 def test_diarisation_preset_switches_only_between_installed_runtimes(monkeypatch):
     from services import diarization_runtime, model_manager
 
-    monkeypatch.delenv("OMNIVOICE_DIARIZATION_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DIARIZATION_BACKEND", raising=False)
     monkeypatch.setattr(
         diarization_runtime,
         "installed_backends",
@@ -78,7 +78,7 @@ def test_diarisation_preset_switches_only_between_installed_runtimes(monkeypatch
 def test_diarisation_preset_respects_external_runtime_pin(monkeypatch):
     from services import diarization_runtime
 
-    monkeypatch.setenv("OMNIVOICE_DIARIZATION_BACKEND", diarization_runtime.PYANNOTE)
+    monkeypatch.setenv("ELEVENVOICE_DIARIZATION_BACKEND", diarization_runtime.PYANNOTE)
     selected = []
     monkeypatch.setattr(diarization_runtime, "select_backend", selected.append)
 
@@ -92,7 +92,7 @@ def test_balanced_preset_recovers_an_installed_asr_model(monkeypatch):
 
     selected = []
     writes = []
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr(prefs, "is_env_shadowed", lambda _key: False)
     monkeypatch.setattr(
         profiles,
@@ -128,7 +128,7 @@ def test_balanced_preset_recovers_an_installed_dictation_model(monkeypatch):
         kind="offline-transducer",
         size_gb=0.67,
     )
-    monkeypatch.delenv("OMNIVOICE_SHERPA_ASR_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_ASR_MODEL", raising=False)
     monkeypatch.setattr(sherpa_dictation, "sherpa_available", lambda: (True, "ready"))
     monkeypatch.setattr(profiles, "_installed_dictation_models", lambda: [model])
     monkeypatch.setattr(prefs, "get", lambda key, default=None: "missing/old")
@@ -328,7 +328,7 @@ def test_asr_preset_selects_metal_whisper_instead_of_pinning_the_cpu(monkeypatch
 
     writes = []
     selected = []
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr(prefs, "is_env_shadowed", lambda _key: False)
     monkeypatch.setattr(profiles, "_faster_whisper_backend", lambda: "faster-whisper")
     monkeypatch.setattr(profiles, "_installed_ct2_models", lambda: [

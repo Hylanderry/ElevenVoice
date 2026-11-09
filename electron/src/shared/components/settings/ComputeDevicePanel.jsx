@@ -6,7 +6,7 @@
  * "auto-detect picked wrong" issue class. Options are limited to families
  * that actually exist on this host (plus Auto and CPU, which always do);
  * the pick applies at the next backend start, same restart contract as the
- * rest of this tab. `OMNIVOICE_DEVICE` pins the value and disables the
+ * rest of this tab. `ELEVENVOICE_DEVICE` pins the value and disables the
  * control rather than pretending the UI choice would win.
  *
  * Endpoints:
@@ -113,7 +113,7 @@ export default function ComputeDevicePanel() {
         subtitle={(() => {
           const pinned = state?.env_pinned
             ? t('settings.compute_device_env_pinned', {
-                defaultValue: 'Pinned by the OMNIVOICE_DEVICE environment variable',
+                defaultValue: 'Pinned by the ELEVENVOICE_DEVICE environment variable',
               })
             : null;
           const ignored = state?.override_ignored

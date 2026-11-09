@@ -23,7 +23,7 @@ def fresh_app(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGING_FACE_HUB_TOKEN", raising=False)
 
@@ -215,7 +215,7 @@ def test_subprocess_env_includes_hf_token_when_resolved(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
     for mod in list(sys.modules):
         if (
@@ -246,7 +246,7 @@ def test_subprocess_env_unchanged_when_no_token(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGING_FACE_HUB_TOKEN", raising=False)
     for mod in list(sys.modules):
@@ -276,7 +276,7 @@ def test_sonitranslate_module_uses_resolver(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in list(sys.modules):
         if (
             mod == "core" or mod.startswith("core.")

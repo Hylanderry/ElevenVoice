@@ -59,7 +59,7 @@ UNUSABLE_GPU_MARKER = "present but PyTorch cannot use it"
 
 
 def cuda_forced() -> bool:
-    """``OMNIVOICE_FORCE_CUDA`` asks for CUDA even when the installed wheel has
+    """``ELEVENVOICE_FORCE_CUDA`` asks for CUDA even when the installed wheel has
     no kernels for the card (#3067).
 
     Shared by the routing badge (``services.engine_routing``) and the GPU
@@ -67,7 +67,7 @@ def cuda_forced() -> bool:
     with the same truthy values through its ``_env_flag`` helper (kept
     separate to avoid an import cycle); tests/test_engine_routing.py checks
     the two agree."""
-    return os.environ.get("OMNIVOICE_FORCE_CUDA", "").strip().lower() in {
+    return os.environ.get("ELEVENVOICE_FORCE_CUDA", "").strip().lower() in {
         "1", "true", "yes", "on",
     }
 
@@ -434,7 +434,7 @@ def why_no_gpu(torch, gpus=None) -> tuple[str, ...]:
                     f"ROCm {hip} is installed on Windows, but no GPU was enumerated "
                     f"while HSA_OVERRIDE_GFX_VERSION={override} is set. Remove that "
                     "override and verify AMD's supported Windows GPU/driver/wheel "
-                    "matrix; VoiceStudio does not remap Windows GPU architectures",
+                    "matrix; ElevenVoice does not remap Windows GPU architectures",
                 )
             location = " and the device nodes are reachable"
             return (
@@ -443,7 +443,7 @@ def why_no_gpu(torch, gpus=None) -> tuple[str, ...]:
                 f"{override} is set. Try removing that override first — this "
                 "ROCm supports most current cards natively, and remapping one "
                 "it already supports can leave the runtime with no usable "
-                "device. VoiceStudio sets the override itself when a card "
+                "device. ElevenVoice sets the override itself when a card "
                 "genuinely needs it",
             )
         if sys.platform == "win32":
@@ -603,7 +603,7 @@ DEVICE_OVERRIDE_CHOICES: tuple[str, ...] = ("auto", "cuda", "rocm", "xpu", "mps"
 
 
 def requested_device_override() -> str:
-    """The user's compute-device pick: ``OMNIVOICE_DEVICE`` env > the Settings
+    """The user's compute-device pick: ``ELEVENVOICE_DEVICE`` env > the Settings
     choice (``compute_device`` in prefs.json) > ``"auto"``. Env wins so
     power-users can pin a device without the UI silently undoing it (same
     resolution order as engine selection, #981). Unknown values normalize to
@@ -611,9 +611,9 @@ def requested_device_override() -> str:
     try:
         from core import prefs
 
-        raw = prefs.resolve("compute_device", env="OMNIVOICE_DEVICE", default="auto")
+        raw = prefs.resolve("compute_device", env="ELEVENVOICE_DEVICE", default="auto")
     except Exception:
-        raw = os.environ.get("OMNIVOICE_DEVICE", "auto")
+        raw = os.environ.get("ELEVENVOICE_DEVICE", "auto")
     val = str(raw or "auto").strip().lower()
     return val if val in DEVICE_OVERRIDE_CHOICES else "auto"
 
@@ -784,7 +784,7 @@ def _probe() -> HostCaps:
     # available_families: every detected accelerator + cpu, deduped, cpu last.
     available: tuple[DeviceFamily, ...] = tuple(dict.fromkeys([*detected, "cpu"]))
 
-    # User override (Settings → Performance, or OMNIVOICE_DEVICE): honored
+    # User override (Settings → Performance, or ELEVENVOICE_DEVICE): honored
     # only when the named family actually exists on this host — an override
     # can steer, it cannot invent hardware. Applied here, at the single
     # choke point, so routing, model loads (get_best_device delegates its

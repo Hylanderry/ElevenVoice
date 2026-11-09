@@ -5,8 +5,8 @@ import os
 import pytest
 import torch
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 from api.routers.audiobook import _render_chapter_cached  # noqa: E402
 from services.audiobook import Chapter, Span  # noqa: E402

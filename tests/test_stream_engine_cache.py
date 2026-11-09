@@ -4,8 +4,8 @@ import os
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 @pytest.fixture
@@ -76,7 +76,7 @@ def _resolve(engine_id):
 
 
 def test_override_is_cached_and_overrides_coexist(tts, engines, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     first = _resolve("stream-b")
     assert _resolve("stream-b") is first
     other = _resolve("stream-a")
@@ -88,14 +88,14 @@ def test_override_is_cached_and_overrides_coexist(tts, engines, monkeypatch):
 
 
 def test_no_override_uses_active_backend_and_leaves_cache_empty(tts, engines, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     inst = _resolve(None)
     assert isinstance(inst, engines.a)
     assert tts._ENGINE_INSTANCES == {}
 
 
 def test_override_of_other_engine_leaves_active_untouched(tts, engines, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     active = _resolve(None)
     other = _resolve("stream-b")
     assert isinstance(other, engines.b)
@@ -105,7 +105,7 @@ def test_override_of_other_engine_leaves_active_untouched(tts, engines, monkeypa
 
 
 def test_override_matching_active_reuses_it(tts, engines, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     active = _resolve(None)
     assert _resolve("stream-a") is active
     assert engines.a not in tts._ENGINE_INSTANCES
@@ -119,13 +119,13 @@ def test_explicit_omnivoice_override_never_loads_the_shared_model(tts, monkeypat
 
     monkeypatch.setattr(model_manager, "get_model", _boom)
     monkeypatch.setattr(tts, "ensure_engine_licence", lambda cls: None)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     inst = _resolve("omnivoice")
     assert isinstance(inst, tts.OmniVoiceBackend)
 
 
 def test_changed_model_preference_swaps_active_without_unloading_the_old(tts, engines, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     old = _resolve(None)
     tts._active_instance, tts._active_instance_id = old, "stream-a"
     monkeypatch.setattr(tts, "_built_for_other_model", lambda cls, inst: inst is old)
@@ -167,7 +167,7 @@ def test_ws_holds_the_engine_during_routing_and_releases_after(tts, engines, mon
     from api.routers import tts_stream
     from services import engine_routing
 
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "stream-a")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "stream-a")
     seen = {}
 
     async def _profile(backend, _caps):

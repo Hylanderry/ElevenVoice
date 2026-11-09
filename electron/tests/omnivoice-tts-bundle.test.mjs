@@ -5,7 +5,7 @@ import { join, sep } from 'node:path';
 import test from 'node:test';
 
 import {
-  OMNIVOICE_TTS_MANIFEST,
+  ELEVENVOICE_TTS_MANIFEST,
   codesignArgs,
   finalizeOmnivoiceTts,
   manifestMismatches,
@@ -24,7 +24,7 @@ function stage(files) {
     writeFileSync(join(dir, name), body);
     lines.push(`${sha256File(join(dir, name))}  ${name}\n`);
   }
-  writeFileSync(join(dir, OMNIVOICE_TTS_MANIFEST), lines.join(''));
+  writeFileSync(join(dir, ELEVENVOICE_TTS_MANIFEST), lines.join(''));
   return dir;
 }
 
@@ -54,7 +54,7 @@ test('refreshes the manifest after signing changes the shipped bytes', () => {
   rewriteManifest(dir);
   assert.deepEqual(manifestMismatches(dir), []);
   assert.match(
-    readFileSync(join(dir, OMNIVOICE_TTS_MANIFEST), 'utf8'),
+    readFileSync(join(dir, ELEVENVOICE_TTS_MANIFEST), 'utf8'),
     /^[0-9a-f]{64} {2}libggml\.dylib\n/,
   );
 });
@@ -62,7 +62,7 @@ test('refreshes the manifest after signing changes the shipped bytes', () => {
 test('refuses a manifest that lists a file the package lacks', () => {
   const dir = stage({ 'omnivoice-tts-linux-x86_64': 'rt' });
   writeFileSync(
-    join(dir, OMNIVOICE_TTS_MANIFEST),
+    join(dir, ELEVENVOICE_TTS_MANIFEST),
     `${'0'.repeat(64)}  omnivoice-tts-linux-x86_64\n${'1'.repeat(64)}  libggml.so\n`,
   );
   assert.throws(() => rewriteManifest(dir), /missing file: libggml\.so/);
@@ -74,7 +74,7 @@ test('afterPack restores execute bits and rewrites the packaged manifest', () =>
   mkdirSync(bin);
   writeFileSync(join(bin, 'omnivoice-tts-linux-x86_64'), 'rt', { mode: 0o644 });
   writeFileSync(
-    join(bin, OMNIVOICE_TTS_MANIFEST),
+    join(bin, ELEVENVOICE_TTS_MANIFEST),
     `${'0'.repeat(64)}  omnivoice-tts-linux-x86_64\n`,
   );
   finalizeOmnivoiceTts({
@@ -113,13 +113,13 @@ test('signs the runtime with the same codesign options osx-sign uses', () => {
 });
 
 test('default signing skips the pre-signed runtime and keeps other ignores', async () => {
-  const app = mkdtempSync(join(tmpdir(), 'VoiceStudio-')) + `${sep}VoiceStudio.app`;
+  const app = mkdtempSync(join(tmpdir(), 'ElevenVoice-')) + `${sep}ElevenVoice.app`;
   const bin = join(app, 'Contents', 'Resources', 'bin');
   mkdirSync(bin, { recursive: true });
   // Not Mach-O, so nothing is passed to codesign here; the manifest still refreshes.
   writeFileSync(join(bin, 'omnivoice-tts-darwin-arm64'), 'rt');
   writeFileSync(
-    join(bin, OMNIVOICE_TTS_MANIFEST),
+    join(bin, ELEVENVOICE_TTS_MANIFEST),
     `${'0'.repeat(64)}  omnivoice-tts-darwin-arm64\n`,
   );
   let forwarded;
@@ -132,5 +132,5 @@ test('default signing skips the pre-signed runtime and keeps other ignores', asy
   assert.equal(forwarded.identity.name, '-');
   assert(forwarded.opts.ignore(join(bin, 'omnivoice-tts-darwin-arm64')));
   assert(forwarded.opts.ignore('/x/driver.kext'));
-  assert(!forwarded.opts.ignore(join(app, 'Contents', 'MacOS', 'VoiceStudio')));
+  assert(!forwarded.opts.ignore(join(app, 'Contents', 'MacOS', 'ElevenVoice')));
 });

@@ -28,7 +28,7 @@ from pydantic import BaseModel, Field
 
 from core.db import db_conn
 
-logger = logging.getLogger("omnivoice.glossary")
+logger = logging.getLogger("elevenvoice.glossary")
 router = APIRouter()
 
 
@@ -222,7 +222,7 @@ def auto_extract(project_id: str, req: AutoExtractRequest):
     if not source_text.strip():
         return list_terms(project_id)
 
-    max_chars = int(os.environ.get("OMNIVOICE_GLOSSARY_MAX_CHARS", "12000"))
+    max_chars = int(os.environ.get("ELEVENVOICE_GLOSSARY_MAX_CHARS", "12000"))
     if len(source_text) > max_chars:
         source_text = source_text[:max_chars] + "\n…[truncated]"
 

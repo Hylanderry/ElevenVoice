@@ -34,10 +34,10 @@ it.each(['../../external-python', '/bin/sh', 'bin/missing-python'])(
 
 it('keeps models and caches in the sandbox and disables Python user code overlays', () => {
   const env = bundledRuntimeEnv('/signed/resources', '/sandbox/app-data');
-  expect(env.VOICESTUDIO_BUNDLED_CODE_ONLY).toBe('1');
+  expect(env.ELEVENVOICE_BUNDLED_CODE_ONLY).toBe('1');
   expect(env.PYTHONNOUSERSITE).toBe('1');
   expect(env.PYTHONDONTWRITEBYTECODE).toBe('1');
-  expect(env.OMNIVOICE_DATA_DIR).toBe(join('/sandbox/app-data', 'data'));
+  expect(env.ELEVENVOICE_DATA_DIR).toBe(join('/sandbox/app-data', 'data'));
   expect(env.HF_HUB_CACHE).toBe(join('/sandbox/app-data', 'models'));
   expect(env.XDG_DATA_HOME).toBe(join('/sandbox/app-data', 'data'));
   expect(env.XDG_CONFIG_HOME).toBe(join('/sandbox/app-data', 'config'));

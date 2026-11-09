@@ -1,16 +1,16 @@
 """Regression for #1787 (closes duplicates #1774, #1778): the generation-
 timeout error told users to "raise the generation timeout" with no UI path to
-do it — the only control was the `OMNIVOICE_GENERATE_TIMEOUT_S` env var, which
+do it — the only control was the `ELEVENVOICE_GENERATE_TIMEOUT_S` env var, which
 a desktop-installer user has no obvious way to set.
 
 Things this pins down:
-  1. `/system/set-env` now accepts OMNIVOICE_GENERATE_TIMEOUT_S and
-     OMNIVOICE_CPU_GENERATE_TIMEOUT_S, validated as positive numbers (same
+  1. `/system/set-env` now accepts ELEVENVOICE_GENERATE_TIMEOUT_S and
+     ELEVENVOICE_CPU_GENERATE_TIMEOUT_S, validated as positive numbers (same
      shape as the existing `_PORT_KEYS` validation), and persists them to
      prefs.json like every other PERSISTENT_KEYS entry.
   2. The persisted value is what services/model_manager.py's GPU_JOB_TIMEOUT_S
      / CPU_JOB_TIMEOUT_S capture on the next import — i.e. the same "restored
-     before ml_imports" contract OMNIVOICE_PORT already relies on, so a saved
+     before ml_imports" contract ELEVENVOICE_PORT already relies on, so a saved
      budget really does take effect after a restart (not silently never).
   3. The public-facing timeout copy no longer recommends an action with no UI
      path.
@@ -39,7 +39,7 @@ def _loopback_client():
 # ── /system/set-env validation ──────────────────────────────────────────────
 
 @pytest.mark.parametrize(
-    "key", ["OMNIVOICE_GENERATE_TIMEOUT_S", "OMNIVOICE_CPU_GENERATE_TIMEOUT_S"]
+    "key", ["ELEVENVOICE_GENERATE_TIMEOUT_S", "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"]
 )
 class TestSetEnvValidation:
     def test_rejects_non_numeric(self, key):
@@ -94,25 +94,25 @@ def test_generate_budget_takes_effect_after_restart(model_manager, monkeypatch):
     the "restart required" badge in Settings promises."""
     import importlib
 
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "111")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "111")
     mm = importlib.reload(model_manager)
     try:
         assert mm.GPU_JOB_TIMEOUT_S == 111.0
         assert mm.generate_timeout_s("short") == 111.0
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
 def test_cpu_budget_takes_effect_after_restart(model_manager, monkeypatch):
     import importlib
 
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "222")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "222")
     mm = importlib.reload(model_manager)
     try:
         assert mm.CPU_JOB_TIMEOUT_S == 222.0
     finally:
-        monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
@@ -121,7 +121,7 @@ def test_saving_both_budgets_the_cpu_one_actually_governs_cpu_dispatch(
 ):
     """Review fix (CodeRabbit/Greptile P1): the two Settings rows must be
     genuinely independent. Before the fix, an explicit
-    OMNIVOICE_GENERATE_TIMEOUT_S made the legacy `universal_override` win for
+    ELEVENVOICE_GENERATE_TIMEOUT_S made the legacy `universal_override` win for
     CPU jobs too, so saving BOTH rows silently ignored the CPU one — the exact
     class of defect #1787 exists to remove. This test fails on the pre-fix
     `generate_timeout_s` logic (CPU dispatch would get 123.5, not 999.0)."""
@@ -129,15 +129,15 @@ def test_saving_both_budgets_the_cpu_one_actually_governs_cpu_dispatch(
     import types
     import core.device_caps as caps
 
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
     mm = importlib.reload(model_manager)
     monkeypatch.setattr(caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cpu"))
     try:
         assert mm.generate_timeout_s("A short CPU render") == 999.0
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
-        monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
@@ -168,11 +168,11 @@ class TestExternalOverrideDetection:
 
         original = prefs._EXTERNALLY_PROVIDED
         try:
-            monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "42")  # simulates external
-            prefs.restore_env({"env.OMNIVOICE_GENERATE_TIMEOUT_S": "99"})
-            assert prefs.is_env_shadowed("OMNIVOICE_GENERATE_TIMEOUT_S") is True
+            monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "42")  # simulates external
+            prefs.restore_env({"env.ELEVENVOICE_GENERATE_TIMEOUT_S": "99"})
+            assert prefs.is_env_shadowed("ELEVENVOICE_GENERATE_TIMEOUT_S") is True
             # setdefault must not have clobbered the external value.
-            assert os.environ["OMNIVOICE_GENERATE_TIMEOUT_S"] == "42"
+            assert os.environ["ELEVENVOICE_GENERATE_TIMEOUT_S"] == "42"
         finally:
             prefs._EXTERNALLY_PROVIDED = original
 
@@ -181,13 +181,13 @@ class TestExternalOverrideDetection:
 
         original = prefs._EXTERNALLY_PROVIDED
         try:
-            monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
-            prefs.restore_env({"env.OMNIVOICE_GENERATE_TIMEOUT_S": "99"})
-            assert prefs.is_env_shadowed("OMNIVOICE_GENERATE_TIMEOUT_S") is False
-            assert os.environ["OMNIVOICE_GENERATE_TIMEOUT_S"] == "99"
+            monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
+            prefs.restore_env({"env.ELEVENVOICE_GENERATE_TIMEOUT_S": "99"})
+            assert prefs.is_env_shadowed("ELEVENVOICE_GENERATE_TIMEOUT_S") is False
+            assert os.environ["ELEVENVOICE_GENERATE_TIMEOUT_S"] == "99"
         finally:
             prefs._EXTERNALLY_PROVIDED = original
-            os.environ.pop("OMNIVOICE_GENERATE_TIMEOUT_S", None)
+            os.environ.pop("ELEVENVOICE_GENERATE_TIMEOUT_S", None)
 
     def test_shadow_flag_is_per_key_not_global(self, monkeypatch):
         """One shadowed key must not falsely flag an unrelated one."""
@@ -195,17 +195,17 @@ class TestExternalOverrideDetection:
 
         original = prefs._EXTERNALLY_PROVIDED
         try:
-            monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "42")
-            monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+            monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "42")
+            monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
             prefs.restore_env({
-                "env.OMNIVOICE_GENERATE_TIMEOUT_S": "99",
-                "env.OMNIVOICE_CPU_GENERATE_TIMEOUT_S": "88",
+                "env.ELEVENVOICE_GENERATE_TIMEOUT_S": "99",
+                "env.ELEVENVOICE_CPU_GENERATE_TIMEOUT_S": "88",
             })
-            assert prefs.is_env_shadowed("OMNIVOICE_GENERATE_TIMEOUT_S") is True
-            assert prefs.is_env_shadowed("OMNIVOICE_CPU_GENERATE_TIMEOUT_S") is False
+            assert prefs.is_env_shadowed("ELEVENVOICE_GENERATE_TIMEOUT_S") is True
+            assert prefs.is_env_shadowed("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S") is False
         finally:
             prefs._EXTERNALLY_PROVIDED = original
-            os.environ.pop("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", None)
+            os.environ.pop("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", None)
 
     def test_system_info_surfaces_the_override_notice(self, monkeypatch):
         """The API-level contract the panel reads: /system/info must NOT
@@ -214,7 +214,7 @@ class TestExternalOverrideDetection:
 
         monkeypatch.setattr(
             prefs_mod, "is_env_shadowed",
-            lambda key: key == "OMNIVOICE_GENERATE_TIMEOUT_S",
+            lambda key: key == "ELEVENVOICE_GENERATE_TIMEOUT_S",
         )
         c = _loopback_client()
         body = c.get("/system/info").json()
@@ -231,16 +231,16 @@ class TestExternalOverrideDetection:
         try:
             r = c.post(
                 "/system/set-env",
-                json={"key": "OMNIVOICE_GENERATE_TIMEOUT_S", "value": "900"},
+                json={"key": "ELEVENVOICE_GENERATE_TIMEOUT_S", "value": "900"},
             )
             assert r.status_code == 200
             body = r.json()
             assert body["set"] is True
             assert body["shadowed"] is True
         finally:
-            os.environ.pop("OMNIVOICE_GENERATE_TIMEOUT_S", None)
+            os.environ.pop("ELEVENVOICE_GENERATE_TIMEOUT_S", None)
             from core import prefs
-            prefs.delete("env.OMNIVOICE_GENERATE_TIMEOUT_S")
+            prefs.delete("env.ELEVENVOICE_GENERATE_TIMEOUT_S")
 
 
 # ── copy fix: the timeout message must not recommend a UI-less action ──────

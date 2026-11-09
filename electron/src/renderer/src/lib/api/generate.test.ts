@@ -257,10 +257,10 @@ describe('parseGenerateHeaders', () => {
       'X-Audio-Duration': '3.25',
       'X-Gen-Time': '1.5',
       'X-Seed': '42',
-      'X-OmniVoice-Routing': 'cpu_fallback',
-      'X-OmniVoice-Routing-Reason': 'no CUDA',
-      'X-OmniVoice-Dropped-Chunks': '2',
-      'X-OmniVoice-Dropped-Text': 'lost | words',
+      'X-ElevenVoice-Routing': 'cpu_fallback',
+      'X-ElevenVoice-Routing-Reason': 'no CUDA',
+      'X-ElevenVoice-Dropped-Chunks': '2',
+      'X-ElevenVoice-Dropped-Text': 'lost | words',
     });
     expect(parseGenerateHeaders(headers)).toEqual({
       id: 'abc',
@@ -274,7 +274,7 @@ describe('parseGenerateHeaders', () => {
   });
 
   it('yields nulls when headers are absent or malformed', () => {
-    const headers = new Headers({ 'X-Seed': 'nope', 'X-OmniVoice-Dropped-Chunks': '0' });
+    const headers = new Headers({ 'X-Seed': 'nope', 'X-ElevenVoice-Dropped-Chunks': '0' });
     expect(parseGenerateHeaders(headers)).toEqual({
       id: null,
       audioPath: null,

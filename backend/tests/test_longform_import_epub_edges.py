@@ -51,7 +51,7 @@ def test_parser_failure_returns_text_collected_before_the_error(monkeypatch, cap
         raise RuntimeError("test parser interruption")
 
     monkeypatch.setattr(li._TextExtractor, "feed", fail_after_opening)
-    with caplog.at_level("WARNING", logger="omnivoice.longform_import"):
+    with caplog.at_level("WARNING", logger="elevenvoice.longform_import"):
         _title, body = li._html_to_title_body("<body>ignored</body>")
     assert body == "Recovered words."
     assert any("HTML parsing failed" in record.message for record in caplog.records)

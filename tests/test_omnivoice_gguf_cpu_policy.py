@@ -4,8 +4,8 @@ The automatic selection may reuse an already-installed larger quant, but
 a host that explicitly asked for the CPU must not silently run the
 bigger cached model instead: the CPU tier's quant is the contract. The
 CPU choice itself comes from the existing compute policy (the Settings
-pick, the global ``OMNIVOICE_DEVICE`` pin, the engine-level
-``OMNIVOICE_GGUF_BACKEND`` override or an ambient native
+pick, the global ``ELEVENVOICE_DEVICE`` pin, the engine-level
+``ELEVENVOICE_GGUF_BACKEND`` override or an ambient native
 ``GGML_BACKEND``), and it never changes the native compute device.
 """
 from __future__ import annotations

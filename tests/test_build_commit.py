@@ -15,9 +15,9 @@ SHA = "0123456789abcdef0123456789abcdef01234567"
 def _fresh(monkeypatch, env: str | None = None):
     version.build_commit.cache_clear()
     if env is None:
-        monkeypatch.delenv("OMNIVOICE_BUILD_COMMIT", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_BUILD_COMMIT", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_BUILD_COMMIT", env)
+        monkeypatch.setenv("ELEVENVOICE_BUILD_COMMIT", env)
 
 
 def test_environment_commit_is_shortened_and_lowercased(monkeypatch):

@@ -47,9 +47,9 @@ from engines.supertonic3 import constants as st3_constants
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.supertonic3")
+logger = logging.getLogger("elevenvoice.supertonic3")
 
-_VENV_ENV_VAR = "OMNIVOICE_SUPERTONIC3_DIR"
+_VENV_ENV_VAR = "ELEVENVOICE_SUPERTONIC3_DIR"
 
 
 def _own_venv_python() -> "Path | None":
@@ -114,9 +114,9 @@ class Supertonic3Backend(SubprocessBackend):
     def recv_timeout_s(self) -> float:
         """Receive timeout in seconds for the Supertonic-3 sidecar process (#2103)."""
         # Supertonic-3 runs ONNX on CPU; cold load downloads ~400MB and long
-        # synthesis benefits from more headroom than 60s. OMNIVOICE_SUPERTONIC3_RECV_TIMEOUT_S (#2103).
+        # synthesis benefits from more headroom than 60s. ELEVENVOICE_SUPERTONIC3_RECV_TIMEOUT_S (#2103).
         try:
-            v = float(os.environ.get("OMNIVOICE_SUPERTONIC3_RECV_TIMEOUT_S", "300"))
+            v = float(os.environ.get("ELEVENVOICE_SUPERTONIC3_RECV_TIMEOUT_S", "300"))
         except (ValueError, TypeError):
             return 300.0
         if not math.isfinite(v):

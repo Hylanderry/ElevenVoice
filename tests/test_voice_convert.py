@@ -27,8 +27,8 @@ import pytest
 import torch
 from fastapi import HTTPException
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 def _tts_mod():
@@ -161,7 +161,7 @@ def _wire_stubs(monkeypatch, *, engine_cls, asr):
     import services.asr_backend as ab
 
     monkeypatch.setitem(_tts_mod()._REGISTRY, engine_cls.id, engine_cls)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", engine_cls.id)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", engine_cls.id)
     monkeypatch.setattr(ab, "asr_model_missing_error", lambda **kw: None)
     monkeypatch.setattr(ab, "load_active_asr_backend", lambda **kw: asr)
 
@@ -789,7 +789,7 @@ def test_keep_delivery_converts_the_recording_without_asr(client, monkeypatch, p
     monkeypatch.setitem(_tts_mod()._REGISTRY, vc_cls.id, vc_cls)
     monkeypatch.setitem(_tts_mod()._REGISTRY, plain.id, plain)
     # The active engine cannot convert; the installed one that can is used.
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", plain.id)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", plain.id)
     _no_asr(monkeypatch)
     _stub_decode(monkeypatch, 25.0)
 
@@ -817,7 +817,7 @@ def test_keep_delivery_prefers_the_active_engine(client, monkeypatch, profile):
     active = _vc_engine(f"vcb-{uuid.uuid4().hex[:6]}")
     monkeypatch.setitem(_tts_mod()._REGISTRY, first.id, first)
     monkeypatch.setitem(_tts_mod()._REGISTRY, active.id, active)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", active.id)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", active.id)
     _no_asr(monkeypatch)
     _stub_decode(monkeypatch, 2.0)
 
@@ -858,7 +858,7 @@ def test_keep_delivery_refuses_an_overlong_source(client, monkeypatch, profile):
 
     vc_cls = _vc_engine(f"vcl-{uuid.uuid4().hex[:6]}")
     monkeypatch.setitem(_tts_mod()._REGISTRY, vc_cls.id, vc_cls)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", vc_cls.id)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", vc_cls.id)
     monkeypatch.setattr(vc, "MAX_SOURCE_S", 5.0)
     _no_asr(monkeypatch)
     _stub_decode(monkeypatch, 30.0)

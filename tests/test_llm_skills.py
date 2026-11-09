@@ -23,8 +23,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _HAS_OPENAI = importlib.util.find_spec("openai") is not None
 
@@ -60,7 +60,7 @@ def _activate_groq(store):
 
 def test_global_off_disables_direct_clients_and_readiness(skills, store, monkeypatch):
     _activate_groq(store)
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     skills.configure_skill("cinematic_translation", provider_override="groq")
     assert skills.resolve_skill("cinematic_translation").ready is False
     assert skills.resolve_skill_client("cinematic_translation") is None
@@ -230,7 +230,7 @@ def test_global_env_kill_switch_silences_overrides(skills, store, monkeypatch):
     from services.llm_backend import OffBackend
     _activate_groq(store)
     skills.configure_skill("direction_parse", provider_override="ollama")
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     assert isinstance(skills.skill_backend("direction_parse"), OffBackend)
 
 

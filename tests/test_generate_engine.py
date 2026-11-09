@@ -2,7 +2,7 @@
 
 Before the fix, /generate always ran the OmniVoice model via
 `services.model_manager.get_model()` and ignored both the Settings engine
-selection (POST /engines/select → prefs / OMNIVOICE_TTS_BACKEND) and any
+selection (POST /engines/select → prefs / ELEVENVOICE_TTS_BACKEND) and any
 per-request override. These tests prove:
 
   1. The Settings-selected engine is the one that generates.
@@ -18,8 +18,8 @@ The engine layer is stubbed (no real model loads), matching test_api.py.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 
@@ -110,7 +110,7 @@ def test_generate_honors_settings_selected_engine(client, monkeypatch, no_omnivo
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-engine", fake)
     # Env var is the top of the same resolution chain prefs.json feeds
     # (active_backend_id: env > prefs > default).
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-engine")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-engine")
 
     res = client.post("/generate", data={"text": "Hello engine", "language": "Auto", "seed": "42"})
 
@@ -129,7 +129,7 @@ def test_generate_engine_param_overrides_selection(client, monkeypatch, no_omniv
     """Explicit per-request `engine` form field wins, like /ws/tts's `engine`."""
     fake = _make_fake_engine()
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-engine", fake)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
 
     res = client.post("/generate", data={"text": "Override me", "engine": "fake-engine"})
 
@@ -139,7 +139,7 @@ def test_generate_engine_param_overrides_selection(client, monkeypatch, no_omniv
 
 
 def test_generate_unknown_engine_is_400(client, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     res = client.post("/generate", data={"text": "x", "engine": "not-a-real-engine"})
     assert res.status_code == 400
     assert "Unknown TTS engine" in res.json()["detail"]
@@ -182,8 +182,8 @@ def test_generate_cpu_fallback_emits_routing_headers(client, monkeypatch, no_omn
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-engine", fake)
     res = client.post("/generate", data={"text": "hi", "engine": "fake-engine"})
     assert res.status_code == 200, res.text
-    assert res.headers.get("x-omnivoice-routing") == "cpu_fallback"
-    reason = res.headers.get("x-omnivoice-routing-reason")
+    assert res.headers.get("x-elevenvoice-routing") == "cpu_fallback"
+    reason = res.headers.get("x-elevenvoice-routing-reason")
     assert reason and reason.encode("ascii")  # present + latin-1/ASCII-safe
     assert len(fake.calls) == 1  # synth still ran (fallback, not block)
 
@@ -195,7 +195,7 @@ def test_generate_cpu_only_host_emits_no_routing_header(client, monkeypatch, no_
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-engine", fake)
     res = client.post("/generate", data={"text": "hi", "engine": "fake-engine"})
     assert res.status_code == 200, res.text
-    assert "x-omnivoice-routing" not in {k.lower() for k in res.headers}
+    assert "x-elevenvoice-routing" not in {k.lower() for k in res.headers}
 
 
 def test_generate_default_path_still_runs_omnivoice(client, monkeypatch, tmp_path):
@@ -203,7 +203,7 @@ def test_generate_default_path_still_runs_omnivoice(client, monkeypatch, tmp_pat
     # Neutralize any persisted Settings pick so the default resolution applies.
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
 
     mock_model = MagicMock()
     mock_model.sampling_rate = 24000

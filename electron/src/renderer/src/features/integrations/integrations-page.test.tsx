@@ -34,6 +34,7 @@ it('only lists integrations with completed wiring pages', () => {
     'Docker',
     'ElevenVoice API',
     'GitHub Container Registry',
+    'Hermes Agent',
     'Model Context Protocol',
     'OpenAI Agents',
     'Twilio',
@@ -66,7 +67,7 @@ it('keeps wired integrations distinct while filtering', async () => {
   expect(errors).not.toHaveBeenCalled();
 });
 
-it('badges every listed integration as working with VoiceStudio', () => {
+it('badges every listed integration as working with ElevenVoice', () => {
   const { container } = render(<IntegrationsPage />);
   const card = (name: string) =>
     [...container.querySelectorAll('.integration-card')].find(

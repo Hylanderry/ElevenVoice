@@ -37,17 +37,17 @@ def test_rejects_non_origin_and_host_spoof_urls(outbound_http, monkeypatch, url)
 
 def test_private_network_requires_explicit_existing_trust_policy(outbound_http, monkeypatch):
     monkeypatch.setattr(socket, "getaddrinfo", lambda *_args, **_kwargs: _answer("192.168.4.20"))
-    monkeypatch.delenv("OMNIVOICE_TRUSTED_NETWORKS", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TRUSTED_NETWORKS", raising=False)
     with pytest.raises(outbound_http.UnsafeEndpoint):
         outbound_http.resolve_trusted_endpoint("http://gptsovits.lan:9880")
 
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "192.168.4.0/24")
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "192.168.4.0/24")
     endpoint = outbound_http.resolve_trusted_endpoint("http://gptsovits.lan:9880")
     assert endpoint.ip == "192.168.4.20"
 
 
 def test_mixed_dns_answers_are_rejected(outbound_http, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "10.0.0.0/8")
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "10.0.0.0/8")
     monkeypatch.setattr(
         socket,
         "getaddrinfo",
@@ -209,7 +209,7 @@ def test_availability_probe_is_one_validator_get(outbound_http, monkeypatch):
 
         return _Ctx()
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9911")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9911")
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", record)
     assert GPTSoVITSBackend.is_available() == (True, "ready (api_v2 server reachable)")
     assert len(seen) == 1
@@ -236,7 +236,7 @@ def test_gptsovits_routing_mismatch_message_distinguishes_old_protocol(
     def raise_404(*_args, **_kwargs):
         raise outbound_http.EndpointHTTPError(404)
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", raise_404)
 
     ok, message = GPTSoVITSBackend.is_available()
@@ -257,7 +257,7 @@ def test_gptsovits_connection_refused_message_unchanged(outbound_http, monkeypat
     def raise_refused(*_args, **_kwargs):
         raise ConnectionRefusedError("endpoint returned HTTP 0 / Connection refused")
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", raise_refused)
 
     ok, message = GPTSoVITSBackend.is_available()
@@ -295,9 +295,9 @@ def posted(outbound_http, monkeypatch):
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", fake_open)
     monkeypatch.setattr(torchaudio, "load", lambda *a, **k: (torch.zeros(1, 320), 32000))
     monkeypatch.setattr(audio_io, "load_audio", lambda *a, **k: (torch.zeros(1, 320), 32000))
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
     for name in ("REF_AUDIO", "REF_TEXT", "REF_LANG"):
-        monkeypatch.delenv(f"OMNIVOICE_GPTSOVITS_{name}", raising=False)
+        monkeypatch.delenv(f"ELEVENVOICE_GPTSOVITS_{name}", raising=False)
     return sent
 
 
@@ -334,7 +334,7 @@ def test_gptsovits_rejects_missing_reference_before_network(outbound_http, monke
         pytest.fail("Missing-reference generation made a network request")
 
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", unexpected_request)
-    monkeypatch.delenv("OMNIVOICE_GPTSOVITS_REF_AUDIO", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_GPTSOVITS_REF_AUDIO", raising=False)
     with pytest.raises(TTSInputError, match="needs a reference clip"):
         GPTSoVITSBackend().generate("just text", ref_audio=reference)
 
@@ -344,7 +344,7 @@ def test_gptsovits_generate_wraps_request_errors_with_server_url(
 ):
     """The user-facing error names the configured server URL, not the path.
 
-    VoiceStudio users typically reach the engine through Settings, where
+    ElevenVoice users typically reach the engine through Settings, where
     the URL is configurable; without the URL in the error they have to
     dig through Settings to find out which one failed. The legacy adapter
     included the URL on the success path but not on the failure path.
@@ -354,7 +354,7 @@ def test_gptsovits_generate_wraps_request_errors_with_server_url(
     def boom(*_args, **_kwargs):
         raise OSError("endpoint returned HTTP 500")
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://gptsovits.lan:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://gptsovits.lan:9880")
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", boom)
 
     backend = GPTSoVITSBackend()
@@ -367,7 +367,7 @@ def test_gptsovits_probe_accepts_route_present_errors(outbound_http, monkeypatch
     """Exercise the real transport boundary, not a successful helper stub."""
     from services.tts_backend import GPTSoVITSBackend
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
     monkeypatch.setattr(socket, "getaddrinfo", lambda *_args, **_kwargs: _answer("127.0.0.1"))
     monkeypatch.setattr(outbound_http, "_PinnedHTTPConnection", _Connection)
     monkeypatch.setattr(_Connection, "getresponse", lambda self: _Response(status))
@@ -433,7 +433,7 @@ def test_transport_rejects_body_without_content_type(outbound_http, monkeypatch)
 @pytest.mark.parametrize('status', [401, 403, 500])
 def test_probe_reports_reachable_http_failures(outbound_http, monkeypatch, status):
     from services.tts_backend import GPTSoVITSBackend
-    monkeypatch.setenv('OMNIVOICE_GPTSOVITS_URL', 'http://127.0.0.1:9880')
+    monkeypatch.setenv('ELEVENVOICE_GPTSOVITS_URL', 'http://127.0.0.1:9880')
     monkeypatch.setattr(socket, 'getaddrinfo', lambda *_a, **_k: _answer('127.0.0.1'))
     monkeypatch.setattr(outbound_http, '_PinnedHTTPConnection', _Connection)
     original_init = _Connection.__init__
@@ -452,7 +452,7 @@ def test_probe_supplies_languages_without_synthesizing(outbound_http, monkeypatc
     """api_v2 lowercases language parameters before validating a missing reference."""
     from urllib.parse import parse_qs, urlsplit
     from services.tts_backend import GPTSoVITSBackend
-    monkeypatch.setenv('OMNIVOICE_GPTSOVITS_URL', 'http://127.0.0.1:9880')
+    monkeypatch.setenv('ELEVENVOICE_GPTSOVITS_URL', 'http://127.0.0.1:9880')
     monkeypatch.setattr(socket, 'getaddrinfo', lambda *_a, **_k: _answer('127.0.0.1'))
     class ApiV2Connection(_Connection):
         def request(self, method, target, **kwargs):
@@ -473,9 +473,9 @@ def test_probe_supplies_languages_without_synthesizing(outbound_http, monkeypatc
 def test_plain_tts_uses_environment_clip_then_explicit_clip_wins(posted, monkeypatch):
     from services.tts_backend import GPTSoVITSBackend
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_REF_AUDIO", "/srv/default.wav")
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_REF_TEXT", "default words")
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_REF_LANG", "Japanese")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_REF_AUDIO", "/srv/default.wav")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_REF_TEXT", "default words")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_REF_LANG", "Japanese")
     backend = GPTSoVITSBackend()
     backend.generate("first", language="en")
     backend.generate("second", language="en", ref_audio="/clips/own.wav", ref_text="own words")
@@ -492,7 +492,7 @@ def test_plain_tts_uses_environment_clip_then_explicit_clip_wins(posted, monkeyp
 def test_request_clip_ignores_reference_language_variable(posted, monkeypatch, code):
     from services.tts_backend import GPTSoVITSBackend
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_REF_LANG", "ko" if code != "ko" else "zh")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_REF_LANG", "ko" if code != "ko" else "zh")
     GPTSoVITSBackend().generate("text", language=code, ref_audio="/clips/x.wav")
     body = posted[0]["json"]
     assert body["prompt_lang"] == "auto"
@@ -502,7 +502,7 @@ def test_request_clip_ignores_reference_language_variable(posted, monkeypatch, c
 def test_environment_clip_without_language_variable_means_auto(posted, monkeypatch):
     from services.tts_backend import GPTSoVITSBackend
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_REF_AUDIO", "/srv/default.wav")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_REF_AUDIO", "/srv/default.wav")
     GPTSoVITSBackend().generate("text", language="en")
     body = posted[0]["json"]
     assert body["prompt_lang"] == "auto" and body["prompt_text"] == ""
@@ -514,7 +514,7 @@ def test_probe_reports_http_status_for_other_failures_with_url(outbound_http, mo
     def refuse(*_a, **_k):
         raise outbound_http.EndpointHTTPError(503)
 
-    monkeypatch.setenv("OMNIVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
+    monkeypatch.setenv("ELEVENVOICE_GPTSOVITS_URL", "http://127.0.0.1:9880")
     monkeypatch.setattr(outbound_http, "open_trusted_endpoint", refuse)
     ok, message = GPTSoVITSBackend.is_available()
     assert ok is False and "HTTP 503" in message and "9880" in message

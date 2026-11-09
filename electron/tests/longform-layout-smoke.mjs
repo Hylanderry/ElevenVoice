@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 // Regression guard: while a big book renders, the Stop button must stay reachable.
 // It lives in the setup pane first, and in the editor column once that pane is folded.
-const UI = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const UI = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 const SCREENS = [
   { label: 'desktop', width: 1400, height: 860 },
   { label: 'compact', width: 640, height: 760 },
@@ -34,7 +34,7 @@ function assertContained(inner, outer, what) {
 async function prepare(page) {
   await page.addInitScript(
     ({ count }) => {
-      localStorage.setItem('voicestudio.setup.complete.v1', '1');
+      localStorage.setItem('elevenvoice.setup.complete.v1', '1');
       const lines = [];
       for (let n = 1; n <= count; n++)
         lines.push({
@@ -43,7 +43,7 @@ async function prepare(page) {
           profileId: null,
         });
       localStorage.setItem(
-        'voicestudio.longform.v1',
+        'elevenvoice.longform.v1',
         JSON.stringify({ stories: { script: '', title: 'Long fixture', voice: 'v1', lines } }),
       );
     },

@@ -144,7 +144,7 @@ def test_is_available_no_venv(monkeypatch):
     )
     ok, msg = IndexTTS2Backend.is_available()
     assert ok is False
-    assert "OMNIVOICE_INDEXTTS_DIR" in msg
+    assert "ELEVENVOICE_INDEXTTS_DIR" in msg
     assert "docs/engines/indextts.md" in msg
 
 
@@ -319,7 +319,7 @@ def test_indextts25_rejects_unsupported_language_without_synthesizing(
     module = checkout / "indextts" / "infer_v2_5.py"
     module.parent.mkdir(parents=True)
     module.write_text("class IndexTTS2: pass\n")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(checkout))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(checkout))
     assert backend.supported_languages == ["zh", "en", "ja", "es", "ar"]
     sent = []
     original_send = SubprocessBackend._send
@@ -342,7 +342,7 @@ def test_user_managed_indextts2_keeps_legacy_language_metadata(
     legacy_module = checkout / "indextts" / "infer_v2.py"
     legacy_module.parent.mkdir(parents=True)
     legacy_module.write_text("class IndexTTS2: pass\n")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(checkout))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(checkout))
     assert patched_indextts_backend.supported_languages == ["zh", "en"]
 
 
@@ -588,7 +588,7 @@ def test_sidecar_loader_prefers_25_and_uses_reviewed_weight_layout(monkeypatch, 
     ckpt = repo / "checkpoints"
     ckpt.mkdir(parents=True)
     (ckpt / "config.yaml").write_text("model: {}\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(repo))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(repo))
     monkeypatch.setattr(sidecar, "_torch_bf16_supported", lambda: True)
     monkeypatch.setattr(sidecar, "_model", None)
     monkeypatch.setattr(sidecar, "_model_version", None)
@@ -621,7 +621,7 @@ def test_sidecar_loader_keeps_user_managed_v2_compatibility(monkeypatch, tmp_pat
     checkpoint_dir = tmp_path / "checkpoints"
     checkpoint_dir.mkdir()
     (checkpoint_dir / "config.yaml").write_text("model: {}\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(tmp_path))
     monkeypatch.setattr(sidecar, "_model", None)
     monkeypatch.setattr(sidecar, "_model_version", None)
 

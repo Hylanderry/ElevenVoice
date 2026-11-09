@@ -112,7 +112,7 @@ export const DEFAULT_FIXTURES = {
     models: [
       {
         repo_id: 'k2-fsa/OmniVoice',
-        label: 'VoiceStudio TTS',
+        label: 'ElevenVoice TTS',
         role: 'TTS',
         size_gb: 2.4,
         required: true,
@@ -252,7 +252,7 @@ export async function startHealthBackend({ fixtures = {}, port = 0 } = {}) {
       const fixture = served[path];
       response.writeHead(200, {
         'content-type': 'application/json',
-        'x-omnivoice-backend': 'native-smoke',
+        'x-elevenvoice-backend': 'native-smoke',
       });
       response.end(
         JSON.stringify(typeof fixture === 'function' ? fixture(request, body) : fixture),

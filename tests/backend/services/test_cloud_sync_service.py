@@ -18,7 +18,7 @@ INFO = {"access_token": "acc", "organization_id": ORG, "sync_api": "https://appa
 @pytest.fixture
 def setup(tmp_path, monkeypatch):
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)

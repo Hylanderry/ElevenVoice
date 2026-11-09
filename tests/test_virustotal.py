@@ -228,8 +228,8 @@ class VirusTotalTests(unittest.TestCase):
         vt.source_archive(archive_path)
         committed_attributes = subprocess.check_output(["git", "show", "HEAD:.gitattributes"], cwd=ROOT)
         with zipfile.ZipFile(archive_path) as archive:
-            self.assertEqual(archive.read("VoiceStudio-main/.gitattributes"), committed_attributes)
-            self.assertNotIn("VoiceStudio-main/.env", archive.namelist())
+            self.assertEqual(archive.read("ElevenVoice-main/.gitattributes"), committed_attributes)
+            self.assertNotIn("ElevenVoice-main/.env", archive.namelist())
 
     def test_make_passes_file_override_without_needing_a_live_api(self):
         import shutil

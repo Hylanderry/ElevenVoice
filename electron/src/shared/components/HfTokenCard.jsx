@@ -20,7 +20,7 @@ import { Button, Input } from '../ui';
 
 const SOURCE_IDS = ['app', 'env', 'hf-cli'];
 const SOURCE_LABELS = {
-  app: ['settings.hf_source_app_label', 'VoiceStudio (encrypted, recommended)'],
+  app: ['settings.hf_source_app_label', 'ElevenVoice (encrypted, recommended)'],
   env: ['settings.hf_source_env_label', 'Environment variable'],
   'hf-cli': ['settings.hf_source_cli_label', 'HuggingFace CLI'],
 };

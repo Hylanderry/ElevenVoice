@@ -11,7 +11,7 @@ from services.cloud_sync.voices import voice_sync_content
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)

@@ -1,6 +1,6 @@
 # probe — spec-driven test harness
 
-`probe` is a portable test harness for VoiceStudio (and, by design, other
+`probe` is a portable test harness for ElevenVoice (and, by design, other
 projects/APIs). It is **mostly deterministic with three narrowly-scoped agent
 roles**, not an "AI does everything" system — that distinction is the whole point.
 
@@ -28,7 +28,7 @@ shared across the backend-touching specs):
 | Spec | Layer | Verifies |
 |------|-------|----------|
 | `first_run` | env | fresh-dir boot: health + DB init + endpoints |
-| `migration` | env | alembic UPGRADE on existing `omnivoice_data` fixture (backward-compat) |
+| `migration` | env | alembic UPGRADE on existing `elevenvoice_data` fixture (backward-compat) |
 | `engines` | engine | TTS/ASR registry: active engine available, every unavailable engine explains why (11 TTS / 7 ASR backends) |
 | `security` | security | system routes reject non-loopback origins (403) |
 | `dictation` | dictation | streaming-ASR WebSocket `/ws/transcribe` registered + accepts loopback handshake |

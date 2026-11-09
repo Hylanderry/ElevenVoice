@@ -16,12 +16,12 @@ from unittest.mock import Mock
 import pytest
 
 DOTS_VARS = (
-    "OMNIVOICE_AUDIOCPP_DOTS_MODEL",
-    "OMNIVOICE_AUDIOCPP_DOTS_PACKAGE",
-    "OMNIVOICE_AUDIOCPP_DOTS_PORT",
-    "OMNIVOICE_AUDIOCPP_MODEL",
-    "OMNIVOICE_AUDIOCPP_PACKAGE",
-    "OMNIVOICE_AUDIOCPP_PORT",
+    "ELEVENVOICE_AUDIOCPP_DOTS_MODEL",
+    "ELEVENVOICE_AUDIOCPP_DOTS_PACKAGE",
+    "ELEVENVOICE_AUDIOCPP_DOTS_PORT",
+    "ELEVENVOICE_AUDIOCPP_MODEL",
+    "ELEVENVOICE_AUDIOCPP_PACKAGE",
+    "ELEVENVOICE_AUDIOCPP_PORT",
 )
 
 
@@ -53,13 +53,13 @@ def test_dots_package_never_collides_with_breeze(mods):
     # Breeze-TTS-2 keeps its historical defaults and env names.
     assert bootstrap.server_port() == bootstrap.DEFAULT_PORT == 17860
     assert bootstrap.package_filename() == "breeze-tts-2-q8_0.gguf"
-    assert breeze.model_env == "OMNIVOICE_AUDIOCPP_MODEL"
+    assert breeze.model_env == "ELEVENVOICE_AUDIOCPP_MODEL"
 
 
 def test_dots_env_overrides_are_its_own(monkeypatch, mods):
     _audiocpp, bootstrap = mods
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_DOTS_PORT", "18090")
-    monkeypatch.setenv("OMNIVOICE_AUDIOCPP_DOTS_PACKAGE", "dots-tts-soar-bf16.gguf")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_DOTS_PORT", "18090")
+    monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_DOTS_PACKAGE", "dots-tts-soar-bf16.gguf")
     assert bootstrap.server_port(bootstrap.DOTS) == 18090
     assert bootstrap.package_filename(bootstrap.DOTS) == "dots-tts-soar-bf16.gguf"
     assert bootstrap.server_port() == 17860
@@ -96,7 +96,7 @@ def test_missing_dots_weights_name_dots(monkeypatch, mods):
         raise LocalEntryNotFoundError("not cached")
 
     monkeypatch.setattr("huggingface_hub.snapshot_download", missing)
-    with pytest.raises(RuntimeError, match=r"dots\.tts is not installed.*OMNIVOICE_AUDIOCPP_DOTS_MODEL"):
+    with pytest.raises(RuntimeError, match=r"dots\.tts is not installed.*ELEVENVOICE_AUDIOCPP_DOTS_MODEL"):
         bootstrap.resolve_model_file(bootstrap.DOTS)
 
 

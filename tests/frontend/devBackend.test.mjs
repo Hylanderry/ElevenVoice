@@ -5,7 +5,7 @@
 //   * the wrapper launches uvicorn directly and owns Python source reloads, so
 //     a dead server cannot hide behind a still-live uvicorn reload parent;
 //   * the data-dir resolution mirrors backend/core/config.py, so the banner
-//     tails the same omnivoice.log the backend writes;
+//     tails the same elevenvoice.log the backend writes;
 //   * the banner names the exit code/signal, carries the log tail, flags the
 //     OOM-kill shapes, and points at the next-start crash notice.
 
@@ -29,9 +29,9 @@ import {
 test('CPU/CUDA/ROCm restarts skip sync while preserving bind-host and port overrides', () => {
   for (const variant of ['auto', 'cpu', 'cuda', 'rocm']) {
     const args = uvRunArgs({
-      OMNIVOICE_TORCH_VARIANT: variant,
-      OMNIVOICE_BIND_HOST: '192.0.2.10',
-      OMNIVOICE_PORT: '4321',
+      ELEVENVOICE_TORCH_VARIANT: variant,
+      ELEVENVOICE_BIND_HOST: '192.0.2.10',
+      ELEVENVOICE_PORT: '4321',
     });
     assert.deepEqual(args.slice(0, 2), ['run', '--no-sync']);
     assert.equal(args[args.indexOf('--host') + 1], '192.0.2.10');
@@ -110,13 +110,13 @@ test('uvicorn runs directly on loopback because the wrapper owns source reloads'
 });
 
 test('dev backend honours the backend bind host and port knobs', () => {
-  const args = uvicornArgs({ OMNIVOICE_BIND_HOST: '0.0.0.0', OMNIVOICE_PORT: '3912' });
+  const args = uvicornArgs({ ELEVENVOICE_BIND_HOST: '0.0.0.0', ELEVENVOICE_PORT: '3912' });
   assert.deepEqual(args.slice(-4), ['--host', '0.0.0.0', '--port', '3912']);
   for (const bad of ['', 'nope', '0', '70000']) {
-    assert.deepEqual(uvicornArgs({ OMNIVOICE_PORT: bad }).slice(-2), ['--port', '3900']);
+    assert.deepEqual(uvicornArgs({ ELEVENVOICE_PORT: bad }).slice(-2), ['--port', '3900']);
   }
-  assert.deepEqual(uvicornArgs({ OMNIVOICE_BIND_HOST: '  ' }).slice(-4, -2), ['--host', '127.0.0.1']);
-  assert.deepEqual(uvRunArgs({ OMNIVOICE_TORCH_VARIANT: 'rocm', OMNIVOICE_PORT: '3912' }).slice(0, 3), [
+  assert.deepEqual(uvicornArgs({ ELEVENVOICE_BIND_HOST: '  ' }).slice(-4, -2), ['--host', '127.0.0.1']);
+  assert.deepEqual(uvRunArgs({ ELEVENVOICE_TORCH_VARIANT: 'rocm', ELEVENVOICE_PORT: '3912' }).slice(0, 3), [
     'run',
     '--no-sync',
     'uvicorn',
@@ -131,7 +131,7 @@ test('only Python source changes trigger backend reloads', () => {
 });
 
 test('resolveDataDir mirrors backend/core/config.py::get_app_data_dir', () => {
-  assert.equal(resolveDataDir({ OMNIVOICE_DATA_DIR: '/x' }, 'linux', '/home/u'), '/x');
+  assert.equal(resolveDataDir({ ELEVENVOICE_DATA_DIR: '/x' }, 'linux', '/home/u'), '/x');
   assert.equal(
     resolveDataDir({}, 'darwin', '/Users/u'),
     path.join('/Users/u', 'Library/Application Support/OmniVoice'),
@@ -145,7 +145,7 @@ test('resolveDataDir mirrors backend/core/config.py::get_app_data_dir', () => {
 
 test('tailFile returns the last N lines, and null for a missing file', () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'ov-devbackend-'));
-  const log = path.join(dir, 'omnivoice.log');
+  const log = path.join(dir, 'elevenvoice.log');
   writeFileSync(log, ['a', 'b', 'c', 'd', ''].join('\n'));
   assert.equal(tailFile(log, 2), 'c\nd');
   assert.equal(tailFile(path.join(dir, 'missing.log'), 2), null);
@@ -156,7 +156,7 @@ test('banner names the exit, embeds the log tail, and points at the crash notice
     code: 1,
     signal: null,
     logTail: 'ERROR the last thing logged',
-    logPath: '/data/omnivoice.log',
+    logPath: '/data/elevenvoice.log',
     platform: 'darwin',
   });
   assert.match(banner, /OMNIVOICE BACKEND DIED/);
@@ -171,7 +171,7 @@ test('banner flags OOM-kill shapes and adds the Linux journalctl hint', () => {
     code: null,
     signal: 'SIGKILL',
     logTail: null,
-    logPath: '/data/omnivoice.log',
+    logPath: '/data/elevenvoice.log',
     platform: 'linux',
   });
   assert.match(killed, /killed by signal SIGKILL/);

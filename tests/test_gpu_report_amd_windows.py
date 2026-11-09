@@ -141,7 +141,7 @@ def test_detect_host_gpus_reads_the_real_windows_display_class(monkeypatch):
             "MatchingDeviceId": "PCI\\VEN_8086&DEV_7D55",
         },
     })
-    monkeypatch.delenv("OMNIVOICE_DISABLE_GPU_INVENTORY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DISABLE_GPU_INVENTORY", raising=False)
     monkeypatch.setattr("sys.platform", "win32")
     monkeypatch.setitem(__import__("sys").modules, "winreg", reg)
     inv = _m("core.gpu_inventory")
@@ -177,7 +177,7 @@ def test_linux_sysfs_lists_cards_not_connectors(tmp_path):
 
 
 def test_inventory_never_raises_and_can_be_disabled(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DISABLE_GPU_INVENTORY", "1")
+    monkeypatch.setenv("ELEVENVOICE_DISABLE_GPU_INVENTORY", "1")
     assert _m("core.gpu_inventory").refresh() == ()
     assert _m("core.gpu_inventory")._read_linux("/definitely/not/here") == ()
 
@@ -342,9 +342,9 @@ def test_kernel_risk_note_marks_the_host_as_missing_kernels():
 
 
 def test_forced_cuda_keeps_the_accelerated_caveat(monkeypatch):
-    # OMNIVOICE_FORCE_CUDA=1 runs the engine on the GPU anyway, so the host
+    # ELEVENVOICE_FORCE_CUDA=1 runs the engine on the GPU anyway, so the host
     # is usable and the risk stays a caveat rather than a missing-kernel host.
-    monkeypatch.setenv("OMNIVOICE_FORCE_CUDA", "1")
+    monkeypatch.setenv("ELEVENVOICE_FORCE_CUDA", "1")
     caps = HostCaps(
         family="cuda", available_families=("cuda", "cpu"),
         notes=("GPU (sm_120) not in this torch build's archs - may fail at kernel launch",),
@@ -422,7 +422,7 @@ def test_indextts_does_not_claim_rocm_when_its_venv_holds_a_cuda_torch(tmp_path,
     from engines.indextts import IndexTTS2Backend, bootstrap
 
     rocm_caps = HostCaps(family="rocm", available_families=("rocm", "cpu"), device_name="RX 6800 XT")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(tmp_path))
     monkeypatch.setattr(bootstrap, "_resolved_python", None)
 
     _fake_venv(tmp_path, "__version__ = '2.8.0+cu128'\ncuda = '12.8'\nhip = None\n")
@@ -440,8 +440,8 @@ def test_indextts_does_not_claim_rocm_when_its_venv_holds_a_cuda_torch(tmp_path,
 def test_indextts_unknown_venv_is_conservative_only_on_opted_windows(tmp_path, monkeypatch, platform, expected):
     from engines.indextts import IndexTTS2Backend, bootstrap
 
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(tmp_path))  # no .venv at all
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(tmp_path))  # no .venv at all
     monkeypatch.setattr(bootstrap, "_resolved_python", None)
     monkeypatch.setattr("sys.platform", platform)
     rocm_caps = HostCaps(family="rocm", available_families=("rocm", "cpu"))
@@ -452,11 +452,11 @@ def test_indextts_unknown_venv_is_conservative_only_on_opted_windows(tmp_path, m
 
 
 def test_indextts_inspects_the_managed_default_venv_too(tmp_path, monkeypatch):
-    """Review: with no OMNIVOICE_INDEXTTS_DIR, bootstrap falls back to the
+    """Review: with no ELEVENVOICE_INDEXTTS_DIR, bootstrap falls back to the
     package's own venv - a CUDA torch there must not be reported as GPU use."""
     from engines.indextts import IndexTTS2Backend, bootstrap
 
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
     monkeypatch.setattr(bootstrap, "_resolved_python", None)
     monkeypatch.setattr(bootstrap, "_ENGINES_VENV_DIR", tmp_path / ".venv")
     _fake_venv(tmp_path, "__version__ = '2.8.0+cu128'\ncuda = '12.8'\nhip = None\n")

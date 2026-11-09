@@ -64,7 +64,7 @@ def test_a_real_failure_is_still_permanent():
 
 @pytest.fixture(autouse=True)
 def _no_backoff(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_BACKOFF_S", "0")
 
 
 def test_truncated_download_is_retried_and_succeeds(monkeypatch):
@@ -83,7 +83,7 @@ def test_truncated_download_is_retried_and_succeeds(monkeypatch):
 
 
 def test_retries_are_bounded(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_RETRIES", "2")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_RETRIES", "2")
     calls = []
 
     def loader():
@@ -131,7 +131,7 @@ def test_the_closed_client_path_stays_single_shot(monkeypatch):
     client is a client-state bug, not a network condition: if a FRESH session
     hits it again, repeating won't help, and #880 chose to surface it. Only
     the transient-download path gets the multi-attempt budget."""
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_RETRIES", "5")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_RETRIES", "5")
     calls = []
 
     def loader():
@@ -167,7 +167,7 @@ def test_voxcpm2_load_actually_retries_a_truncated_download(monkeypatch):
     monkeypatch.setitem(
         sys.modules, "voxcpm", types.SimpleNamespace(VoxCPM=_FakeVoxCPM)
     )
-    monkeypatch.setenv("OMNIVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
+    monkeypatch.setenv("ELEVENVOICE_VOXCPM_MODEL", "openbmb/VoxCPM2")
     monkeypatch.setattr(
         tts_backend.VoxCPM2Backend, "is_available", classmethod(lambda cls: (True, ""))
     )
@@ -312,7 +312,7 @@ def test_the_two_budgets_do_not_share_a_counter(monkeypatch):
     counter as the download retries, so a session reset followed by transient
     failures left a resumable multi-GB download one attempt short of its
     configured budget."""
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_RETRIES", "3")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_RETRIES", "3")
     import huggingface_hub.utils as hub_utils
 
     monkeypatch.setattr(hub_utils, "close_session", lambda: None, raising=False)
@@ -336,5 +336,5 @@ def test_a_non_finite_backoff_falls_back_to_the_default(monkeypatch, bad):
     """Review finding (#1224): `float("inf")` parses fine and then makes
     `sleep(inf)` raise OverflowError, replacing a retryable download failure
     with an unrelated crash that hides the original error."""
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_BACKOFF_S", bad)
-    assert tts_backend._float_env("OMNIVOICE_MODEL_LOAD_BACKOFF_S", 2.0) == 2.0
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_BACKOFF_S", bad)
+    assert tts_backend._float_env("ELEVENVOICE_MODEL_LOAD_BACKOFF_S", 2.0) == 2.0

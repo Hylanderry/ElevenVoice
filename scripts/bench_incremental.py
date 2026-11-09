@@ -26,7 +26,7 @@ _APP_CONFIG = json.loads(
         encoding="utf-8"
     )
 )
-API = f"http://127.0.0.1:{os.environ.get('OMNIVOICE_PORT', _APP_CONFIG['ports']['backend'])}"
+API = f"http://127.0.0.1:{os.environ.get('ELEVENVOICE_PORT', _APP_CONFIG['ports']['backend'])}"
 DEFAULT_URL = "https://www.youtube.com/watch?v=ZzI9JE0i6Lc"
 TARGET_S = 5.0
 # Cap baseline segments to keep full-dub wall-clock tractable. The incremental

@@ -3,10 +3,10 @@ Tiny user-preferences store — JSON file in DATA_DIR.
 
 Keeps UI-selected choices (engine picks, translator provider, …) across
 process restarts without reaching for a DB table. Environment variables
-still win — users who set `OMNIVOICE_TTS_BACKEND=…` are opting into an
+still win — users who set `ELEVENVOICE_TTS_BACKEND=…` are opting into an
 explicit override that the UI cannot silently undo.
 
-    resolve("tts_backend", env="OMNIVOICE_TTS_BACKEND", default="omnivoice")
+    resolve("tts_backend", env="ELEVENVOICE_TTS_BACKEND", default="omnivoice")
       → env var if set, else prefs.json value, else default.
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ from typing import Any, Optional
 
 from core.config import DATA_DIR
 
-logger = logging.getLogger("omnivoice.prefs")
+logger = logging.getLogger("elevenvoice.prefs")
 
 _PREFS_PATH = os.path.join(DATA_DIR, "prefs.json")
 
@@ -140,7 +140,7 @@ _EXTERNALLY_PROVIDED: frozenset[str] = frozenset()
 # Ports older versions persisted although the process that binds them never
 # reads prefs.json. Restoring one made the backend report a port it was not
 # listening on (Settings → Sharing, LAN share and Tailscale targets).
-UNRESTORED_ENV_KEYS = frozenset({"OMNIVOICE_PORT", "OMNIVOICE_UI_PORT"})
+UNRESTORED_ENV_KEYS = frozenset({"ELEVENVOICE_PORT", "ELEVENVOICE_UI_PORT"})
 
 
 def restore_env(data: dict) -> None:

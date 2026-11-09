@@ -22,8 +22,8 @@ vi.mock('./bundled-runtime', () => ({
     return join(root, 'python-runtime', 'bin', 'python3.11');
   },
   bundledRuntimeEnv: (_root: string, data: string) => ({
-    VOICESTUDIO_BUNDLED_CODE_ONLY: '1',
-    OMNIVOICE_DATA_DIR: join(data, 'data'),
+    ELEVENVOICE_BUNDLED_CODE_ONLY: '1',
+    ELEVENVOICE_DATA_DIR: join(data, 'data'),
   }),
 }));
 vi.mock('electron', () => ({
@@ -53,8 +53,8 @@ vi.mock('./runtime-project', async (importOriginal) => ({
 }));
 vi.mock('./legacy-storage', () => ({
   legacyStorageEnv: () => ({
-    OMNIVOICE_DATA_DIR: '/legacy/data',
-    OMNIVOICE_CACHE_DIR: '/legacy/models',
+    ELEVENVOICE_DATA_DIR: '/legacy/data',
+    ELEVENVOICE_CACHE_DIR: '/legacy/models',
   }),
 }));
 import {
@@ -84,8 +84,8 @@ afterEach(() => {
 it('store builds launch only bundled Python, ignoring external command overrides', async () => {
   state.packaged = true;
   state.bundledOnly = true;
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '["external-python"]');
-  vi.stubEnv('OMNIVOICE_DATA_DIR', undefined);
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '["external-python"]');
+  vi.stubEnv('ELEVENVOICE_DATA_DIR', undefined);
   const original = process.resourcesPath;
   Object.defineProperty(process, 'resourcesPath', {
     value: '/signed/resources',
@@ -110,8 +110,8 @@ it('store builds launch only bundled Python, ignoring external command overrides
       cwd: '/signed/resources',
     });
     expect(managedBackendSpawnOptions(3912).env).toMatchObject({
-      VOICESTUDIO_BUNDLED_CODE_ONLY: '1',
-      OMNIVOICE_DATA_DIR: join('/user-data', 'data'),
+      ELEVENVOICE_BUNDLED_CODE_ONLY: '1',
+      ELEVENVOICE_DATA_DIR: join('/user-data', 'data'),
     });
   } finally {
     Object.defineProperty(process, 'resourcesPath', { value: original, configurable: true });
@@ -120,8 +120,8 @@ it('store builds launch only bundled Python, ignoring external command overrides
 it('store builds preserve an explicit data pointer instead of silently starting with empty data', () => {
   state.packaged = true;
   state.bundledOnly = true;
-  vi.stubEnv('OMNIVOICE_DATA_DIR', '/selected/inaccessible-data');
-  expect(managedBackendSpawnOptions(3912).env?.OMNIVOICE_DATA_DIR).toBe(
+  vi.stubEnv('ELEVENVOICE_DATA_DIR', '/selected/inaccessible-data');
+  expect(managedBackendSpawnOptions(3912).env?.ELEVENVOICE_DATA_DIR).toBe(
     '/selected/inaccessible-data',
   );
 });
@@ -146,7 +146,7 @@ it.each(['darwin', 'win32', 'linux'] as const)(
   },
 );
 it('launches the prepared source interpreter without syncing or downloading dependencies', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   const plan = await resolveSpawnPlan(3912);
   expect(plan).toHaveProperty('argv');
   if ('error' in plan) throw new Error(plan.error);
@@ -162,19 +162,19 @@ it('launches the prepared source interpreter without syncing or downloading depe
   expect(plan.argv.slice(-2)).toEqual(['--port', '3912']);
 });
 it('requires explicit source setup when no environment exists, even with uv installed', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.installed = false;
   expect(await resolveSpawnPlan(3900)).toEqual({
     error: expect.stringContaining('bun run setup:api'),
   });
 });
 it('preserves an explicitly configured command', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '["custom-python", "-m", "uvicorn"]');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '["custom-python", "-m", "uvicorn"]');
   expect(await resolveSpawnPlan(3900)).toHaveProperty('argv', ['custom-python', '-m', 'uvicorn']);
 });
 
 it('requires setup when an interpreter exists but required imports fail', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.ready = false;
   expect(await resolveSpawnPlan(3900)).toEqual({
     error: expect.stringContaining('bun run setup:api'),
@@ -182,7 +182,7 @@ it('requires setup when an interpreter exists but required imports fail', async 
 });
 
 it('names the failing import or the absent interpreter instead of one vague message (#2555)', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.ready = false;
   const incomplete = await resolveSpawnPlan(3900);
   if (!('error' in incomplete)) throw new Error('expected a setup error');
@@ -198,7 +198,7 @@ it('names the failing import or the absent interpreter instead of one vague mess
 });
 
 it('never gives an installed app the source-checkout setup command (#3480)', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.packaged = true;
   state.installed = false;
   state.ready = false;
@@ -208,7 +208,7 @@ it('never gives an installed app the source-checkout setup command (#3480)', asy
 });
 
 it('tells a source checkout to press Retry after setup, since Retry re-checks the environment', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.ready = false;
   const plan = await resolveSpawnPlan(3900);
   if (!('error' in plan)) throw new Error('expected a setup error');
@@ -216,17 +216,17 @@ it('tells a source checkout to press Retry after setup, since Retry re-checks th
 });
 
 it('names the folder to open and refuses setup advice outside a checkout (#2988)', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.installed = false;
   state.checkout = false;
   const plan = await resolveSpawnPlan(3900);
   if (!('error' in plan)) throw new Error('expected a setup error');
-  expect(plan.error).toContain('not a VoiceStudio source checkout');
+  expect(plan.error).toContain('not a ElevenVoice source checkout');
   expect(plan.error).toContain('release installer');
 });
 
 it('sends an Intel Mac checkout to a remote backend instead of setup:api (#3584)', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
   state.ready = false;
   const plan = await resolveSpawnPlan(3900, undefined, 'unsupported_platform');
   if (!('error' in plan)) throw new Error('expected a host error');
@@ -240,7 +240,7 @@ it('sends an Intel Mac checkout to a remote backend instead of setup:api (#3584)
   expect(rosetta).not.toHaveProperty('setupIssue');
 
   // An explicit backend command still wins on any host.
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '["custom-python"]');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '["custom-python"]');
   expect(await resolveSpawnPlan(3900, undefined, 'unsupported_platform')).toHaveProperty('argv');
 });
 
@@ -277,26 +277,26 @@ it('keeps native fault frames when the production log ring overflows', async () 
 
 it('passes legacy storage to packaged backends while preserving explicit overrides', () => {
   state.packaged = true;
-  vi.stubEnv('OMNIVOICE_DATA_DIR', undefined);
-  vi.stubEnv('OMNIVOICE_CACHE_DIR', undefined);
+  vi.stubEnv('ELEVENVOICE_DATA_DIR', undefined);
+  vi.stubEnv('ELEVENVOICE_CACHE_DIR', undefined);
   expect(managedBackendSpawnOptions(3900).env).toMatchObject({
-    OMNIVOICE_DATA_DIR: '/legacy/data',
-    OMNIVOICE_CACHE_DIR: '/legacy/models',
+    ELEVENVOICE_DATA_DIR: '/legacy/data',
+    ELEVENVOICE_CACHE_DIR: '/legacy/models',
   });
-  vi.stubEnv('OMNIVOICE_DATA_DIR', '/chosen/data');
-  vi.stubEnv('OMNIVOICE_CACHE_DIR', '/chosen/models');
+  vi.stubEnv('ELEVENVOICE_DATA_DIR', '/chosen/data');
+  vi.stubEnv('ELEVENVOICE_CACHE_DIR', '/chosen/models');
   expect(managedBackendSpawnOptions(3900).env).toMatchObject({
-    OMNIVOICE_DATA_DIR: '/chosen/data',
-    OMNIVOICE_CACHE_DIR: '/chosen/models',
+    ELEVENVOICE_DATA_DIR: '/chosen/data',
+    ELEVENVOICE_CACHE_DIR: '/chosen/models',
   });
   state.packaged = false;
-  vi.stubEnv('OMNIVOICE_DATA_DIR', undefined);
-  vi.stubEnv('OMNIVOICE_CACHE_DIR', undefined);
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_DATA_DIR).toBeUndefined();
+  vi.stubEnv('ELEVENVOICE_DATA_DIR', undefined);
+  vi.stubEnv('ELEVENVOICE_CACHE_DIR', undefined);
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_DATA_DIR).toBeUndefined();
 });
 
 it('names the refused program without recommending runtime repair', () => {
-  const python = String.raw`C:\Users\u\VoiceStudio\.venv\Scripts\python.exe`;
+  const python = String.raw`C:\Users\u\ElevenVoice\.venv\Scripts\python.exe`;
   const message = spawnFailureMessage(
     python,
     Object.assign(new Error('spawn UNKNOWN'), { code: 'UNKNOWN' }),
@@ -319,7 +319,7 @@ it('reads Smart App Control from the registry output', () => {
 });
 
 it('names Smart App Control when it blocked the runtime (#3224)', () => {
-  const python = String.raw`C:\Users\u\VoiceStudio\.venv\Scripts\python.exe`;
+  const python = String.raw`C:\Users\u\ElevenVoice\.venv\Scripts\python.exe`;
   const blocked = Object.assign(new Error('spawn UNKNOWN'), { code: 'UNKNOWN' });
   for (const smartAppControl of ['on', 'evaluation'] as const) {
     const message = spawnFailureMessage(python, blocked, { smartAppControl });
@@ -359,7 +359,7 @@ it('keeps a plain spawn failure message free of install advice', () => {
 });
 
 it('says what the launch did in a startup-budget failure', () => {
-  const budget = 'Backend did not answer on port 3900 within 300 s (OMNIVOICE_STARTUP_BUDGET_S).';
+  const budget = 'Backend did not answer on port 3900 within 300 s (ELEVENVOICE_STARTUP_BUDGET_S).';
   expect(
     startupTimeoutMessage(3900, 300_000, { owned: true, lastOutput: 'INFO: loading model' }),
   ).toContain(`${budget} Last output: INFO: loading model`);
@@ -423,44 +423,44 @@ it('ignores supervisor log lines when this launch printed nothing', async () => 
 
 it('tells the backend the dev renderer port so Sharing reports the real UI port', () => {
   expect(devRendererPort('http://localhost:3902')).toBe('3902');
-  expect(devRendererPort('app://voicestudio/index.html')).toBeNull();
+  expect(devRendererPort('app://elevenvoice/index.html')).toBeNull();
   expect(devRendererPort(undefined)).toBeNull();
-  vi.stubEnv('OMNIVOICE_UI_PORT', '');
-  vi.stubEnv('VOICESTUDIO_UI_PORT', '');
+  vi.stubEnv('ELEVENVOICE_UI_PORT', '');
+  vi.stubEnv('ELEVENVOICE_UI_PORT', '');
   vi.stubEnv('ELECTRON_RENDERER_URL', 'http://localhost:4102');
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_UI_PORT).toBe('4102');
-  vi.stubEnv('OMNIVOICE_UI_PORT', '4200');
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_UI_PORT).toBe('4200');
-  vi.stubEnv('OMNIVOICE_UI_PORT', '');
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_UI_PORT).toBe('4102');
+  vi.stubEnv('ELEVENVOICE_UI_PORT', '4200');
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_UI_PORT).toBe('4200');
+  vi.stubEnv('ELEVENVOICE_UI_PORT', '');
   vi.stubEnv('ELECTRON_RENDERER_URL', '');
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_UI_PORT).toBe('');
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_UI_PORT).toBe('');
 });
 
 it('hands backend-only capabilities to the managed backend alone, never to process.env', () => {
   setBackendOnlyEnv({
-    VOICESTUDIO_ACCOUNT_BRIDGE_URL: 'http://127.0.0.1:1',
-    VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN: 'cap',
+    ELEVENVOICE_ACCOUNT_BRIDGE_URL: 'http://127.0.0.1:1',
+    ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN: 'cap',
   });
   try {
     expect(managedBackendSpawnOptions(3900).env).toMatchObject({
-      VOICESTUDIO_ACCOUNT_BRIDGE_URL: 'http://127.0.0.1:1',
-      VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN: 'cap',
+      ELEVENVOICE_ACCOUNT_BRIDGE_URL: 'http://127.0.0.1:1',
+      ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN: 'cap',
     });
-    expect(process.env.VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN).toBeUndefined();
+    expect(process.env.ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN).toBeUndefined();
   } finally {
     setBackendOnlyEnv({
-      VOICESTUDIO_ACCOUNT_BRIDGE_URL: undefined,
-      VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN: undefined,
+      ELEVENVOICE_ACCOUNT_BRIDGE_URL: undefined,
+      ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN: undefined,
     });
   }
-  expect(managedBackendSpawnOptions(3900).env.VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN).toBeUndefined();
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN).toBeUndefined();
 });
 
 it('tells the backend which commit the app was built from (#3293)', () => {
-  vi.stubEnv('OMNIVOICE_BUILD_COMMIT', undefined);
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_BUILD_COMMIT).toBe('000000000');
-  vi.stubEnv('OMNIVOICE_BUILD_COMMIT', 'abcdef123');
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_BUILD_COMMIT).toBe('abcdef123');
+  vi.stubEnv('ELEVENVOICE_BUILD_COMMIT', undefined);
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_BUILD_COMMIT).toBe('000000000');
+  vi.stubEnv('ELEVENVOICE_BUILD_COMMIT', 'abcdef123');
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_BUILD_COMMIT).toBe('abcdef123');
 });
 
 it('names Smart App Control when it refused a runtime DLL, and other blockers otherwise (#3209)', () => {
@@ -488,7 +488,7 @@ it('reports a failed launch as the managed runtime, with a failure record', asyn
     generation: number;
     spawnChild(plan: { argv: string[]; cwd: string }, generation: number): void;
   };
-  const program = join(tmpdir(), 'voicestudio-no-such-dir', 'python');
+  const program = join(tmpdir(), 'elevenvoice-no-such-dir', 'python');
 
   internals.spawnChild({ argv: [program], cwd: tmpdir() }, internals.generation);
 

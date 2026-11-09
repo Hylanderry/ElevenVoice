@@ -1,6 +1,6 @@
 """Phase 3 — TTS / ASR / LLM adapter registries."""
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import sys
 import types
@@ -66,16 +66,16 @@ def test_tts_moss_nano_language_count():
 
 
 def test_tts_active_backend_env_override(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "voxcpm2")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "voxcpm2")
     assert tts_backend.active_backend_id() == "voxcpm2"
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     # Reset prefs in case an earlier test persisted a choice.
     from core import prefs as _prefs
     _prefs.set_("tts_backend", "omnivoice")
     assert tts_backend.active_backend_id() == "omnivoice"
 
 
-# ── #919: sherpa-onnx gates on OMNIVOICE_SHERPA_MODEL ────────────────────────
+# ── #919: sherpa-onnx gates on ELEVENVOICE_SHERPA_MODEL ────────────────────────
 # sherpa-onnx ships no bundled model, so with the package installed but no model
 # dir configured it must report unavailable-with-a-reason — not "ready" and then
 # a generate-time config error the OOM catch-all mislabeled. A fake module makes
@@ -84,16 +84,16 @@ def test_tts_active_backend_env_override(monkeypatch):
 
 def test_tts_sherpa_unavailable_without_model_env(monkeypatch):
     monkeypatch.setitem(sys.modules, "sherpa_onnx", types.ModuleType("sherpa_onnx"))
-    monkeypatch.delenv("OMNIVOICE_SHERPA_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SHERPA_MODEL", raising=False)
     ok, msg = tts_backend.SherpaOnnxBackend.is_available()
     assert ok is False
-    assert "OMNIVOICE_SHERPA_MODEL" in msg   # names the exact env var
+    assert "ELEVENVOICE_SHERPA_MODEL" in msg   # names the exact env var
     assert "model.onnx" in msg               # says what to point it at
 
 
 def test_tts_sherpa_unavailable_when_model_dir_lacks_onnx(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, "sherpa_onnx", types.ModuleType("sherpa_onnx"))
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))  # empty dir
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))  # empty dir
     ok, msg = tts_backend.SherpaOnnxBackend.is_available()
     assert ok is False
     assert "model.onnx" in msg
@@ -102,7 +102,7 @@ def test_tts_sherpa_unavailable_when_model_dir_lacks_onnx(monkeypatch, tmp_path)
 def test_tts_sherpa_available_when_model_env_points_at_model(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, "sherpa_onnx", types.ModuleType("sherpa_onnx"))
     (tmp_path / "model.onnx").write_bytes(b"")
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))
     ok, _msg = tts_backend.SherpaOnnxBackend.is_available()
     assert ok is True
 
@@ -127,7 +127,7 @@ def test_tts_sherpa_accepts_voice_named_piper_model(monkeypatch, tmp_path):
     (tmp_path / "en_US-voice.onnx.json").write_text("{}", encoding="utf-8")
     (tmp_path / "tokens.txt").write_text("tokens", encoding="utf-8")
     (tmp_path / "espeak-ng-data").mkdir()
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))
 
     ok, _reason = tts_backend.SherpaOnnxBackend.is_available()
 
@@ -138,7 +138,7 @@ def test_tts_sherpa_rejects_ambiguous_onnx_directory(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, "sherpa_onnx", types.ModuleType("sherpa_onnx"))
     (tmp_path / "first.onnx").write_bytes(b"")
     (tmp_path / "second.ONNX").write_bytes(b"")
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))
 
     ok, reason = tts_backend.SherpaOnnxBackend.is_available()
 
@@ -162,7 +162,7 @@ def test_tts_sherpa_loads_piper_phonemizer_data(monkeypatch, tmp_path):
     (tmp_path / "tokens.txt").write_text("tokens", encoding="utf-8")
     data_dir = tmp_path / "espeak-ng-data"
     data_dir.mkdir()
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))
 
     tts_backend.SherpaOnnxBackend()._ensure_loaded()
 
@@ -180,7 +180,7 @@ def test_tts_sherpa_loads_lexicon_without_obsolete_dictionary(monkeypatch, tmp_p
     lexicon = tmp_path / "lexicon.txt"
     lexicon.write_text("word phones", encoding="utf-8")
     (tmp_path / "dict").mkdir()
-    monkeypatch.setenv("OMNIVOICE_SHERPA_MODEL", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_MODEL", str(tmp_path))
 
     tts_backend.SherpaOnnxBackend()._ensure_loaded()
 
@@ -193,17 +193,17 @@ def test_tts_sherpa_loads_lexicon_without_obsolete_dictionary(monkeypatch, tmp_p
 def test_tts_sherpa_setup_snippet_registered():
     # The Compat Matrix's copy-paste setup line must exist for the now
     # path-gated engine (parity with Confucius4/dots/MOSS).
-    assert "OMNIVOICE_SHERPA_MODEL" in tts_backend._SETUP_SNIPPETS["sherpa-onnx"]
+    assert "ELEVENVOICE_SHERPA_MODEL" in tts_backend._SETUP_SNIPPETS["sherpa-onnx"]
 
 
 def test_tts_active_backend_prefs_fallback(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     _prefs.set_("tts_backend", "moss-tts-nano")
     assert tts_backend.active_backend_id() == "moss-tts-nano"
     # Env var must beat prefs.
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "voxcpm2")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "voxcpm2")
     assert tts_backend.active_backend_id() == "voxcpm2"
 
 
@@ -221,7 +221,7 @@ def test_tts_unknown_backend_raises():
 # ── #981 — MLX-Audio curated-model selection ─────────────────────────────
 #
 # MLXAudioBackend.__init__ used to resolve its active model ONLY from
-# OMNIVOICE_MLX_AUDIO_MODEL, invisible to Settings and unchangeable without
+# ELEVENVOICE_MLX_AUDIO_MODEL, invisible to Settings and unchangeable without
 # restarting the process with an env var set. It must now mirror
 # active_backend_id()'s env > prefs > default resolution.
 
@@ -229,7 +229,7 @@ def test_tts_unknown_backend_raises():
 def test_mlx_audio_model_id_resolves_via_prefs(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_MLX_AUDIO_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MLX_AUDIO_MODEL", raising=False)
     _prefs.set_("mlx_audio_model_id", "outetts")
     be = tts_backend.MLXAudioBackend()
     assert be._model_id == tts_backend.MLXAudioBackend.CURATED_MODELS["outetts"]
@@ -239,7 +239,7 @@ def test_mlx_audio_model_id_env_overrides_prefs(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     _prefs.set_("mlx_audio_model_id", "outetts")
-    monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "csm")
+    monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "csm")
     be = tts_backend.MLXAudioBackend()
     assert be._model_id == tts_backend.MLXAudioBackend.CURATED_MODELS["csm"]
 
@@ -247,7 +247,7 @@ def test_mlx_audio_model_id_env_overrides_prefs(monkeypatch, tmp_path):
 def test_mlx_audio_model_id_defaults_to_kokoro(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_MLX_AUDIO_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MLX_AUDIO_MODEL", raising=False)
     be = tts_backend.MLXAudioBackend()
     assert be._model_id == tts_backend.MLXAudioBackend.CURATED_MODELS["kokoro"]
 
@@ -258,8 +258,8 @@ def test_get_active_tts_backend_reconstructs_on_mlx_model_switch(monkeypatch, tm
     curated model in Settings has no effect until an app restart."""
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_MLX_AUDIO_MODEL", raising=False)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MLX_AUDIO_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     _prefs.set_("tts_backend", "mlx-audio")
     _prefs.set_("mlx_audio_model_id", "kokoro")
     tts_backend.reset_active_backend()
@@ -303,31 +303,31 @@ def test_asr_auto_detects():
 
 
 def test_asr_env_override(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "pytorch-whisper")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "pytorch-whisper")
     assert asr_backend.active_backend_id() == "pytorch-whisper"
 
 
 # ── ASR selection resolution (Model Catalogue ASR picker) ────────────────
 # Same env > prefs > auto-detect contract as TTS. The env var MUST keep
-# winning so existing `OMNIVOICE_ASR_BACKEND` pins don't change behavior now
+# winning so existing `ELEVENVOICE_ASR_BACKEND` pins don't change behavior now
 # that the Settings picker writes the prefs key.
 
 
 def test_asr_active_backend_prefs_fallback(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     _prefs.set_("asr_backend", "moonshine")
     assert asr_backend.active_backend_id() == "moonshine"
     # Env var must beat prefs.
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "pytorch-whisper")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "pytorch-whisper")
     assert asr_backend.active_backend_id() == "pytorch-whisper"
 
 
 def test_asr_auto_detects_when_no_env_no_prefs(monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     assert asr_backend.active_backend_id() in {
         "whisperx", "faster-whisper", "mlx-whisper", "pytorch-whisper",
     }
@@ -339,7 +339,7 @@ def test_get_active_asr_backend_follows_prefs_switch_without_restart(monkeypatch
     re-resolves the id per call, so a prefs write switches immediately."""
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     _prefs.set_("asr_backend", "pytorch-whisper")
     assert isinstance(
         asr_backend.get_active_asr_backend(), asr_backend.PyTorchWhisperBackend)
@@ -349,7 +349,7 @@ def test_get_active_asr_backend_follows_prefs_switch_without_restart(monkeypatch
 
 
 def test_asr_unknown_backend_raises(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "not-a-real-asr")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "not-a-real-asr")
     with pytest.raises(ValueError):
         asr_backend.get_active_asr_backend()
 
@@ -365,7 +365,7 @@ def test_llm_registry_includes_off():
 
 def test_llm_off_chat_raises_actionable(monkeypatch):
     # Force selection to Off regardless of env.
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     be = llm_backend.get_active_llm_backend()
     assert isinstance(be, llm_backend.OffBackend)
     with pytest.raises(RuntimeError) as ei:
@@ -383,7 +383,7 @@ def test_llm_auto_selects_off_when_nothing_configured(clean_llm_env):
 
 
 def test_llm_auto_selects_openai_compat_when_configured(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_LLM_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_LLM_BACKEND", raising=False)
     monkeypatch.setenv("TRANSLATE_BASE_URL", "http://localhost:11434/v1")
     monkeypatch.setenv("TRANSLATE_API_KEY", "local")
     monkeypatch.setenv("TRANSLATE_MODEL", "fixture-model")
@@ -879,12 +879,12 @@ def test_cached_engine_follows_a_model_switch(monkeypatch):
     monkeypatch.setattr(tts_backend, "_ENGINE_INSTANCES", {})
     monkeypatch.setattr(tts_backend, "_ENGINE_LAST_USED", {})
     monkeypatch.setattr(tts_backend, "_ENGINE_IN_USE", {})
-    monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "kokoro")
+    monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "kokoro")
     first = tts_backend.get_engine_instance(tts_backend.MLXAudioBackend)
     unloaded = []
     first.unload = lambda: unloaded.append(True)
     assert tts_backend.get_engine_instance(tts_backend.MLXAudioBackend) is first
-    monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "outetts")
+    monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "outetts")
     second = tts_backend.get_engine_instance(tts_backend.MLXAudioBackend)
     assert second is not first
     assert second.model_identity() == tts_backend.MLXAudioBackend.CURATED_MODELS["outetts"]
@@ -895,12 +895,12 @@ def test_model_switch_never_unloads_an_engine_mid_job(monkeypatch):
     monkeypatch.setattr(tts_backend, "_ENGINE_INSTANCES", {})
     monkeypatch.setattr(tts_backend, "_ENGINE_LAST_USED", {})
     monkeypatch.setattr(tts_backend, "_ENGINE_IN_USE", {})
-    monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "kokoro")
+    monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "kokoro")
     first = tts_backend.get_engine_instance(tts_backend.MLXAudioBackend)
     unloaded = []
     first.unload = lambda: unloaded.append(True)
     with tts_backend.engine_in_use(first):
-        monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "csm")
+        monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "csm")
         second = tts_backend.get_engine_instance(tts_backend.MLXAudioBackend)
         assert not unloaded
     assert unloaded == [True]

@@ -38,7 +38,7 @@ interface NotificationsResponse {
   notifications: SystemNotification[];
 }
 
-const DISMISSED_KEY = 'voicestudio.dismissed-system-notifications';
+const DISMISSED_KEY = 'elevenvoice.dismissed-system-notifications';
 
 function loadDismissed(): string[] {
   try {

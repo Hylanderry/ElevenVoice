@@ -36,13 +36,13 @@ def _db_files(data_dir: str) -> set:
 
 def main() -> int:
     data_dir, out_path = sys.argv[1], sys.argv[2]
-    os.environ["OMNIVOICE_MODEL"] = "test"
-    os.environ["OMNIVOICE_DISABLE_FILE_LOG"] = "1"
+    os.environ["ELEVENVOICE_MODEL"] = "test"
+    os.environ["ELEVENVOICE_DISABLE_FILE_LOG"] = "1"
     # Early-bind refactor: this subprocess is not pytest, so a bare import
     # would defer routers/DB behind the startup gate and every probe below
     # would read 503. The probes measure the classic synchronous boot.
-    os.environ["OMNIVOICE_EAGER_INIT"] = "1"
-    os.environ["OMNIVOICE_DATA_DIR"] = data_dir
+    os.environ["ELEVENVOICE_EAGER_INIT"] = "1"
+    os.environ["ELEVENVOICE_DATA_DIR"] = data_dir
 
     repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     backend = os.path.join(repo_root, "backend")

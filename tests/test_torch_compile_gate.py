@@ -7,7 +7,7 @@ user disabled it. Tests force find_spec / the setting and assert the decision.
 
 #278 adds two more gates: the GPU's compute capability must be in the torch
 build's arch list (new archs like Blackwell sm_120 break Triton/Inductor
-before upstream support lands — overridable via OMNIVOICE_FORCE_TORCH_COMPILE),
+before upstream support lands — overridable via ELEVENVOICE_FORCE_TORCH_COMPILE),
 and a compile failure earlier in the session disables compile for the rest of
 the process.
 """
@@ -46,7 +46,7 @@ def compile_friendly_env(monkeypatch):
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     monkeypatch.setattr("services.settings_store.get_text", lambda key, default="0": "0")
     monkeypatch.setattr(engine_env, "_compile_runtime_failure", None)
-    monkeypatch.delenv("OMNIVOICE_FORCE_TORCH_COMPILE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FORCE_TORCH_COMPILE", raising=False)
     for name in ("TORCH_COMPILE_DISABLE", "TORCHDYNAMO_DISABLE", "TORCHINDUCTOR_DISABLE"):
         monkeypatch.delenv(name, raising=False)
 
@@ -89,7 +89,7 @@ def test_skips_when_gpu_arch_not_in_torch_build(monkeypatch, compile_friendly_en
 
 def test_force_env_overrides_arch_gate(monkeypatch, compile_friendly_env):
     _fake_torch(monkeypatch, _FakeCuda(capability=(12, 0)))
-    monkeypatch.setenv("OMNIVOICE_FORCE_TORCH_COMPILE", "1")
+    monkeypatch.setenv("ELEVENVOICE_FORCE_TORCH_COMPILE", "1")
     assert engine_env.should_torch_compile("cuda") is True
 
 
@@ -163,6 +163,6 @@ def test_primary_switch_parsing(monkeypatch, compile_friendly_env, setting, opte
 
 def test_compile_disable_env_outranks_force(monkeypatch, compile_friendly_env):
     _fake_torch(monkeypatch, _FakeCuda(capability=(12, 1)))
-    monkeypatch.setenv("OMNIVOICE_FORCE_TORCH_COMPILE", "yes")
+    monkeypatch.setenv("ELEVENVOICE_FORCE_TORCH_COMPILE", "yes")
     monkeypatch.setenv("TORCHDYNAMO_DISABLE", "true")
     assert not engine_env.should_torch_compile("cuda")

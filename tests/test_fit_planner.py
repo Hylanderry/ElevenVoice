@@ -436,7 +436,7 @@ def test_fit_fingerprint_real_changes_flip_the_hash():
 
 def test_fit_fingerprint_is_stable():
     """Pin the digest of the default config: existing fit_fp values stored in
-    omnivoice_data/ jobs must stay valid across releases (same guarantee
+    elevenvoice_data/ jobs must stay valid across releases (same guarantee
     segment hashes have)."""
     import hashlib
 

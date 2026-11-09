@@ -1,6 +1,6 @@
 """cosyvoice-subprocess: CosyVoice 3 from its own venv (one-click install).
 
-The in-process engine needs CosyVoice importable from VoiceStudio's own
+The in-process engine needs CosyVoice importable from ElevenVoice's own
 interpreter, which upstream's setup (its own Python 3.10 environment, pins
 that conflict with the app's) never provides. The one-click installer clones a
 reviewed CosyVoice commit and the Matcha-TTS code it vendors as a submodule
@@ -22,7 +22,7 @@ from pathlib import Path
 from services.expression import COSYVOICE_INLINE_TAGS
 from services.subprocess_backend import SubprocessBackend
 
-VENV_ENV_VAR = "OMNIVOICE_COSYVOICE_DIR"
+VENV_ENV_VAR = "ELEVENVOICE_COSYVOICE_DIR"
 #: Where the installer puts the CosyVoice 3 weights, inside the checkout.
 MANAGED_MODEL_SUBDIR = "pretrained_models/Fun-CosyVoice3-0.5B"
 
@@ -83,7 +83,7 @@ class CosyVoiceSubprocessBackend(SubprocessBackend):
         # Loading the model and its text normalizers takes a while on a cold
         # start; the sidecar heartbeats progress frames meanwhile.
         try:
-            v = float(os.environ.get("OMNIVOICE_COSYVOICE_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_COSYVOICE_RECV_TIMEOUT_S", "900"))
         except (TypeError, ValueError):
             return 900.0
         if not math.isfinite(v):  # reject inf/nan so the deadline can't be disabled
@@ -110,7 +110,7 @@ class CosyVoiceSubprocessBackend(SubprocessBackend):
     def model_identity(self) -> str:
         # v1/v2/v3 share the one "cosyvoice" id; the folder name tells them
         # apart, as it does for the in-process engine.
-        model_dir = os.environ.get("OMNIVOICE_COSYVOICE_MODEL") or MANAGED_MODEL_SUBDIR
+        model_dir = os.environ.get("ELEVENVOICE_COSYVOICE_MODEL") or MANAGED_MODEL_SUBDIR
         return os.path.basename(os.path.normpath(model_dir))
 
 

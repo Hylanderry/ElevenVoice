@@ -11,8 +11,8 @@ test_generate_engine.py.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 
@@ -637,7 +637,7 @@ def client():
 def fake_engine(monkeypatch):
     fake = _make_fake_engine()
     monkeypatch.setitem(_tts_mod()._REGISTRY, "fake-norm-engine", fake)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     return fake
 
 
@@ -668,7 +668,7 @@ def test_generate_normalizes_before_dictionary(client, monkeypatch, fake_engine)
     """Route-level pin of the ordering: the DB dictionary sees normalized
     text, and its respellings are not re-normalized."""
     monkeypatch.delenv(text_normalization.ENV_VAR, raising=False)
-    monkeypatch.delenv("OMNIVOICE_PRONUNCIATION", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PRONUNCIATION", raising=False)
     pron_mod = importlib.import_module("services.pronunciation")
     monkeypatch.setattr(pron_mod, "load_entries_from_db", lambda: [
         {"term": "two", "replacement": "TWO-OH", "type": "respelling",
@@ -768,9 +768,9 @@ def test_pronunciation_switch_is_env_only(monkeypatch, env, expected):
     import core.prefs as prefs_mod
 
     if env is None:
-        monkeypatch.delenv("OMNIVOICE_PRONUNCIATION", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_PRONUNCIATION", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_PRONUNCIATION", env)
+        monkeypatch.setenv("ELEVENVOICE_PRONUNCIATION", env)
     # A never-written pref must not change the outcome.
     monkeypatch.setattr(prefs_mod, "get", lambda key, default=None: False)
     assert pronunciation_enabled() is expected

@@ -10,7 +10,7 @@ it('packaged builds are locked to production whatever the env var says', () => {
   expect(resolveCloudEnvironment({ packaged: true, requested: 'local' }).name).toBe('prod');
 });
 
-it('developer builds honour VOICESTUDIO_CLOUD_ENV and default to dev', () => {
+it('developer builds honour ELEVENVOICE_CLOUD_ENV and default to dev', () => {
   expect(resolveCloudEnvironment({ packaged: false, requested: 'local' }).issuer).toBe(
     'http://localhost:8092',
   );

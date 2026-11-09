@@ -3,7 +3,7 @@
 `main.py` loads this file at startup (via dotenv) before importing torch/HF, so
 values written here take effect on the next backend launch. Used by the
 configurable models directory (#64): the Settings endpoint upserts
-``OMNIVOICE_CACHE_DIR`` here, which main.py then maps to
+``ELEVENVOICE_CACHE_DIR`` here, which main.py then maps to
 ``HF_HOME`` / ``HF_HUB_CACHE`` / ``TORCH_HOME``.
 
 Format is dotenv-style ``KEY=value`` lines. Upsert preserves other keys (e.g. a
@@ -47,7 +47,7 @@ def _opener_0600(path: str, flags: int) -> int:
 
 def _write_lines(path: str, lines: list[str]) -> None:
     parent = os.path.dirname(path)
-    if parent:  # bare filename (e.g. an OMNIVOICE_ENV_FILE override) has no parent
+    if parent:  # bare filename (e.g. an ELEVENVOICE_ENV_FILE override) has no parent
         os.makedirs(parent, exist_ok=True)
     body = "\n".join(lines)
     if body and not body.endswith("\n"):
@@ -70,7 +70,7 @@ def _encode_value(value: str) -> str:
 
     An unquoted ``Books #1`` is cut at `` #`` as a comment, so anything outside
     the plain set is single-quoted with backslash and apostrophe escaped (the
-    same scheme Electron uses for ``OMNIVOICE_DATA_DIR``).
+    same scheme Electron uses for ``ELEVENVOICE_DATA_DIR``).
     """
     if re.search(r"[\0\r\n]", value):
         raise ValueError("value must not contain NUL or line breaks")
@@ -86,7 +86,7 @@ def _decode_value(raw: str) -> str:
 
 
 def get_user_env(key: str, path: Optional[str] = None) -> Optional[str]:
-    path = path or os.environ.get("OMNIVOICE_ENV_FILE") or USER_ENV_PATH  # resolved at call time so tests can monkeypatch
+    path = path or os.environ.get("ELEVENVOICE_ENV_FILE") or USER_ENV_PATH  # resolved at call time so tests can monkeypatch
     prefix = f"{key}="
     for line in _read_lines(path):
         if line.startswith(prefix):
@@ -96,7 +96,7 @@ def get_user_env(key: str, path: Optional[str] = None) -> Optional[str]:
 
 def set_user_env(key: str, value: str, path: Optional[str] = None) -> None:
     """Upsert ``KEY=value``, preserving all other lines."""
-    path = path or os.environ.get("OMNIVOICE_ENV_FILE") or USER_ENV_PATH
+    path = path or os.environ.get("ELEVENVOICE_ENV_FILE") or USER_ENV_PATH
     prefix = f"{key}="
     encoded = _encode_value(value)
     lines = _read_lines(path)
@@ -113,7 +113,7 @@ def set_user_env(key: str, value: str, path: Optional[str] = None) -> None:
 
 def unset_user_env(key: str, path: Optional[str] = None) -> None:
     """Remove ``KEY=...`` if present, preserving all other lines."""
-    path = path or os.environ.get("OMNIVOICE_ENV_FILE") or USER_ENV_PATH
+    path = path or os.environ.get("ELEVENVOICE_ENV_FILE") or USER_ENV_PATH
     prefix = f"{key}="
     lines = [ln for ln in _read_lines(path) if not ln.startswith(prefix)]
     _write_lines(path, lines)
@@ -124,7 +124,7 @@ def load_into_environ(path: Optional[str] = None) -> bool:
     any value a launcher already injected. Returns True if a file was loaded.
 
     This file is the in-app Settings source of truth. The desktop launcher
-    (Tauri) injects defaults like ``OMNIVOICE_CACHE_DIR`` (and ``HF_ENDPOINT``)
+    (Tauri) injects defaults like ``ELEVENVOICE_CACHE_DIR`` (and ``HF_ENDPOINT``)
     from its *own* config into the backend's environment *before* startup, so
     loading this file with ``override=False`` meant a models directory the user
     changed in Settings was silently ignored on every launch — the effective
@@ -133,7 +133,7 @@ def load_into_environ(path: Optional[str] = None) -> bool:
     the launcher's default, so we override. Restores this file's documented
     "values written here take effect on the next backend launch" contract.
     """
-    path = path or os.environ.get("OMNIVOICE_ENV_FILE") or USER_ENV_PATH
+    path = path or os.environ.get("ELEVENVOICE_ENV_FILE") or USER_ENV_PATH
     if not os.path.isfile(path):
         return False
     try:
@@ -176,19 +176,19 @@ def _single_quoted_keys(path: str) -> set[str]:
 
 
 #: Path-valued keys this file can persist. A reinstall that skipped uninstall
-#: inherits the old file unconditionally — including e.g. an OMNIVOICE_CACHE_DIR
+#: inherits the old file unconditionally — including e.g. an ELEVENVOICE_CACHE_DIR
 #: pointing at an unplugged drive or a deleted folder. Exporting a dead path
 #: sends every model download/lookup somewhere that cannot exist and the app
 #: looks broken out of the box (the audit's "reinstall inherits stale durable
 #: state" gap). Validate after load: a directory that exists or can be created
 #: is honored; anything else is dropped for THIS run with a loud log line (the
 #: file itself is left alone — plugging the drive back in restores the setting).
-_PATH_KEYS = ("OMNIVOICE_CACHE_DIR", "OMNIVOICE_DATA_DIR")
+_PATH_KEYS = ("ELEVENVOICE_CACHE_DIR", "ELEVENVOICE_DATA_DIR")
 
 
 def _drop_invalid_path_keys() -> None:
     import logging
-    logger = logging.getLogger("omnivoice.user_env")
+    logger = logging.getLogger("elevenvoice.user_env")
     for key in _PATH_KEYS:
         val = os.environ.get(key)
         if not val:
@@ -198,7 +198,7 @@ def _drop_invalid_path_keys() -> None:
             # Existing-but-read-only (an external mount, a permissions accident)
             # passes isdir yet fails on first real use — probe actual write
             # capability, not just existence (review finding).
-            probe = os.path.join(val, f".omnivoice-write-probe-{os.getpid()}")
+            probe = os.path.join(val, f".elevenvoice-write-probe-{os.getpid()}")
             with open(probe, "w") as f:
                 f.write("ok")
             os.remove(probe)

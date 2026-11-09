@@ -21,7 +21,7 @@ import { homedir } from 'node:os';
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
 import { DIRECTORY_RENAME, renameWithRetry } from './rename-retry';
 
-const DATA_KEY = 'OMNIVOICE_DATA_DIR';
+const DATA_KEY = 'ELEVENVOICE_DATA_DIR';
 const MOVE_RESERVE_BYTES = 64 * 1024 * 1024;
 
 interface ManifestEntry {
@@ -258,7 +258,7 @@ async function stableDirectoryIdentity(
 // Keep the exclusive marker open so inode reuse cannot make cleanup adopt a
 // replacement. No model files are open during this check.
 async function probeDirectoryChange(target: string, selected: BigIntStats): Promise<BigIntStats> {
-  const marker = join(target, `.voicestudio-identity-${randomUUID()}`);
+  const marker = join(target, `.elevenvoice-identity-${randomUUID()}`);
   const handle = await open(marker, 'wx');
   try {
     const owned = await handle.stat({ bigint: true });
@@ -332,7 +332,7 @@ async function prepareExistingDestination(
     plan.target,
     requestedTarget,
   );
-  const staging = join(plan.target, `.voicestudio-moving-${randomUUID()}`);
+  const staging = join(plan.target, `.elevenvoice-moving-${randomUUID()}`);
   await mkdir(staging, { recursive: false });
   let stagingInfo: BigIntStats;
   try {
@@ -626,7 +626,7 @@ export async function prepareDataRelocation(
   );
   if (existing) return prepareExistingDestination(plan, sourceManifest, target);
   const parent = dirname(plan.target);
-  const staging = join(parent, `.${basename(plan.target)}.voicestudio-moving-${randomUUID()}`);
+  const staging = join(parent, `.${basename(plan.target)}.elevenvoice-moving-${randomUUID()}`);
   await mkdir(staging, { recursive: false });
   const originalStagedIdentity = await lstat(staging, { bigint: true });
   let stagedIdentity = originalStagedIdentity;
@@ -760,7 +760,7 @@ async function syncDirectory(dir: string): Promise<void> {
 }
 
 export function userEnvironmentPath(): string {
-  return process.env.OMNIVOICE_ENV_FILE || join(homedir(), '.config', 'omnivoice', 'env');
+  return process.env.ELEVENVOICE_ENV_FILE || join(homedir(), '.config', 'omnivoice', 'env');
 }
 
 export async function readDataDirectorySetting(

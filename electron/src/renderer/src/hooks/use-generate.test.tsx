@@ -627,7 +627,7 @@ it.each([
     );
     fireEvent.click(screen.getByText('saved-emotion:idle'));
     await waitFor(() => {
-      const records = JSON.parse(localStorage.getItem('voicestudio.take-settings.v1') ?? '{}');
+      const records = JSON.parse(localStorage.getItem('elevenvoice.take-settings.v1') ?? '{}');
       expect(records[`take-${saved}`]?.emotionMode).toBe(saved);
     });
     engine.emotion = undefined;

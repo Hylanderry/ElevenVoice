@@ -43,8 +43,8 @@ const CHUNK_ATTEMPTS = 4;
 const IDLE_TIMEOUT_MS = 30_000;
 const PROGRESS_INTERVAL_MS = 500;
 
-/** Connections per wheel from `OMNIVOICE_SETUP_CONNECTIONS`; 0 or 1 turns the prefetch off. */
-export function prefetchConnections(value = process.env.OMNIVOICE_SETUP_CONNECTIONS): number {
+/** Connections per wheel from `ELEVENVOICE_SETUP_CONNECTIONS`; 0 or 1 turns the prefetch off. */
+export function prefetchConnections(value = process.env.ELEVENVOICE_SETUP_CONNECTIONS): number {
   if (value === undefined || value.trim() === '') return DEFAULT_PREFETCH_CONNECTIONS;
   const parsed = Number.parseInt(value, 10);
   if (!Number.isFinite(parsed) || parsed < 0) return DEFAULT_PREFETCH_CONNECTIONS;
@@ -240,7 +240,7 @@ export function httpsRangeTransport(
             agent,
             signal,
             // Some mirrors (mirrors.aliyun.com) refuse requests without a User-Agent.
-            headers: { Range: `bytes=${start}-${end}`, 'User-Agent': 'VoiceStudio-setup' },
+            headers: { Range: `bytes=${start}-${end}`, 'User-Agent': 'ElevenVoice-setup' },
           },
           (response) => {
             const status = response.statusCode ?? 0;

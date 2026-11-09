@@ -25,7 +25,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from api.dependencies import require_loopback
 from core import job_store
 
-logger = logging.getLogger("omnivoice.longform_jobs")
+logger = logging.getLogger("elevenvoice.longform_jobs")
 router = APIRouter()
 
 #: Job types this library surfaces. Both flow through the shared longform
@@ -240,7 +240,7 @@ def longform_jobs(limit: int = Query(50, ge=1, le=500)) -> dict:
 from core import job_store`` re-resolves
     through ``sys.modules`` on every request — and several test suites purge
     and re-import the whole ``core``/``services`` namespace under a
-    temporary OMNIVOICE_DATA_DIR (the ``isolated_db`` pattern,
+    temporary ELEVENVOICE_DATA_DIR (the ``isolated_db`` pattern,
     tests/smoke/test_boot_smoke.py, …) without restoring the old module
     tree. After one of those ran, the call-time import resolved a stale
     module world whose DB_PATH pointed at a different SQLite file than the

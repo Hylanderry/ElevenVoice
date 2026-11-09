@@ -52,7 +52,7 @@ def test_quant_map_valid():
     assert isinstance(meta, dict), "quant_map.json must have _meta block"
     assert meta["schema_version"] == 1
     assert meta["source_model"] == "Serveurperso/OmniVoice-GGUF"
-    assert meta["runtime"] == "omnivoice.cpp"
+    assert meta["runtime"] == "elevenvoice.cpp"
 
     for key in ("source_commit_sha", "runtime_commit_sha"):
         sha = meta[key]
@@ -153,10 +153,10 @@ def cached_weights(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_HUB_CACHE", str(cache))
     # A clean compute environment: an ambient CPU pin or native backend
     # would change which quant the engine looks for.
-    for variable in ("OMNIVOICE_DEVICE", "OMNIVOICE_GGUF_BACKEND",
-                     "OMNIVOICE_GGUF_DEVICE", "GGML_BACKEND"):
+    for variable in ("ELEVENVOICE_DEVICE", "ELEVENVOICE_GGUF_BACKEND",
+                     "ELEVENVOICE_GGUF_DEVICE", "GGML_BACKEND"):
         monkeypatch.delenv(variable, raising=False)
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
     return cache
 
 

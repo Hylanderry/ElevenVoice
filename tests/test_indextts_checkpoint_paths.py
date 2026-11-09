@@ -16,13 +16,13 @@ def sidecar(monkeypatch):
     spec = importlib.util.spec_from_file_location("_indextts_paths_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_FP16", "0")
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_FP16", "0")
     monkeypatch.setattr(module, "_heartbeat", lambda *args: nullcontext())
     return module
 
 
 def install_fake(monkeypatch, tmp_path, constructor, version="2.5"):
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(tmp_path))
     package = types.ModuleType("indextts")
     package.__path__ = []
     monkeypatch.setitem(sys.modules, "indextts", package)

@@ -93,7 +93,7 @@ def _with_retries(action):
     """Run ``action``, retrying a transient download failure with a short
     backoff, the way the app's own loader does for in-process engines."""
     try:
-        attempts = max(1, int(os.environ.get("OMNIVOICE_MODEL_LOAD_RETRIES", "3")))
+        attempts = max(1, int(os.environ.get("ELEVENVOICE_MODEL_LOAD_RETRIES", "3")))
     except ValueError:
         attempts = 3
     for attempt in range(1, attempts + 1):
@@ -129,7 +129,7 @@ def _heartbeat(stdout, stage: str):
 
 def _configure_tokenizer_cache(model):
     """Keep cache roots stable and reuse a usable legacy tokenizer at load time."""
-    if getattr(model, "_voicestudio_tokenizer_cache_configured", False):
+    if getattr(model, "_elevenvoice_tokenizer_cache_configured", False):
         return model
     from huggingface_hub.constants import HF_HUB_CACHE  # noqa: PLC0415
 
@@ -167,7 +167,7 @@ def _configure_tokenizer_cache(model):
             return loader(resolved_path=resolved_path, cache_dir=cache_dir)
 
         model._load_resolved_text_tokenizer = load_tokenizer_with_cache_fallback
-    model._voicestudio_tokenizer_cache_configured = True
+    model._elevenvoice_tokenizer_cache_configured = True
     return model
 
 
@@ -184,9 +184,9 @@ def _load_service(stdout):
         from moss_tts_nano_runtime import NanoTTSService  # type: ignore[import-not-found]  # noqa: PLC0415
 
         service = NanoTTSService(
-            checkpoint_path=os.environ.get("OMNIVOICE_MOSS_TTS_MODEL", DEFAULT_CHECKPOINT_PATH),
+            checkpoint_path=os.environ.get("ELEVENVOICE_MOSS_TTS_MODEL", DEFAULT_CHECKPOINT_PATH),
             audio_tokenizer_path=os.environ.get(
-                "OMNIVOICE_MOSS_TTS_TOKENIZER", DEFAULT_AUDIO_TOKENIZER_PATH
+                "ELEVENVOICE_MOSS_TTS_TOKENIZER", DEFAULT_AUDIO_TOKENIZER_PATH
             ),
             # Upstream writes every synthesis to a file; keep them out of the
             # install folder (and see _handle_synthesize: one file, reused).

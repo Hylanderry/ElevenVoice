@@ -2,7 +2,7 @@ import { lstat, realpath } from 'node:fs/promises';
 import { isAbsolute } from 'node:path';
 import {
   directorySize,
-  isValidVoiceStudioRoot,
+  isValidElevenVoiceRoot,
   modelsAreShared,
   normalized,
   within,
@@ -142,7 +142,7 @@ export async function createUninstallPlan(
   for (const target of eligible) {
     if (
       !isAbsolute(target.path) ||
-      !(await isValidVoiceStudioRoot(target.path, home, target.key === 'models'))
+      !(await isValidElevenVoiceRoot(target.path, home, target.key === 'models'))
     ) {
       refused.push(target.path);
     } else {

@@ -16,7 +16,7 @@ Covers the pure planning layer that runs after translation, before TTS:
 from __future__ import annotations
 
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -249,7 +249,7 @@ def fake_llm(monkeypatch):
 
 
 def test_condense_no_llm_is_noop(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     text = "A" * 90
     res = dp.condense_for_slot(text, available_s=2.0, target_lang="en")
     assert res["applied"] is False

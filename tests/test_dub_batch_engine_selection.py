@@ -24,7 +24,7 @@ import asyncio
 import importlib
 import os
 
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 import torch
@@ -192,7 +192,7 @@ def test_dub_generate_fails_fast_for_non_cloning_engine(
     actionable message naming alternatives — never a silent OmniVoice run."""
     dg, job = dub_job_env
     fake_registry("fake-nonclone", supports_cloning=False)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-nonclone")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-nonclone")
 
     with pytest.raises(HTTPException) as exc_info:
         asyncio.run(dg.dub_generate("jobX", _one_seg_request()))
@@ -233,7 +233,7 @@ def test_dub_generate_retry_oom_stream_is_sanitized(
 ):
     dg, _job = dub_job_env
     fake = fake_registry("fake-oom", supports_cloning=True)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-oom")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-oom")
     private = (
         "CUDA out of memory. Process 1031664 has 22.02 GiB in use. "
         "/home/alice/private/model.safetensors"
@@ -271,7 +271,7 @@ def test_dub_generate_uses_selected_cloning_engine_not_omnivoice(
     """A cloning-capable non-OmniVoice engine actually runs the segment."""
     dg, job = dub_job_env
     fake = fake_registry("fake-clone", supports_cloning=True)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-clone")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-clone")
 
     asyncio.run(dg.dub_generate("jobX", _one_seg_request()))
 
@@ -285,7 +285,7 @@ def test_dub_generate_respects_applies_own_mastering(
 ):
     dg, job = dub_job_env
     fake = fake_registry("fake-studio", supports_cloning=True, own_mastering=True)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-studio")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-studio")
 
     mastering_calls = []
     monkeypatch.setattr(
@@ -357,7 +357,7 @@ def test_batch_unpinned_voice_succeeds_on_noncloning_engine(
     """No voice_id pinned → any active engine (cloning-capable or not) is fine."""
     b, make_job = batch_job_env
     fake = fake_registry("fake-batch-nonclone", supports_cloning=False)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-batch-nonclone")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-batch-nonclone")
 
     job = make_job("jobA", voice_id=None)
     asyncio.run(b._run_batch_pipeline("jobA", job))
@@ -373,7 +373,7 @@ def test_batch_pinned_voice_fails_fast_on_noncloning_engine(
     runs, with the same actionable message shape as the dub gate."""
     b, make_job = batch_job_env
     fake = fake_registry("fake-batch-nonclone2", supports_cloning=False)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-batch-nonclone2")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-batch-nonclone2")
     monkeypatch.setattr(
         b,
         "_batch_voice",
@@ -401,7 +401,7 @@ def test_batch_respects_applies_own_mastering(
 ):
     b, make_job = batch_job_env
     fake = fake_registry("fake-batch-studio", supports_cloning=True, own_mastering=True)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-batch-studio")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-batch-studio")
 
     mastering_calls = []
     import services.audio_dsp as audio_dsp

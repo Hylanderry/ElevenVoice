@@ -4,7 +4,7 @@ An "8 GB" machine reports ~7.8 GB usable (firmware/iGPU/kernel reservations),
 so comparing reported RAM against the marketing-size threshold blocked exactly
 the boundary hardware the ≥8 GB rule intends to allow. The check now applies
 ``_RAM_RESERVED_ALLOWANCE`` to both thresholds, and
-``OMNIVOICE_RAM_PREFLIGHT=0`` downgrades a genuine fail to a warning.
+``ELEVENVOICE_RAM_PREFLIGHT=0`` downgrades a genuine fail to a warning.
 """
 
 import pytest
@@ -23,9 +23,9 @@ def _ram_check(monkeypatch, ram_gb: float, env: str | None = None) -> dict:
     monkeypatch.setattr(media_tools, "summary", lambda auto_acquire=True: None)
     monkeypatch.setattr(wizard, "_ram_gb", lambda: ram_gb)
     if env is None:
-        monkeypatch.delenv("OMNIVOICE_RAM_PREFLIGHT", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_RAM_PREFLIGHT", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_RAM_PREFLIGHT", env)
+        monkeypatch.setenv("ELEVENVOICE_RAM_PREFLIGHT", env)
     resp = wizard.preflight()
     checks = resp["checks"] if isinstance(resp, dict) else resp.checks
     for c in checks:
@@ -57,7 +57,7 @@ def test_genuinely_low_ram_still_fails(monkeypatch):
 def test_escape_hatch_downgrades_fail_to_warn(monkeypatch, env):
     check = _ram_check(monkeypatch, 6.0, env=env)
     assert check["status"] == "warn"
-    assert "OMNIVOICE_RAM_PREFLIGHT" in (check["fix"] or "")
+    assert "ELEVENVOICE_RAM_PREFLIGHT" in (check["fix"] or "")
 
 
 def test_escape_hatch_not_triggered_by_other_values(monkeypatch):

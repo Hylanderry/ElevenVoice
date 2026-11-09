@@ -1,4 +1,4 @@
-"""The PyTorch wheel index VoiceStudio installs CUDA builds from.
+"""The PyTorch wheel index ElevenVoice installs CUDA builds from.
 
 A local-version pin such as ``torch==2.9.1+cu128`` exists only on PyTorch's
 own index, never on PyPI. The app's own ``pyproject.toml`` routes torch there
@@ -43,7 +43,7 @@ UV_PIP_CPU_ARGS: tuple[str, ...] = (
 )
 
 # The ROCm index, and the torch stack the main venv swaps to behind
-# `OMNIVOICE_TORCH_VARIANT=rocm`. A sidecar on a ROCm host resolves torch
+# `ELEVENVOICE_TORCH_VARIANT=rocm`. A sidecar on a ROCm host resolves torch
 # through its own installer — an upstream's `[tool.uv.sources]` can even route
 # it to the cu128 index — and a CUDA wheel on AMD sees no GPU, so the whole
 # engine falls back to CPU (#2371). Keep the index and pins in sync with

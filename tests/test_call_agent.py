@@ -6,8 +6,8 @@ driven over the gateway app's WebSocket exactly as Twilio would.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import base64
@@ -939,7 +939,7 @@ def test_migration_adds_call_sessions_and_matches_the_base_schema(tmp_path, monk
         conn.execute("INSERT INTO alembic_version VALUES ('0011_remote_attempt_deadlines')")
         conn.execute("CREATE TABLE voice_profiles (id TEXT PRIMARY KEY, name TEXT)")
         conn.execute("INSERT INTO voice_profiles VALUES ('keep', 'Mine')")
-    monkeypatch.setenv("OMNIVOICE_DB_PATH", str(db_path))
+    monkeypatch.setenv("ELEVENVOICE_DB_PATH", str(db_path))
     _alembic_upgrade(str(db_path))
     _alembic_upgrade(str(db_path))  # idempotent
     canon = sqlite3.connect(":memory:")

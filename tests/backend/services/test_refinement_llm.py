@@ -159,14 +159,14 @@ class _SlowBackend:
 
 
 def test_refine_timeout_env_default_and_override(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_REFINE_TIMEOUT_S", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_REFINE_TIMEOUT_S", raising=False)
     assert refinement._refine_timeout_s() == 4.0
-    monkeypatch.setenv("OMNIVOICE_REFINE_TIMEOUT_S", "1.5")
+    monkeypatch.setenv("ELEVENVOICE_REFINE_TIMEOUT_S", "1.5")
     assert refinement._refine_timeout_s() == 1.5
     # Invalid / non-positive values can never disable the bound.
-    monkeypatch.setenv("OMNIVOICE_REFINE_TIMEOUT_S", "junk")
+    monkeypatch.setenv("ELEVENVOICE_REFINE_TIMEOUT_S", "junk")
     assert refinement._refine_timeout_s() == 4.0
-    monkeypatch.setenv("OMNIVOICE_REFINE_TIMEOUT_S", "-3")
+    monkeypatch.setenv("ELEVENVOICE_REFINE_TIMEOUT_S", "-3")
     assert refinement._refine_timeout_s() == 4.0
 
 

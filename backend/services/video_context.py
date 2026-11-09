@@ -30,7 +30,7 @@ import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
-logger = logging.getLogger("omnivoice.video_context")
+logger = logging.getLogger("elevenvoice.video_context")
 
 _analysis_pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="vid-ctx")
 

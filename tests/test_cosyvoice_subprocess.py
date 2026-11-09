@@ -45,8 +45,8 @@ def _load_sidecar(monkeypatch, tmp_path, calls, *, model_class="CosyVoice3", sam
     (checkout / "pretrained_models" / "Fun-CosyVoice3-0.5B").mkdir(parents=True)
     (checkout / "asset").mkdir()
     (checkout / "asset" / "zero_shot_prompt.wav").write_bytes(b"RIFF")
-    monkeypatch.setenv("OMNIVOICE_COSYVOICE_DIR", str(checkout))
-    monkeypatch.delenv("OMNIVOICE_COSYVOICE_MODEL", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_COSYVOICE_DIR", str(checkout))
+    monkeypatch.delenv("ELEVENVOICE_COSYVOICE_MODEL", raising=False)
 
     cls = _fake_model_class(model_class, calls, sample_rate)
 
@@ -158,7 +158,7 @@ def test_a_model_folder_override_is_honoured(monkeypatch, tmp_path):
     sidecar, _ = _load_sidecar(monkeypatch, tmp_path, calls)
     other = tmp_path / "my-model"
     other.mkdir()
-    monkeypatch.setenv("OMNIVOICE_COSYVOICE_MODEL", str(other))
+    monkeypatch.setenv("ELEVENVOICE_COSYVOICE_MODEL", str(other))
     sidecar._handle_synthesize({"text": "hi", "ref_audio": "/r.wav"}, io.BytesIO())
     assert next(c for c in calls if c[0] == "load")[2]["model_dir"] == str(other)
 
@@ -205,16 +205,16 @@ def test_the_class_switches_to_the_sidecar_once_its_venv_exists(monkeypatch, tmp
     from services import tts_backend
     from services.sidecar_install import _INSTALL_COMPLETE_MARKER, _venv_python
 
-    monkeypatch.setenv("OMNIVOICE_COSYVOICE_DIR", "")
-    monkeypatch.delenv("OMNIVOICE_COSYVOICE_DIR")
-    monkeypatch.delenv("OMNIVOICE_COSYVOICE_MODEL", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_COSYVOICE_DIR", "")
+    monkeypatch.delenv("ELEVENVOICE_COSYVOICE_DIR")
+    monkeypatch.delenv("ELEVENVOICE_COSYVOICE_MODEL", raising=False)
     assert tts_backend.get_backend_class("cosyvoice") is tts_backend.CosyVoiceBackend
 
     py = _venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
     (tmp_path / _INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_COSYVOICE_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_COSYVOICE_DIR", str(tmp_path))
 
     cls = tts_backend.get_backend_class("cosyvoice")
     assert cls is CosyVoiceSubprocessBackend
@@ -231,8 +231,8 @@ def test_a_missing_model_override_is_an_error_not_a_silent_swap(monkeypatch, tmp
     the user did not choose, while model_identity() still named theirs."""
     calls = []
     sidecar, _ = _load_sidecar(monkeypatch, tmp_path, calls)
-    monkeypatch.setenv("OMNIVOICE_COSYVOICE_MODEL", str(tmp_path / "moved-away"))
-    with pytest.raises(RuntimeError, match="OMNIVOICE_COSYVOICE_MODEL"):
+    monkeypatch.setenv("ELEVENVOICE_COSYVOICE_MODEL", str(tmp_path / "moved-away"))
+    with pytest.raises(RuntimeError, match="ELEVENVOICE_COSYVOICE_MODEL"):
         sidecar._handle_synthesize({"text": "hi", "ref_audio": "/r.wav"}, io.BytesIO())
     assert not any(c[0] == "load" for c in calls)
 

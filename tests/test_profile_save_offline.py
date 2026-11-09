@@ -42,7 +42,7 @@ def stalled_transcription(monkeypatch):
 
     release = threading.Event()
     monkeypatch.setattr(asr_backend, "transcribe_reference", lambda _path: release.wait(30) and "late")
-    monkeypatch.setenv("OMNIVOICE_PROFILE_TRANSCRIBE_TIMEOUT_S", "0.3")
+    monkeypatch.setenv("ELEVENVOICE_PROFILE_TRANSCRIBE_TIMEOUT_S", "0.3")
     yield release
     release.set()
 
@@ -106,7 +106,7 @@ def installed_snapshot(tmp_path, monkeypatch):
     (snapshot / "config.json").write_text("{}")
     with open(snapshot / "model.bin", "wb") as weights:
         weights.truncate(64 * 1024 * 1024)
-    (repo_dir / "voicestudio-revision").write_text(revision_for(_REPO) + "\n")
+    (repo_dir / "elevenvoice-revision").write_text(revision_for(_REPO) + "\n")
     monkeypatch.setenv("HF_HUB_CACHE", str(cache))
     return str(snapshot)
 

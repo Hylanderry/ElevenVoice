@@ -95,7 +95,7 @@ it('keeps the sidebar expanded beside section panes when the preference is off',
 
 it('records which route and viewport the expansion belongs to', () => {
   const getWorkspaceSnapshot = () =>
-    JSON.parse(localStorage.getItem('voicestudio.workspace-layout')!);
+    JSON.parse(localStorage.getItem('elevenvoice.workspace-layout')!);
   const hook = state();
   act(() => hook.result.current.setOpen(true));
   expect(getWorkspaceSnapshot()).toMatchObject({

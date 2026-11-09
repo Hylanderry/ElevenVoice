@@ -7,10 +7,10 @@ const browser = await chromium.launch({
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
-    localStorage.setItem('voicestudio.language', 'en');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.language', 'en');
   });
-  const base = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+  const base = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
   const profiles = await (await page.request.get(base + '/api/profiles')).json();
   const [tts, models] = await Promise.all(
     ['/engines/tts', '/models'].map(async (p) =>

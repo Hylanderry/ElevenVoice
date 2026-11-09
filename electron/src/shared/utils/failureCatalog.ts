@@ -121,7 +121,7 @@ export function isFailureTopic(value: unknown): value is FailureTopic {
 }
 
 /**
- * Sentences VoiceStudio itself writes for a class, recognised when a surface
+ * Sentences ElevenVoice itself writes for a class, recognised when a surface
  * received them as bare text (an older backend, or a route that forwards the
  * exception message). Lower-case substrings; tests/test_failure_catalog.py checks
  * the backend still classifies each one to the same class.

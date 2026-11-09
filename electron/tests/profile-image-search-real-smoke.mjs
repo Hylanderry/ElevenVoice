@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-const backend = process.env.VOICESTUDIO_BACKEND_URL || 'http://127.0.0.1:3900';
-const renderer = process.env.VOICESTUDIO_UI_URL || 'http://127.0.0.1:3912';
+const backend = process.env.ELEVENVOICE_BACKEND_URL || 'http://127.0.0.1:3900';
+const renderer = process.env.ELEVENVOICE_UI_URL || 'http://127.0.0.1:3912';
 const browser = await chromium.launch({
   channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge',
   headless: true,
@@ -13,8 +13,8 @@ let profileId;
 
 try {
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
-    localStorage.setItem('voicestudio.locale', 'en');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.locale', 'en');
   });
   const created = await page.request.post(`${backend}/profiles`, {
     multipart: {

@@ -4,7 +4,7 @@ capability store every export/settings native-picker flow consumes.
 #1781: exports 403'd with "Invalid or expired desktop authorization" because
 Tauri wrote its capability file into a DIFFERENT `.path-authorizations`
 directory than this backend scanned (dev backend spawned without
-`OMNIVOICE_*` env, or a custom data folder / portable mode). The Rust-side
+`ELEVENVOICE_*` env, or a custom data folder / portable mode). The Rust-side
 fix (`commands::path_authorization_dir`) makes Tauri ask the running
 backend where its data dir actually is; these tests cover the backend half:
 `consume()` behaves uniformly across every capability kind (the whole class
@@ -103,10 +103,10 @@ def test_consume_is_one_shot(auth):
 
 
 def test_bundled_backend_refreshes_its_own_scopes_only_after_a_valid_native_grant(auth, monkeypatch):
-    module = ModuleType("_voicestudio_sandbox_bookmarks")
+    module = ModuleType("_elevenvoice_sandbox_bookmarks")
     module.restore = Mock(return_value=True)
     monkeypatch.setitem(sys.modules, module.__name__, module)
-    monkeypatch.setenv("VOICESTUDIO_BUNDLED_CODE_ONLY", "1")
+    monkeypatch.setenv("ELEVENVOICE_BUNDLED_CODE_ONLY", "1")
     token = _token()
     auth.write(token, "models_dir", "/selected-models")
     assert auth.consume(token, "models_dir") == "/selected-models"
@@ -118,12 +118,12 @@ def test_bundled_backend_refreshes_its_own_scopes_only_after_a_valid_native_gran
 
 @pytest.mark.parametrize('throws', [False, True])
 def test_failed_sandbox_scope_is_an_authorization_error_and_never_returns_a_path(auth, monkeypatch, throws):
-    module = ModuleType("_voicestudio_sandbox_bookmarks")
+    module = ModuleType("_elevenvoice_sandbox_bookmarks")
     module.restore = Mock(return_value=False)
     if throws:
         module.restore.side_effect = RuntimeError('native grant failed')
     monkeypatch.setitem(sys.modules, module.__name__, module)
-    monkeypatch.setenv("VOICESTUDIO_BUNDLED_CODE_ONLY", "1")
+    monkeypatch.setenv("ELEVENVOICE_BUNDLED_CODE_ONLY", "1")
     token = _token()
     auth.write(token, "models_dir", "/selected-models")
     with pytest.raises(auth.Error, match="Invalid or expired desktop authorization"):
@@ -131,10 +131,10 @@ def test_failed_sandbox_scope_is_an_authorization_error_and_never_returns_a_path
 
 
 def test_bundled_models_folder_reset_does_not_require_unrelated_folder_grants(auth, monkeypatch):
-    module = ModuleType("_voicestudio_sandbox_bookmarks")
+    module = ModuleType("_elevenvoice_sandbox_bookmarks")
     module.restore = Mock(return_value=False)  # An external drive is no longer mounted.
     monkeypatch.setitem(sys.modules, module.__name__, module)
-    monkeypatch.setenv("VOICESTUDIO_BUNDLED_CODE_ONLY", "1")
+    monkeypatch.setenv("ELEVENVOICE_BUNDLED_CODE_ONLY", "1")
     token = _token()
     auth.write(token, "models_dir", "")
     assert auth.consume(token, "models_dir") == ""
@@ -223,7 +223,7 @@ def test_missing_store_directory_is_distinguished_from_a_missing_token(auth, cap
     don't belong in application logs).
     """
     assert not os.path.isdir(auth.dir)
-    caplog.set_level(logging.WARNING, logger="omnivoice.path_authorization")
+    caplog.set_level(logging.WARNING, logger="elevenvoice.path_authorization")
     with pytest.raises(auth.Error) as exc:
         auth.consume(_token(), "dub_export")
     # Client-facing: identical to the missing-token case, no HTTP-visible

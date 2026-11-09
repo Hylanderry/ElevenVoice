@@ -44,7 +44,7 @@ from dataclasses import dataclass
 # sandboxed data dir.
 from services.ffmpeg_utils import probe_duration, probe_frame_rates, run_ffmpeg
 
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 #: Above this chunk count a single filter_complex graph becomes fragile
 #: (one split branch per chunk, all decoded in lockstep) — switch to the

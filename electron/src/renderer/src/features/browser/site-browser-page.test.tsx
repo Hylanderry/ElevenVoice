@@ -24,7 +24,7 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => k
 let onState: (state: SiteBrowserState) => void;
 const ready = {
   url: 'https://voicestudio.sh/',
-  title: 'VoiceStudio',
+  title: 'ElevenVoice',
   loading: false,
   error: false,
   canGoBack: false,

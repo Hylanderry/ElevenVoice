@@ -18,7 +18,7 @@ home = root / "user"
 original_expanduser = os.path.expanduser
 os.path.expanduser = lambda value: str(home) + value[1:] if value.startswith("~") else value
 canonical = home / ".cache" / "huggingface" / "token"
-legacy = root / "local" / "OmniVoice" / "hf_cache" / "token"
+legacy = root / "local" / "ElevenVoice" / "hf_cache" / "token"
 expected = canonical
 if scenario in ("legacy", "both"):
     legacy.parent.mkdir(parents=True); legacy.write_text("synthetic-legacy")
@@ -33,10 +33,10 @@ if scenario == "explicit_home":
 if scenario == "explicit_cache":
     os.environ["HF_HUB_CACHE"] = str(root / "custom-cache")
 if scenario == "explicit_app_cache":
-    os.environ["OMNIVOICE_CACHE_DIR"] = str(root / "app-cache")
+    os.environ["ELEVENVOICE_CACHE_DIR"] = str(root / "app-cache")
     # main.py applies the explicit app setting before importing core.config.
-    os.environ["HF_HOME"] = os.environ["OMNIVOICE_CACHE_DIR"]
-    os.environ["HF_HUB_CACHE"] = os.environ["OMNIVOICE_CACHE_DIR"]
+    os.environ["HF_HOME"] = os.environ["ELEVENVOICE_CACHE_DIR"]
+    os.environ["HF_HUB_CACHE"] = os.environ["ELEVENVOICE_CACHE_DIR"]
     expected = root / "app-cache" / "token"
 if scenario == "xdg":
     os.environ["XDG_CACHE_HOME"] = "~/xdg"; expected = home / "xdg" / "huggingface" / "token"
@@ -78,8 +78,8 @@ else:
     assert os.environ["HF_TOKEN_PATH"] != str(legacy), "Cleared legacy login must not resurrect"
 print(json.dumps({"selected": str(expected)}))
 '''
-    env = {key: value for key, value in os.environ.items() if not key.startswith(("HF_", "HUGGING_FACE_", "OMNIVOICE_CACHE", "XDG_CACHE"))}
-    env.update(HF_HUB_OFFLINE="1", OMNIVOICE_DATA_DIR=str(tmp_path / "app"), LOCALAPPDATA=str(tmp_path / "local"), PYTHONPATH=str(Path(__file__).resolve().parents[1] / "backend"))
+    env = {key: value for key, value in os.environ.items() if not key.startswith(("HF_", "HUGGING_FACE_", "ELEVENVOICE_CACHE", "XDG_CACHE"))}
+    env.update(HF_HUB_OFFLINE="1", ELEVENVOICE_DATA_DIR=str(tmp_path / "app"), LOCALAPPDATA=str(tmp_path / "local"), PYTHONPATH=str(Path(__file__).resolve().parents[1] / "backend"))
     result = subprocess.run([sys.executable, "-c", script, str(tmp_path), scenario], env=env, capture_output=True, text=True, timeout=20)
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)["selected"]

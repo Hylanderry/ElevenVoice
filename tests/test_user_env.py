@@ -1,7 +1,7 @@
 """plan-01 follow-up / #64 — durable per-user env file helper.
 
 Backs the configurable models directory: the Settings endpoint writes
-OMNIVOICE_CACHE_DIR into ~/.config/omnivoice/env, which main.py loads at startup
+ELEVENVOICE_CACHE_DIR into ~/.config/omnivoice/env, which main.py loads at startup
 (→ HF_HOME / HF_HUB_CACHE / TORCH_HOME). The helper must upsert one key without
 clobbering others (e.g. a persisted HF_TOKEN) and store the file 0600.
 """
@@ -16,31 +16,31 @@ from core import user_env
 
 def test_set_creates_and_upserts(tmp_path):
     p = str(tmp_path / "env")
-    user_env.set_user_env("OMNIVOICE_CACHE_DIR", "/data/models", path=p)
-    assert user_env.get_user_env("OMNIVOICE_CACHE_DIR", path=p) == "/data/models"
+    user_env.set_user_env("ELEVENVOICE_CACHE_DIR", "/data/models", path=p)
+    assert user_env.get_user_env("ELEVENVOICE_CACHE_DIR", path=p) == "/data/models"
     # upsert: change value, do not duplicate the key
-    user_env.set_user_env("OMNIVOICE_CACHE_DIR", "/other/models", path=p)
-    assert user_env.get_user_env("OMNIVOICE_CACHE_DIR", path=p) == "/other/models"
+    user_env.set_user_env("ELEVENVOICE_CACHE_DIR", "/other/models", path=p)
+    assert user_env.get_user_env("ELEVENVOICE_CACHE_DIR", path=p) == "/other/models"
     with open(p) as f:
-        assert f.read().count("OMNIVOICE_CACHE_DIR=") == 1
+        assert f.read().count("ELEVENVOICE_CACHE_DIR=") == 1
 
 
 def test_preserves_other_keys(tmp_path):
     p = tmp_path / "env"
     p.write_text("HF_TOKEN=hf_abc123\nFOO=bar\n")
-    user_env.set_user_env("OMNIVOICE_CACHE_DIR", "/m", path=str(p))
+    user_env.set_user_env("ELEVENVOICE_CACHE_DIR", "/m", path=str(p))
     txt = p.read_text()
     assert "HF_TOKEN=hf_abc123" in txt
     assert "FOO=bar" in txt
-    assert "OMNIVOICE_CACHE_DIR=/m" in txt
+    assert "ELEVENVOICE_CACHE_DIR=/m" in txt
 
 
 def test_unset_removes_only_that_key(tmp_path):
     p = tmp_path / "env"
-    p.write_text("HF_TOKEN=hf_x\nOMNIVOICE_CACHE_DIR=/m\n")
-    user_env.unset_user_env("OMNIVOICE_CACHE_DIR", path=str(p))
+    p.write_text("HF_TOKEN=hf_x\nELEVENVOICE_CACHE_DIR=/m\n")
+    user_env.unset_user_env("ELEVENVOICE_CACHE_DIR", path=str(p))
     txt = p.read_text()
-    assert "OMNIVOICE_CACHE_DIR" not in txt
+    assert "ELEVENVOICE_CACHE_DIR" not in txt
     assert "HF_TOKEN=hf_x" in txt
 
 
@@ -49,7 +49,7 @@ def test_get_missing_returns_none(tmp_path):
 
 
 def test_set_with_bare_filename_no_parent(tmp_path, monkeypatch):
-    # A path with no directory component (e.g. OMNIVOICE_ENV_FILE=env) must not
+    # A path with no directory component (e.g. ELEVENVOICE_ENV_FILE=env) must not
     # blow up: os.makedirs("") raises, so the helper has to skip the mkdir.
     monkeypatch.chdir(tmp_path)
     user_env.set_user_env("K", "v", path="envfile")
@@ -80,20 +80,20 @@ def test_special_characters_survive_the_dotenv_round_trip(tmp_path, monkeypatch,
     by the startup dotenv loader, silently pointing at a sibling directory."""
     p = tmp_path / "env"
     p.write_text("HF_TOKEN=hf_keep\n")
-    user_env.set_user_env("OMNIVOICE_TEST_PATH", value, path=str(p))
-    assert user_env.get_user_env("OMNIVOICE_TEST_PATH", path=str(p)) == value
-    monkeypatch.delenv("OMNIVOICE_TEST_PATH", raising=False)
+    user_env.set_user_env("ELEVENVOICE_TEST_PATH", value, path=str(p))
+    assert user_env.get_user_env("ELEVENVOICE_TEST_PATH", path=str(p)) == value
+    monkeypatch.delenv("ELEVENVOICE_TEST_PATH", raising=False)
     monkeypatch.setenv("HF_TOKEN", "")
     assert user_env.load_into_environ(str(p)) is True
-    assert os.environ["OMNIVOICE_TEST_PATH"] == value
+    assert os.environ["ELEVENVOICE_TEST_PATH"] == value
     assert os.environ["HF_TOKEN"] == "hf_keep"
 
 
 def test_ordinary_values_stay_unquoted(tmp_path):
     p = tmp_path / "env"
     user_env.set_user_env("HF_ENDPOINT", "https://hf-mirror.com", path=str(p))
-    user_env.set_user_env("OMNIVOICE_CACHE_DIR", "/data/models", path=str(p))
-    assert p.read_text() == "HF_ENDPOINT=https://hf-mirror.com\nOMNIVOICE_CACHE_DIR=/data/models\n"
+    user_env.set_user_env("ELEVENVOICE_CACHE_DIR", "/data/models", path=str(p))
+    assert p.read_text() == "HF_ENDPOINT=https://hf-mirror.com\nELEVENVOICE_CACHE_DIR=/data/models\n"
 
 
 def test_line_breaks_are_rejected(tmp_path):
@@ -109,18 +109,18 @@ def test_hand_written_unquoted_values_still_expand_variables(tmp_path, monkeypat
     p = tmp_path / "env"
     p.write_text(
         "HF_HOME=${HOME}/models\n"
-        'OMNIVOICE_TEST_DQ="${HOME}/dq"\n'
-        "OMNIVOICE_TEST_SQ='${HOME}/sq'\n"
-        "OMNIVOICE_TEST_LAST='${HOME}/first'\n"
-        "OMNIVOICE_TEST_LAST=${HOME}/second\n"
+        'ELEVENVOICE_TEST_DQ="${HOME}/dq"\n'
+        "ELEVENVOICE_TEST_SQ='${HOME}/sq'\n"
+        "ELEVENVOICE_TEST_LAST='${HOME}/first'\n"
+        "ELEVENVOICE_TEST_LAST=${HOME}/second\n"
     )
-    user_env.set_user_env("OMNIVOICE_TEST_PATH", "/chosen/${HOME}/models", path=str(p))
-    for key in ("HF_HOME", "OMNIVOICE_TEST_DQ", "OMNIVOICE_TEST_SQ", "OMNIVOICE_TEST_LAST",
-                "OMNIVOICE_TEST_PATH"):
+    user_env.set_user_env("ELEVENVOICE_TEST_PATH", "/chosen/${HOME}/models", path=str(p))
+    for key in ("HF_HOME", "ELEVENVOICE_TEST_DQ", "ELEVENVOICE_TEST_SQ", "ELEVENVOICE_TEST_LAST",
+                "ELEVENVOICE_TEST_PATH"):
         monkeypatch.delenv(key, raising=False)
     assert user_env.load_into_environ(str(p)) is True
     assert os.environ["HF_HOME"] == "/home/u/models"
-    assert os.environ["OMNIVOICE_TEST_DQ"] == "/home/u/dq"
-    assert os.environ["OMNIVOICE_TEST_SQ"] == "${HOME}/sq"
-    assert os.environ["OMNIVOICE_TEST_LAST"] == "/home/u/second"
-    assert os.environ["OMNIVOICE_TEST_PATH"] == "/chosen/${HOME}/models"
+    assert os.environ["ELEVENVOICE_TEST_DQ"] == "/home/u/dq"
+    assert os.environ["ELEVENVOICE_TEST_SQ"] == "${HOME}/sq"
+    assert os.environ["ELEVENVOICE_TEST_LAST"] == "/home/u/second"
+    assert os.environ["ELEVENVOICE_TEST_PATH"] == "/chosen/${HOME}/models"

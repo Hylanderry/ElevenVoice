@@ -20,7 +20,7 @@ import {
 } from "@/features/settings/model-license-contract";
 export { joinApiPath } from "../../../../shared/web-api-routing";
 
-type ApiBaseWindow = Window & { __OMNIVOICE_API_BASE__?: string };
+type ApiBaseWindow = Window & { __ELEVENVOICE_API_BASE__?: string };
 
 export function resolveApiBase(
   webDeployment: boolean,
@@ -28,7 +28,7 @@ export function resolveApiBase(
   win?: ApiBaseWindow,
 ): string {
   if (!webDeployment || dev) return "/api";
-  const runtime = win?.__OMNIVOICE_API_BASE__?.trim();
+  const runtime = win?.__ELEVENVOICE_API_BASE__?.trim();
   return runtime ? runtime.replace(/\/+$/, "") : "";
 }
 
@@ -45,7 +45,7 @@ export function absoluteApiBase(): string {
     .replace(/\/+$/, "");
 }
 
-const BACKEND_MARKER = "x-omnivoice-backend";
+const BACKEND_MARKER = "x-elevenvoice-backend";
 // nginx's 502/503/504 and Cloudflare's 520-527/530: a proxy answering for a slow
 // or unreachable backend.
 const PROXY_GATEWAY_STATUSES = new Set([
@@ -155,7 +155,7 @@ export async function errorFromResponse(res: Response): Promise<ApiError> {
       // Plain-text body.
     }
   }
-  // A gateway status that is not JSON did not come from VoiceStudio: a reverse
+  // A gateway status that is not JSON did not come from ElevenVoice: a reverse
   // proxy (nginx, Caddy, a tunnel, Cloudflare) gave up waiting and answered with
   // its own HTML page (#2781, #3219). Echoing that page told the user nothing about the real
   // situation, which is that the backend may well still be rendering.
@@ -229,7 +229,7 @@ export async function apiFetch(
   // already-succeeded streamed generation fail.
   if (
     typeof window !== "undefined" &&
-    window.voicestudio?.backend &&
+    window.elevenvoice?.backend &&
     !isBackendReachable(getBackendStatusSnapshot().stage)
   )
     throw new ApiError(0, tr("tts_errors.backend_unreachable"));
@@ -246,7 +246,7 @@ export async function apiFetch(
         // Cookie and bearer-session authentication still work when storage is blocked.
       }
       sentSession = getAdminSession(apiBase);
-      if (pin) headers.set("X-OmniVoice-Pin", pin);
+      if (pin) headers.set("X-ElevenVoice-Pin", pin);
       if (sentSession)
         headers.set("Authorization", `Bearer ${sentSession.token}`);
       if (isSameOriginApi(apiBase)) headers.set(CSRF_HEADER_NAME, "1");

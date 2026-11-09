@@ -84,7 +84,7 @@ it('exports during setup without requiring a backend and handles save cancellati
   fireEvent.click(screen.getByRole('button', { name: i18n.t('setupHelp.download_log') }));
   await waitFor(() => expect(mock.save).toHaveBeenCalled());
   expect(new TextDecoder().decode(mock.save.mock.calls[0][0].data)).toBe('Setup log: redacted');
-  expect(mock.save.mock.calls[0][0].suggestedName).toBe('voicestudio-setup.log');
+  expect(mock.save.mock.calls[0][0].suggestedName).toBe('elevenvoice-setup.log');
   expect(mock.external).not.toHaveBeenCalled();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });

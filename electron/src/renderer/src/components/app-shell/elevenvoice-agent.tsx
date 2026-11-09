@@ -42,11 +42,11 @@ import {
 import { translationActivity } from '@/features/dub/translation-activity';
 import { TranslationAgentDock } from './translation-agent-dock';
 import { AgentDockFrame } from './agent-dock-frame';
-import './voice-studio-agent.css';
+import './elevenvoice-agent.css';
 
 const REPAIR_DOCS_URL =
-  'https://github.com/debpalash/VoiceStudio/blob/main/docs/electron-repair.md#source-checkout';
-const CLONE_COMMAND = 'git clone https://github.com/debpalash/VoiceStudio.git';
+  'https://github.com/Hylanderry/ElevenVoice#readme';
+const CLONE_COMMAND = 'git clone https://github.com/Hylanderry/ElevenVoice.git';
 type WorkspaceProblem = NonNullable<RepairAgentState['workspaceError']>;
 const icons = { codex: codexIcon, claude: claudeIcon, opencode: openCodeIcon, pi: piIcon };
 const labels: Record<AgentFeature, string> = {
@@ -71,7 +71,7 @@ function savedAgent(): RepairAgentId {
   return 'codex';
 }
 
-export function VoiceStudioAgent() {
+export function ElevenVoiceAgent() {
   const { t } = useTranslation();
   const bridge = getBridge();
   const backend = useBackendStatus();
@@ -280,7 +280,7 @@ export function VoiceStudioAgent() {
       label={t('repairAgent.title')}
       className="agent-workspace"
       resizable
-      resizeStorageKey="voicestudio.agent-workspace-height"
+      resizeStorageKey="elevenvoice.agent-workspace-height"
     >
       <header className="agent-workspace-header">
         <BotIcon className="size-5 text-primary" />
@@ -437,7 +437,7 @@ export function VoiceStudioAgent() {
                   {
                     installed_app: t('repairAgent.sourceRejected.installed_app'),
                     not_git: t('repairAgent.sourceRejected.not_git'),
-                    not_voicestudio: t('repairAgent.sourceRejected.not_voicestudio'),
+                    not_elevenvoice: t('repairAgent.sourceRejected.not_elevenvoice'),
                     read_only: t('repairAgent.sourceRejected.read_only'),
                   }[workspaceProblem]
                 }

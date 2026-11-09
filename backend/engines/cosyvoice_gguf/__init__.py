@@ -15,7 +15,7 @@ from engines.cosyvoice_gguf.process import NativeServer
 from engines.cosyvoice_gguf.prompt_cache import cached_prompt, prompt_cache_key
 from engines.cosyvoice_gguf.server import build_speech_payload, decode_speech_response
 
-logger = logging.getLogger("omnivoice.cosyvoice_gguf")
+logger = logging.getLogger("elevenvoice.cosyvoice_gguf")
 
 
 class CosyVoiceGGUFBackend(TTSBackend):

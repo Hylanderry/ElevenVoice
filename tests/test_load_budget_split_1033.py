@@ -1,14 +1,14 @@
 """Model LOAD time must not eat the GENERATE timeout budget (#1033/#1037 class).
 
 Field evidence (#1014, measured on a Tesla T4): a fresh install's first
-TTS request spent its entire OMNIVOICE_GENERATE_TIMEOUT_S window (300s)
+TTS request spent its entire ELEVENVOICE_GENERATE_TIMEOUT_S window (300s)
 downloading the multi-GB checkpoint — 0% GPU utilization throughout — and
 died with the "too heavy for the available compute" 503. Two user reports
 (#1033, #1037) match the signature. The generate guard was wrapping the
 adapter's lazy `_ensure_loaded()` (weight download included) together with
 the actual synthesis.
 
-The fix gives loading its own, larger budget (OMNIVOICE_MODEL_LOAD_TIMEOUT,
+The fix gives loading its own, larger budget (ELEVENVOICE_MODEL_LOAD_TIMEOUT,
 default 1200s) via the new `TTSBackend.ensure_ready()` hook, dispatched
 BEFORE the generate clock starts, in both /generate's adapter path and
 /v1/audio/speech. These tests drive the class with a fake backend whose
@@ -20,8 +20,8 @@ Engine-stub pattern from tests/test_agentic_provider_contract.py.
 import os
 import time
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 

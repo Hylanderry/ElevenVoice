@@ -24,7 +24,7 @@ from typing import Optional
 
 from services.llm_backend import get_active_llm_backend, OffBackend
 
-logger = logging.getLogger("omnivoice.director")
+logger = logging.getLogger("elevenvoice.director")
 
 # LLM Skills registry id — Settings → LLM Skills can disable the LLM parse
 # or route it to a specific provider. Disabled == the heuristic parser.

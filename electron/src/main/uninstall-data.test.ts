@@ -13,12 +13,12 @@ afterEach(async () => {
 });
 
 async function fixture(): Promise<UninstallRoots & { root: string }> {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'VoiceStudio-uninstall-test-')));
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'ElevenVoice-uninstall-test-')));
   created.push(root);
   const roots = {
     root,
     data: join(root, 'Application Support', 'OmniVoice', 'data'),
-    environment: join(root, 'Application Support', 'VoiceStudio', 'shell'),
+    environment: join(root, 'Application Support', 'ElevenVoice', 'shell'),
     logs: join(root, 'Application Support', 'OmniVoice', 'logs'),
     userEnvironment: join(root, '.config', 'omnivoice'),
     models: join(root, '.cache', 'huggingface'),
@@ -70,7 +70,7 @@ it('does not offer a nested private model directory as a separately shared targe
 
 it('lists a setup-chosen location by its runtime folders so data and models stay separate choices (#2971)', async () => {
   const roots = await fixture();
-  const chosen = join(roots.root, 'E', 'VoiceStudio');
+  const chosen = join(roots.root, 'E', 'ElevenVoice');
   const data = join(chosen, 'data');
   const entries = [join(chosen, 'project'), join(chosen, '.uv-cache')];
   for (const path of [data, ...entries]) await mkdir(path, { recursive: true });
@@ -94,7 +94,7 @@ it('lists a setup-chosen location by its runtime folders so data and models stay
 
 it('protects a shared model cache reached through a data-path alias', async () => {
   const roots = await fixture();
-  const alias = join(roots.root, 'Application Support', 'VoiceStudio', 'data-alias');
+  const alias = join(roots.root, 'Application Support', 'ElevenVoice', 'data-alias');
   await symlink(roots.models, alias, process.platform === 'win32' ? 'junction' : 'dir');
   const targets = await scanUninstallTargets({ ...roots, data: alias });
   const model = targets.find((target) => target.key === 'models');
@@ -106,7 +106,7 @@ it('protects a shared model cache reached through a data-path alias', async () =
 
 it('counts overlapping parent and child targets only once in the deletion plan', async () => {
   const roots = await fixture();
-  const parent = join(roots.root, 'Application Support', 'VoiceStudio');
+  const parent = join(roots.root, 'Application Support', 'ElevenVoice');
   const child = join(parent, 'data');
   await mkdir(child, { recursive: true });
   await writeFile(join(child, 'prefs.json'), '12345');

@@ -138,7 +138,7 @@ try {
     budgets.push(body);
     return route.fulfill({ json: { shadowed: body.key.includes('CPU') } });
   });
-  const base = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902';
+  const base = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902';
   await page.goto(base + '/#/settings/performance');
   await page.getByRole('radiogroup').first().waitFor();
   assert.equal(await page.getByRole('radiogroup').count(), 7);
@@ -191,7 +191,7 @@ try {
   );
   await gpuBudget.press('Enter');
   await savedBudget;
-  assert.deepEqual(budgets[0], { key: 'OMNIVOICE_GENERATE_TIMEOUT_S', value: '900' });
+  assert.deepEqual(budgets[0], { key: 'ELEVENVOICE_GENERATE_TIMEOUT_S', value: '900' });
   const cpuBudget = page.getByRole('spinbutton', {
     name: t('settings.generate_timeout_cpu'),
     exact: true,

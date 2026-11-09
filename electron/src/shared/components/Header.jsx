@@ -27,7 +27,7 @@ import {
 import { Button, Badge } from '../ui';
 import NotificationPanel from './NotificationPanel';
 import TitleTabs from './TitleTabs';
-import VoiceStudioMark from './brand/VoiceStudioMark';
+import ElevenVoiceMark from './brand/ElevenVoiceMark';
 import { useAppStore } from '../store';
 import { useSysinfo, useEngines } from '../api/hooks';
 import { reloadAfterApplicationPersistence } from '../utils/persistenceLifecycle';
@@ -46,7 +46,7 @@ const VIEW_META = {
     kickerKey: 'header.kicker_studio',
   },
   // Legacy ids — kept so a not-yet-shimmed persisted 'clone'/'design' mode
-  // still renders a sensible header (voice-studio-unification P4).
+  // still renders a sensible header (elevenvoice-unification P4).
   clone: {
     labelKey: 'header.label_clone',
     Icon: Fingerprint,
@@ -361,8 +361,8 @@ export default function Header({
           className="flex items-center gap-2 justify-self-center pointer-events-none whitespace-nowrap"
           translate="no"
         >
-          <VoiceStudioMark
-            data-testid="voice-studio-logo"
+          <ElevenVoiceMark
+            data-testid="elevenvoice-logo"
             className="size-7 overflow-visible text-[var(--chrome-accent)]"
           />
           <span className="text-[0.92rem] font-semibold text-[var(--chrome-fg)] tracking-[0.02em] [font-family:var(--font-sans)] not-italic">
@@ -536,7 +536,7 @@ export default function Header({
                             <div className="flex flex-col gap-[1px] min-w-0">
                               <span className="text-[12px] text-[var(--color-fg)] font-medium">
                                 {engineDisplayName(m.name)}
-                                {/* Resident-but-not-routed engine (e.g. VoiceStudio still in
+                                {/* Resident-but-not-routed engine (e.g. ElevenVoice still in
                                     VRAM after switching to another backend) — say so. */}
                                 {m.is_active_engine === false && (
                                   <span className="ml-[6px] text-[10px] font-normal text-[var(--color-fg-subtle)] [font-family:var(--font-mono)]">

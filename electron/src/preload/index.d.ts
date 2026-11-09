@@ -1,7 +1,7 @@
 import type { HostSnapshotLike } from '../shared/utils/hostSnapshot';
 import type { InstallFailure } from '../shared/utils/installFailure';
 /**
- * The contextBridge surface exposed to the renderer as `window.voicestudio`.
+ * The contextBridge surface exposed to the renderer as `window.elevenvoice`.
  *
  * Keep this file the single contract between main (src/main), preload
  * (src/preload/index.ts) and the renderer. Both tsconfigs include it.
@@ -33,7 +33,7 @@ export interface BackendStatus {
   lastCrash?: NativeCrashRecord;
   /** Set on the setup screen when Windows Smart App Control may block the engine. */
   smartAppControlWarning?: boolean;
-  /** OMNIVOICE_ANALYTICS_DISABLED is set: nothing may be sent, whatever was chosen. */
+  /** ELEVENVOICE_ANALYTICS_DISABLED is set: nothing may be sent, whatever was chosen. */
   analyticsDisabled?: boolean;
   /** Code and facts for the current install or startup failure. */
   failure?: InstallFailure;
@@ -231,7 +231,7 @@ export interface RepairAgentState {
   workspaceAvailable: boolean;
   workspacePath?: string;
   /** Set only on a chooseWorkspace reply whose picked folder was rejected. */
-  workspaceError?: 'installed_app' | 'not_git' | 'not_voicestudio' | 'read_only';
+  workspaceError?: 'installed_app' | 'not_git' | 'not_elevenvoice' | 'read_only';
 }
 export type RepairAgentEvent =
   | { sessionId: string; type: 'output'; text: string }
@@ -367,8 +367,8 @@ export interface SetupConnectionCheck {
   checkedAt: number;
 }
 
-export interface VoiceStudioBridge {
-  /** VoiceStudio Cloud account; never carries a token. */
+export interface ElevenVoiceBridge {
+  /** ElevenVoice Cloud account; never carries a token. */
   account: {
     get(): Promise<AccountPublicState>;
     signIn(): Promise<void>;
@@ -515,7 +515,7 @@ export interface VoiceStudioBridge {
 
 declare global {
   interface Window {
-    voicestudio: VoiceStudioBridge;
+    elevenvoice: ElevenVoiceBridge;
   }
 }
 

@@ -18,8 +18,8 @@ from pathlib import Path
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 @pytest.fixture(scope="module")
@@ -27,7 +27,7 @@ def iso(tmp_path_factory):
     """Isolated data dir + reloaded config/db/marketplace (no main, no torch)."""
     mp = pytest.MonkeyPatch()
     tmp = tmp_path_factory.mktemp("persona-kind-data")
-    mp.setenv("OMNIVOICE_DATA_DIR", str(tmp))
+    mp.setenv("ELEVENVOICE_DATA_DIR", str(tmp))
     import core.config as cfg
     importlib.reload(cfg)
     import core.db as db

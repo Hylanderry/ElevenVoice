@@ -280,20 +280,20 @@ def test_winerror_193_is_a_corrupt_binary_not_oom():
 
 
 def test_sherpa_model_not_set_is_a_config_error_not_oom():
-    # #919: the reporter selected sherpa-onnx and hit "OMNIVOICE_SHERPA_MODEL
+    # #919: the reporter selected sherpa-onnx and hit "ELEVENVOICE_SHERPA_MODEL
     # not set. Point it to a sherpa-onnx TTS model directory …" — a pure setup
     # problem — but the OOM catch-all told them (63 GB RAM) to press Flush for
     # memory they never ran out of. It must classify as a CONFIGURATION error:
     # name the env var, point at Model Catalogue, and never mention memory
     # or the Flush button.
     err = RuntimeError(
-        "OMNIVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS model "
+        "ELEVENVOICE_SHERPA_MODEL not set. Point it to a sherpa-onnx TTS model "
         "directory (containing model.onnx + tokens.txt)."
     )
     with pytest.raises(RuntimeError) as ei:
         _oom_friendly_reraise(err)
     msg = str(ei.value)
-    assert "OMNIVOICE_SHERPA_MODEL" in msg      # names the exact env var
+    assert "ELEVENVOICE_SHERPA_MODEL" in msg      # names the exact env var
     assert "Model Catalogue" in msg    # tells the user where to fix it
     assert "out of memory" not in msg
     assert "ran out of memory" not in msg
@@ -305,13 +305,13 @@ def test_engine_not_configured_class_is_not_oom():
     # because its required model path / env var isn't set is configuration, not
     # OOM — including when a lower layer wraps the original message. Covers
     # sherpa's is_available() wrapper, sherpa's "no model.onnx" variant, and a
-    # Confucius4/dots/MOSS-style "venv not found. Set OMNIVOICE_…_DIR".
+    # Confucius4/dots/MOSS-style "venv not found. Set ELEVENVOICE_…_DIR".
     for raw in (
-        "Sherpa-ONNX unavailable: OMNIVOICE_SHERPA_MODEL not set. Point it to a "
+        "Sherpa-ONNX unavailable: ELEVENVOICE_SHERPA_MODEL not set. Point it to a "
         "sherpa-onnx TTS model directory (containing model.onnx + tokens.txt).",
         "No model.onnx found in /tts/models. Download a model from "
         "https://github.com/k2-fsa/sherpa-onnx/releases",
-        "Confucius4-TTS venv not found. Set OMNIVOICE_CONFUCIUS4_TTS_DIR to your "
+        "Confucius4-TTS venv not found. Set ELEVENVOICE_CONFUCIUS4_TTS_DIR to your "
         "clone and restart OmniVoice.",
     ):
         with pytest.raises(RuntimeError) as ei:

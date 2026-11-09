@@ -20,8 +20,8 @@ export function legacyStorageEnv(roots: string[]): NodeJS.ProcessEnv {
         ? join(portable, 'data', 'models')
         : absolute(config.models_dir ?? config.modelsDir);
       if (data || models) return {
-        ...(data ? { OMNIVOICE_DATA_DIR: data } : {}),
-        ...(models ? { OMNIVOICE_CACHE_DIR: models } : {}),
+        ...(data ? { ELEVENVOICE_DATA_DIR: data } : {}),
+        ...(models ? { ELEVENVOICE_CACHE_DIR: models } : {}),
       };
     } catch {
       // Missing or malformed legacy configuration must not block a fresh install.

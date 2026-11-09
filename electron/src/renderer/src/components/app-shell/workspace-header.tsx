@@ -45,7 +45,7 @@ export function WorkspaceHeader({ children }: { children: ReactNode }) {
           className="h-7 shrink-0 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
           aria-label={t('preferences.search')}
           title={isMac() ? 'Command + K' : 'Ctrl + K'}
-          onClick={() => window.dispatchEvent(new Event('voicestudio:commands'))}
+          onClick={() => window.dispatchEvent(new Event('elevenvoice:commands'))}
         >
           <SearchIcon />
           <span className="hidden text-xs font-medium lg:inline">{isMac() ? '⌘K' : 'Ctrl K'}</span>

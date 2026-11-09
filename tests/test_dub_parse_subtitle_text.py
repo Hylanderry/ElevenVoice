@@ -12,7 +12,7 @@ import os
 import pytest
 from fastapi import HTTPException
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 
 def _call(text):

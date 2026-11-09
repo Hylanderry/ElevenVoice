@@ -60,7 +60,7 @@ def test_store_languages_match_the_phone_models():
 
 
 def test_data_safety_declares_the_report_the_app_sends():
-    # The Report sheet sends user-written text to VoiceStudio (mobile/contract/SPEC.md).
+    # The Report sheet sends user-written text to ElevenVoice (mobile/contract/SPEC.md).
     spec = (ROOT / "mobile/contract/SPEC.md").read_text()
     assert "## Reporting generated content" in spec
     safety = LISTING["dataSafety"]

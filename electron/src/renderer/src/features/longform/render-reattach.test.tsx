@@ -210,7 +210,7 @@ it('shows one card per interrupted project, explains a disabled Resume and can b
   fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
   // Every manifest of that book goes with it.
   await waitFor(() => expect(screen.queryByText('Book')).toBeNull());
-  expect(JSON.parse(localStorage.getItem('voicestudio.longform.dismissed-recoveries')!)).toEqual([
+  expect(JSON.parse(localStorage.getItem('elevenvoice.longform.dismissed-recoveries')!)).toEqual([
     'old',
     'new',
   ]);

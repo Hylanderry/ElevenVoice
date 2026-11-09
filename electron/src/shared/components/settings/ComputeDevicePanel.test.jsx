@@ -67,7 +67,7 @@ describe('ComputeDevicePanel', () => {
     expect(screen.getByText(/after the app restarts/i)).toBeInTheDocument();
   });
 
-  it('an OMNIVOICE_DEVICE pin disables the control and says so', async () => {
+  it('an ELEVENVOICE_DEVICE pin disables the control and says so', async () => {
     global.fetch = mockFetchSequence({
       status: 200,
       body: { ...CUDA_HOST, value: 'cpu', applied: 'cpu', env_pinned: true },
@@ -76,7 +76,7 @@ describe('ComputeDevicePanel', () => {
     await waitFor(() => {
       expect(screen.getByTestId('compute-device-select')).toBeDisabled();
     });
-    expect(screen.getByText(/OMNIVOICE_DEVICE/)).toBeInTheDocument();
+    expect(screen.getByText(/ELEVENVOICE_DEVICE/)).toBeInTheDocument();
   });
 
   it('re-syncs from the server when the PUT fails, keeping the error visible', async () => {

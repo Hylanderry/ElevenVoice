@@ -91,9 +91,9 @@ def test_serve_enable_falls_back_to_http_when_https_fails():
 
 
 def test_serve_enable_proxies_configured_backend_port(monkeypatch):
-    """When OMNIVOICE_PORT is set and serve_enable() is called with no explicit
+    """When ELEVENVOICE_PORT is set and serve_enable() is called with no explicit
     port, the proxy target must use the configured backend port (not 3900)."""
-    monkeypatch.setenv("OMNIVOICE_PORT", "4000")
+    monkeypatch.setenv("ELEVENVOICE_PORT", "4000")
     payload = {**_RUNNING, "CertDomains": None}
     captured = {}
 

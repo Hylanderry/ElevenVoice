@@ -251,7 +251,7 @@ def test_miss_names_the_changed_input(data_dirs, caplog):
     use(old)
     lexicon = {"Why": "LEXICON-SENTINEL-RESPELLING"}
     _render(_chapter("Why?"), _synth([]), _SR, "eng", _resolver(old), str(cache), lexicon)
-    with caplog.at_level(logging.INFO, logger="omnivoice.audiobook"):
+    with caplog.at_level(logging.INFO, logger="elevenvoice.audiobook"):
         _render(_chapter("Why?"), _synth([]), _SR, "eng",
                 _resolver(old, ref_text="a new transcript"), str(cache), lexicon)
     assert "voice v1 reference text" in caplog.text

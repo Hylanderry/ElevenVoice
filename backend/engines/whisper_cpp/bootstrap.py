@@ -5,8 +5,8 @@ of OpenAI's Whisper model, supporting GGML/GGUF quantization and native GPU
 backends including Vulkan, CUDA, and Metal.
 
 Probe order for the binary:
-    1. ${OMNIVOICE_WHISPER_CPP_BIN} — absolute path to the binary itself.
-    2. ${OMNIVOICE_WHISPER_CPP_DIR}/whisper-cli[.exe] — user-managed install dir.
+    1. ${ELEVENVOICE_WHISPER_CPP_BIN} — absolute path to the binary itself.
+    2. ${ELEVENVOICE_WHISPER_CPP_DIR}/whisper-cli[.exe] — user-managed install dir.
     3. backend/engines/whisper_cpp/bin/whisper-cli[.exe] — package-local copy.
     4. System PATH lookup via shutil.which().
 
@@ -20,7 +20,7 @@ import shutil
 import sys
 from pathlib import Path, PureWindowsPath
 
-logger = logging.getLogger("omnivoice.whisper_cpp.bootstrap")
+logger = logging.getLogger("elevenvoice.whisper_cpp.bootstrap")
 
 #: Pinned default model identifier
 DEFAULT_MODEL_NAME = "ggml-base.bin"
@@ -29,11 +29,11 @@ DEFAULT_MODEL_NAME = "ggml-base.bin"
 HF_MODEL_REPO = "ggerganov/whisper.cpp"
 
 #: Environment variable overrides
-BIN_ENV = "OMNIVOICE_WHISPER_CPP_BIN"
-DIR_ENV = "OMNIVOICE_WHISPER_CPP_DIR"
-MODEL_ENV = "OMNIVOICE_WHISPER_CPP_MODEL"
-BACKEND_ENV = "OMNIVOICE_WHISPER_CPP_BACKEND"
-DEVICE_ENV = "OMNIVOICE_WHISPER_CPP_DEVICE"
+BIN_ENV = "ELEVENVOICE_WHISPER_CPP_BIN"
+DIR_ENV = "ELEVENVOICE_WHISPER_CPP_DIR"
+MODEL_ENV = "ELEVENVOICE_WHISPER_CPP_MODEL"
+BACKEND_ENV = "ELEVENVOICE_WHISPER_CPP_BACKEND"
+DEVICE_ENV = "ELEVENVOICE_WHISPER_CPP_DEVICE"
 
 #: Package-local binary and model directories
 _PKG_DIR = Path(__file__).resolve().parent

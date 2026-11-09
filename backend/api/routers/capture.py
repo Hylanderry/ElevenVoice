@@ -26,7 +26,7 @@ from typing import Optional
 from core.path_security import upload_suffix
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.capture")
+logger = logging.getLogger("elevenvoice.capture")
 
 
 def _timing(value):

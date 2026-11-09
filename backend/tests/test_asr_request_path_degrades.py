@@ -85,7 +85,7 @@ def asr(monkeypatch):
 
     ab = sys.modules["services.asr_backend"]
 
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     monkeypatch.setattr("core.prefs.get", lambda key, default=None: None)
     monkeypatch.setattr(ab, "_mps_available", lambda: False)
     for cls in (ab.WhisperXBackend, ab.FasterWhisperBackend):

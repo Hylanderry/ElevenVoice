@@ -389,7 +389,7 @@ describe('HTTPS range transport (#3411)', () => {
     const options = get.calls[0]![1] as { headers: Record<string, string> };
     expect(options.headers).toMatchObject({
       Range: 'bytes=0-2',
-      'User-Agent': 'VoiceStudio-setup',
+      'User-Agent': 'ElevenVoice-setup',
     });
     const sizing = httpsRangeTransport(
       {},

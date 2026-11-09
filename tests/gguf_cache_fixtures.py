@@ -40,9 +40,9 @@ Q8_PAIR = (QUANT_MAP["mid-vram"]["base"], QUANT_MAP["mid-vram"]["tokenizer"])
 #: fixture clears them so a saved Settings choice or an ambient native
 #: backend cannot change what these tests observe.
 COMPUTE_ENV = (
-    "OMNIVOICE_DEVICE",
-    "OMNIVOICE_GGUF_BACKEND",
-    "OMNIVOICE_GGUF_DEVICE",
+    "ELEVENVOICE_DEVICE",
+    "ELEVENVOICE_GGUF_BACKEND",
+    "ELEVENVOICE_GGUF_DEVICE",
     "GGML_BACKEND",
 )
 
@@ -68,7 +68,7 @@ def gguf_cache(monkeypatch, tmp_path):
         monkeypatch.delenv(variable, raising=False)
     # The env is authoritative over the saved Settings choice, so pinning
     # it to "auto" neutralizes a user's own CPU preference.
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
 
     def _no_download(*args, **kwargs):
         raise AssertionError("the GGUF engine must not download weights")
@@ -100,8 +100,8 @@ def install_pair(root: Path, filenames, *, revision: str = REVISION) -> None:
 def choose_cpu(monkeypatch, source: str) -> None:
     """Apply one compute choice the way the app's compute policy reads it.
 
-    ``source`` is "global" (``OMNIVOICE_DEVICE``), "settings" (the
-    Settings pick), "engine" (``OMNIVOICE_GGUF_BACKEND``), "native" (an
+    ``source`` is "global" (``ELEVENVOICE_DEVICE``), "settings" (the
+    Settings pick), "engine" (``ELEVENVOICE_GGUF_BACKEND``), "native" (an
     ambient ``GGML_BACKEND``) or "auto" (nothing pinned).
     """
     from core import prefs
@@ -109,12 +109,12 @@ def choose_cpu(monkeypatch, source: str) -> None:
     for variable in COMPUTE_ENV:
         monkeypatch.delenv(variable, raising=False)
     if source == "global":
-        monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+        monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     elif source == "settings":
         monkeypatch.setattr(prefs, "resolve", lambda *a, **k: "cpu")
     elif source == "engine":
-        monkeypatch.setenv("OMNIVOICE_GGUF_BACKEND", "cpu")
+        monkeypatch.setenv("ELEVENVOICE_GGUF_BACKEND", "cpu")
     elif source == "native":
         monkeypatch.setenv("GGML_BACKEND", "CPU")
     else:
-        monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
+        monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")

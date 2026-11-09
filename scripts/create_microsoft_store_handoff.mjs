@@ -46,7 +46,7 @@ export function createMicrosoftStoreHandoff({
   const packages = readdirSync(releaseDir)
     .filter((name) =>
       new RegExp(
-        `^VoiceStudio-MicrosoftStore-${version.replaceAll(".", "\\.")}-win-(x64|arm64)\\.exe$`,
+        `^ElevenVoice-MicrosoftStore-${version.replaceAll(".", "\\.")}-win-(x64|arm64)\\.exe$`,
       ).test(name),
     )
     .sort()

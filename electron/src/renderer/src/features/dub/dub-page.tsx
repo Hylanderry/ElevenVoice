@@ -144,8 +144,8 @@ import {
   planDubIncremental,
 } from './dub-session';
 
-const DEFAULT_TRANSLATION_AGENT_KEY = 'voicestudio.defaultTranslationAgent';
-const LIVE_PREVIEW_KEY = 'voicestudio.dubLivePreview';
+const DEFAULT_TRANSLATION_AGENT_KEY = 'elevenvoice.defaultTranslationAgent';
+const LIVE_PREVIEW_KEY = 'elevenvoice.dubLivePreview';
 // Targets include translate-and-speak-only languages (Uyghur, #2810).
 const targetOptions = TRANSLATION_TARGET_LABELS;
 const sentenceEnd = /[.!?\u3002\uff01\uff1f]/;
@@ -290,7 +290,7 @@ export function DubPage() {
   } | null>(null);
   const [demoDismissed, setDemoDismissed] = useState(() => {
     try {
-      return localStorage.getItem('omnivoice.dubbingDemoDismissed') === '1';
+      return localStorage.getItem('elevenvoice.dubbingDemoDismissed') === '1';
     } catch {
       return false;
     }
@@ -1612,7 +1612,7 @@ export function DubPage() {
                         >
                           {t('asr_missing.choose')}
                         </Link>
-                        <AgentFixButton request="Restore local ASR readiness for this Dubbing job. Install and activate the best supported Faster-Whisper model through VoiceStudio's setup interfaces, preserve the prepared media, and leave transcription ready to retry." />
+                        <AgentFixButton request="Restore local ASR readiness for this Dubbing job. Install and activate the best supported Faster-Whisper model through ElevenVoice's setup interfaces, preserve the prepared media, and leave transcription ready to retry." />
                       </div>
                     )
                   ) : (
@@ -1675,7 +1675,7 @@ export function DubPage() {
                         onDismiss={() => {
                           setDemoDismissed(true);
                           try {
-                            localStorage.setItem('omnivoice.dubbingDemoDismissed', '1');
+                            localStorage.setItem('elevenvoice.dubbingDemoDismissed', '1');
                           } catch {
                             // The demo still dismisses for this session when storage is unavailable.
                           }

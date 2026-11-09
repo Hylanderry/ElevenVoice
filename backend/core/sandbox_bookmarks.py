@@ -140,14 +140,14 @@ atexit.register(_grants.close)
 
 
 def restore(required_path: str | None = None) -> bool:
-    if sys.platform != "darwin" or os.environ.get("VOICESTUDIO_BUNDLED_CODE_ONLY") != "1":
+    if sys.platform != "darwin" or os.environ.get("ELEVENVOICE_BUNDLED_CODE_ONLY") != "1":
         return True
-    file = os.environ.get("VOICESTUDIO_SANDBOX_BOOKMARKS")
+    file = os.environ.get("ELEVENVOICE_SANDBOX_BOOKMARKS")
     if not file:
         return required_path is None
     ok = _grants.refresh(Path(file))
     if not ok:
-        logging.getLogger("omnivoice.sandbox").warning("Sandbox folder authorization needs renewal")
+        logging.getLogger("elevenvoice.sandbox").warning("Sandbox folder authorization needs renewal")
     if required_path:
         path = Path(required_path)
         # The journal lives in the app's own userData container. It already

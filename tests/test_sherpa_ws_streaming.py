@@ -21,8 +21,8 @@ import pytest
 pytestmark = pytest.mark.usefixtures("asr_model_installed")
 
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 class _GrowingStream:
@@ -351,7 +351,7 @@ def test_non_streaming_model_uses_offline_handler(monkeypatch):
     monkeypatch.setitem(sys.modules, "services.refinement",
                         types.SimpleNamespace(maybe_refine=lambda t: None,
                                               collapse_repetitive_artifacts=lambda t: t))
-    monkeypatch.setenv("OMNIVOICE_SHERPA_OFFLINE_PARTIAL", "0.05")
+    monkeypatch.setenv("ELEVENVOICE_SHERPA_OFFLINE_PARTIAL", "0.05")
     # reload module-level cadence constant
     cw.SHERPA_OFFLINE_PARTIAL_S = 0.05
 
@@ -574,7 +574,7 @@ class _KwargsOnlineRecognizer:
 
 def test_endpoint_rules_fast_defaults_and_env_override(monkeypatch):
     """Streaming endpoint rules commit at 1.0s/0.6s by default (was 2.4/1.2 —
-    laggy) and honor OMNIVOICE_DICTATION_ENDPOINT_R1/R2."""
+    laggy) and honor ELEVENVOICE_DICTATION_ENDPOINT_R1/R2."""
     from services import sherpa_dictation as sd
 
     fake = types.ModuleType("sherpa_onnx")
@@ -582,8 +582,8 @@ def test_endpoint_rules_fast_defaults_and_env_override(monkeypatch):
     monkeypatch.setitem(sys.modules, "sherpa_onnx", fake)
     monkeypatch.setattr(sd, "_resolve_model_dir",
                         lambda spec, download=True: "/fake/dir")
-    monkeypatch.delenv("OMNIVOICE_DICTATION_ENDPOINT_R1", raising=False)
-    monkeypatch.delenv("OMNIVOICE_DICTATION_ENDPOINT_R2", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DICTATION_ENDPOINT_R1", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DICTATION_ENDPOINT_R2", raising=False)
 
     sd.build_online_recognizer(sd.get_spec("sherpa-zipformer-en-20m"))
     kw = _KwargsOnlineRecognizer.last_kwargs
@@ -591,14 +591,14 @@ def test_endpoint_rules_fast_defaults_and_env_override(monkeypatch):
     assert kw["rule2_min_trailing_silence"] == 0.6
     assert kw["rule3_min_utterance_length"] == 20  # unchanged
 
-    monkeypatch.setenv("OMNIVOICE_DICTATION_ENDPOINT_R1", "2.4")
-    monkeypatch.setenv("OMNIVOICE_DICTATION_ENDPOINT_R2", "1.2")
+    monkeypatch.setenv("ELEVENVOICE_DICTATION_ENDPOINT_R1", "2.4")
+    monkeypatch.setenv("ELEVENVOICE_DICTATION_ENDPOINT_R2", "1.2")
     sd.build_online_recognizer(sd.get_spec("sherpa-paraformer-bilingual-zh-en"))
     kw = _KwargsOnlineRecognizer.last_kwargs
     assert kw["rule1_min_trailing_silence"] == 2.4
     assert kw["rule2_min_trailing_silence"] == 1.2
 
     # Garbage env falls back to the defaults rather than crashing dictation.
-    monkeypatch.setenv("OMNIVOICE_DICTATION_ENDPOINT_R1", "fast")
-    monkeypatch.setenv("OMNIVOICE_DICTATION_ENDPOINT_R2", "")
+    monkeypatch.setenv("ELEVENVOICE_DICTATION_ENDPOINT_R1", "fast")
+    monkeypatch.setenv("ELEVENVOICE_DICTATION_ENDPOINT_R2", "")
     assert sd._endpoint_rules() == (1.0, 0.6)

@@ -12,11 +12,11 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _FAKE_AUDIO = b"RIFF" + b"\x00" * 2000  # > _MIN_CONSENT_AUDIO_BYTES floor
-_CONSENT_TEXT = "I confirm this is my own voice and I consent to cloning it in OmniVoice Studio."
+_CONSENT_TEXT = "I confirm this is my own voice and I consent to cloning it in ElevenVoice."
 
 
 @pytest.fixture(scope="module")
@@ -31,7 +31,7 @@ def app_client(tmp_path_factory):
     """
     mp = pytest.MonkeyPatch()
     tmp_path = tmp_path_factory.mktemp("consent-data")
-    mp.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    mp.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
 
     import importlib
     import core.config as _cfg

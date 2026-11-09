@@ -39,7 +39,7 @@ function status(overrides: Partial<GgufQuantStatus> = {}): GgufQuantStatus {
     recommended: 'omnivoice-base-BF16.gguf',
     selection: 'auto',
     selection_source: 'auto',
-    env_var: 'OMNIVOICE_GGUF_QUANT',
+    env_var: 'ELEVENVOICE_GGUF_QUANT',
     selected: 'omnivoice-base-BF16.gguf',
     in_use: 'omnivoice-base-Q4_K_M.gguf',
     options: [option('Q4_K_M', 659, true), option('Q8_0', 945, false), option('BF16', 1600, false)],
@@ -90,5 +90,5 @@ it('locks the picker when the environment pins a quant', async () => {
     status({ selection: 'omnivoice-base-Q8_0.gguf', selection_source: 'env' }),
   );
   renderPicker();
-  expect(await screen.findByText(/ggufQuant\.env_pinned.*OMNIVOICE_GGUF_QUANT/)).toBeTruthy();
+  expect(await screen.findByText(/ggufQuant\.env_pinned.*ELEVENVOICE_GGUF_QUANT/)).toBeTruthy();
 });

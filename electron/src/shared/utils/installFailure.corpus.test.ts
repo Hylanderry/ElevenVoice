@@ -55,7 +55,7 @@ const CORPUS: [string, FailureEvidence, InstallFailureCode][] = [
     {
       stage: 'failed',
       message:
-        'Backend did not answer on port 3900 within 300 s (OMNIVOICE_STARTUP_BUDGET_S). It printed no output. Slow disks and antivirus scanning of the runtime folder are the usual cause.',
+        'Backend did not answer on port 3900 within 300 s (ELEVENVOICE_STARTUP_BUDGET_S). It printed no output. Slow disks and antivirus scanning of the runtime folder are the usual cause.',
     },
     'STARTUP_TIMEOUT_SILENT',
   ],
@@ -73,7 +73,7 @@ const CORPUS: [string, FailureEvidence, InstallFailureCode][] = [
     {
       stage: 'failed',
       message:
-        'The Python environment in D:\\VoiceStudio-main\\VoiceStudio-main is missing (no .venv\\Scripts\\python.exe). Open a terminal in D:\\VoiceStudio-main\\VoiceStudio-main, run `bun run setup:api`, wait for it to finish, then press Retry.',
+        'The Python environment in D:\\ElevenVoice-main\\ElevenVoice-main is missing (no .venv\\Scripts\\python.exe). Open a terminal in D:\\ElevenVoice-main\\ElevenVoice-main, run `bun run setup:api`, wait for it to finish, then press Retry.',
     },
     'SOURCE_ENV_INCOMPLETE',
   ],
@@ -81,7 +81,7 @@ const CORPUS: [string, FailureEvidence, InstallFailureCode][] = [
     '#3704 port conflict',
     {
       stage: 'port_in_use',
-      message: 'Port 3900 is already in use by another application, and VoiceStudio could not free it.',
+      message: 'Port 3900 is already in use by another application, and ElevenVoice could not free it.',
     },
     'PORT_IN_USE',
   ],

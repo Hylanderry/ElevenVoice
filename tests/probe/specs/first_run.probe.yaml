@@ -8,7 +8,7 @@ feature: first-run
 layer: env
 
 setup:
-  fixture: fresh-data-dir        # empty OMNIVOICE_DATA_DIR → exercises DB init
+  fixture: fresh-data-dir        # empty ELEVENVOICE_DATA_DIR → exercises DB init
 
 steps:
   - actor: env

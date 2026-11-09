@@ -6,7 +6,7 @@ import os
 import sys
 from typing import IO, Optional
 
-_OPT_OUT_VARIABLE = "OMNIVOICE_DISABLE_FAULTHANDLER"
+_OPT_OUT_VARIABLE = "ELEVENVOICE_DISABLE_FAULTHANDLER"
 _AFFIRMATIVE = {"1", "on", "true", "yes"}
 
 

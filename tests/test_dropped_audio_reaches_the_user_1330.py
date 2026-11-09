@@ -143,11 +143,11 @@ def test_every_inference_entry_point_accepts_the_sink(ct):
 def test_the_classic_path_puts_the_loss_in_the_response_headers():
     # The classic response body is a WAV, so headers are the only channel.
     src = _generation_src()
-    assert "X-OmniVoice-Dropped-Chunks" in src
-    assert "X-OmniVoice-Dropped-Text" in src
+    assert "X-ElevenVoice-Dropped-Chunks" in src
+    assert "X-ElevenVoice-Dropped-Text" in src
     # The quoted text must go through the header sanitizer, or a newline in the
     # user's own text could split the response headers.
-    head = src[src.index("X-OmniVoice-Dropped-Text") - 400:src.index("X-OmniVoice-Dropped-Text")]
+    head = src[src.index("X-ElevenVoice-Dropped-Text") - 400:src.index("X-ElevenVoice-Dropped-Text")]
     assert "header_safe_reason" in head
 
 
@@ -215,7 +215,7 @@ def test_the_generate_response_actually_carries_the_loss(monkeypatch):
             return torch.zeros(1, 24000)
 
     monkeypatch.setitem(tts._REGISTRY, "half-mute-engine", _HalfMuteEngine)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     # Force multi-chunk rendering with a tiny chunk limit so the two sentences
     # become two chunks without needing a wall of text.
     client = TestClient(main.app, client=("127.0.0.1", 50000))
@@ -228,9 +228,9 @@ def test_the_generate_response_actually_carries_the_loss(monkeypatch):
         },
     )
     assert res.status_code == 200, res.text
-    assert res.headers.get("X-OmniVoice-Dropped-Chunks") == "1"
+    assert res.headers.get("X-ElevenVoice-Dropped-Chunks") == "1"
     # ...and the lost text itself, so the user knows what to re-render.
-    assert dropped_text in (res.headers.get("X-OmniVoice-Dropped-Text") or "")
+    assert dropped_text in (res.headers.get("X-ElevenVoice-Dropped-Text") or "")
 
 
 def test_a_complete_generate_carries_no_such_headers(monkeypatch):
@@ -263,7 +263,7 @@ def test_a_complete_generate_carries_no_such_headers(monkeypatch):
             return torch.zeros(1, 24000)
 
     monkeypatch.setitem(tts._REGISTRY, "healthy-engine", _HealthyEngine)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     client = TestClient(main.app, client=("127.0.0.1", 50000))
     res = client.post(
         "/generate",
@@ -274,4 +274,4 @@ def test_a_complete_generate_carries_no_such_headers(monkeypatch):
         },
     )
     assert res.status_code == 200, res.text
-    assert "X-OmniVoice-Dropped-Chunks" not in res.headers
+    assert "X-ElevenVoice-Dropped-Chunks" not in res.headers

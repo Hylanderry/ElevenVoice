@@ -260,7 +260,7 @@ def test_mlx_audio_curated_models_roster(registry_sandbox):
 def test_mlx_audio_active_model_id_reflects_prefs(registry_sandbox, monkeypatch, tmp_path):
     from core import prefs as _prefs
     monkeypatch.setattr(_prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    monkeypatch.delenv("OMNIVOICE_MLX_AUDIO_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MLX_AUDIO_MODEL", raising=False)
     _prefs.set_("mlx_audio_model_id", "outetts")
     out = {entry["id"]: entry for entry in list_backends()}
     assert out["mlx-audio"]["active_model_id"] == "outetts"

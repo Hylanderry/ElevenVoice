@@ -184,7 +184,7 @@ def test_demo_keeps_a_user_rename_but_drops_the_old_default_name(tmp_path, monke
     conn.execute(_table_sql())
     conn.execute(
         "INSERT INTO voice_profiles (id, name, is_demo, description, ref_text) VALUES (?, ?, 1, '', ?)",
-        (onboarding.DEMO_PROFILE_ID, "VoiceStudio Demo Voice", onboarding.DEMO_REF_TEXT),
+        (onboarding.DEMO_PROFILE_ID, "ElevenVoice Demo Voice", onboarding.DEMO_REF_TEXT),
     )
     conn.commit()
     conn.close()

@@ -3,12 +3,12 @@ import { DEFAULT_BACKEND_PORT } from '../app-config.ts';
 /**
  * Centralised API base URL resolver.
  *
- * Single source of truth for "where is the VoiceStudio backend reachable from
+ * Single source of truth for "where is the ElevenVoice backend reachable from
  * the currently-rendering frontend?". Three runtime contexts need different
  * answers:
  *
  *   1. Explicit override (Docker users / CI / power users):
- *        VITE_OMNIVOICE_API="http://10.0.0.5:3900"
+ *        VITE_ELEVENVOICE_API="http://10.0.0.5:3900"
  *      Always wins. Set in `.env.local` or the docker-compose env.
  *
  *   2. Tauri webview (the shipped desktop app):
@@ -32,8 +32,8 @@ declare global {
     __TAURI_INTERNALS__?: unknown;
     __TAURI__?: unknown;
     /** Runtime API base injected into index.html by the backend from
-     *  OMNIVOICE_PUBLIC_API_BASE (Docker / reverse-proxy deployments). */
-    __OMNIVOICE_API_BASE__?: string;
+     *  ELEVENVOICE_PUBLIC_API_BASE (Docker / reverse-proxy deployments). */
+    __ELEVENVOICE_API_BASE__?: string;
   }
 }
 
@@ -63,14 +63,14 @@ export function _setEnvOverrideForTesting(value: string | undefined): void {
 function _readEnvOverride(): string | undefined {
   if (_testEnvOverride !== undefined) return _testEnvOverride;
   const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
-  return env?.VITE_OMNIVOICE_API;
+  return env?.VITE_ELEVENVOICE_API;
 }
 
 export function getApiBase(): string {
   // 0. Runtime override injected by the backend (Docker/proxy) wins over
   //    everything — it's the only knob a prebuilt image can turn at run time.
   if (typeof window !== 'undefined') {
-    const runtime = window.__OMNIVOICE_API_BASE__;
+    const runtime = window.__ELEVENVOICE_API_BASE__;
     if (typeof runtime === 'string' && runtime) {
       return stripTrailingSlash(runtime);
     }

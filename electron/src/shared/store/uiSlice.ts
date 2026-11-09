@@ -19,7 +19,7 @@ export type AppMode =
   | 'generate'
   | 'dub'
   | 'studio'
-  // Legacy navigation ids — consolidated into 'studio' (voice-studio-unification
+  // Legacy navigation ids — consolidated into 'studio' (elevenvoice-unification
   // P4). Kept in the union so persisted UI state / history items that still say
   // 'clone'/'design' type-check while the restore shims map them to 'studio'.
   | 'clone'

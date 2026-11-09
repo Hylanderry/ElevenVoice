@@ -14,8 +14,8 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -221,7 +221,7 @@ async def test_keeps_the_omnivoice_core_when_it_IS_the_active_engine(instance_ca
 async def test_policy_can_be_disabled(instance_cache, monkeypatch):
     import services.model_manager as mm
 
-    monkeypatch.setenv("OMNIVOICE_SINGLE_ENGINE_RESIDENT", "0")
+    monkeypatch.setenv("ELEVENVOICE_SINGLE_ENGINE_RESIDENT", "0")
     monkeypatch.setattr(mm, "model", object(), raising=False)
 
     class Other:

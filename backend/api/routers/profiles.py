@@ -29,7 +29,7 @@ from starlette.datastructures import UploadFile as StarletteUploadFile
 from core.path_security import upload_suffix
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.profiles")
+logger = logging.getLogger("elevenvoice.profiles")
 
 
 def _profile_record(row):
@@ -62,7 +62,7 @@ _REFERENCE_TRANSCRIBE_TIMEOUT_S = 60.0
 def _reference_transcribe_timeout() -> float:
     try:
         value = float(os.environ.get(
-            "OMNIVOICE_PROFILE_TRANSCRIBE_TIMEOUT_S", _REFERENCE_TRANSCRIBE_TIMEOUT_S,
+            "ELEVENVOICE_PROFILE_TRANSCRIBE_TIMEOUT_S", _REFERENCE_TRANSCRIBE_TIMEOUT_S,
         ))
     except (TypeError, ValueError):
         return _REFERENCE_TRANSCRIBE_TIMEOUT_S
@@ -135,7 +135,7 @@ async def create_profile(
     engine: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
 ):
-    """Create a voice profile (spec: docs/specs/voice-studio-unification.md §5).
+    """Create a voice profile (spec: docs/specs/elevenvoice-unification.md §5).
 
     kind='clone'  — requires `ref_audio` (the user's reference recording).
     kind='design' — requires `vd_states` (JSON of category picks); the server
@@ -273,7 +273,7 @@ async def create_profile(
                 audio_filename = f"{profile_id}.wav"
             except Exception:
                 # OOM / inference failure — defer the sample, clearing partials.
-                logging.getLogger("omnivoice.profiles").info(
+                logging.getLogger("elevenvoice.profiles").info(
                     "Design profile %s saved with sample pending — "
                     "voice engine not ready; will render on preview", profile_id,
                 )

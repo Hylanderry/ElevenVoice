@@ -26,12 +26,12 @@ interface StartOptions {
 }
 
 const BRIDGE_ENV_OFF = {
-  VOICESTUDIO_ACCOUNT_BRIDGE_URL: undefined,
-  VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN: undefined,
+  ELEVENVOICE_ACCOUNT_BRIDGE_URL: undefined,
+  ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN: undefined,
 };
 
 /**
- * Wires VoiceStudio Cloud sign-in. Must run before the backend starts (bridge env).
+ * Wires ElevenVoice Cloud sign-in. Must run before the backend starts (bridge env).
  * Never throws: an optional feature must not stop the local app from starting.
  */
 export async function startAccount(opts: StartOptions): Promise<() => void> {
@@ -47,8 +47,8 @@ async function wireAccount(opts: StartOptions): Promise<() => void> {
   const available = cloudAccountsAvailable(app.isPackaged);
   const env = resolveCloudEnvironment({
     packaged: app.isPackaged,
-    requested: process.env.VOICESTUDIO_CLOUD_ENV,
-    clientId: process.env.VOICESTUDIO_CLOUD_CLIENT_ID,
+    requested: process.env.ELEVENVOICE_CLOUD_ENV,
+    clientId: process.env.ELEVENVOICE_CLOUD_CLIENT_ID,
   });
   const switches = new CloudSwitchStore(join(app.getPath('userData'), 'cloud-switches.json'));
   const allowed = () => available && switches.get().accountEnabled;
@@ -118,8 +118,8 @@ async function wireAccount(opts: StartOptions): Promise<() => void> {
   const unwatchSession = session.onChange(() => reconcile());
   // Only the managed backend's spawn env carries the capability; see setBackendOnlyEnv.
   setBackendOnlyEnv({
-    VOICESTUDIO_ACCOUNT_BRIDGE_URL: bridge.url,
-    VOICESTUDIO_ACCOUNT_BRIDGE_TOKEN: bridge.token,
+    ELEVENVOICE_ACCOUNT_BRIDGE_URL: bridge.url,
+    ELEVENVOICE_ACCOUNT_BRIDGE_TOKEN: bridge.token,
   });
   return () => {
     unwatchPhoto();

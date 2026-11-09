@@ -7,7 +7,7 @@ main.py now defers the heavy phases behind an already-bound socket; these
 tests pin the three contracts that fix depends on:
 
 1. `/startup/progress` (and `/health` 503) answer within seconds of spawn —
-   long before full readiness — carrying the `x-omnivoice-backend` marker.
+   long before full readiness — carrying the `x-elevenvoice-backend` marker.
    FAILED before the refactor: nothing listened until import completed.
 2. The startup gate 503s work routes with the `[starting]` marker until ready,
    retains deliberate desktop shutdown, and is inert after.
@@ -46,10 +46,10 @@ def test_progress_endpoint_answers_long_before_readiness(tmp_path):
     old import-everything-first startup could not meet on a cold torch."""
     port = _free_port()
     env = os.environ | {
-        "OMNIVOICE_DATA_DIR": str(tmp_path / "data"),
-        "OMNIVOICE_DISABLE_FILE_LOG": "1",
-        "OMNIVOICE_PRELOAD_CAPTURE_ASR": "0",
-        "OMNIVOICE_EAGER_INIT": "0",  # the server path, even under pytest
+        "ELEVENVOICE_DATA_DIR": str(tmp_path / "data"),
+        "ELEVENVOICE_DISABLE_FILE_LOG": "1",
+        "ELEVENVOICE_PRELOAD_CAPTURE_ASR": "0",
+        "ELEVENVOICE_EAGER_INIT": "0",  # the server path, even under pytest
     }
     proc = subprocess.Popen(
         [
@@ -72,7 +72,7 @@ def test_progress_endpoint_answers_long_before_readiness(tmp_path):
                     f"http://127.0.0.1:{port}/startup/progress", timeout=1
                 ) as resp:
                     assert resp.status == 200
-                    assert resp.headers.get("x-omnivoice-backend"), (
+                    assert resp.headers.get("x-elevenvoice-backend"), (
                         "progress body must carry the backend marker header"
                     )
                     body = json.loads(resp.read())
@@ -155,7 +155,7 @@ def test_shutdown_intent_retires_the_sentinel_during_deferred_startup(tmp_path, 
 
     monkeypatch.setattr(run_sentinel, "SENTINEL_PATH", str(tmp_path / "run_sentinel.json"))
     monkeypatch.setattr(run_sentinel, "CRASH_RECORD_PATH", str(tmp_path / "last_run_crash.json"))
-    monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "omnivoice.log"))
+    monkeypatch.setattr(run_sentinel, "LOG_PATH", str(tmp_path / "elevenvoice.log"))
     run_sentinel._reset_for_tests()
     assert run_sentinel.write_sentinel()
     client = TestClient(

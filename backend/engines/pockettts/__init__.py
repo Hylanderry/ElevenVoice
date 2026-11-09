@@ -17,7 +17,7 @@ child's memory, the thing an in-process engine structurally cannot do. CPU-only
 by design (``gpu_compat = ("cpu",)``): Kyutai observes no GPU speedup for this
 100M, batch-1 model.
 
-Opt-in (Settings -> Engines, or ``OMNIVOICE_TTS_BACKEND=pockettts``); the
+Opt-in (Settings -> Engines, or ``ELEVENVOICE_TTS_BACKEND=pockettts``); the
 default ``omnivoice`` engine is unchanged, so existing users see no behaviour
 change.
 
@@ -46,9 +46,9 @@ from typing import TYPE_CHECKING
 
 from services.subprocess_backend import SubprocessBackend
 
-logger = logging.getLogger("omnivoice.engines.pockettts")
+logger = logging.getLogger("elevenvoice.engines.pockettts")
 
-_VENV_ENV_VAR = "OMNIVOICE_POCKETTTS_DIR"
+_VENV_ENV_VAR = "ELEVENVOICE_POCKETTTS_DIR"
 
 
 def _own_venv_python() -> "Path | None":
@@ -180,7 +180,7 @@ class PocketTTSBackend(SubprocessBackend):
         # so allow a long recv deadline; the sidecar also heartbeats progress frames
         # during the download (main.py) to keep the watchdog armed.
         try:
-            v = float(os.environ.get("OMNIVOICE_POCKETTTS_RECV_TIMEOUT_S", "600"))
+            v = float(os.environ.get("ELEVENVOICE_POCKETTTS_RECV_TIMEOUT_S", "600"))
         except (ValueError, TypeError):
             return 600.0
         if not math.isfinite(v):  # reject inf/nan so the deadline can't be disabled

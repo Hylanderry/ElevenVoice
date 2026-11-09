@@ -84,8 +84,8 @@ def _lock_with_history_text(client, text):
 
 def test_lock_drops_script_markup_from_the_transcript(client):
     # #3062: markup in a transcript is spoken at every chunk start.
-    text = "Hello there. [pause 1s] [slow]Take your time.[/slow] [[VS|VoiceStudio]] [laughter]"
-    assert _lock_with_history_text(client, text) == "Hello there. Take your time. VoiceStudio [laughter]"
+    text = "Hello there. [pause 1s] [slow]Take your time.[/slow] [[VS|ElevenVoice]] [laughter]"
+    assert _lock_with_history_text(client, text) == "Hello there. Take your time. ElevenVoice [laughter]"
 
 
 def test_lock_leaves_a_possibly_cut_take_untranscribed(client):

@@ -3,7 +3,7 @@ OpenAI-compatible TTS & STT API — Phase 3.2 (ROADMAP.md P0).
 
 Drop-in replacement for OpenAI's audio endpoints so that any tool speaking the
 OpenAI protocol (the official ``openai`` SDK, the OpenAI Agents SDK voice
-pipeline, pipecat, LiveKit, litellm, n8n, etc.) can use VoiceStudio as a local
+pipeline, pipecat, LiveKit, litellm, n8n, etc.) can use ElevenVoice as a local
 backend with zero code changes.
 
 Endpoints
@@ -13,16 +13,16 @@ Endpoints
     POST /v1/audio/translations    → STT + translate to English (Whisper engines)
     GET  /v1/models                → OpenAI aliases + installed engines
     GET  /v1/models/{id}           → one model
-    GET  /v1/audio/voices          → list available voices (VoiceStudio extension)
+    GET  /v1/audio/voices          → list available voices (ElevenVoice extension)
 
 Errors on these routes use OpenAI's shape,
 ``{"error": {"message", "type", "param", "code"}}``, so the SDK raises typed
 errors with a readable message; request-validation failures are 400 (OpenAI's
 status) rather than FastAPI's 422. The original ``detail`` is kept alongside
-for existing VoiceStudio clients.
+for existing ElevenVoice clients.
 
 The router delegates to the active TTS/ASR backends via the same adapter
-protocol used by the rest of VoiceStudio, so engine selection, GPU offloading,
+protocol used by the rest of ElevenVoice, so engine selection, GPU offloading,
 model loading, and invisible provenance watermarking (services.watermark,
 #1169) all work identically.
 
@@ -52,7 +52,7 @@ from core.http_headers import content_disposition
 from core.path_security import contained_join, upload_suffix
 from services.audio_io import OPUS_CODEC_ARGS, OPUS_SAMPLE_RATE
 
-logger = logging.getLogger("omnivoice.openai_compat")
+logger = logging.getLogger("elevenvoice.openai_compat")
 
 
 # ── OpenAI-shaped errors ────────────────────────────────────────────────────
@@ -88,7 +88,7 @@ def _openai_error_body(status: int, message: str, *, param=None, code=None, deta
             "param": param,
             "code": code,
         },
-        # Kept for VoiceStudio-aware clients that read FastAPI's `detail`.
+        # Kept for ElevenVoice-aware clients that read FastAPI's `detail`.
         "detail": message if detail is None else detail,
     }
 
@@ -162,7 +162,7 @@ _OPENAI_TTS_MODEL_RE = re.compile(r"^(tts-1(-hd)?|gpt-[a-z0-9.]+(-mini)?-tts)(-[
 #: engine; these are listed so clients that validate the model list find them.
 OPENAI_STT_MODELS = ("whisper-1", "gpt-4o-transcribe", "gpt-4o-mini-transcribe")
 
-# OpenAI's named voices aren't real voices in VoiceStudio. Map them to the
+# OpenAI's named voices aren't real voices in ElevenVoice. Map them to the
 # active engine's default voice so callers that hardcode "alloy" (or the
 # Agents SDK's default "ash") don't get an engine-preset error.
 _OPENAI_VOICE_ALIASES = {
@@ -246,7 +246,7 @@ class SpeechRequest(BaseModel):
     model: str = Field(
         default="omnivoice",
         description=(
-            "TTS model to use. Maps to VoiceStudio engine IDs: "
+            "TTS model to use. Maps to ElevenVoice engine IDs: "
             "'omnivoice', 'voxcpm2', 'cosyvoice', 'mlx-audio', 'kittentts', 'moss-tts-nano'. "
             "OpenAI model ids ('tts-1', 'tts-1-hd', 'gpt-4o-mini-tts', dated "
             "snapshots) are aliases for the active engine."
@@ -260,7 +260,7 @@ class SpeechRequest(BaseModel):
     voice: Union[str, dict] = Field(
         default="default",
         description=(
-            "Voice to use. For VoiceStudio: pass a voice profile ID, a voice "
+            "Voice to use. For ElevenVoice: pass a voice profile ID, a voice "
             "profile name (case-insensitive; an ID wins, and a name shared by "
             "several profiles is a 409 listing their IDs), 'default', "
             "or a KittenTTS preset name (also accepted as OpenAI's "
@@ -273,7 +273,7 @@ class SpeechRequest(BaseModel):
         default=None,
         max_length=4096,
         description="OpenAI's voice-style instructions, forwarded as the engine's style "
-        "instruction (OmniVoice keeps only its voice-design tags). VoiceStudio's "
+        "instruction (OmniVoice keeps only its voice-design tags). ElevenVoice's "
         "`instruct` wins when both are sent.",
     )
     response_format: SpeechFormat = Field(
@@ -291,7 +291,7 @@ class SpeechRequest(BaseModel):
         description="'audio' streams raw audio bytes (the default); 'sse' streams "
         "`speech.audio.delta` / `speech.audio.done` server-sent events.",
     )
-    # VoiceStudio extensions (not part of OpenAI spec, but accepted if sent)
+    # ElevenVoice extensions (not part of OpenAI spec, but accepted if sent)
     language: Optional[str] = Field(default=None, description="Language code (ISO 639-1)")
     description: Optional[str] = Field(
         default=None,
@@ -302,19 +302,19 @@ class SpeechRequest(BaseModel):
     duration: Optional[float] = Field(
         default=None,
         gt=0,
-        description="Aim for this many seconds of audio (seconds, must be positive). Outside the OpenAI spec; used by VoiceStudio engines that can honour it.",
+        description="Aim for this many seconds of audio (seconds, must be positive). Outside the OpenAI spec; used by ElevenVoice engines that can honour it.",
     )
     seed: Optional[int] = Field(
         default=None,
-        description="Fixes the random seed so the same request can be reproduced. Outside the OpenAI spec; VoiceStudio only.",
+        description="Fixes the random seed so the same request can be reproduced. Outside the OpenAI spec; ElevenVoice only.",
     )
     denoise: bool = Field(
         default=True,
-        description="Set false to skip the denoise step on engines that offer one. Outside the OpenAI spec; VoiceStudio only.",
+        description="Set false to skip the denoise step on engines that offer one. Outside the OpenAI spec; ElevenVoice only.",
     )
     preprocess_prompt: bool = Field(
         default=True,
-        description="Set false to use the reference clip untouched instead of preprocessing it, where the engine supports that. Outside the OpenAI spec; VoiceStudio only.",
+        description="Set false to use the reference clip untouched instead of preprocessing it, where the engine supports that. Outside the OpenAI spec; ElevenVoice only.",
     )
     chunk_duration: Optional[float] = Field(
         default=None,
@@ -335,19 +335,19 @@ class SpeechRequest(BaseModel):
         default=None,
         ge=1,
         le=128,
-        description="VoiceStudio extension: iterative unmasking steps (app default 16; 32 = the model's documented quality preset).",
+        description="ElevenVoice extension: iterative unmasking steps (app default 16; 32 = the model's documented quality preset).",
     )
     guidance_scale: Optional[float] = Field(
         default=None,
         gt=0,
         le=20,
-        description="VoiceStudio extension: classifier-free guidance scale (app default 2.0).",
+        description="ElevenVoice extension: classifier-free guidance scale (app default 2.0).",
     )
 
     @field_validator("voice", mode="before")
     @classmethod
     def _voice_id(cls, v: Any) -> Any:
-        # OpenAI accepts a custom voice as {"id": "voice_..."}; VoiceStudio's
+        # OpenAI accepts a custom voice as {"id": "voice_..."}; ElevenVoice's
         # equivalent is a voice-profile id, so unwrap it.
         if isinstance(v, dict):
             vid = v.get("id")
@@ -386,7 +386,7 @@ def _known_engine_ids() -> str:
 
 
 def _resolve_engine(model_id: str):
-    """Map an OpenAI model name to a VoiceStudio backend."""
+    """Map an OpenAI model name to a ElevenVoice backend."""
     from services.tts_backend import (
         get_backend_class, get_active_tts_backend, get_engine_instance_for,
     )
@@ -402,7 +402,7 @@ def _resolve_engine(model_id: str):
             400,
             f"Unknown model '{model_id}'. Use an OpenAI TTS model id "
             f"({', '.join(OPENAI_TTS_MODELS)}) for the active engine, or a "
-            f"VoiceStudio engine id: {_known_engine_ids()}. "
+            f"ElevenVoice engine id: {_known_engine_ids()}. "
             "GET /v1/models lists what this server offers.",
             param="model", code="model_not_found",
         )
@@ -490,7 +490,7 @@ def _ffmpeg_or_error(fmt: str) -> str:
     if not exe:
         raise OpenAIError(
             400,
-            f"response_format '{fmt}' needs ffmpeg, which VoiceStudio could not find. "
+            f"response_format '{fmt}' needs ffmpeg, which ElevenVoice could not find. "
             "Request 'wav', 'flac' or 'pcm', or install ffmpeg (Settings → Audio tools) "
             "or set FFMPEG_PATH.",
             param="response_format", code="unsupported_response_format",
@@ -558,7 +558,7 @@ def _typed_speech_http_error(e: Exception) -> Optional[HTTPException]:
       refused by the OS) → 503 with the repair hint, instead of the bare
       "[Errno 8] Exec format error" 500.
     - TimeoutError (#1190/#1202: pool saturation or a job that overran its
-      execution budget) → 503 + Retry-After + X-OmniVoice-Retryable, instead of
+      execution budget) → 503 + Retry-After + X-ElevenVoice-Retryable, instead of
       the 500 a scripted client can't distinguish from a real crash. Matched on
       the BUILTIN base, not GpuJobTimeoutError by name, so a mid-suite module
       reload can't break the isinstance check (same rationale as the load-path
@@ -576,7 +576,7 @@ def _typed_speech_http_error(e: Exception) -> Optional[HTTPException]:
         return HTTPException(
             status_code=503, detail=str(e),
             headers={"Retry-After": str(getattr(e, "retry_after", 30)),
-                     "X-OmniVoice-Retryable": "true"},
+                     "X-ElevenVoice-Retryable": "true"},
         )
     return None
 
@@ -631,7 +631,7 @@ _STREAM_CHUNK = 32 * 1024
 
 def _sse_events(audio: bytes):
     """OpenAI's speech SSE stream: base64 `speech.audio.delta` events, then a
-    `speech.audio.done`. VoiceStudio synthesises the whole clip first, so the
+    `speech.audio.done`. ElevenVoice synthesises the whole clip first, so the
     events carry the finished audio in chunks (no token usage to report)."""
     for i in range(0, len(audio), _STREAM_CHUNK):
         delta = base64.b64encode(audio[i:i + _STREAM_CHUNK]).decode("ascii")
@@ -653,7 +653,7 @@ async def create_speech(req: SpeechRequest):
     try:
         backend = _resolve_engine(req.model)
     except ModelLicenceNotAccepted as exc:
-        # OpenAI's error shape; `detail` keeps the models for VoiceStudio clients.
+        # OpenAI's error shape; `detail` keeps the models for ElevenVoice clients.
         raise OpenAIError(403, exc.detail(), param="model", code=exc.detail()["code"]) from exc
 
     # Compressed formats need ffmpeg: fail fast, before any model load or GPU
@@ -688,7 +688,7 @@ async def create_speech(req: SpeechRequest):
         kw["guidance_scale"] = req.guidance_scale
     if req.language:
         kw["language"] = req.language
-    # OpenAI's `instructions` maps onto VoiceStudio's `instruct` (it used to be
+    # OpenAI's `instructions` maps onto ElevenVoice's `instruct` (it used to be
     # dropped silently); an explicit `instruct` wins.
     instruct = req.instruct or _engine_instructions(backend, req.instructions)
     if instruct:
@@ -739,7 +739,7 @@ async def create_speech(req: SpeechRequest):
     # before this one warms up, so switching `model` ids across requests —
     # explicit id → explicit id, or explicit id → the tts-1/omnivoice aliases —
     # can't stack multi-GB engines/sidecars. No-op when nothing else is
-    # resident; opt out with OMNIVOICE_SINGLE_ENGINE_RESIDENT=0.
+    # resident; opt out with ELEVENVOICE_SINGLE_ENGINE_RESIDENT=0.
     from services.engine_memory import evict_other_tts_engines
     await evict_other_tts_engines(backend.id)
 
@@ -748,7 +748,7 @@ async def create_speech(req: SpeechRequest):
     # install's first /v1/audio/speech burning its whole 300s generate budget
     # on the multi-GB checkpoint download (0% GPU util throughout) and dying
     # with a misleading "too heavy for the available compute" error. Model
-    # loading gets OMNIVOICE_MODEL_LOAD_TIMEOUT (default 1200s); once warm
+    # loading gets ELEVENVOICE_MODEL_LOAD_TIMEOUT (default 1200s); once warm
     # this is a per-request no-op.
     from services.model_manager import _model_load_timeout
     try:
@@ -774,7 +774,7 @@ async def create_speech(req: SpeechRequest):
                 f"progress), not that generation failed. Retry once the model "
                 f"shows as installed."
             ),
-            headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+            headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
         ) from e
     except Exception as e:
         if type(e).__name__ == "ModelLoadInterruptedByShutdown":
@@ -794,7 +794,7 @@ async def create_speech(req: SpeechRequest):
             raise HTTPException(
                 status_code=503,
                 detail=str(model_load_failure(backend.id, e)["detail"]),
-                headers={"Retry-After": "30", "X-OmniVoice-Retryable": "true"},
+                headers={"Retry-After": "30", "X-ElevenVoice-Retryable": "true"},
             ) from e
         logger.warning("OpenAI TTS engine load failed: %s", e)
         raise http from e
@@ -813,7 +813,7 @@ async def create_speech(req: SpeechRequest):
         raise HTTPException(
             status_code=429, detail=str(e),
             headers={"Retry-After": str(getattr(e, "retry_after", 30)),
-                     "X-OmniVoice-Retryable": "true"},
+                     "X-ElevenVoice-Retryable": "true"},
         ) from e
 
     try:
@@ -843,10 +843,10 @@ async def create_speech(req: SpeechRequest):
     }
     if _routing_notice:
         from services.engine_routing import header_safe_reason
-        _headers["X-OmniVoice-Routing"] = _routing_notice[0]
+        _headers["X-ElevenVoice-Routing"] = _routing_notice[0]
         _hr = header_safe_reason(_routing_notice[1])
         if _hr:
-            _headers["X-OmniVoice-Routing-Reason"] = _hr
+            _headers["X-ElevenVoice-Routing-Reason"] = _hr
     if req.stream_format == "sse":
         _headers.pop("Content-Disposition")
         return StreamingResponse(_sse_events(audio_bytes), media_type="text/event-stream",
@@ -872,7 +872,7 @@ class _TaskUnsupported(Exception):
 
 
 class _ModelNotActive(Exception):
-    """``model`` names a VoiceStudio ASR engine that is not the one serving."""
+    """``model`` names a ElevenVoice ASR engine that is not the one serving."""
 
     def __init__(self, requested: str, active: str):
         super().__init__(requested)
@@ -996,7 +996,7 @@ async def _transcribe_request(
     # TTS-only install: no ASR model on disk → actionable 409, BEFORE any
     # backend load could silently auto-download multi-GB whisper weights.
     # Same typed detail shape as /transcribe (capture.py): the machine fields
-    # (`error`, `missing_repo_id`, `recommended`) let VoiceStudio-aware clients
+    # (`error`, `missing_repo_id`, `recommended`) let ElevenVoice-aware clients
     # render the one-click download CTA, while `message` keeps a human-readable
     # line for generic OpenAI-compat clients.
     missing = await asyncio.to_thread(asr_model_missing_error)
@@ -1041,7 +1041,7 @@ async def _transcribe_request(
         # weights, so it belongs inside the pool with the transcribe call —
         # never on the event loop.
         # OpenAI model ids (and any other name) mean "the active engine". A
-        # VoiceStudio ASR engine id is a concrete choice: serve it only when
+        # ElevenVoice ASR engine id is a concrete choice: serve it only when
         # it is the engine actually loaded, never silently substitute another.
         explicit_engine = model if _is_asr_engine_id(model) else None
 
@@ -1169,7 +1169,7 @@ async def _transcribe_request(
 
 _MODEL_DESC = (
     "ASR model. OpenAI ids ('whisper-1', 'gpt-4o-transcribe', "
-    "'gpt-4o-mini-transcribe') are served by the active engine; a VoiceStudio "
+    "'gpt-4o-mini-transcribe') are served by the active engine; a ElevenVoice "
     "ASR engine id must name the active engine (400 otherwise)."
 )
 #: The SDK sends list fields as `name[]` in multipart forms; accept both.
@@ -1238,9 +1238,9 @@ def _model_entry(model_id: str, kind: str, alias: bool) -> dict:
         "id": model_id,
         "object": "model",
         "created": 0,
-        "owned_by": "voicestudio",
-        # VoiceStudio extension: what the id does here.
-        "voicestudio": {"kind": kind, "alias_for_active_engine": alias},
+        "owned_by": "elevenvoice",
+        # ElevenVoice extension: what the id does here.
+        "elevenvoice": {"kind": kind, "alias_for_active_engine": alias},
     }
 
 
@@ -1283,16 +1283,16 @@ def retrieve_model(model_id: str):
             return m
     if is_openai_tts_model(model_id):
         return _model_entry(model_id, "tts", True)
-    raise OpenAIError(404, f"The model '{model_id}' does not exist on this VoiceStudio server.",
+    raise OpenAIError(404, f"The model '{model_id}' does not exist on this ElevenVoice server.",
                       param="model", code="model_not_found")
 
 
-# ── Voices: GET /v1/audio/voices (VoiceStudio extension) ─────────────────────
+# ── Voices: GET /v1/audio/voices (ElevenVoice extension) ─────────────────────
 
 
 @router.get("/audio/voices")
 def list_voices():
-    """List available voices. VoiceStudio extension to the OpenAI API."""
+    """List available voices. ElevenVoice extension to the OpenAI API."""
     from services.tts_backend import list_backends
 
     backends = list_backends()
@@ -1304,7 +1304,7 @@ def list_voices():
             "voice_id": name,
             "name": name.capitalize(),
             "type": "openai_alias",
-            "description": f"OpenAI '{name}' voice — maps to the active VoiceStudio engine's default voice.",
+            "description": f"OpenAI '{name}' voice — maps to the active ElevenVoice engine's default voice.",
         })
 
     # Include voice profiles from the database. `voice_id` is always

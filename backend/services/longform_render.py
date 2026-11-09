@@ -48,8 +48,8 @@ from services.ffmpeg_utils import local_inputs_only
 _BITRATE_RE = re.compile(r"^\d{2,3}k$")
 #: Default ceiling for the content-addressed chapter cache. Above this, the
 #: oldest cached chapter WAVs are evicted (LRU by mtime). Override via
-#: OMNIVOICE_LONGFORM_CACHE_MAX_GB.
-_CACHE_MAX_BYTES = int(float(os.environ.get("OMNIVOICE_LONGFORM_CACHE_MAX_GB", "2")) * 1024 ** 3)
+#: ELEVENVOICE_LONGFORM_CACHE_MAX_GB.
+_CACHE_MAX_BYTES = int(float(os.environ.get("ELEVENVOICE_LONGFORM_CACHE_MAX_GB", "2")) * 1024 ** 3)
 _COVER_EXTS = {".jpg", ".jpeg", ".png"}
 _COVER_MAX_BYTES = 8 * 1024 * 1024  # 8 MB — a book cover, not a payload
 

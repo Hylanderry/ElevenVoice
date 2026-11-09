@@ -8,7 +8,7 @@ import pytest
 MASTER = "MASTER_DO_NOT_LEAK_7d29"
 CSRF_HEADERS = {
     "Origin": "http://voice.test",
-    "X-VoiceStudio-CSRF": "1",
+    "X-ElevenVoice-CSRF": "1",
 }
 
 
@@ -19,9 +19,9 @@ def auth_environment(monkeypatch):
 
     admin_session_store.clear()
     _exchange_attempt_limiter.reset()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_TRUSTED_NETWORKS", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_TRUSTED_NETWORKS", raising=False)
     yield
     admin_session_store.clear()
     _exchange_attempt_limiter.reset()
@@ -57,7 +57,7 @@ def _issue_bearer(client):
 
 
 def test_session_exchange_fails_closed_when_master_is_not_configured(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
 
     response = _client().post(
         "/api/auth/session",
@@ -137,7 +137,7 @@ def test_https_origin_behind_tls_terminating_proxy_can_logout():
         "/api/auth/session",
         headers={
             "Origin": "https://voice.test",
-            "X-VoiceStudio-CSRF": "1",
+            "X-ElevenVoice-CSRF": "1",
             "X-Forwarded-Proto": "https",
         },
     )
@@ -164,7 +164,7 @@ def test_bearer_transport_returns_only_short_lived_session():
         {},
         {"Authorization": "Bearer wrong"},
         {"Authorization": "Bearer    "},
-        {"X-OmniVoice-Pin": "123456"},
+        {"X-ElevenVoice-Pin": "123456"},
     ],
 )
 def test_missing_wrong_or_nonmaster_credential_cannot_issue_session(headers):
@@ -348,7 +348,7 @@ def test_cookie_logout_rejects_wrong_missing_and_null_origin():
     for origin in (None, "null", "http://voice.test.evil.test"):
         client = _client()
         assert _issue_cookie(client).status_code == 204
-        headers = {"X-VoiceStudio-CSRF": "1"}
+        headers = {"X-ElevenVoice-CSRF": "1"}
         if origin is not None:
             headers["Origin"] = origin
 
@@ -389,7 +389,7 @@ def test_key_rotation_rejects_session_on_next_request(monkeypatch):
     client = _client()
     token = _issue_bearer(client).json()["token"]
 
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "rotated")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "rotated")
 
     response = client.get(
         "/v1/audio/voices",
@@ -444,7 +444,7 @@ def test_explicit_invalid_authorization_blocks_legacy_cookie_migration():
 def test_legacy_cookie_migration_fails_without_exact_origin(origin):
     client = _client()
     client.cookies.set("ov_key", MASTER, domain="voice.test")
-    headers = {"X-VoiceStudio-CSRF": "1"}
+    headers = {"X-ElevenVoice-CSRF": "1"}
     if origin is not None:
         headers["Origin"] = origin
 
@@ -538,7 +538,7 @@ def test_cookie_session_csrf_guard_covers_all_unsafe_routes(monkeypatch):
     wrong_origin = client.post(
         "/api/settings/hf-token",
         json={"token": "hf_test"},
-        headers={"Origin": "http://voice.test.evil.test", "X-VoiceStudio-CSRF": "1"},
+        headers={"Origin": "http://voice.test.evil.test", "X-ElevenVoice-CSRF": "1"},
     )
     allowed = client.post(
         "/api/settings/hf-token",

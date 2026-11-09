@@ -97,7 +97,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
       const data = await bridge.backend.getSetupDiagnostics();
       await bridge.files.saveData({
         data: new TextEncoder().encode(data),
-        suggestedName: 'voicestudio-setup.log',
+        suggestedName: 'elevenvoice-setup.log',
       });
     } catch {
       setSaveFailed(true);
@@ -162,7 +162,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
         .trim();
       const context = [
         `**Summary:** ${summaryText}`,
-        `**App:** VoiceStudio ${__APP_VERSION__} (build ${__BUILD_COMMIT__})`,
+        `**App:** ElevenVoice ${__APP_VERSION__} (build ${__BUILD_COMMIT__})`,
         '**Shell:** Electron',
       ];
       if (setup) {
@@ -174,7 +174,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
           '## Runtime setup',
           `Stage: ${backend?.stage ?? 'unknown'}`,
           `Progress: ${JSON.stringify(backend?.setupProgress ?? {})}`,
-          'Attach the downloaded voicestudio-setup.log for the full setup history.',
+          'Attach the downloaded elevenvoice-setup.log for the full setup history.',
           '```',
           clampCrashTail(scrubText(diagnostics ?? backend?.logTail.join('\n') ?? '')),
           '```',

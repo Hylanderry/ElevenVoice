@@ -27,10 +27,10 @@ def test_omnivoice_tags_match_the_model_tokenizer():
     expression = importlib.import_module("services.expression")
     source = (REPO / "omnivoice" / "models" / "omnivoice.py").read_text(encoding="utf-8")
     block = re.search(r"_NONVERBAL_PATTERN = re\.compile\((.*?)\n\)", source, re.DOTALL)
-    assert block, "OmniVoice's _NONVERBAL_PATTERN moved; update OMNIVOICE_INLINE_TAGS"
+    assert block, "OmniVoice's _NONVERBAL_PATTERN moved; update ELEVENVOICE_INLINE_TAGS"
     pattern = "".join(re.findall(r'r"([^"]*)"', block.group(1)))
     names = re.fullmatch(r"\\\[\((.*)\)\\\]", pattern).group(1).split("|")
-    assert expression.OMNIVOICE_INLINE_TAGS == tuple(f"[{name}]" for name in names)
+    assert expression.ELEVENVOICE_INLINE_TAGS == tuple(f"[{name}]" for name in names)
 
 
 def test_catalogue_reports_each_engines_mechanism():
@@ -39,7 +39,7 @@ def test_catalogue_reports_each_engines_mechanism():
     expression = importlib.import_module("services.expression")
     assert entries["omnivoice"]["expression_caps"] == {
         "emotion": "none",
-        "tags": list(expression.OMNIVOICE_INLINE_TAGS),
+        "tags": list(expression.ELEVENVOICE_INLINE_TAGS),
     }
     assert entries["indextts2"]["expression_caps"] == {"emotion": "graded", "tags": []}
     assert entries["cosyvoice"]["expression_caps"] == {

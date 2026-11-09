@@ -19,14 +19,14 @@ def test_cpu_choice_selects_cpu_quant_without_losing_explicit_override(
     """A high-VRAM GPU must not enlarge the automatic CPU model selection."""
     probe = importlib.import_module("engines.omnivoice_gguf.hardware_probe")
     prefs = importlib.import_module("core.prefs")
-    for variable in ("OMNIVOICE_DEVICE", "OMNIVOICE_GGUF_BACKEND",
-                     "OMNIVOICE_GGUF_DEVICE", "GGML_BACKEND"):
+    for variable in ("ELEVENVOICE_DEVICE", "ELEVENVOICE_GGUF_BACKEND",
+                     "ELEVENVOICE_GGUF_DEVICE", "GGML_BACKEND"):
         monkeypatch.delenv(variable, raising=False)
     if cpu_choice == "settings":
         monkeypatch.setattr(prefs, "resolve", lambda *args, **kwargs: "cpu")
     else:
-        monkeypatch.setenv({"global": "OMNIVOICE_DEVICE",
-                           "engine": "OMNIVOICE_GGUF_BACKEND",
+        monkeypatch.setenv({"global": "ELEVENVOICE_DEVICE",
+                           "engine": "ELEVENVOICE_GGUF_BACKEND",
                            "native": "GGML_BACKEND"}[cpu_choice],
                           "CPU" if cpu_choice == "native" else "cpu")
     monkeypatch.setattr(probe, "detect_capabilities", lambda: SimpleNamespace(
@@ -48,15 +48,15 @@ def test_unverified_native_capacity_uses_conservative_quant(
 ):
     """A parent GPU's memory cannot establish the selected child adapter's capacity."""
     probe = importlib.import_module("engines.omnivoice_gguf.hardware_probe")
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "auto")
-    monkeypatch.setenv("OMNIVOICE_GGUF_BACKEND", native_choice
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "auto")
+    monkeypatch.setenv("ELEVENVOICE_GGUF_BACKEND", native_choice
                        if native_choice != "native-vulkan" else "auto")
-    monkeypatch.delenv("OMNIVOICE_GGUF_DEVICE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_GGUF_DEVICE", raising=False)
     monkeypatch.delenv("GGML_BACKEND", raising=False)
     if native_choice == "native-vulkan":
         monkeypatch.setenv("GGML_BACKEND", "Vulkan1")
     elif native_choice in {"vulkan", "cuda"}:
-        monkeypatch.setenv("OMNIVOICE_GGUF_DEVICE", "1")
+        monkeypatch.setenv("ELEVENVOICE_GGUF_DEVICE", "1")
     monkeypatch.setattr(probe, "detect_capabilities", lambda: SimpleNamespace(
         backend=host_backend, vram_mb=24_576, compute_class="high-vram"))
     engine = gguf.OmniVoiceGGUFBackend(quant_override=quant_override)

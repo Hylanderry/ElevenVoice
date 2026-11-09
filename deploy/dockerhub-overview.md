@@ -1,11 +1,11 @@
-# VoiceStudio
+# ElevenVoice
 
 **The open-source ElevenLabs alternative.** Real-time dictation, zero-shot voice
 cloning, and cinematic video dubbing — fully local, with no cloud API keys or accounts.
 **646 languages.**
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/palashdeb/omnivoice-studio?logo=docker&color=2496ED)](https://hub.docker.com/r/palashdeb/omnivoice-studio)
-[![Image Size](https://img.shields.io/docker/image-size/palashdeb/omnivoice-studio/latest?logo=docker&label=image%20size)](https://hub.docker.com/r/palashdeb/omnivoice-studio/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/palashdeb/elevenvoice?logo=docker&color=2496ED)](https://hub.docker.com/r/palashdeb/elevenvoice)
+[![Image Size](https://img.shields.io/docker/image-size/palashdeb/elevenvoice/latest?logo=docker&label=image%20size)](https://hub.docker.com/r/palashdeb/elevenvoice/tags)
 [![GitHub Stars](https://img.shields.io/github/stars/debpalash/VoiceStudio?logo=github&color=f59e0b)](https://github.com/debpalash/VoiceStudio)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](https://github.com/debpalash/VoiceStudio/blob/main/LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/bzQavDfVV9)
@@ -14,11 +14,11 @@ cloning, and cinematic video dubbing — fully local, with no cloud API keys or 
 
 ![VoiceStudio — the open-source ElevenLabs alternative](https://raw.githubusercontent.com/debpalash/VoiceStudio/main/.github/assets/social-preview.png)
 
-VoiceStudio processes media on your own hardware and automatically chooses CUDA,
+ElevenVoice processes media on your own hardware and automatically chooses CUDA,
 ROCm, or CPU. Data leaves the machine only after you explicitly agree. PostHog
 analytics collect content-free metadata only when you accept the first-run
 consent question; declining or skipping keeps analytics disabled, and
-`-e OMNIVOICE_ANALYTICS_DISABLED=1` turns them off completely. This headless
+`-e ELEVENVOICE_ANALYTICS_DISABLED=1` turns them off completely. This headless
 server image runs FastAPI with the pre-built React interface over HTTP, making
 it suitable for an AMD64 homelab or GPU server that you control from a browser.
 
@@ -61,14 +61,14 @@ the entire pipeline runs on CPU, just slower. Pull size: ~5 GB compressed
 ## Quick start (CPU)
 
 ```bash
-export OMNIVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+export ELEVENVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 
 docker run -d --name omnivoice \
   -p 127.0.0.1:3900:3900 \
-  -e OMNIVOICE_API_KEY="$OMNIVOICE_API_KEY" \
-  -e OMNIVOICE_DATA_DIR=/app/omnivoice_data \
-  -v omnivoice-data:/app/omnivoice_data \
-  palashdeb/omnivoice-studio:stable
+  -e ELEVENVOICE_API_KEY="$ELEVENVOICE_API_KEY" \
+  -e ELEVENVOICE_DATA_DIR=/app/elevenvoice_data \
+  -v omnivoice-data:/app/elevenvoice_data \
+  palashdeb/elevenvoice:stable
 ```
 
 Open <http://localhost:3900>. The first run downloads a few GB of model weights —
@@ -80,14 +80,14 @@ loopback origin.
 ## Quick start (NVIDIA GPU)
 
 ```bash
-export OMNIVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+export ELEVENVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 
 docker run -d --name omnivoice --gpus all \
   -p 127.0.0.1:3900:3900 \
-  -e OMNIVOICE_API_KEY="$OMNIVOICE_API_KEY" \
-  -e OMNIVOICE_DATA_DIR=/app/omnivoice_data \
-  -v omnivoice-data:/app/omnivoice_data \
-  palashdeb/omnivoice-studio:stable
+  -e ELEVENVOICE_API_KEY="$ELEVENVOICE_API_KEY" \
+  -e ELEVENVOICE_DATA_DIR=/app/elevenvoice_data \
+  -v omnivoice-data:/app/elevenvoice_data \
+  palashdeb/elevenvoice:stable
 ```
 
 GPU mode needs the
@@ -101,15 +101,15 @@ CUDA-only and runs on CPU on AMD hardware). No toolkit needed — pass the GPU
 through as device nodes; the host only needs the `amdgpu` kernel driver:
 
 ```bash
-export OMNIVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+export ELEVENVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 
 docker run -d --name omnivoice \
   --device /dev/kfd --device /dev/dri \
   -p 127.0.0.1:3900:3900 \
-  -e OMNIVOICE_API_KEY="$OMNIVOICE_API_KEY" \
-  -e OMNIVOICE_DATA_DIR=/app/omnivoice_data \
-  -v omnivoice-data:/app/omnivoice_data \
-  palashdeb/omnivoice-studio:stable-rocm
+  -e ELEVENVOICE_API_KEY="$ELEVENVOICE_API_KEY" \
+  -e ELEVENVOICE_DATA_DIR=/app/elevenvoice_data \
+  -v omnivoice-data:/app/elevenvoice_data \
+  palashdeb/elevenvoice:stable-rocm
 ```
 
 Podman users: same two `--device` flags (Quadlet: `AddDevice=/dev/kfd` +
@@ -143,8 +143,8 @@ Release tags are published only when the GitHub Release is published.
 Preview builds always come from `main` and never version-sort below `:stable`,
 so upgrades flow naturally. The same images and tags
 are mirrored on GHCR at
-[`ghcr.io/debpalash/voicestudio`](https://github.com/debpalash/VoiceStudio/pkgs/container/voicestudio).
-The former `ghcr.io/debpalash/omnivoice-studio` path remains a compatible alias.
+[`ghcr.io/hylanderry/elevenvoice`](https://github.com/debpalash/VoiceStudio/pkgs/container/voicestudio).
+The former `ghcr.io/debpalash/elevenvoice` path remains a compatible alias.
 
 ---
 
@@ -157,7 +157,7 @@ The former `ghcr.io/debpalash/omnivoice-studio` path remains a compatible alias.
 - **🔊 Vocal Isolation** — Demucs splits speech from music and keeps the background.
 - **👥 Speaker Diarization** — Pyannote + WhisperX auto-identify who said what.
 - **📦 Batch Queue** — drop 50 videos and walk away; per-job progress.
-- **🤖 MCP Server** — drive VoiceStudio from Claude, Cursor, or any MCP client.
+- **🤖 MCP Server** — drive ElevenVoice from Claude, Cursor, or any MCP client.
 - **🛡️ AI Watermark** — invisible AudioSeal (Meta) marking that survives compression.
 - **⚡ GPU Auto-Detect** — selects CUDA, ROCm, or CPU and auto-offloads on GPUs with 8 GB VRAM or less.
 - **🧩 Extensible** — subclass `TTSBackend` to add any engine in ~50 lines.
@@ -171,11 +171,11 @@ more), auto-detected and selectable in Settings.
 
 | Mount | Purpose |
 |-------|---------|
-| `omnivoice-data:/app/omnivoice_data` | Project DB, user voices, settings, encrypted HF token, and the Hugging Face model cache — survives upgrades |
+| `omnivoice-data:/app/elevenvoice_data` | Project DB, user voices, settings, encrypted HF token, and the Hugging Face model cache — survives upgrades |
 
-The image sets `HF_HOME=/app/omnivoice_data/huggingface`, so models already
+The image sets `HF_HOME=/app/elevenvoice_data/huggingface`, so models already
 persist in that volume. To reuse an existing host cache instead, bind it with
-`-v ~/.cache/huggingface:/app/omnivoice_data/huggingface` (files the container
+`-v ~/.cache/huggingface:/app/elevenvoice_data/huggingface` (files the container
 adds there are root-owned).
 
 ---
@@ -186,31 +186,31 @@ adds there are root-owned).
   `127.0.0.1:3900:3900` mapping is what keeps it loopback-only. Change the
   mapping to `0.0.0.0:3900:3900` for LAN access.
 - Behind a reverse proxy on a different origin, set
-  `-e OMNIVOICE_PUBLIC_API_BASE=https://api.your-host.example` so the UI targets
+  `-e ELEVENVOICE_PUBLIC_API_BASE=https://api.your-host.example` so the UI targets
   the right API base (works on the prebuilt image; no rebuild needed), and
-  `-e OMNIVOICE_ALLOWED_ORIGINS=https://ui.your-host.example` so the API accepts
+  `-e ELEVENVOICE_ALLOWED_ORIGINS=https://ui.your-host.example` so the API accepts
   the UI's requests, video previews and downloads included.
-- The image ships with `OMNIVOICE_SERVER_MODE=1`, which relaxes the desktop-only
+- The image ships with `ELEVENVOICE_SERVER_MODE=1`, which relaxes the desktop-only
   loopback-origin gate so the admin UI works through Docker's NAT. Set it to `0`
   if you front the container with your own loopback auth proxy.
-- Without an API key, open VoiceStudio by `localhost` or an IP address; to use a
-  host name such as `http://nas.lan:3900`, add `-e OMNIVOICE_ALLOWED_HOSTS=nas.lan`.
+- Without an API key, open ElevenVoice by `localhost` or an IP address; to use a
+  host name such as `http://nas.lan:3900`, add `-e ELEVENVOICE_ALLOWED_HOSTS=nas.lan`.
   URL imports refuse private-network addresses unless
-  `-e OMNIVOICE_ALLOW_PRIVATE_URL_IMPORTS=1` is set.
+  `-e ELEVENVOICE_ALLOW_PRIVATE_URL_IMPORTS=1` is set.
 - For LAN or internet-facing deployments, set a long random
-  `OMNIVOICE_API_KEY` and pass the same key through the browser's login prompt.
+  `ELEVENVOICE_API_KEY` and pass the same key through the browser's login prompt.
   A six-digit share PIN is also available for casual LAN access, but it does
   not authorize administration or dictation; see the
   [API authentication guide](https://github.com/debpalash/VoiceStudio/blob/main/docs/api-auth.md).
 - The share PIN also applies to the host's own browser, which reaches the
   container from Docker's gateway address. On a host only you use, with the
-  port published on `127.0.0.1`, `-e OMNIVOICE_TRUST_HOST_LOOPBACK=1` lets that
+  port published on `127.0.0.1`, `-e ELEVENVOICE_TRUST_HOST_LOOPBACK=1` lets that
   browser skip the PIN; other machines still need it. Read the
   [risks](https://github.com/debpalash/VoiceStudio/blob/main/docs/install/docker.md#trust-host-loopback)
   first.
 
 > **Security:** Loopback-only publishing is the safe default. Before exposing
-> VoiceStudio on a trusted LAN, configure `OMNIVOICE_API_KEY`. On any untrusted
+> ElevenVoice on a trusted LAN, configure `ELEVENVOICE_API_KEY`. On any untrusted
 > network, plain HTTP is not safe for the API key or session cookie. Keep the
 > backend on an encrypted private overlay such as Tailscale/ZeroTier; do not
 > expose it directly to the public internet.
@@ -224,4 +224,4 @@ adds there are root-owned).
 - **Troubleshooting:** <https://github.com/debpalash/VoiceStudio/blob/main/docs/install/troubleshooting.md>
 - **Community / support:** [Discord](https://discord.gg/bzQavDfVV9)
 
-VoiceStudio is in active beta and licensed under AGPL-3.0.
+ElevenVoice is in active beta and licensed under AGPL-3.0.

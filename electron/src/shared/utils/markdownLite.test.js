@@ -10,9 +10,9 @@ describe('inlineSegments (safe markdown-lite inline tokens)', () => {
   });
 
   it('tokenizes `code` spans', () => {
-    expect(inlineSegments('set `OMNIVOICE_DATA_DIR` first')).toEqual([
+    expect(inlineSegments('set `ELEVENVOICE_DATA_DIR` first')).toEqual([
       { type: 'text', text: 'set ' },
-      { type: 'code', text: 'OMNIVOICE_DATA_DIR' },
+      { type: 'code', text: 'ELEVENVOICE_DATA_DIR' },
       { type: 'text', text: ' first' },
     ]);
   });

@@ -38,7 +38,7 @@ def mt(monkeypatch, tmp_path):
         op.update(state="idle", progress=0.0, error=None)
     mt_mod._version_cache.clear()
     # Never let a test inherit a real user override.
-    _OVERRIDE_KEYS = ("FFMPEG_PATH", "FFPROBE_PATH", "OMNIVOICE_FFPROBE_PATH")
+    _OVERRIDE_KEYS = ("FFMPEG_PATH", "FFPROBE_PATH", "ELEVENVOICE_FFPROBE_PATH")
     for key in _OVERRIDE_KEYS:
         monkeypatch.delenv(key, raising=False)
     yield mt_mod
@@ -484,8 +484,8 @@ def test_router_is_admin_gated(mt):
 def test_server_mode_media_tool_mutations_require_api_key(mt, monkeypatch):
     from main import app
 
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     remote = TestClient(app, client=("172.17.0.1", 50000))
 
     assert remote.get("/media-tools/status").status_code == 200

@@ -6,7 +6,7 @@ after two ``generate:start (audio)`` clicks, with ``Preloading TTS model in
 background…`` still live in the captured log.
 
 There were two cold-load routes into the same native
-``VoiceStudio.from_pretrained``:
+``ElevenVoice.from_pretrained``:
 
   * the startup preload (and any server-loop ``get_model()``) held
     ``_model_lock`` and ran the load *in the GPU pool*;

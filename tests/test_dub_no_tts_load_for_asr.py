@@ -3,7 +3,7 @@
 The transcribe preflight in ``dub_core`` called ``get_model()`` — pulling the full
 ~3 GB TTS core into memory — for exactly one reason: to read a preloaded
 ``_asr_pipe`` off it. But that attribute is only ever set by
-``OmniVoice.from_pretrained`` under ``OMNIVOICE_PRELOAD_TTS_ASR``, which is off by
+``OmniVoice.from_pretrained`` under ``ELEVENVOICE_PRELOAD_TTS_ASR``, which is off by
 default ("intentionally false", model_manager.should_preload_tts_asr).
 
 So in the default configuration every dub:
@@ -54,7 +54,7 @@ class _FakeASR:
 def dub(tmp_path, monkeypatch):
     """dub_core rebound to an isolated data dir, with a job seeded and every
     heavy dependency stubbed. Yields (module, job_id, load_counter)."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
 
     import importlib
     import core.config as _cfg
@@ -68,7 +68,7 @@ def dub(tmp_path, monkeypatch):
         calls["get_model"] += 1
         raise AssertionError(
             "dub loaded the TTS core model during the ASR preflight — it only has "
-            "an _asr_pipe to harvest when OMNIVOICE_PRELOAD_TTS_ASR is set"
+            "an _asr_pipe to harvest when ELEVENVOICE_PRELOAD_TTS_ASR is set"
         )
 
     monkeypatch.setattr(dc, "get_model", _counting_get_model)

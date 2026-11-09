@@ -27,7 +27,7 @@ from typing import Any
 
 from .case import EvalCase, JudgeResult
 
-logger = logging.getLogger("omnivoice.evals")
+logger = logging.getLogger("elevenvoice.evals")
 
 
 _JUDGE_SYSTEM = (

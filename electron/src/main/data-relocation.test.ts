@@ -31,13 +31,13 @@ afterEach(async () => {
 });
 
 async function fixture() {
-  const root = await mkdtemp(join(tmpdir(), 'VoiceStudio-relocation-test-'));
+  const root = await mkdtemp(join(tmpdir(), 'ElevenVoice-relocation-test-'));
   created.push(root);
   const source = join(root, 'OmniVoice', 'data');
-  const target = join(root, 'new-home', 'VoiceStudio');
+  const target = join(root, 'new-home', 'ElevenVoice');
   await mkdir(join(source, 'voices'), { recursive: true });
   await mkdir(dirname(target), { recursive: true });
-  await writeFile(join(source, 'omnivoice.db'), 'database');
+  await writeFile(join(source, 'elevenvoice.db'), 'database');
   await writeFile(join(source, 'voices', 'sample.wav'), 'voice');
   return { root, source, target };
 }
@@ -58,7 +58,7 @@ it('moves into an existing empty destination, the folder-picker case (#2521)', a
   await mkdir(target, { recursive: true });
   const prepared = await prepareDataRelocation(source, target);
   expect(await readFile(join(target, 'voices', 'sample.wav'), 'utf8')).toBe('voice');
-  expect(existsSync(join(source, 'omnivoice.db'))).toBe(true);
+  expect(existsSync(join(source, 'elevenvoice.db'))).toBe(true);
   expect(existsSync(prepared.target)).toBe(true);
 });
 
@@ -67,7 +67,7 @@ it('rolls back only the verified destination and keeps the source', async () => 
   const prepared = await prepareDataRelocation(source, target);
   await prepared.rollback();
   expect(existsSync(target)).toBe(false);
-  expect(existsSync(join(source, 'omnivoice.db'))).toBe(true);
+  expect(existsSync(join(source, 'elevenvoice.db'))).toBe(true);
 });
 
 it('rejects nested and non-empty destinations', async () => {
@@ -83,9 +83,9 @@ it('updates only the data-directory line in the shared durable environment', asy
   const { root, target } = await fixture();
   const env = join(root, 'config', 'env');
   await mkdir(dirname(env), { recursive: true });
-  await writeFile(env, 'HF_TOKEN=secret\nOMNIVOICE_DATA_DIR=/old\n');
+  await writeFile(env, 'HF_TOKEN=secret\nELEVENVOICE_DATA_DIR=/old\n');
   expect(await readDataDirectorySetting(env)).toBe('/old');
-  const quotedTarget = join(dirname(target), "Voice Studio's data");
+  const quotedTarget = join(dirname(target), "ElevenVoice's data");
   await writeDataDirectorySetting(quotedTarget, env);
   expect(await readDataDirectorySetting(env)).toBe(quotedTarget);
   expect(await readFile(env, 'utf8')).toContain('HF_TOKEN=secret\n');
@@ -98,7 +98,7 @@ it('restores the setting and original backend when activation cannot be verified
   const { root, source, target } = await fixture();
   const env = join(root, 'config', 'env');
   await mkdir(dirname(env), { recursive: true });
-  await writeFile(env, `OMNIVOICE_DATA_DIR=${source}\nHF_TOKEN=secret\n`);
+  await writeFile(env, `ELEVENVOICE_DATA_DIR=${source}\nHF_TOKEN=secret\n`);
   const calls: string[] = [];
 
   await expect(
@@ -117,7 +117,7 @@ it('restores the setting and original backend when activation cannot be verified
 
   expect(await readDataDirectorySetting(env)).toBe(source);
   expect(existsSync(target)).toBe(false);
-  expect(existsSync(join(source, 'omnivoice.db'))).toBe(true);
+  expect(existsSync(join(source, 'elevenvoice.db'))).toBe(true);
   expect(calls.filter((call) => call === 'stop')).toHaveLength(2);
   expect(calls.filter((call) => call === 'start')).toHaveLength(2);
   expect(calls).toContain('rolling_back');
@@ -163,9 +163,9 @@ it('accepts a single-component destination directly under the volume root', asyn
   const { root, source } = await fixture();
   // Only one path component below the drive root: previously rejected by
   // safeDestination's '>= 2' requirement even though dirname(target) !== target.
-  const target = join(parse(root).root, 'VoiceStudio-relocation-single-test');
+  const target = join(parse(root).root, 'ElevenVoice-relocation-single-test');
   const plan = await inspectDataRelocation(source, target);
-  expect(plan.target.endsWith('VoiceStudio-relocation-single-test')).toBe(true);
+  expect(plan.target.endsWith('ElevenVoice-relocation-single-test')).toBe(true);
   expect(plan.file_count).toBe(2);
 });
 

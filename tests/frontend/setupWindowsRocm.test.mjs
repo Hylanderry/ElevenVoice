@@ -9,7 +9,7 @@ test("Windows x64 ROCm is explicit and never queries NVIDIA", async () => {
     await selectTorchVariant({
       platform: "win32",
       arch: "x64",
-      env: { OMNIVOICE_TORCH_VARIANT: " ROCm " },
+      env: { ELEVENVOICE_TORCH_VARIANT: " ROCm " },
       nvidiaAvailable: () => {
         throw Error("unexpected probe");
       },
@@ -23,7 +23,7 @@ test("Windows ARM64 refuses the native ROCm recipe before sync", async () => {
     selectTorchVariant({
       platform: "win32",
       arch: "arm64",
-      env: { OMNIVOICE_TORCH_VARIANT: "rocm" },
+      env: { ELEVENVOICE_TORCH_VARIANT: "rocm" },
     }),
     /Windows.*x64/,
   );
@@ -31,7 +31,7 @@ test("Windows ARM64 refuses the native ROCm recipe before sync", async () => {
 
 test("source ROCm sync protects the overlay and installs before native repair", async () => {
   const calls = [];
-  const env = { OMNIVOICE_TORCH_VARIANT: " ROCm ", UV_PROJECT_ENVIRONMENT: "H:/Voice Env" };
+  const env = { ELEVENVOICE_TORCH_VARIANT: " ROCm ", UV_PROJECT_ENVIRONMENT: "H:/Voice Env" };
   const status = await setupApi({
     platform: "win32",
     arch: "x64",
@@ -72,11 +72,11 @@ test("source ROCm sync protects the overlay and installs before native repair", 
     "--uv",
     "uv",
   ]);
-  assert.equal(calls[2][2].env.OMNIVOICE_TORCH_VARIANT, "rocm");
+  assert.equal(calls[2][2].env.ELEVENVOICE_TORCH_VARIANT, "rocm");
   assert.equal(calls[2][2].env.UV_PROJECT_ENVIRONMENT, env.UV_PROJECT_ENVIRONMENT);
   assert.deepEqual(calls[3], ["repair"]);
   assert.deepEqual(calls[4][1], ["run", "--no-sync", "python", "scripts/setup.py"]);
-  assert.equal(env.OMNIVOICE_TORCH_VARIANT, " ROCm ");
+  assert.equal(env.ELEVENVOICE_TORCH_VARIANT, " ROCm ");
 });
 
 test("a failed Windows overlay stops setup before native imports", async () => {
@@ -86,7 +86,7 @@ test("a failed Windows overlay stops setup before native imports", async () => {
     await setupApi({
       platform: "win32",
       arch: "x64",
-      env: { OMNIVOICE_TORCH_VARIANT: "rocm" },
+      env: { ELEVENVOICE_TORCH_VARIANT: "rocm" },
       log: () => {},
       repairNativeLibraries: async () => {
         repaired = true;

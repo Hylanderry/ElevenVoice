@@ -34,7 +34,7 @@ from core.http_headers import content_disposition
 from services import persona_bundle as pb
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.personas")
+logger = logging.getLogger("elevenvoice.personas")
 
 
 def _safe_name(name: str, profile_id: str) -> str:
@@ -65,11 +65,11 @@ async def export_persona(
     profile = dict(row)
 
     tag_list = [t.strip() for t in tags.split(",") if t.strip()]
-    # #693: if OMNIVOICE_MODEL is set, record the *resolved* checkpoint in the
+    # #693: if ELEVENVOICE_MODEL is set, record the *resolved* checkpoint in the
     # exported bundle so a leaked engine id (e.g. "omnivoice") can't be baked in;
     # keep "" when unset (the bundle's "engine unspecified" marker).
     from services.model_manager import resolve_omnivoice_checkpoint
-    engine_id = resolve_omnivoice_checkpoint() if os.environ.get("OMNIVOICE_MODEL", "").strip() else ""
+    engine_id = resolve_omnivoice_checkpoint() if os.environ.get("ELEVENVOICE_MODEL", "").strip() else ""
     try:
         loop = asyncio.get_running_loop()
         content = await loop.run_in_executor(

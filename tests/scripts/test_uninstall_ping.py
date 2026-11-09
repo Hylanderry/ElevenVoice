@@ -68,9 +68,9 @@ def _run(tmp_path, *args, consented=True, with_info=True):
     env.update(
         {
             "HOME": str(home),
-            "OMNIVOICE_DATA_DIR": str(data),
+            "ELEVENVOICE_DATA_DIR": str(data),
             # Keep the shared-model-cache branch inert and inside the sandbox.
-            "OMNIVOICE_CACHE_DIR": str(tmp_path / "models-nonexistent"),
+            "ELEVENVOICE_CACHE_DIR": str(tmp_path / "models-nonexistent"),
             "PATH": f"{bin_dir}:{env.get('PATH', '')}",
         }
     )

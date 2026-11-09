@@ -54,7 +54,7 @@ def test_autofit_strict_trims_until_within_slot(speech_rate):
 
 
 def test_strict_no_llm_degrades_gracefully(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     from services import speech_rate as _sr
     res = _sr.adjust_for_slot("A" * 30, slot_seconds=1.0, target_lang="en", strict=True)
     assert res.get("error") == "no-llm"

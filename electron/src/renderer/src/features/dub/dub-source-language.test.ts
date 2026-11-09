@@ -8,7 +8,7 @@ vi.mock('@/lib/api/client', async (load) => ({
 }));
 
 afterEach(() => {
-  delete (window as Partial<Window>).voicestudio;
+  delete (window as Partial<Window>).elevenvoice;
   vi.resetAllMocks();
 });
 
@@ -49,7 +49,7 @@ it('sends the explicit source choice to a local translation agent', async () => 
   const translate = vi
     .fn()
     .mockResolvedValue({ agent: 'codex', translations: [{ id: 'a', text: 'Bonjour' }] });
-  Object.defineProperty(window, 'voicestudio', {
+  Object.defineProperty(window, 'elevenvoice', {
     configurable: true,
     value: { repair: { translate, stopTranslation: vi.fn(), onTranslationEvent: () => vi.fn() } },
   });

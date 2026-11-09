@@ -21,7 +21,7 @@ _STAGES = frozenset({'synthesis', 'join', 'effects', 'save', 'watermark', 'mux',
 _current: ContextVar[RenderTrace | None] = ContextVar('render_trace', default=None)
 _recent: deque = deque(maxlen=32)
 _recent_lock = threading.Lock()
-logger = logging.getLogger('omnivoice.render')
+logger = logging.getLogger('elevenvoice.render')
 
 
 class RenderTrace:

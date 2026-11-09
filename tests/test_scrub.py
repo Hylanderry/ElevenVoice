@@ -20,7 +20,7 @@ from core.scrub import REDACTED, scrub_provider_error, scrub_text
     "raw,expected",
     [
         ("/Users/alice/Library/Logs/app.log", "~/Library/Logs/app.log"),
-        ("/home/bob/.omnivoice/omnivoice.log", "~/.omnivoice/omnivoice.log"),
+        ("/home/bob/.omnivoice/elevenvoice.log", "~/.elevenvoice/elevenvoice.log"),
         (r"C:\Users\carol\AppData\Roaming\OmniVoice", r"~\AppData\Roaming\OmniVoice"),
         (r"D:\Users\dave\models", r"~\models"),
         # Windows paths normalized to forward slashes (file URLs, traces)
@@ -94,7 +94,7 @@ def test_env_secret_short_value_not_swept(monkeypatch):
 
 
 def test_env_non_secret_name_untouched(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MODEL", "k2-fsa/OmniVoice")
+    monkeypatch.setenv("ELEVENVOICE_MODEL", "k2-fsa/OmniVoice")
     assert "k2-fsa/OmniVoice" in scrub_text("loading k2-fsa/OmniVoice")
 
 

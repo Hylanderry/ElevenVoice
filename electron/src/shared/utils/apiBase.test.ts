@@ -2,7 +2,7 @@
  * Tests for utils/apiBase.ts (Phase 1 Wave 3, issue #80).
  *
  * Covers the four-branch resolver:
- *   1. VITE_OMNIVOICE_API override always wins.
+ *   1. VITE_ELEVENVOICE_API override always wins.
  *   2. Tauri webview context → 127.0.0.1:3900 (IPv4; not "localhost" — Windows IPv6).
  *   3. Plain browser context → window.location.hostname:3900.
  *   4. SSR / no-window fallback → localhost:3900.
@@ -19,12 +19,12 @@ describe('apiBase.getApiBase', () => {
     originalTauriInternals = (window as Window).__TAURI_INTERNALS__;
     originalTauri = (window as Window).__TAURI__;
     originalLocation = window.location;
-    // jsdom defaults VITE_OMNIVOICE_API to undefined — no need to stub.
+    // jsdom defaults VITE_ELEVENVOICE_API to undefined — no need to stub.
     vi.resetModules();
   });
 
   afterEach(() => {
-    delete (window as Window).__OMNIVOICE_API_BASE__;
+    delete (window as Window).__ELEVENVOICE_API_BASE__;
     if (originalTauriInternals === undefined) {
       delete (window as Window).__TAURI_INTERNALS__;
     } else {
@@ -44,7 +44,7 @@ describe('apiBase.getApiBase', () => {
     });
   });
 
-  it('uses VITE_OMNIVOICE_API override when set', async () => {
+  it('uses VITE_ELEVENVOICE_API override when set', async () => {
     // vi.stubEnv works for inline `import.meta.env` reads in the test file,
     // but does not propagate to dynamically imported modules' import.meta in
     // vitest 4.x (Vite's per-module env snapshot). Instead, we patch the
@@ -65,9 +65,9 @@ describe('apiBase.getApiBase', () => {
     mod._setEnvOverrideForTesting(undefined);
   });
 
-  it('runtime window.__OMNIVOICE_API_BASE__ wins over Tauri + env (Docker prebuilt-image override)', async () => {
+  it('runtime window.__ELEVENVOICE_API_BASE__ wins over Tauri + env (Docker prebuilt-image override)', async () => {
     (window as Window).__TAURI_INTERNALS__ = {};
-    (window as Window).__OMNIVOICE_API_BASE__ = 'https://api.example.com/';
+    (window as Window).__ELEVENVOICE_API_BASE__ = 'https://api.example.com/';
     vi.resetModules();
     const mod = await import('./apiBase');
     mod._setEnvOverrideForTesting('http://10.0.0.5:3900');

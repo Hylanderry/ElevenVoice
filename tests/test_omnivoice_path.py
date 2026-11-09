@@ -39,7 +39,7 @@ def test_find_source_root_none_when_absent(tmp_path):
 
 
 def test_candidate_roots_prefers_env_then_backend_parent(tmp_path, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_PROJECT_ROOT", "/explicit/root")
+    monkeypatch.setenv("ELEVENVOICE_PROJECT_ROOT", "/explicit/root")
     backend_dir = str(tmp_path / "project" / "backend")
     roots = _candidate_roots(backend_dir)
     assert roots[0] == "/explicit/root"
@@ -47,7 +47,7 @@ def test_candidate_roots_prefers_env_then_backend_parent(tmp_path, monkeypatch):
 
 
 def test_candidate_roots_without_env(tmp_path, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_PROJECT_ROOT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PROJECT_ROOT", raising=False)
     backend_dir = str(tmp_path / "project" / "backend")
     assert _candidate_roots(backend_dir) == [os.path.join(str(tmp_path), "project")]
 
@@ -76,7 +76,7 @@ def test_ensure_appends_source_root_when_not_importable(tmp_path, monkeypatch):
     backend_dir = str(root / "backend")
     # Simulate the missing editable install (patch on the live module object).
     monkeypatch.setattr(op, "_already_importable", lambda: False)
-    monkeypatch.delenv("OMNIVOICE_PROJECT_ROOT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PROJECT_ROOT", raising=False)
     monkeypatch.setattr(sys, "path", list(sys.path))  # isolate mutation
 
     added = op.ensure_omnivoice_importable(backend_dir)
@@ -89,6 +89,6 @@ def test_ensure_appends_source_root_when_not_importable(tmp_path, monkeypatch):
 def test_ensure_returns_none_when_no_source_found(tmp_path, monkeypatch):
     op = _live()
     monkeypatch.setattr(op, "_already_importable", lambda: False)
-    monkeypatch.delenv("OMNIVOICE_PROJECT_ROOT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PROJECT_ROOT", raising=False)
     backend_dir = str(tmp_path / "no-sibling" / "backend")
     assert op.ensure_omnivoice_importable(backend_dir) is None

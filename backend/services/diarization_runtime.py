@@ -25,7 +25,7 @@ def selected_backend() -> str:
     value = str(
         prefs.resolve(
             "diarization_backend",
-            env="OMNIVOICE_DIARIZATION_BACKEND",
+            env="ELEVENVOICE_DIARIZATION_BACKEND",
             default=PYANNOTE,
         )
     ).strip()
@@ -33,7 +33,7 @@ def selected_backend() -> str:
 
 
 def sortformer_model_path() -> Path:
-    configured = os.environ.get("OMNIVOICE_DIARIZATION_MODEL", "").strip()
+    configured = os.environ.get("ELEVENVOICE_DIARIZATION_MODEL", "").strip()
     if configured:
         return Path(configured).expanduser().resolve()
 
@@ -62,11 +62,11 @@ PYANNOTE_REPOS = (
 def selected_model_repos() -> list[str]:
     """Registry models the selected diarisation runtime loads.
 
-    A user-configured Sortformer GGUF (``OMNIVOICE_DIARIZATION_MODEL``) is a
+    A user-configured Sortformer GGUF (``ELEVENVOICE_DIARIZATION_MODEL``) is a
     local asset with no registry identity, so it names no repo.
     """
     if selected_backend() == SORTFORMER:
-        if os.environ.get("OMNIVOICE_DIARIZATION_MODEL", "").strip():
+        if os.environ.get("ELEVENVOICE_DIARIZATION_MODEL", "").strip():
             return []
         return [SORTFORMER_REPO]
     return list(PYANNOTE_REPOS)

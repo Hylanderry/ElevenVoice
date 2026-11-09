@@ -50,7 +50,7 @@ def feature_graphic():
     logo = Image.open(ROOT / "config/brand/logo.png").convert("RGBA").resize((132, 132), Image.LANCZOS)
     image.paste(logo, (72, 112), logo)
     draw = ImageDraw.Draw(image)
-    draw.text((72, 270), "VoiceStudio", font=font(76, 700), fill=colors["text"])
+    draw.text((72, 270), "ElevenVoice", font=font(76, 700), fill=colors["text"])
     draw.text((74, 366), "Voice cloning, dictation and dubbing on your phone",
               font=font(28, 500), fill=colors["text"])
     draw.text((74, 408), "Runs offline once models are downloaded", font=font(24, 400), fill=colors["textMuted"])

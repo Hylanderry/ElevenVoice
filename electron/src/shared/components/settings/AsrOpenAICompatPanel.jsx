@@ -5,7 +5,7 @@
  * llama.cpp-style local servers, or OpenAI's own Whisper API. Configures the
  * `openai-compat-asr` backend's base_url/model/api_key; the engine is then
  * activated with the "Use" button on its row in the ASR engine matrix right
- * above this panel (or pinned via `OMNIVOICE_ASR_BACKEND=openai-compat-asr`,
+ * above this panel (or pinned via `ELEVENVOICE_ASR_BACKEND=openai-compat-asr`,
  * which always wins over the Settings pick). The engine re-reads this config
  * on every transcribe — no restart needed after saving.
  *

@@ -5,6 +5,8 @@ Historically every module in this directory stubbed
 pointing at its own ``mkdtemp``. That stub leaked **process-wide at
 collection time**: pytest imports test modules while collecting, so in any
 mixed invocation (``pytest tests/... backend/tests/...``) every *later* lazy
+import os as _os_licences
+_os_licences.environ.setdefault("ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT", "0")  # tests exercise the per-model gate
 import of ``core.config`` resolved the stub instead of the real module —
 ``tests/test_router_smoke.py``'s ``from main import app`` died with
 ImportError (missing config attrs), and
@@ -14,7 +16,7 @@ straight from ``sys.modules``). That was the root cause of the
 order-pollution combos around test_longform_e2e (8 AttributeErrors) and
 test_router_smoke (24 fixture ImportErrors).
 
-The real ``core.config`` derives every path from ``OMNIVOICE_DATA_DIR`` at
+The real ``core.config`` derives every path from ``ELEVENVOICE_DATA_DIR`` at
 import time, so pointing that env var at a throwaway dir *before* any test
 module imports it gives the same hermeticity (issue #878: never touch the
 developer's real app state) with zero ``sys.modules`` surgery. This mirrors
@@ -35,23 +37,23 @@ _BACKEND = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND not in sys.path:
     sys.path.insert(0, _BACKEND)
 
-if not os.environ.get("OMNIVOICE_DATA_DIR"):
-    os.environ["OMNIVOICE_DATA_DIR"] = tempfile.mkdtemp(prefix="omnivoice-test-data-")
-if not os.environ.get("OMNIVOICE_ENV_FILE"):
-    os.environ["OMNIVOICE_ENV_FILE"] = os.path.join(
-        os.environ["OMNIVOICE_DATA_DIR"], "user-env"
+if not os.environ.get("ELEVENVOICE_DATA_DIR"):
+    os.environ["ELEVENVOICE_DATA_DIR"] = tempfile.mkdtemp(prefix="omnivoice-test-data-")
+if not os.environ.get("ELEVENVOICE_ENV_FILE"):
+    os.environ["ELEVENVOICE_ENV_FILE"] = os.path.join(
+        os.environ["ELEVENVOICE_DATA_DIR"], "user-env"
     )
 # TestClient's "http://testserver" host must pass the DNS-rebinding guard
 # (core.browser_guard); mirrors tests/conftest.py.
-os.environ.setdefault("OMNIVOICE_ALLOWED_HOSTS", "testserver")
+os.environ.setdefault("ELEVENVOICE_ALLOWED_HOSTS", "testserver")
 # TTS checkpoint sentinel — mirrors tests/conftest.py (both assign the same
 # value, so load order doesn't matter). Unconditional on purpose (#1175
-# review): an ambient OMNIVOICE_MODEL from the dev's shell (set for running
+# review): an ambient ELEVENVOICE_MODEL from the dev's shell (set for running
 # the real app) must not leak in — a `setdefault` preserved it, letting
 # app-startup tests resolve a real checkpoint and `preload_model()` kick off
 # a multi-GB background download on a networked machine. Tests that need a
 # different value monkeypatch it explicitly.
-os.environ["OMNIVOICE_MODEL"] = "test"
+os.environ["ELEVENVOICE_MODEL"] = "test"
 
 
 import functools

@@ -16,7 +16,7 @@ import stat
 
 from core.config import DATA_DIR
 
-logger = logging.getLogger("omnivoice.path_authorization")
+logger = logging.getLogger("elevenvoice.path_authorization")
 
 _TOKEN_RE = re.compile(r"[0-9a-f]{64}\Z")
 _KINDS = {
@@ -49,7 +49,7 @@ def consume(token: str, expected_kind: str) -> str:
     # already consumed / never issued — normal, no server-side signal) from
     # "the store doesn't exist at all" (the desktop app and this backend are
     # very likely pointed at different data directories, e.g. a dev backend
-    # started without OMNIVOICE_DATA_DIR, or a stale custom data folder — see
+    # started without ELEVENVOICE_DATA_DIR, or a stale custom data folder — see
     # #1781). The client-facing message is byte-identical either way (never
     # leak local filesystem paths, or even which case occurred, over HTTP —
     # CWE-200); the mismatch case additionally gets a server log line so it's
@@ -121,12 +121,12 @@ def consume(token: str, expected_kind: str) -> str:
         raise PathAuthorizationError("Invalid desktop authorization")
     if payload.get("kind") != expected_kind or not isinstance(payload.get("path"), str):
         raise PathAuthorizationError("Desktop authorization does not match this setting")
-    if os.environ.get("VOICESTUDIO_BUNDLED_CODE_ONLY") == "1" and payload["path"]:
+    if os.environ.get("ELEVENVOICE_BUNDLED_CODE_ONLY") == "1" and payload["path"]:
         # Electron's newly selected folder extends its own sandbox only. Pick
         # up the journal in this already-running child before using that path.
         # An empty path resets to the container default and needs no grant.
         try:
-            from _voicestudio_sandbox_bookmarks import restore
+            from _elevenvoice_sandbox_bookmarks import restore
             scoped = restore(payload["path"])
         except Exception as exc:
             raise PathAuthorizationError("Invalid or expired desktop authorization") from exc

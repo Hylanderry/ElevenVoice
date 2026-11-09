@@ -1,9 +1,9 @@
-"""Encrypted settings store for VoiceStudio — AUTH-02 + threat T-01-01.
+"""Encrypted settings store for ElevenVoice — AUTH-02 + threat T-01-01.
 
 Persists small key/value rows in the SQLite `settings` table. The `hf_token`
 row is encrypted at rest via Fernet (symmetric AEAD). The Fernet key itself
 is derived per-install in `_secret_key.derive_fernet_key()` so a copied
-omnivoice.db is not a smoking gun on another machine.
+elevenvoice.db is not a smoking gun on another machine.
 
 Public API (consumed by `token_resolver.py`):
     get_hf_token() -> Optional[str]
@@ -18,7 +18,7 @@ import time
 from typing import Optional
 from core.logging_utils import log_safe
 
-logger = logging.getLogger("omnivoice.settings_store")
+logger = logging.getLogger("elevenvoice.settings_store")
 
 _TOKEN_KEY = "hf_token"
 
@@ -48,7 +48,7 @@ def _fernet():
 def get_hf_token() -> Optional[str]:
     """Return the decrypted HF token from the settings table, or None.
 
-    On `InvalidToken` (e.g. user migrated omnivoice_data/ across machines so
+    On `InvalidToken` (e.g. user migrated elevenvoice_data/ across machines so
     machine-id no longer matches the salt used to encrypt), log a warning
     and return None — the caller's cascade (env / HF-CLI) takes over
     naturally. Per Open Question #5 in 01-RESEARCH.md.

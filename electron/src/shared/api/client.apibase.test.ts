@@ -33,10 +33,10 @@ describe('_resolveApiBase', () => {
     expect(_resolveApiBase({ VITE_API_PORT: '4000' }, win)).toBe('http://127.0.0.1:4000');
   });
 
-  it('runtime window.__OMNIVOICE_API_BASE__ wins over everything (Docker prebuilt-image override)', () => {
+  it('runtime window.__ELEVENVOICE_API_BASE__ wins over everything (Docker prebuilt-image override)', () => {
     const win = {
       __TAURI__: {},
-      __OMNIVOICE_API_BASE__: 'https://api.example.com/',
+      __ELEVENVOICE_API_BASE__: 'https://api.example.com/',
       location: { origin: 'http://x', hostname: 'x' },
     };
     // Beats Tauri loopback AND VITE_API_URL; trailing slash stripped.
@@ -45,9 +45,9 @@ describe('_resolveApiBase', () => {
     );
   });
 
-  it('honors VITE_OMNIVOICE_API (the documented Docker var) and strips trailing slash', () => {
+  it('honors VITE_ELEVENVOICE_API (the documented Docker var) and strips trailing slash', () => {
     const win = { location: { origin: 'http://x', hostname: 'x' } };
-    expect(_resolveApiBase({ VITE_OMNIVOICE_API: 'http://10.0.0.5:9/' }, win)).toBe(
+    expect(_resolveApiBase({ VITE_ELEVENVOICE_API: 'http://10.0.0.5:9/' }, win)).toBe(
       'http://10.0.0.5:9',
     );
   });

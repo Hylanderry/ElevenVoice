@@ -22,8 +22,8 @@ import threading
 import time
 from types import SimpleNamespace
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -298,7 +298,7 @@ def test_rollback_removes_only_what_the_download_added(tmp_path):
     _seed_previous_install(tmp_path)
     repo = tmp_path / FOLDER
     (repo / "blobs" / "stale.incomplete").write_bytes(b"x")
-    (repo / "voicestudio-revision").write_text(OLD_COMMIT + "\n")
+    (repo / "elevenvoice-revision").write_text(OLD_COMMIT + "\n")
     before = hf_cache_rollback.capture(str(tmp_path), [REPO])
 
     (repo / "blobs" / "newblob").write_bytes(b"new")
@@ -308,7 +308,7 @@ def test_rollback_removes_only_what_the_download_added(tmp_path):
     (repo / "snapshots" / COMMIT / "sub" / "model.safetensors").write_bytes(b"new")
     (repo / "snapshots" / OLD_COMMIT / "extra.json").write_text("{}")
     (repo / "refs" / "main").write_text(COMMIT)
-    (repo / "voicestudio-revision").write_text(COMMIT + "\n")
+    (repo / "elevenvoice-revision").write_text(COMMIT + "\n")
 
     assert hf_cache_rollback.rollback(before) == []
 
@@ -318,7 +318,7 @@ def test_rollback_removes_only_what_the_download_added(tmp_path):
         "model.safetensors"
     ]
     assert (repo / "refs" / "main").read_text() == OLD_COMMIT
-    assert (repo / "voicestudio-revision").read_text() == OLD_COMMIT + "\n"
+    assert (repo / "elevenvoice-revision").read_text() == OLD_COMMIT + "\n"
     assert (tmp_path / "models--someone--other" / "blobs" / "busy.incomplete").exists()
 
 

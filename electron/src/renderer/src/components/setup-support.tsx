@@ -51,7 +51,7 @@ export function SetupSupport({ status }: { status: BackendStatus }) {
               const data = await bridge!.backend.getSetupDiagnostics();
               await bridge!.files.saveData({
                 data: new TextEncoder().encode(data),
-                suggestedName: 'voicestudio-setup.log',
+                suggestedName: 'elevenvoice-setup.log',
               });
             } catch {
               setFailed(true);

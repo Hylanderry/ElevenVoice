@@ -212,9 +212,9 @@ describe("deployment API base", () => {
 
   it("honors the runtime Docker/reverse-proxy override", () => {
     const win = {
-      __OMNIVOICE_API_BASE__: "https://voice.example/studio/",
+      __ELEVENVOICE_API_BASE__: "https://voice.example/studio/",
     } as Window & {
-      __OMNIVOICE_API_BASE__?: string;
+      __ELEVENVOICE_API_BASE__?: string;
     };
     expect(resolveApiBase(true, false, win)).toBe(
       "https://voice.example/studio",
@@ -406,7 +406,7 @@ it("keeps a backend-marked 504 as the backend answered it", async () => {
   const error = await errorFromResponse(
     new Response("upstream said no", {
       status: 504,
-      headers: { "x-omnivoice-backend": "1" },
+      headers: { "x-elevenvoice-backend": "1" },
     }),
   );
   expect(error.message).toBe("upstream said no");

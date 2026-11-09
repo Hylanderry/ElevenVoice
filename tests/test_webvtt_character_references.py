@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 VTT = """WEBVTT
 

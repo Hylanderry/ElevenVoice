@@ -1,6 +1,6 @@
 """Confucius4-TTS engine scaffold (#590).
 
-The engine is opt-in (gated behind OMNIVOICE_CONFUCIUS4_TTS_DIR) and
+The engine is opt-in (gated behind ELEVENVOICE_CONFUCIUS4_TTS_DIR) and
 subprocess-isolated, so it must be wired into the registry yet completely inert
 on a default install — never importing the (unvalidated) upstream package, never
 reporting available without a clone. These tests pin exactly that.
@@ -25,7 +25,7 @@ def test_backend_class_metadata():
 
 
 def test_inert_without_clone_dir(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", raising=False)
     from engines.confucius4 import bootstrap
     bootstrap.invalidate()
     assert bootstrap.is_confucius4_installed() is False
@@ -33,15 +33,15 @@ def test_inert_without_clone_dir(monkeypatch):
     from engines.confucius4 import Confucius4Backend
     ok, reason = Confucius4Backend.is_available()
     assert ok is False
-    assert "OMNIVOICE_CONFUCIUS4_TTS_DIR" in reason
+    assert "ELEVENVOICE_CONFUCIUS4_TTS_DIR" in reason
 
 
 def test_resolve_raises_actionable_without_clone(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_CONFUCIUS4_TTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CONFUCIUS4_TTS_DIR", raising=False)
     from engines.confucius4 import bootstrap
     bootstrap.invalidate()
     import pytest
-    with pytest.raises(RuntimeError, match="OMNIVOICE_CONFUCIUS4_TTS_DIR"):
+    with pytest.raises(RuntimeError, match="ELEVENVOICE_CONFUCIUS4_TTS_DIR"):
         bootstrap.resolve_confucius4_venv()
 
 

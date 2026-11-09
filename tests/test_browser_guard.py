@@ -7,8 +7,8 @@ non-browser clients keep working.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from starlette.websockets import WebSocketDisconnect
@@ -98,7 +98,7 @@ def test_fetch_metadata_without_origin_is_refused(spawned, public_dns, site):
         {},  # CLI, curl, MCP client, scripts
         {"Sec-Fetch-Site": "none"},  # Electron main-process net.fetch
         {"Origin": "http://testserver", "Sec-Fetch-Site": "same-origin"},  # served web UI
-        {"Origin": "app://voicestudio", "Sec-Fetch-Site": "cross-site"},  # packaged renderer
+        {"Origin": "app://elevenvoice", "Sec-Fetch-Site": "cross-site"},  # packaged renderer
         {"Origin": "http://localhost:3901"},  # browser dev UI
     ],
 )
@@ -110,11 +110,11 @@ def test_first_party_and_non_browser_requests_pass(spawned, public_dns, headers)
 
 
 def test_configured_extra_origin_passes(spawned, public_dns, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ALLOWED_ORIGINS", "https://ui.example")
+    monkeypatch.setenv("ELEVENVOICE_ALLOWED_ORIGINS", "https://ui.example")
     assert _client().post(_DOWNLOAD, headers={"Origin": "https://ui.example"}).status_code == 500
 
 
-# A UI on another allowed origin (OMNIVOICE_PUBLIC_API_BASE deployments) loads
+# A UI on another allowed origin (ELEVENVOICE_PUBLIC_API_BASE deployments) loads
 # media and downloads with plain GETs: browsers send no Origin there, only
 # Sec-Fetch-Site and the page's Referer.
 _MEDIA_GET = "/audio/not-an-id.ogg"  # the route 404s before touching disk or DB
@@ -123,7 +123,7 @@ _UI = "https://ui.example"
 
 @pytest.mark.parametrize("site", ["same-site", "cross-site"])
 def test_media_get_from_an_allowed_ui_origin_passes_by_referer(monkeypatch, site):
-    monkeypatch.setenv("OMNIVOICE_ALLOWED_ORIGINS", _UI)
+    monkeypatch.setenv("ELEVENVOICE_ALLOWED_ORIGINS", _UI)
     response = _client().get(
         _MEDIA_GET, headers={"Sec-Fetch-Site": site, "Referer": f"{_UI}/dub?tab=export"}
     )
@@ -145,7 +145,7 @@ def test_media_get_from_an_allowed_ui_origin_passes_by_referer(monkeypatch, site
 )
 @pytest.mark.parametrize("site", ["same-site", "cross-site"])
 def test_media_get_with_a_missing_or_foreign_referer_is_refused(monkeypatch, site, referer):
-    monkeypatch.setenv("OMNIVOICE_ALLOWED_ORIGINS", _UI)
+    monkeypatch.setenv("ELEVENVOICE_ALLOWED_ORIGINS", _UI)
     headers = {"Sec-Fetch-Site": site}
     if referer is not None:
         headers["Referer"] = referer
@@ -155,7 +155,7 @@ def test_media_get_with_a_missing_or_foreign_referer_is_refused(monkeypatch, sit
 
 
 def test_referer_never_overrides_a_foreign_origin(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ALLOWED_ORIGINS", _UI)
+    monkeypatch.setenv("ELEVENVOICE_ALLOWED_ORIGINS", _UI)
     response = _client().get(
         _MEDIA_GET, headers={"Origin": EVIL, "Sec-Fetch-Site": "cross-site", "Referer": f"{_UI}/"}
     )
@@ -263,7 +263,7 @@ def test_websocket_from_another_site_is_refused():
             ws.receive_text()
 
 
-@pytest.mark.parametrize("headers", [{}, {"Origin": "app://voicestudio"}, {"Origin": "http://testserver"}])
+@pytest.mark.parametrize("headers", [{}, {"Origin": "app://elevenvoice"}, {"Origin": "http://testserver"}])
 def test_websocket_from_the_app_or_a_non_browser_client_connects(headers):
     with _client().websocket_connect("/ws/tts", headers=headers) as ws:
         ws.send_json({})
@@ -276,12 +276,12 @@ def test_websocket_from_the_app_or_a_non_browser_client_connects(headers):
 @pytest.fixture
 def default_hosts(monkeypatch):
     for name in (
-        "OMNIVOICE_ALLOWED_HOSTS",
-        "OMNIVOICE_ALLOWED_ORIGINS",
-        "OMNIVOICE_MCP_ALLOWED_HOSTS",
-        "OMNIVOICE_API_URL",
-        "OMNIVOICE_PUBLIC_API_BASE",
-        "OMNIVOICE_BIND_HOST",
+        "ELEVENVOICE_ALLOWED_HOSTS",
+        "ELEVENVOICE_ALLOWED_ORIGINS",
+        "ELEVENVOICE_MCP_ALLOWED_HOSTS",
+        "ELEVENVOICE_API_URL",
+        "ELEVENVOICE_PUBLIC_API_BASE",
+        "ELEVENVOICE_BIND_HOST",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -301,7 +301,7 @@ def test_rebound_hostname_is_refused_even_when_same_origin(default_hosts, monkey
         "/system/network/enable", headers={"Origin": "http://evil.example:3900"}
     )
     assert response.status_code == 403
-    assert "OMNIVOICE_ALLOWED_HOSTS" in response.json()["detail"]
+    assert "ELEVENVOICE_ALLOWED_HOSTS" in response.json()["detail"]
     assert called == []
     # The public shell still loads so a remote UI can sign in and explain.
     assert client.get("/health").status_code in (200, 503)
@@ -341,7 +341,7 @@ def test_host_values_parse_strictly(default_hosts):
 
 
 def test_configured_host_names_pass(default_hosts, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ALLOWED_HOSTS", "media.lan,.home.example")
+    monkeypatch.setenv("ELEVENVOICE_ALLOWED_HOSTS", "media.lan,.home.example")
     assert _client("http://media.lan:3900").get("/system/network/state").status_code == 200
     assert _client("http://nas.home.example").get("/system/network/state").status_code == 200
     assert _client("http://other.example").get("/system/network/state").status_code == 403
@@ -351,7 +351,7 @@ def test_credentialed_remote_clients_are_not_host_checked(default_hosts, monkeyp
     from services.admin_sessions import admin_session_store
 
     admin_session_store.clear()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     client = _client("http://gpu.example.com", client=("10.0.0.5", 1))
     response = client.get(
         "/v1/audio/voices", headers={"Authorization": "Bearer s3cret-key"}
@@ -382,7 +382,7 @@ def test_loopback_proxy_with_a_valid_key_is_not_host_checked(default_hosts, monk
     from services.admin_sessions import admin_session_store
 
     admin_session_store.clear()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     proxied = _client("https://voice.example.com")  # loopback peer
     assert proxied.get(
         "/system/network/state", headers={"Authorization": "Bearer s3cret-key"}
@@ -401,7 +401,7 @@ def test_loopback_proxy_with_an_admin_session_is_not_host_checked_but_a_pin_is(d
     from services.admin_sessions import admin_session_store
 
     admin_session_store.clear()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     session = admin_session_store.issue("s3cret-key")
     proxied = _client("https://voice.example.com")
     assert proxied.get(
@@ -412,18 +412,18 @@ def test_loopback_proxy_with_an_admin_session_is_not_host_checked_but_a_pin_is(d
     class _Share:
         pin = "4321"
 
-    monkeypatch.delenv("OMNIVOICE_API_KEY")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY")
     monkeypatch.setattr(app.state, "network_share", _Share(), raising=False)
     # A guessable PIN must not let a rebinding page through with loopback
     # rights; right and wrong PINs are refused alike, so there is no oracle.
-    assert proxied.get("/v1/audio/voices", headers={"X-OmniVoice-Pin": "4321"}).status_code == 403
-    assert proxied.get("/v1/audio/voices", headers={"X-OmniVoice-Pin": "0000"}).status_code == 403
-    assert proxied.get("/system/diagnose", headers={"X-OmniVoice-Pin": "4321"}).status_code == 403
+    assert proxied.get("/v1/audio/voices", headers={"X-ElevenVoice-Pin": "4321"}).status_code == 403
+    assert proxied.get("/v1/audio/voices", headers={"X-ElevenVoice-Pin": "0000"}).status_code == 403
+    assert proxied.get("/system/diagnose", headers={"X-ElevenVoice-Pin": "4321"}).status_code == 403
 
 
 def test_host_refusal_says_where_to_configure_the_desktop_app(default_hosts):
     detail = _client("http://evil.example:3900").get("/system/network/state").json()["detail"]
-    assert "OMNIVOICE_ALLOWED_HOSTS" in detail
+    assert "ELEVENVOICE_ALLOWED_HOSTS" in detail
     assert "~/.config/omnivoice/env" in detail
     assert "%USERPROFILE%\\.config\\omnivoice\\env" in detail
 
@@ -432,7 +432,7 @@ def test_loopback_proxy_websocket_with_a_ticket_is_not_host_checked(default_host
     from services.admin_sessions import admin_session_store
 
     admin_session_store.clear()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     session = admin_session_store.issue("s3cret-key")
     ticket = admin_session_store.issue_ws_ticket(session.token, "/ws/tts", "s3cret-key").token
     proxied = _client("https://voice.example.com")

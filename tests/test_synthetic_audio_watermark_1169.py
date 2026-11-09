@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import asyncio
 import base64
@@ -176,7 +176,7 @@ def fake_engine(monkeypatch):
     tb.reset_active_backend()
     fake = _make_fake_engine("fake-wm-1169")
     monkeypatch.setitem(tb._REGISTRY, "fake-wm-1169", fake)
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     yield fake
     tb.reset_active_backend()
 
@@ -382,7 +382,7 @@ def test_batch_dub_track_is_watermarked(tmp_path, monkeypatch, fake_engine, mark
     import torchaudio
 
     monkeypatch.setattr(b, "DATA_DIR", str(tmp_path))
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "fake-wm-1169")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "fake-wm-1169")
 
     async def _fake_run_transcribe_guarded(pool, fn, what=None):
         return (

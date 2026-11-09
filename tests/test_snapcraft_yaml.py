@@ -20,12 +20,12 @@ def _builder_plugs() -> set[str]:
 
 def test_snapcraft_yaml_matches_the_release_snap():
     snap = yaml.safe_load((ROOT / "snap" / "snapcraft.yaml").read_text(encoding="utf-8"))
-    assert snap["name"] == "voicestudio"
+    assert snap["name"] == "elevenvoice"
     assert snap["confinement"] == "strict" and snap["base"] == "core22"
     aliases = {name: spec["interface"] for name, spec in (snap.get("plugs") or {}).items()}
     assert snap["plugs"]["browser-sandbox"]["allow-sandbox"] is False
-    app_plugs = {aliases.get(p, p) for p in snap["apps"]["voicestudio"]["plugs"]}
+    app_plugs = {aliases.get(p, p) for p in snap["apps"]["elevenvoice"]["plugs"]}
     assert app_plugs == _builder_plugs()
     # snapd owns updates for a Store install.
-    assert snap["apps"]["voicestudio"]["environment"]["VOICESTUDIO_DISABLE_UPDATER"] == "1"
+    assert snap["apps"]["elevenvoice"]["environment"]["ELEVENVOICE_DISABLE_UPDATER"] == "1"
     assert (ROOT / snap["icon"]).is_file()

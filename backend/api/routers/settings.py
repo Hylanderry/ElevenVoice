@@ -28,7 +28,7 @@ from core.nvidia_smi import find_nvidia_smi
 from core.engine_licenses import LICENSE_GATED_ENGINES
 from api.dependencies import require_admin, require_admin_action
 
-logger = logging.getLogger("omnivoice.api.settings")
+logger = logging.getLogger("elevenvoice.api.settings")
 
 router = APIRouter(
     prefix="/api/settings",
@@ -208,7 +208,7 @@ class _OffloadAfterGenerationBody(BaseModel):
 
 def _offload_after_generation_state() -> dict:
     """`enabled` is the effective value (env > saved > off). `env_pinned` means
-    OMNIVOICE_OFFLOAD_AFTER_GENERATION decides and a saved value is ignored.
+    ELEVENVOICE_OFFLOAD_AFTER_GENERATION decides and a saved value is ignored.
     `device` is the TTS device: on `cpu` the setting has nothing to move."""
     from services import model_manager as mm
 
@@ -255,7 +255,7 @@ class _PauseFillBody(BaseModel):
 
 def _pause_fill_state() -> dict:
     """`mode` is the effective value (env > saved > silence). `env_pinned`
-    means OMNIVOICE_PAUSE_FILL decides and a saved value is ignored."""
+    means ELEVENVOICE_PAUSE_FILL decides and a saved value is ignored."""
     from services import audio_dsp
 
     return {
@@ -300,7 +300,7 @@ def _compute_device_state() -> dict:
     from core import device_caps
 
     caps = device_caps.detect_host_caps()
-    env_pin = (os.environ.get("OMNIVOICE_DEVICE") or "").strip().lower()
+    env_pin = (os.environ.get("ELEVENVOICE_DEVICE") or "").strip().lower()
     auto_family = next(
         (f for f in device_caps.ACCELERATOR_PRIORITY if f in caps.available_families),
         "cpu",
@@ -335,7 +335,7 @@ def get_compute_device():
 def set_compute_device(body: _ComputeDeviceBody):
     """Persist the compute-device pick. Applied by the capability probe at
     the next backend start (host caps are immutable per process — same
-    restart contract as the rest of the Performance tab). ``OMNIVOICE_DEVICE``
+    restart contract as the rest of the Performance tab). ``ELEVENVOICE_DEVICE``
     always wins over this pick; the UI shows the pin instead of pretending."""
     from core import device_caps, prefs
 
@@ -662,7 +662,7 @@ def list_llm_providers():
     return {
         "active": llm_providers.active_provider_id(),
         "engine_active": llm_backend.active_backend_id(),
-        "engine_from_env": bool(os.environ.get("OMNIVOICE_LLM_BACKEND")),
+        "engine_from_env": bool(os.environ.get("ELEVENVOICE_LLM_BACKEND")),
         "providers": [llm_providers.describe(p) for p in llm_providers.all_providers()],
     }
 
@@ -682,7 +682,7 @@ def save_llm_provider(provider_id: str, body: _LLMProviderBody):
         from services import llm_backend
         # Persist the pre-save mode before adding a first cloud key. Otherwise
         # legacy key auto-detection would enable LLMs before Connect verifies it.
-        if prefs.get("llm_backend") is None and not os.environ.get("OMNIVOICE_LLM_BACKEND"):
+        if prefs.get("llm_backend") is None and not os.environ.get("ELEVENVOICE_LLM_BACKEND"):
             prefs.set_("llm_backend", llm_backend.active_backend_id())
     if body.api_key is not None:
         llm_providers.save_key(provider_id, body.api_key.strip())
@@ -723,7 +723,7 @@ def _validate_llm_activation(provider_id: str) -> None:
     if p is None:
         raise HTTPException(status_code=404, detail="Unknown LLM provider.")
     pin = llm_providers._active_env_pin()
-    if (pin and pin != provider_id) or os.environ.get("OMNIVOICE_LLM_BACKEND") not in (None, "", "openai-compat"):
+    if (pin and pin != provider_id) or os.environ.get("ELEVENVOICE_LLM_BACKEND") not in (None, "", "openai-compat"):
         raise HTTPException(status_code=409, detail="LLM selection is pinned by the environment.")
     error = llm_providers.configuration_error(p)
     if error:
@@ -1045,12 +1045,12 @@ def get_license_acceptance(engine_id: str) -> dict:
 
 # ── Storage: configurable models directory (#64) ──────────────────────────
 # Where HuggingFace / Torch download model weights. The user's choice is
-# persisted durably to the per-user env file as OMNIVOICE_CACHE_DIR, which
+# persisted durably to the per-user env file as ELEVENVOICE_CACHE_DIR, which
 # main.py maps to HF_HOME / HF_HUB_CACHE / TORCH_HOME at startup. That env file
 # is the *single source of truth*: PUT writes it, GET reads it back — there is
 # no second store to diverge from. Takes effect on the next backend restart
 # (a storage-location change can't safely move an in-use cache mid-process).
-_MODELS_DIR_ENV = "OMNIVOICE_CACHE_DIR"
+_MODELS_DIR_ENV = "ELEVENVOICE_CACHE_DIR"
 
 
 def _default_models_dir() -> str:
@@ -1093,7 +1093,7 @@ def get_models_dir():
 def set_models_dir(body: _ModelsDirBody):
     """Set (or clear, with an empty path) the models download directory.
 
-    Validates the directory is writable, then writes OMNIVOICE_CACHE_DIR to the
+    Validates the directory is writable, then writes ELEVENVOICE_CACHE_DIR to the
     durable per-user env file so main.py applies it on the next launch. The env
     file is the only persisted store, so GET can never diverge from what was
     saved. Returns restart_required=True.
@@ -1171,7 +1171,7 @@ async def get_storage_report(refresh: bool = Query(False)):
 
 @router.post("/storage/temp/clear")
 async def clear_temp_files():
-    """Delete VoiceStudio-owned temp files (Settings → Storage → Temporary files).
+    """Delete ElevenVoice-owned temp files (Settings → Storage → Temporary files).
 
     Removes only the ``omnivoice*`` entries in the OS temp dir — the exact
     population the storage report's "temp" category counts — and invalidates

@@ -25,13 +25,13 @@ def test_parent_pipe_ignores_bytes_until_eof():
 def test_watchdog_is_disabled_outside_desktop(monkeypatch):
     from core.parent_liveness import arm_desktop_parent_watchdog
 
-    monkeypatch.delenv("OMNIVOICE_DESKTOP_CONTAINED", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DESKTOP_CONTAINED", raising=False)
     assert arm_desktop_parent_watchdog() is False
 
 
 def test_desktop_child_exits_when_parent_closes_stdin():
     env = os.environ.copy()
-    env["OMNIVOICE_DESKTOP_CONTAINED"] = "1"
+    env["ELEVENVOICE_DESKTOP_CONTAINED"] = "1"
     child = subprocess.Popen(
         [
             sys.executable,
@@ -119,7 +119,7 @@ def test_windows_watchdog_arms_pipe_poller_on_pipe_stdin(monkeypatch):
     import types
     import core.parent_liveness as pl
 
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     monkeypatch.setattr(pl.os, "name", "nt")
 
     class FakeBuffer:
@@ -153,7 +153,7 @@ def test_windows_watchdog_keeps_blocking_reader_for_non_pipe_stdin(monkeypatch):
     import types
     import core.parent_liveness as pl
 
-    monkeypatch.setenv("OMNIVOICE_DESKTOP_CONTAINED", "1")
+    monkeypatch.setenv("ELEVENVOICE_DESKTOP_CONTAINED", "1")
     monkeypatch.setattr(pl.os, "name", "nt")
 
     class FakeBuffer:
@@ -208,10 +208,10 @@ def test_desktop_spawned_backend_gets_past_ml_imports_on_windows(tmp_path):
     env = os.environ.copy()
     env.update(
         {
-            "OMNIVOICE_DESKTOP_CONTAINED": "1",  # arms the watchdog on the stdin pipe
-            "OMNIVOICE_PORT": str(port),
-            "OMNIVOICE_DATA_DIR": str(tmp_path / "data"),
-            "OMNIVOICE_CACHE_DIR": str(tmp_path / "hf_cache"),
+            "ELEVENVOICE_DESKTOP_CONTAINED": "1",  # arms the watchdog on the stdin pipe
+            "ELEVENVOICE_PORT": str(port),
+            "ELEVENVOICE_DATA_DIR": str(tmp_path / "data"),
+            "ELEVENVOICE_CACHE_DIR": str(tmp_path / "hf_cache"),
             "HF_HUB_CACHE": str(tmp_path / "hf_cache"),  # never the developer's populated cache
             "HF_HUB_OFFLINE": "1",
             "PYTHONUNBUFFERED": "1",

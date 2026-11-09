@@ -10,6 +10,7 @@ import {
   screen,
   type Tray,
   type IpcMainInvokeEvent,
+  type MenuItemConstructorOptions,
 } from 'electron';
 import { join } from 'node:path';
 import { backendRoot } from './backend';
@@ -25,7 +26,13 @@ export function installNativeCapture(
   preload: string,
   tray: Tray,
   main: () => BrowserWindow | null,
-): () => void {
+  options: {
+    /** Opens the main window when the app runs in the tray without one. */
+    openMain?: () => BrowserWindow;
+    /** Extra tray entries (background mode, start with the system). */
+    extraItems?: () => MenuItemConstructorOptions[];
+  } = {},
+): { close: () => void; refreshTray: () => void } {
   let recorder: BrowserWindow | null = null;
   let unregister: (() => void) | null = null;
   let capturing = false;
@@ -36,7 +43,7 @@ export function installNativeCapture(
     settings: string;
     exit: string;
   } | null = null;
-  const name = 'voicestudio-desktop-bridge' + (process.platform === 'win32' ? '.exe' : '');
+  const name = 'elevenvoice-desktop-bridge' + (process.platform === 'win32' ? '.exe' : '');
   const executable = app.isPackaged
     ? join(process.resourcesPath, 'native', name)
     : join(backendRoot(), 'native', 'desktop-bridge', 'target', 'debug', name);
@@ -83,13 +90,19 @@ export function installNativeCapture(
   );
 
   const showMain = (path?: '/settings') => {
-    const owner = main();
+    let owner = main();
+    if ((!owner || owner.isDestroyed()) && options.openMain) owner = options.openMain();
     if (!activateLiveWindow(owner)) return;
     if (path) sendToLiveWindow(owner, 'app:navigate', path);
   };
   const refreshTrayMenu = () => {
-    if (!trayLabels) return;
-    const labels = trayLabels;
+    const labels = trayLabels ?? {
+      show: `Open ${app.getName()}`,
+      start: 'Start dictation',
+      stop: 'Stop dictation',
+      settings: 'Settings',
+      exit: 'Quit',
+    };
     const shortcut = shortcuts.getState().accelerator;
     tray.setImage(createTrayIcon(trayIcon(capturing ? 'tray-recording.png' : '32x32.png')));
     tray.setContextMenu(
@@ -115,6 +128,7 @@ export function installNativeCapture(
           },
         },
         { label: labels.settings, click: () => showMain('/settings') },
+        ...(options.extraItems ? [{ type: 'separator' as const }, ...options.extraItems()] : []),
         { type: 'separator' },
         { label: labels.exit, click: () => app.quit() },
       ]),
@@ -276,7 +290,7 @@ export function installNativeCapture(
     void output.request({ method: 'prime_tray' }).catch(() => {});
   };
   tray.on('mouse-enter', prime);
-  return () => {
+  const close = () => {
     tray.removeListener('mouse-enter', prime);
     unregister?.();
     unregister = null;
@@ -301,4 +315,5 @@ export function installNativeCapture(
     ])
       ipcMain.removeHandler(`capture:${name}`);
   };
+  return { close, refreshTray: refreshTrayMenu };
 }

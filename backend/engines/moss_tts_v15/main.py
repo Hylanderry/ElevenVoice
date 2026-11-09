@@ -1,7 +1,7 @@
 """MOSS-TTS-v1.5 sidecar entry point (issue #498).
 
 Runs inside ``engines/moss_tts_v15/.venv`` (or the user's existing
-``${OMNIVOICE_MOSS_TTS_V15_DIR}/.venv``) with ``transformers==5.0.0``,
+``${ELEVENVOICE_MOSS_TTS_V15_DIR}/.venv``) with ``transformers==5.0.0``,
 isolated from the OmniVoice parent process which pins ``transformers>=5.3``.
 Same isolation rationale as the IndexTTS sidecar.
 
@@ -62,19 +62,19 @@ _SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 def _model_source() -> tuple[str, str]:
     """Return a pinned model source; custom remote code requires two opt-ins."""
-    repo = os.environ.get("OMNIVOICE_MOSS_TTS_V15_MODEL", _DEFAULT_REPO)
+    repo = os.environ.get("ELEVENVOICE_MOSS_TTS_V15_MODEL", _DEFAULT_REPO)
     if repo == _DEFAULT_REPO:
         return repo, _DEFAULT_REVISION
-    unsafe = os.environ.get("OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "").lower()
-    revision = os.environ.get("OMNIVOICE_MOSS_TTS_V15_REVISION", "")
+    unsafe = os.environ.get("ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "").lower()
+    revision = os.environ.get("ELEVENVOICE_MOSS_TTS_V15_REVISION", "")
     if unsafe not in {"1", "true", "yes", "on"}:
         raise RuntimeError(
             "A custom MOSS model contains executable remote code. Set "
-            "OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE=1 only after auditing it."
+            "ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE=1 only after auditing it."
         )
     if not _SHA.fullmatch(revision):
         raise RuntimeError(
-            "A custom MOSS model requires OMNIVOICE_MOSS_TTS_V15_REVISION="
+            "A custom MOSS model requires ELEVENVOICE_MOSS_TTS_V15_REVISION="
             "<40-character commit SHA>; branches and tags are mutable."
         )
     return repo, revision
@@ -287,7 +287,7 @@ def _load_model(stdout):
     dtype = torch.bfloat16 if device != "cpu" else torch.float32
     # "sdpa" works on CUDA + CPU and needs no extra dep. flash_attention_2
     # (Ampere+ CUDA, optional flash-attn) is opt-in via env.
-    attn = os.environ.get("OMNIVOICE_MOSS_TTS_V15_ATTN", "sdpa")
+    attn = os.environ.get("ELEVENVOICE_MOSS_TTS_V15_ATTN", "sdpa")
 
     # The upstream processor forwards revision to both the separate codec
     # repo and ProcessorMixin.__init__, where it is invalid (#2690). Resolve

@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 
 def _tone(f0=150.0, dur=1.0, amp=0.3, am=4.0, sr=16000):

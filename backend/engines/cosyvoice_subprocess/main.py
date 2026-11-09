@@ -114,17 +114,17 @@ def _heartbeat(stdout, stage: str):
 
 
 def _checkout() -> str:
-    path = os.environ.get("OMNIVOICE_COSYVOICE_DIR")
+    path = os.environ.get("ELEVENVOICE_COSYVOICE_DIR")
     if not path:
         raise RuntimeError(
-            "OMNIVOICE_COSYVOICE_DIR is not set. Reinstall CosyVoice from "
+            "ELEVENVOICE_COSYVOICE_DIR is not set. Reinstall CosyVoice from "
             "Model Catalogue → Engines."
         )
     return path
 
 
 def _model_dir(checkout: str) -> str:
-    override = os.environ.get("OMNIVOICE_COSYVOICE_MODEL")
+    override = os.environ.get("ELEVENVOICE_COSYVOICE_MODEL")
     if not override:
         return os.path.join(checkout, *_MANAGED_MODEL_SUBDIR)
     if not os.path.isdir(override):
@@ -132,7 +132,7 @@ def _model_dir(checkout: str) -> str:
         # and voice the user did not choose, while model_identity() still
         # named theirs. Say what is wrong instead.
         raise RuntimeError(
-            f"OMNIVOICE_COSYVOICE_MODEL points at {override}, which is not a "
+            f"ELEVENVOICE_COSYVOICE_MODEL points at {override}, which is not a "
             "folder. Point it at a CosyVoice model folder, or clear it to use "
             "the model the one-click install downloaded."
         )

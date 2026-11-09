@@ -10,7 +10,7 @@ import time
 import threading
 from tempfile import TemporaryDirectory
 
-logger = logging.getLogger("omnivoice.diarisation.native")
+logger = logging.getLogger("elevenvoice.diarisation.native")
 _process_lock = threading.Lock()
 _processes: set = set()
 MAX_V1_AUDIO_SECONDS = 120.0
@@ -103,7 +103,7 @@ class NativeSortformer:
 
         # Built per use, so this also applies a revoked acceptance (#2689).
         # A user-configured GGUF is a local asset with no registry identity.
-        if not os.environ.get("OMNIVOICE_DIARIZATION_MODEL", "").strip():
+        if not os.environ.get("ELEVENVOICE_DIARIZATION_MODEL", "").strip():
             ensure_accepted([SORTFORMER_REPO])
         from engines.audiocpp.bootstrap import resolve_server_binary
 
@@ -146,7 +146,7 @@ class NativeSortformer:
         if audio_info is not None:
             _check_duration(audio_info.duration)
         device = resolve_compute_selection().device
-        with TemporaryDirectory(prefix="voicestudio-sortformer-") as directory:
+        with TemporaryDirectory(prefix="elevenvoice-sortformer-") as directory:
             source = Path(audio_path).resolve()
             output = Path(directory) / "turns.json"
             command = _sortformer_command(

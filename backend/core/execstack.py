@@ -23,7 +23,7 @@ import struct
 import sys
 import threading
 
-logger = logging.getLogger("omnivoice.execstack")
+logger = logging.getLogger("elevenvoice.execstack")
 
 PT_GNU_STACK = 0x6474E551
 PF_X = 0x1

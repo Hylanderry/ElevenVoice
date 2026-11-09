@@ -18,14 +18,14 @@ Design notes (single source of truth for the choices):
   ``pip install git+https://…`` path was rejected because the engine
   *directory* must exist on disk anyway: the sidecar resolves its venv
   and model weights relative to it.
-* **Managed install root:** ``DATA_DIR/engines/<engine_id>/`` (or ``$OMNIVOICE_ENGINES_DIR/<engine_id>/``) — always
+* **Managed install root:** ``DATA_DIR/engines/<engine_id>/`` (or ``$ELEVENVOICE_ENGINES_DIR/<engine_id>/``) — always
   user-writable (works in frozen/packaged builds where ``backend/`` is
   read-only), survives app updates, and never collides with a user's own
   clone. A user-managed install (env var already pointing at their clone)
   is left completely alone.
 * **Weights ARE part of the install** for engines whose sidecar loads
   from ``<checkout>/<weights_subdir>/`` (IndexTTS 2.5's ``main.py`` reads
-  ``$OMNIVOICE_INDEXTTS_DIR/checkpoints/config_v2_5.yaml`` — verified). The
+  ``$ELEVENVOICE_INDEXTTS_DIR/checkpoints/config_v2_5.yaml`` — verified). The
   download goes through ``huggingface_hub.snapshot_download`` with the
   endpoint from :mod:`services.endpoint_race` (HF endpoint auto-select;
   **no hardcoded huggingface.co**) and the token from
@@ -63,7 +63,7 @@ from typing import Callable, Iterable, NamedTuple, Optional
 from core.config import DATA_DIR, get_engines_dir
 from core.contained_subprocess import OwnedPopen, WindowsJobPopen, spawn_owned
 
-logger = logging.getLogger("omnivoice.sidecar_install")
+logger = logging.getLogger("elevenvoice.sidecar_install")
 
 _GIB = 1024 ** 3
 
@@ -164,7 +164,7 @@ class SidecarSpec:
     # runs torch on the CPU (see core.torch_indexes).
     cpu_torch_index: bool = False
     # Install torch from PyTorch's ROCm index on a ROCm host (or with
-    # ``OMNIVOICE_TORCH_VARIANT=rocm``). Only for an engine whose own torch
+    # ``ELEVENVOICE_TORCH_VARIANT=rocm``). Only for an engine whose own torch
     # constraints accept the shared ROCm stack in core.torch_indexes — an
     # engine pinning another torch version must not set this, or resolution
     # fails loudly at install time. False keeps the engine's existing host
@@ -287,8 +287,8 @@ def _rocm_index_url() -> Optional[str]:
 
     Two ways to be on ROCm, mirroring ``scripts/setup.py::_rocm_opt_in``:
     the host probe reports family ``rocm`` (the main venv's torch exposes HIP),
-    or the user opted in with ``OMNIVOICE_TORCH_VARIANT=rocm`` (covers a swap
-    that has not landed yet). ``OMNIVOICE_TORCH_INDEX`` overrides the index
+    or the user opted in with ``ELEVENVOICE_TORCH_VARIANT=rocm`` (covers a swap
+    that has not landed yet). ``ELEVENVOICE_TORCH_INDEX`` overrides the index
     exactly as it does for the main venv. Linux only: ROCm wheels ship for
     Linux (incl. WSL2) nowhere else, and the main venv's swap degrades to a
     warning on other platforms — a sidecar install must not hard-fail where
@@ -296,10 +296,10 @@ def _rocm_index_url() -> Optional[str]:
     """
     if sys.platform != "linux":
         return None
-    variant = os.environ.get("OMNIVOICE_TORCH_VARIANT", "").strip().lower()
+    variant = os.environ.get("ELEVENVOICE_TORCH_VARIANT", "").strip().lower()
     if _host_family() == "rocm" or variant == "rocm":
         from core.torch_indexes import PYTORCH_ROCM_INDEX_URL
-        return os.environ.get("OMNIVOICE_TORCH_INDEX") or PYTORCH_ROCM_INDEX_URL
+        return os.environ.get("ELEVENVOICE_TORCH_INDEX") or PYTORCH_ROCM_INDEX_URL
     return None
 
 
@@ -310,7 +310,7 @@ def _rocm_pin_args() -> list[str]:
     own ``[tool.uv.sources]`` (IndexTTS pins it to the cu128 index): without it
     every ``+rocm`` pin is looked up on the cu128 index and fails. The local
     tag comes from the index name (``…/rocm6.4`` → ``+rocm6.4``) so a custom
-    ``OMNIVOICE_TORCH_INDEX`` keeps resolving; a mirror without a rocm-style
+    ``ELEVENVOICE_TORCH_INDEX`` keeps resolving; a mirror without a rocm-style
     name falls back to the bare pin and lets the extra index win by PEP 440
     ordering (a tagged build sorts above the bare version).
     """
@@ -324,7 +324,7 @@ def _rocm_pin_args() -> list[str]:
     tail = index.rstrip("/").rsplit("/", 1)[-1]
     tag = f"+{tail}" if tail.startswith("rocm") else ""
     # uv must resolve against the SAME index the pins were derived from:
-    # the tag above already comes from OMNIVOICE_TORCH_INDEX, so appending
+    # the tag above already comes from ELEVENVOICE_TORCH_INDEX, so appending
     # the hard-coded public index would look a mirror's pins up on someone
     # else's server (and bypass the mirror entirely).
     idx_args = [
@@ -429,7 +429,7 @@ SPECS: dict[str, SidecarSpec] = {
             "bf2e967fac7933197143b017a60820b1ad40c448.tar.gz"
         ),
         checkout_dirname="index-tts-2.5",
-        env_var="OMNIVOICE_INDEXTTS_DIR",
+        env_var="ELEVENVOICE_INDEXTTS_DIR",
         probe_module="indextts.infer_v2_5",
         venv_args=("--python", "3.11"),
         compatible_python=("3.10", "3.11"),
@@ -471,7 +471,7 @@ SPECS: dict[str, SidecarSpec] = {
             "934d6826b084c46a0d033402174d5f8ac4ed2519.tar.gz"
         ),
         checkout_dirname="MOSS-TTS",
-        env_var="OMNIVOICE_MOSS_TTS_V15_DIR",
+        env_var="ELEVENVOICE_MOSS_TTS_V15_DIR",
         probe_module="transformers",
         probe_code="import transformers, torch",
         source_revision="934d6826b084c46a0d033402174d5f8ac4ed2519",
@@ -501,7 +501,7 @@ SPECS: dict[str, SidecarSpec] = {
             "4fb32c481302d8858c3aec6a1c2a8b4cea8894c0.tar.gz"
         ),
         checkout_dirname="Confucius4-TTS",
-        env_var="OMNIVOICE_CONFUCIUS4_TTS_DIR",
+        env_var="ELEVENVOICE_CONFUCIUS4_TTS_DIR",
         probe_module="confuciustts",
         # Upstream is not pip-installable; the package resolves from the
         # checkout on sys.path, exactly as the engine's sidecar imports it.
@@ -533,7 +533,7 @@ SPECS: dict[str, SidecarSpec] = {
             "32407a55228630475c48ecdb2c4e2c0f9c09e030.tar.gz"
         ),
         checkout_dirname="dots.tts",
-        env_var="OMNIVOICE_DOTS_TTS_DIR",
+        env_var="ELEVENVOICE_DOTS_TTS_DIR",
         probe_module="dots_tts.runtime",
         source_revision="32407a55228630475c48ecdb2c4e2c0f9c09e030",
         source_required_path="constraints/recommended.txt",
@@ -560,7 +560,7 @@ SPECS: dict[str, SidecarSpec] = {
         repo_url="",
         tarball_url="",
         checkout_dirname="supertonic3",
-        env_var="OMNIVOICE_SUPERTONIC3_DIR",
+        env_var="ELEVENVOICE_SUPERTONIC3_DIR",
         probe_module="supertonic",
         has_source=False,
         venv_args=("--python", "3.11"),
@@ -577,7 +577,7 @@ SPECS: dict[str, SidecarSpec] = {
         repo_url="",
         tarball_url="",
         checkout_dirname="pockettts",
-        env_var="OMNIVOICE_POCKETTTS_DIR",
+        env_var="ELEVENVOICE_POCKETTTS_DIR",
         probe_module="pocket_tts",
         has_source=False,
         venv_args=("--python", "3.11"),
@@ -601,7 +601,7 @@ SPECS: dict[str, SidecarSpec] = {
         repo_url="",
         tarball_url="",
         checkout_dirname="voxcpm2",
-        env_var="OMNIVOICE_VOXCPM2_DIR",
+        env_var="ELEVENVOICE_VOXCPM2_DIR",
         probe_module="voxcpm",
         has_source=False,
         venv_args=("--python", "3.11"),
@@ -628,7 +628,7 @@ SPECS: dict[str, SidecarSpec] = {
             "8b7bcc9341b3b4ef3a3a58ba1338a7d85ff133eb.tar.gz"
         ),
         checkout_dirname="MOSS-TTS-Nano",
-        env_var="OMNIVOICE_MOSS_TTS_NANO_DIR",
+        env_var="ELEVENVOICE_MOSS_TTS_NANO_DIR",
         probe_module="moss_tts_nano_runtime",
         probe_code=(
             "import moss_tts_nano_runtime, torchaudio\n"
@@ -669,7 +669,7 @@ SPECS: dict[str, SidecarSpec] = {
             "074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc.tar.gz"
         ),
         checkout_dirname="CosyVoice",
-        env_var="OMNIVOICE_COSYVOICE_DIR",
+        env_var="ELEVENVOICE_COSYVOICE_DIR",
         probe_module="cosyvoice",
         probe_code=(
             "import os, sys; c = {checkout_repr}; "
@@ -733,7 +733,7 @@ SPECS: dict[str, SidecarSpec] = {
 
 class HostUnsupported(RuntimeError):
     """The one-click install cannot work on this machine. The message is a
-    VoiceStudio-owned sentence from the spec, safe to show the user."""
+    ElevenVoice-owned sentence from the spec, safe to show the user."""
 
 
 def host_support(spec: SidecarSpec) -> tuple[bool, str]:
@@ -827,18 +827,18 @@ def _venv_python(venv_dir: Path) -> Path:
 
 
 def _locate_uv() -> Optional[str]:
-    """Find uv: bundled (shell-set OMNIVOICE_BUNDLED_UV) first, then PATH.
+    """Find uv: bundled (shell-set ELEVENVOICE_BUNDLED_UV) first, then PATH.
 
     Same resolution order as engines.indextts.bootstrap._locate_uv — the
     canonical uv-resolution pattern for sidecar venvs.
 
-    The desktop shell sets OMNIVOICE_BUNDLED_UV because PATH alone cannot find
+    The desktop shell sets ELEVENVOICE_BUNDLED_UV because PATH alone cannot find
     the packaged uv: it ships in the app's own resources directory, which is on
     nobody's PATH, and a GUI launch does not inherit the shell's PATH additions
     either (#2215). Without it every sidecar installer fails preflight on a
     clean install even though the binary is right there in the bundle.
     """
-    bundled = os.environ.get("OMNIVOICE_BUNDLED_UV")
+    bundled = os.environ.get("ELEVENVOICE_BUNDLED_UV")
     if bundled and Path(bundled).is_file():
         return bundled
     return shutil.which("uv")
@@ -898,7 +898,7 @@ def uv_subprocess_env(cache_parent: Path) -> "dict[str, str]":
     """Environment for ``uv`` subprocesses that install into *cache_parent*'s volume.
 
     Always a copy of ``os.environ`` with ``UV_NO_CONFIG=1``: an engine's
-    install resolves its own requirements, never VoiceStudio's. The backend
+    install resolves its own requirements, never ElevenVoice's. The backend
     runs inside the app's tree, so uv would otherwise discover the app's
     ``pyproject.toml`` and apply its ``[tool.uv] constraint-dependencies``
     (``torch==2.8.0``) to the engine's venv. An engine pinning another torch
@@ -1067,7 +1067,7 @@ def _job_step(job: dict, step_id: str) -> dict:
 
 
 _DISK_FULL_REMEDIATION = (
-    "The disk is full. Free up space (or move VoiceStudio's data directory to a "
+    "The disk is full. Free up space (or move ElevenVoice's data directory to a "
     "larger volume), then re-run the install — it resumes from where it stopped."
 )
 
@@ -1330,7 +1330,7 @@ def uninstall(engine_id: str) -> dict:
             "status": "not_managed",
             "engine": engine_id,
             "detail": (
-                f"{spec.display_name} points at {env_dir}, which VoiceStudio did not "
+                f"{spec.display_name} points at {env_dir}, which ElevenVoice did not "
                 f"install. Remove that directory yourself if you want it gone, or "
                 f"clear {spec.env_var} in Settings."
             ),
@@ -1399,14 +1399,14 @@ def _run_install(spec: SidecarSpec, job: dict) -> None:
 def _step_preflight(spec: SidecarSpec, job: dict) -> None:
     if _locate_uv() is None:
         raise _StepError(
-            "uv was not found (checked the bundled path via OMNIVOICE_BUNDLED_UV, "
+            "uv was not found (checked the bundled path via ELEVENVOICE_BUNDLED_UV, "
             "then PATH).",
-            "Install uv from https://docs.astral.sh/uv/ and relaunch VoiceStudio, or "
-            "set OMNIVOICE_BUNDLED_UV to the absolute path of a uv binary.",
+            "Install uv from https://docs.astral.sh/uv/ and relaunch ElevenVoice, or "
+            "set ELEVENVOICE_BUNDLED_UV to the absolute path of a uv binary.",
         )
     err = disk_space_error(spec)
     if err:
-        raise _StepError(err, "Free up disk space (or move VoiceStudio's data directory "
+        raise _StepError(err, "Free up disk space (or move ElevenVoice's data directory "
                               "to a larger volume) and retry.")
     managed_root(spec).mkdir(parents=True, exist_ok=True)
     _job_step(job, "preflight")["detail"] = "uv found, disk space OK"
@@ -1474,11 +1474,11 @@ def _fetch_main_source(spec: SidecarSpec, job: dict) -> None:
     step["detail"] = "source tarball"
 
 
-_SOURCE_REVISION_MARKER = ".voicestudio_source_revision"
+_SOURCE_REVISION_MARKER = ".elevenvoice_source_revision"
 # Written once the import probe passes. For an engine with no weights
 # download, the venv interpreter existing proves nothing: a dependency
 # install that died halfway leaves one behind.
-_INSTALL_COMPLETE_MARKER = ".voicestudio_install_complete"
+_INSTALL_COMPLETE_MARKER = ".elevenvoice_install_complete"
 
 
 def _source_layout_ok(spec: SidecarSpec, checkout: Path) -> bool:

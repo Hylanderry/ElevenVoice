@@ -9,12 +9,12 @@ def _download_module():
 
 def test_segmented_download_default_and_env_values(monkeypatch):
     module = _download_module()
-    monkeypatch.delenv("OMNIVOICE_SEGMENTED_DOWNLOAD", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SEGMENTED_DOWNLOAD", raising=False)
     assert module._segmented_enabled() is True
-    monkeypatch.setenv("OMNIVOICE_SEGMENTED_DOWNLOAD", "0")
+    monkeypatch.setenv("ELEVENVOICE_SEGMENTED_DOWNLOAD", "0")
     assert module._segmented_enabled() is False
     for value in ("1", "true", "on", "yes"):
-        monkeypatch.setenv("OMNIVOICE_SEGMENTED_DOWNLOAD", value)
+        monkeypatch.setenv("ELEVENVOICE_SEGMENTED_DOWNLOAD", value)
         assert module._segmented_enabled() is True
 
 

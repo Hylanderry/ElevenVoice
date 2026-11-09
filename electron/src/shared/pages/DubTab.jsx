@@ -167,12 +167,12 @@ export default function DubTab(props) {
   // across sessions so power users don't see it every launch.
   const [demoDismissed, setDemoDismissed] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return localStorage.getItem('omnivoice.dubbingDemoDismissed') === '1';
+    return localStorage.getItem('elevenvoice.dubbingDemoDismissed') === '1';
   });
   const dismissDubDemo = () => {
     setDemoDismissed(true);
     try {
-      localStorage.setItem('omnivoice.dubbingDemoDismissed', '1');
+      localStorage.setItem('elevenvoice.dubbingDemoDismissed', '1');
     } catch {
       /* noop */
     }

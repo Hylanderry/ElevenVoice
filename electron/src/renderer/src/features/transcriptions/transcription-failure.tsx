@@ -10,7 +10,7 @@ import { apiFailureGuidance } from '@/lib/api/failure';
 export interface TranscriptionFailureState {
   /** Raw failure text, kept behind Technical details. */
   detail: string;
-  /** VoiceStudio-owned remediation for a classified failure, shown visibly. */
+  /** ElevenVoice-owned remediation for a classified failure, shown visibly. */
   guidance?: string;
   /** Diagnosed failure class, which picks the in-app fix. */
   topic?: string;

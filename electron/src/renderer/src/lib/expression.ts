@@ -5,7 +5,7 @@ import { TAGS } from '@/lib/languages';
 export const KNOWN_TAGS: readonly string[] = [...TAGS, '[breath]'];
 
 export const EXPRESSIVE_DOCS_URL =
-  'https://github.com/debpalash/VoiceStudio/blob/main/docs/expressive-speech.md';
+  'https://github.com/Hylanderry/ElevenVoice#readme';
 
 /**
  * What the engine does with emotion and reaction tags (#3422). A backend that
@@ -25,7 +25,7 @@ export function expressionCaps(engine: EngineBackend | null | undefined): Expres
 export function engineShortName(engine: EngineBackend | null | undefined): string {
   const name = engine?.display_name ?? engine?.id ?? '';
   const [, short = name, details = ''] = /^(.*?)\s*\((.*)\)\s*$/.exec(name) ?? [];
-  if (short === 'ElevenVoice' || short === 'VoiceStudio')
+  if (short === 'ElevenVoice' || short === 'ElevenVoice')
     return details.split(',')[0].split('/').pop()?.trim() || short;
   return short || name;
 }

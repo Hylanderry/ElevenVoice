@@ -16,7 +16,7 @@ import zipfile
 from core.fs_retry import retry_on_lock
 from engines.audiocpp import bootstrap
 
-logger = logging.getLogger("omnivoice.audiocpp.install")
+logger = logging.getLogger("elevenvoice.audiocpp.install")
 _CHUNK = 256 * 1024
 _lock = threading.Lock()
 _job = {"state": "idle", "progress": 0.0, "error": None}
@@ -63,7 +63,7 @@ def status() -> dict:
 def _download(url: str, destination: Path, digest: str, expected_size: int) -> None:
     if not url.startswith("https://github.com/"):
         raise ValueError("audio.cpp downloads require the pinned GitHub release")
-    request = urllib.request.Request(url, headers={"User-Agent": "VoiceStudio"})
+    request = urllib.request.Request(url, headers={"User-Agent": "ElevenVoice"})
     hasher = hashlib.sha256()
     received = 0
     with urllib.request.urlopen(request, timeout=30) as response, destination.open("wb") as out:

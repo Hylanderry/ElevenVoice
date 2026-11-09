@@ -32,7 +32,7 @@ import os
 import sys
 import tempfile
 
-logger = logging.getLogger("omnivoice.sandbox")
+logger = logging.getLogger("elevenvoice.sandbox")
 
 
 def _worker(conn, request: dict):

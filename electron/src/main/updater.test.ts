@@ -34,7 +34,7 @@ const mocks = vi.hoisted(() => {
     app: {
       isPackaged: true,
       getVersion: vi.fn(() => '0.5.2'),
-      getPath: vi.fn(() => 'C:\\VoiceStudio-test'),
+      getPath: vi.fn(() => 'C:\\ElevenVoice-test'),
     },
     autoUpdater,
     disk,
@@ -208,7 +208,7 @@ describe('DesktopUpdater', () => {
     emit('update-available', {
       version: '0.5.3',
       releaseNotes: null,
-      files: [{ url: 'VoiceStudio.exe', sha512: 'hash', size: 1_000 }],
+      files: [{ url: 'ElevenVoice.exe', sha512: 'hash', size: 1_000 }],
     });
     emit('download-progress', {
       percent: 25,
@@ -402,7 +402,7 @@ describe('DesktopUpdater', () => {
   });
 
   test('a package-managed install exposes no channel to switch', () => {
-    vi.stubEnv('VOICESTUDIO_DISABLE_UPDATER', '1');
+    vi.stubEnv('ELEVENVOICE_DISABLE_UPDATER', '1');
     try {
       expect(new DesktopUpdater().snapshot().channel).toBeUndefined();
     } finally {
@@ -411,7 +411,7 @@ describe('DesktopUpdater', () => {
   });
 
   test('stays unsupported when a package manager owns the install', async () => {
-    vi.stubEnv('VOICESTUDIO_DISABLE_UPDATER', '1');
+    vi.stubEnv('ELEVENVOICE_DISABLE_UPDATER', '1');
     try {
       const updater = new DesktopUpdater();
       expect(updater.snapshot()).toMatchObject({
@@ -467,7 +467,7 @@ describe('DesktopUpdater', () => {
         JSON.stringify([
           {
             tag_name: 'v0.5.2',
-            name: 'VoiceStudio 0.5.2',
+            name: 'ElevenVoice 0.5.2',
             published_at: '2026-09-12T12:00:00Z',
             prerelease: false,
             body: 'Ready',
@@ -475,7 +475,7 @@ describe('DesktopUpdater', () => {
           { name: 'missing tag' },
           {
             tag_name: 'mobile-v0.5.7-beta.2',
-            name: 'mobile-v0.5.7-beta.2 — VoiceStudio mobile',
+            name: 'mobile-v0.5.7-beta.2 — ElevenVoice mobile',
             published_at: '2026-10-24T14:00:00Z',
             prerelease: true,
             body: 'Phone apps',
@@ -488,7 +488,7 @@ describe('DesktopUpdater', () => {
     await expect(listDesktopReleases(fetcher)).resolves.toEqual([
       {
         version: '0.5.2',
-        name: 'VoiceStudio 0.5.2',
+        name: 'ElevenVoice 0.5.2',
         date: '2026-09-12T12:00:00Z',
         prerelease: false,
         notes: 'Ready',
@@ -541,7 +541,7 @@ describe('update IPC', () => {
     emit('update-downloaded', { version: '0.5.3', releaseNotes: null });
     const beforeInstall = vi.fn(async () => undefined);
     const webContents = {
-      mainFrame: { url: 'app://voicestudio/index.html' },
+      mainFrame: { url: 'app://elevenvoice/index.html' },
       send: vi.fn(),
     };
     const owner = { webContents, isDestroyed: () => false } as any;

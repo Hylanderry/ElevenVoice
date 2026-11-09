@@ -2,7 +2,7 @@
 Plugin SDK — abstract interface for third-party TTS engines.
 
 Allows community contributors to add support for ElevenLabs, XTTS, Bark,
-Fish TTS, etc. without modifying core VoiceStudio code.
+Fish TTS, etc. without modifying core ElevenVoice code.
 
 Usage:
     1. Create a Python file in backend/plugins/  (e.g. elevenlabs.py)
@@ -25,7 +25,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Optional
 
-logger = logging.getLogger("omnivoice.plugins")
+logger = logging.getLogger("elevenvoice.plugins")
 
 # ── Plugin registry ──────────────────────────────────────────────────
 

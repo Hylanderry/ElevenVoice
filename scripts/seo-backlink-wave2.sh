@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
-# VoiceStudio — Wave 2: Deep SEO Backlink Submission
+# ElevenVoice — Wave 2: Deep SEO Backlink Submission
 # Extended list: code mirrors, package indexes, wiki crawlers, forum pings,
 # RSS aggregators, and 100+ additional directories
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-SITE_URL="https://github.com/debpalash/VoiceStudio"
-SITE_NAME="VoiceStudio"
+SITE_URL="https://github.com/Hylanderry/ElevenVoice"
+SITE_NAME="ElevenVoice"
 SITE_DESC="Open-source ElevenLabs alternative — cinematic audio dubbing, voice cloning and TTS in 646 languages"
-RSS_URL="https://github.com/debpalash/VoiceStudio/releases.atom"
+RSS_URL="https://github.com/Hylanderry/ElevenVoice/releases.atom"
 GITHUB_USER="debpalash"
-REPO_NAME="VoiceStudio"
+REPO_NAME="ElevenVoice"
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -56,7 +56,7 @@ ED=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$SITE_DESC', saf
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════════╗"
-echo "║  VoiceStudio — Wave 2: Deep SEO Backlink Engine           ║"
+echo "║  ElevenVoice — Wave 2: Deep SEO Backlink Engine           ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -89,18 +89,18 @@ submit "Repology Search"                "https://repology.org/projects/?search=o
 # ── 3. DEVELOPER COMMUNITY CRAWL TRIGGERS ───────────────────────────────────
 echo ""
 echo "${YELLOW}━━━ 3. Developer Community & Forum Crawl Triggers ━━━${NC}"
-submit "Dev.to Search"                  "https://dev.to/search?q=omnivoice+studio"
+submit "Dev.to Search"                  "https://dev.to/search?q=elevenvoice"
 submit "Hashnode Search"                "https://hashnode.com/search?q=omnivoice"
-submit "Medium Search"                  "https://medium.com/search?q=omnivoice+studio"
+submit "Medium Search"                  "https://medium.com/search?q=elevenvoice"
 submit "HackerNoon Search"              "https://hackernoon.com/search?query=omnivoice"
 submit "Indie Hackers Search"           "https://www.indiehackers.com/search?q=omnivoice"
 submit "DEV Community Tag"              "https://dev.to/t/voicecloning"
 submit "DEV Community TTS Tag"          "https://dev.to/t/tts"
 submit "DEV Community AI Tag"           "https://dev.to/t/ai"
-submit "daily.dev Search"               "https://app.daily.dev/search?q=omnivoice+studio"
-submit "Lemmy Search"                   "https://lemmy.world/search?q=omnivoice+studio&type=All"
+submit "daily.dev Search"               "https://app.daily.dev/search?q=elevenvoice"
+submit "Lemmy Search"                   "https://lemmy.world/search?q=elevenvoice&type=All"
 submit "Mastodon Search (instances)"    "https://mastodon.social/tags/omnivoice"
-submit "Bluesky Search"                 "https://bsky.app/search?q=omnivoice+studio"
+submit "Bluesky Search"                 "https://bsky.app/search?q=elevenvoice"
 submit "Tildes Search"                  "https://tildes.net/search?q=omnivoice"
 submit "Fediverse Search"               "https://search.joinmastodon.org/"
 
@@ -109,8 +109,8 @@ echo ""
 echo "${YELLOW}━━━ 4. Research & Academic Platforms ━━━${NC}"
 submit "Papers With Code"               "https://paperswithcode.com/search?q=omnivoice"
 submit "Semantic Scholar"                "https://www.semanticscholar.org/search?q=omnivoice"
-submit "Google Scholar"                  "https://scholar.google.com/scholar?q=omnivoice+studio"
-submit "Hugging Face Search"            "https://huggingface.co/search/full-text?q=omnivoice+studio&type=all"
+submit "Google Scholar"                  "https://scholar.google.com/scholar?q=elevenvoice"
+submit "Hugging Face Search"            "https://huggingface.co/search/full-text?q=elevenvoice&type=all"
 submit "Hugging Face Spaces"            "https://huggingface.co/spaces?search=omnivoice"
 submit "Replicate Search"               "https://replicate.com/explore?query=omnivoice"
 submit "Kaggle Search"                  "https://www.kaggle.com/search?q=omnivoice"
@@ -274,17 +274,17 @@ submit "Hacker News"                    "https://news.ycombinator.com/submitlink
 echo ""
 echo "${YELLOW}━━━ 12. Extended Wayback Machine Archives ━━━${NC}"
 EXTRA_PAGES=(
-  "https://github.com/debpalash/VoiceStudio/blob/main/docs/STRUCTURE.md"
-  "https://github.com/debpalash/VoiceStudio/blob/main/LICENSE"
-  "https://github.com/debpalash/VoiceStudio/graphs/contributors"
-  "https://github.com/debpalash/VoiceStudio/network/dependents"
-  "https://github.com/debpalash/VoiceStudio/stargazers"
-  "https://github.com/debpalash/VoiceStudio/network/members"
-  "https://github.com/debpalash/VoiceStudio/releases/tag/v0.2.4"
-  "https://github.com/debpalash/VoiceStudio/releases/tag/v0.2.3"
-  "https://github.com/debpalash/VoiceStudio/tree/main/backend"
-  "https://github.com/debpalash/VoiceStudio/tree/main/frontend"
-  "https://github.com/debpalash/VoiceStudio/tree/main/docs"
+  "https://github.com/Hylanderry/ElevenVoice#readme"
+  "https://github.com/Hylanderry/ElevenVoice/blob/main/LICENSE"
+  "https://github.com/Hylanderry/ElevenVoice/graphs/contributors"
+  "https://github.com/Hylanderry/ElevenVoice/network/dependents"
+  "https://github.com/Hylanderry/ElevenVoice/stargazers"
+  "https://github.com/Hylanderry/ElevenVoice/network/members"
+  "https://github.com/Hylanderry/ElevenVoice/releases/tag/v0.2.4"
+  "https://github.com/Hylanderry/ElevenVoice/releases/tag/v0.2.3"
+  "https://github.com/Hylanderry/ElevenVoice/tree/main/backend"
+  "https://github.com/Hylanderry/ElevenVoice/tree/main/frontend"
+  "https://github.com/Hylanderry/ElevenVoice/tree/main/docs"
   "https://github.com/debpalash"
 )
 for page in "${EXTRA_PAGES[@]}"; do
@@ -294,24 +294,24 @@ done
 # ── 13. GOOGLE SCHOLAR / RESEARCH INDEX PINGS ───────────────────────────────
 echo ""
 echo "${YELLOW}━━━ 13. Knowledge Graph & Entity Pings ━━━${NC}"
-submit "Wikidata Search"                "https://www.wikidata.org/w/index.php?search=omnivoice+studio"
-submit "Wikipedia Search"               "https://en.wikipedia.org/w/index.php?search=omnivoice+studio"
+submit "Wikidata Search"                "https://www.wikidata.org/w/index.php?search=elevenvoice"
+submit "Wikipedia Search"               "https://en.wikipedia.org/w/index.php?search=elevenvoice"
 submit "DBpedia Lookup"                 "https://lookup.dbpedia.org/api/search?query=omnivoice&maxResults=5"
-submit "DuckDuckGo Instant"             "https://api.duckduckgo.com/?q=omnivoice+studio&format=json"
-submit "Brave Search"                   "https://search.brave.com/search?q=omnivoice+studio"
-submit "Ecosia Search"                  "https://www.ecosia.org/search?q=omnivoice+studio"
-submit "Qwant Search"                   "https://www.qwant.com/?q=omnivoice+studio"
-submit "Mojeek Search"                  "https://www.mojeek.com/search?q=omnivoice+studio"
-submit "You.com Search"                 "https://you.com/search?q=omnivoice+studio"
-submit "Perplexity Search"              "https://www.perplexity.ai/search?q=omnivoice+studio"
-submit "Phind Search"                   "https://www.phind.com/search?q=omnivoice+studio"
-submit "Kagi Search"                    "https://kagi.com/search?q=omnivoice+studio"
-submit "Marginalia Search"              "https://search.marginalia.nu/search?query=omnivoice+studio"
-submit "Yep Search"                     "https://yep.com/web?q=omnivoice+studio"
-submit "Swisscows"                      "https://swisscows.com/en/web?query=omnivoice+studio"
-submit "MetaGer"                        "https://metager.org/meta/meta.ger3?eingabe=omnivoice+studio"
-submit "Startpage"                      "https://www.startpage.com/sp/search?query=omnivoice+studio"
-submit "Searx"                          "https://searx.be/search?q=omnivoice+studio"
+submit "DuckDuckGo Instant"             "https://api.duckduckgo.com/?q=elevenvoice&format=json"
+submit "Brave Search"                   "https://search.brave.com/search?q=elevenvoice"
+submit "Ecosia Search"                  "https://www.ecosia.org/search?q=elevenvoice"
+submit "Qwant Search"                   "https://www.qwant.com/?q=elevenvoice"
+submit "Mojeek Search"                  "https://www.mojeek.com/search?q=elevenvoice"
+submit "You.com Search"                 "https://you.com/search?q=elevenvoice"
+submit "Perplexity Search"              "https://www.perplexity.ai/search?q=elevenvoice"
+submit "Phind Search"                   "https://www.phind.com/search?q=elevenvoice"
+submit "Kagi Search"                    "https://kagi.com/search?q=elevenvoice"
+submit "Marginalia Search"              "https://search.marginalia.nu/search?query=elevenvoice"
+submit "Yep Search"                     "https://yep.com/web?q=elevenvoice"
+submit "Swisscows"                      "https://swisscows.com/en/web?query=elevenvoice"
+submit "MetaGer"                        "https://metager.org/meta/meta.ger3?eingabe=elevenvoice"
+submit "Startpage"                      "https://www.startpage.com/sp/search?query=elevenvoice"
+submit "Searx"                          "https://searx.be/search?q=elevenvoice"
 
 # ── SUMMARY ──────────────────────────────────────────────────────────────────
 echo ""

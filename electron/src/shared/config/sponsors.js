@@ -1,10 +1,10 @@
-// Single source of truth for VoiceStudio's sponsors + the "become a sponsor"
+// Single source of truth for ElevenVoice's sponsors + the "become a sponsor"
 // contact links. Consumed by the Support page's Sponsors section and the
 // footer's Sponsors link, so a logo or link change lands in exactly one place.
 //
 // Local-first / zero-token by design: "Become a sponsor" opens a PREFILLED
 // GitHub issue (same pattern as the bug reporter, utils/bugReport.js) — the
-// user reviews and submits it in their own browser; VoiceStudio never POSTs or
+// user reviews and submits it in their own browser; ElevenVoice never POSTs or
 // holds a credential.
 
 import { GITHUB_SPONSORS_URL, KOFI_URL } from '../utils/donateLinks';
@@ -12,7 +12,7 @@ import supermetryMark from '../assets/sponsors/supermetry-mark.svg';
 import opengtmMark from '../assets/sponsors/opengtm-mark.svg';
 import opalMark from '../assets/sponsors/opal-mark.svg';
 
-const REPO = 'https://github.com/debpalash/VoiceStudio';
+const REPO = 'https://github.com/Hylanderry/ElevenVoice';
 
 /**
  * Active sponsors. The Support page renders a "be the first" placeholder while
@@ -35,19 +35,19 @@ export const SPONSORS = [
   {
     name: 'OpenGTM',
     logoUrl: opengtmMark,
-    url: 'https://opengtm.palash.dev/?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
+    url: 'https://opengtm.palash.dev/?utm_source=elevenvoice&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
     tier: 'strategic',
   },
   {
     name: 'Opal',
     logoUrl: opalMark,
-    url: 'https://opal.palash.dev/?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
+    url: 'https://opal.palash.dev/?utm_source=elevenvoice&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
     tier: 'strategic',
   },
   {
     name: 'Supermetry',
     logoUrl: supermetryMark,
-    url: 'https://supermetry.com/?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
+    url: 'https://supermetry.com/?utm_source=elevenvoice&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=in-app-support',
     tier: 'strategic',
   },
 ];

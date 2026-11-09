@@ -23,7 +23,7 @@ from engines.whisper_cpp.bootstrap import (
 from engines.whisper_cpp.output import parse_transcript
 from engines.whisper_cpp.process import run_transcription
 
-logger = logging.getLogger("omnivoice.whisper_cpp")
+logger = logging.getLogger("elevenvoice.whisper_cpp")
 
 
 class WhisperCppBackend(ASRBackend):
@@ -70,14 +70,14 @@ class WhisperCppBackend(ASRBackend):
         if not binary:
             return (
                 False,
-                ("whisper.cpp binary not found. Set OMNIVOICE_WHISPER_CPP_BIN or "
+                ("whisper.cpp binary not found. Set ELEVENVOICE_WHISPER_CPP_BIN or "
                  "place whisper-cli in backend/engines/whisper_cpp/bin/."),
             )
         model = resolve_model()
         if not model:
             return (
                 False,
-                ("whisper.cpp model not found. Set OMNIVOICE_WHISPER_CPP_MODEL or "
+                ("whisper.cpp model not found. Set ELEVENVOICE_WHISPER_CPP_MODEL or "
                  "download a ggml-*.bin model."),
             )
         return True, "ok"

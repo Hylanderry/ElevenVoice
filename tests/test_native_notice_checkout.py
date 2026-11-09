@@ -19,7 +19,7 @@ def test_pinned_native_notices_survive_autocrlf_checkout(tmp_path):
     shutil.copy2(ROOT / ".gitattributes", tmp_path / ".gitattributes")
     notices = []
     for directory, manifest, prefix in [
-        ("mobile/ios/VoiceStudio/Resources/NativeLicences", "sources.json", ""),
+        ("mobile/ios/ElevenVoice/Resources/NativeLicences", "sources.json", ""),
         ("mobile/android/app/src/main/assets/licenses", "native-sources.json", "native-"),
     ]:
         relative = Path(directory)

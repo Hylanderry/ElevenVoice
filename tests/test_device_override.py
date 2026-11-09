@@ -1,4 +1,4 @@
-"""The user compute-device override (Settings → Performance / OMNIVOICE_DEVICE).
+"""The user compute-device override (Settings → Performance / ELEVENVOICE_DEVICE).
 
 The override is applied at the single choke point — `_probe()`'s family
 selection — so routing, `get_best_device()`, and every UI badge inherit it.
@@ -46,16 +46,16 @@ def _probe_with(modules):
 def _cleanup():
     # Leave the process-wide cache in its no-override state for other tests.
     # The env var must go FIRST: this runs inside the test (before
-    # monkeypatch teardown), so a refresh with OMNIVOICE_DEVICE still set
+    # monkeypatch teardown), so a refresh with ELEVENVOICE_DEVICE still set
     # would cache the overridden caps for every later test in the session.
     import os
 
-    os.environ.pop("OMNIVOICE_DEVICE", None)
+    os.environ.pop("ELEVENVOICE_DEVICE", None)
     device_caps.refresh()
 
 
 def test_no_override_is_auto_and_keeps_priority_pick(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_DEVICE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_DEVICE", raising=False)
     monkeypatch.setattr("core.prefs.resolve", lambda key, **kw: kw.get("default"))
     try:
         caps = _probe_with({"torch": _torch_mock(cuda_available=True, mps_available=True)})
@@ -66,7 +66,7 @@ def test_no_override_is_auto_and_keeps_priority_pick(monkeypatch):
 
 
 def test_cpu_override_forces_cpu_on_an_accelerated_host(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     try:
         caps = _probe_with({"torch": _torch_mock(cuda_available=True)})
         assert caps.family == "cpu"
@@ -79,7 +79,7 @@ def test_cpu_override_forces_cpu_on_an_accelerated_host(monkeypatch):
 
 
 def test_override_for_a_missing_family_is_noted_and_ignored(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cuda")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cuda")
     try:
         caps = _probe_with({"torch": _torch_mock(mps_available=True)})
         assert caps.family == "mps"  # auto pick survives
@@ -90,7 +90,7 @@ def test_override_for_a_missing_family_is_noted_and_ignored(monkeypatch):
 
 
 def test_override_matching_the_auto_pick_adds_no_note(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cuda")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cuda")
     try:
         caps = _probe_with({"torch": _torch_mock(cuda_available=True)})
         assert caps.family == "cuda"
@@ -107,16 +107,16 @@ def test_env_beats_the_persisted_settings_pick(monkeypatch, tmp_path):
     monkeypatch.setattr(prefs, "_PREFS_PATH", tmp_path / "prefs.json")
     prefs.set_("compute_device", "cuda")
     try:
-        monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+        monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
         assert device_caps.requested_device_override() == "cpu"
-        monkeypatch.delenv("OMNIVOICE_DEVICE")
+        monkeypatch.delenv("ELEVENVOICE_DEVICE")
         assert device_caps.requested_device_override() == "cuda"
     finally:
         _cleanup()
 
 
 def test_unknown_values_normalize_to_auto(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "quantum")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "quantum")
     try:
         assert device_caps.requested_device_override() == "auto"
     finally:
@@ -126,7 +126,7 @@ def test_unknown_values_normalize_to_auto(monkeypatch):
 def test_torch_unimportable_still_reports_the_request(monkeypatch):
     # Even a degraded CPU-only probe carries the requested family so the
     # Settings panel renders the user's pick instead of resetting to auto.
-    monkeypatch.setenv("OMNIVOICE_DEVICE", "cpu")
+    monkeypatch.setenv("ELEVENVOICE_DEVICE", "cpu")
     real_import = __import__
 
     def _no_torch(name, *a, **kw):

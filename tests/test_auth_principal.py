@@ -80,7 +80,7 @@ def store(_resolve_active_auth_modules) -> AdminSessionStore:
 
 
 def test_loopback_principal_has_native_capability(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
 
     principal = resolve_principal(Connection(host="127.0.0.1"), store=store)
 
@@ -99,7 +99,7 @@ def test_principal_capability_helper_is_explicit():
 
 def test_trusted_network_parser_ignores_invalid_entries_and_maps_ipv4(monkeypatch):
     monkeypatch.setenv(
-        "OMNIVOICE_TRUSTED_NETWORKS",
+        "ELEVENVOICE_TRUSTED_NETWORKS",
         "not-a-network, 10.0.0.0/8",
     )
 
@@ -111,7 +111,7 @@ def test_trusted_network_parser_ignores_invalid_entries_and_maps_ipv4(monkeypatc
 
 
 def test_valid_master_header_produces_admin_principal(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", f"  {MASTER}  ")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", f"  {MASTER}  ")
 
     principal = resolve_principal(
         Connection(headers={"authorization": f"Bearer {MASTER}"}), store=store
@@ -125,7 +125,7 @@ def test_valid_master_header_produces_admin_principal(monkeypatch, store):
 
 def test_unicode_master_is_compared_as_utf8_bytes(monkeypatch, store):
     master = "clé-administrateur-sécurité"
-    monkeypatch.setenv("OMNIVOICE_API_KEY", master)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", master)
 
     principal = resolve_principal(
         Connection(headers={"authorization": f"Bearer {master}"}),
@@ -147,7 +147,7 @@ def test_credential_comparison_handles_unpaired_surrogates_without_raising():
         Connection(headers={"authorization": "Bearer clé-incorrecte"}),
         Connection(query={"api_key": "sécurité-incorrecte"}),
         Connection(cookies={"ov_key": "contraseña-incorrecta"}),
-        Connection(headers={"x-omnivoice-pin": "clé"}, pin="123456"),
+        Connection(headers={"x-elevenvoice-pin": "clé"}, pin="123456"),
     ],
 )
 def test_non_ascii_invalid_credentials_fail_closed_without_type_error(
@@ -155,7 +155,7 @@ def test_non_ascii_invalid_credentials_fail_closed_without_type_error(
     store,
     connection,
 ):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
 
     principal = resolve_principal(connection, store=store)
 
@@ -163,7 +163,7 @@ def test_non_ascii_invalid_credentials_fail_closed_without_type_error(
 
 
 def test_valid_session_header_produces_admin_principal(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
     principal = resolve_principal(
@@ -178,7 +178,7 @@ def test_valid_session_header_produces_admin_principal(monkeypatch, store):
 
 
 def test_valid_session_cookie_produces_admin_principal(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
     principal = resolve_principal(
@@ -190,7 +190,7 @@ def test_valid_session_cookie_produces_admin_principal(monkeypatch, store):
 
 
 def test_default_store_resolves_current_process_singleton_after_module_rebind(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     sessions = importlib.import_module("services.admin_sessions")
     active_store = sessions.AdminSessionStore(pepper=b"a" * 32)
     stale_store = sessions.AdminSessionStore(pepper=b"s" * 32)
@@ -209,7 +209,7 @@ def test_default_store_resolves_current_process_singleton_after_module_rebind(mo
 
 
 def test_query_and_legacy_cookie_remain_master_compatibility_channels(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
 
     query = resolve_principal(Connection(query={"api_key": MASTER}), store=store)
     cookie = resolve_principal(Connection(cookies={"ov_key": MASTER}), store=store)
@@ -221,7 +221,7 @@ def test_query_and_legacy_cookie_remain_master_compatibility_channels(monkeypatc
 
 
 def test_invalid_nonempty_explicit_header_is_authoritative(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
     principal = resolve_principal(
@@ -243,7 +243,7 @@ def test_unsupported_or_malformed_authorization_cannot_fall_back_to_cookie(
     store,
     authorization,
 ):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
     principal = resolve_principal(
@@ -259,7 +259,7 @@ def test_unsupported_or_malformed_authorization_cannot_fall_back_to_cookie(
 
 
 def test_whitespace_header_and_query_fall_back_to_session_cookie(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
     principal = resolve_principal(
@@ -276,7 +276,7 @@ def test_whitespace_header_and_query_fall_back_to_session_cookie(monkeypatch, st
 
 
 def test_invalid_session_cookie_is_authoritative_over_legacy_master_cookie(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
 
     principal = resolve_principal(
         Connection(
@@ -293,8 +293,8 @@ def test_invalid_session_cookie_is_authoritative_over_legacy_master_cookie(monke
 
 
 def test_trusted_network_is_consumption_only(monkeypatch, store):
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
 
     principal = resolve_principal(Connection(host="10.0.0.5"), store=store)
 
@@ -303,8 +303,8 @@ def test_trusted_network_is_consumption_only(monkeypatch, store):
 
 
 def test_valid_api_key_beats_trusted_network_identity(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
 
     principal = resolve_principal(
         Connection(host="10.0.0.5", headers={"authorization": f"Bearer {MASTER}"}),
@@ -315,10 +315,10 @@ def test_valid_api_key_beats_trusted_network_identity(monkeypatch, store):
 
 
 def test_pin_is_consumption_only(monkeypatch, store):
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
 
     principal = resolve_principal(
-        Connection(headers={"x-omnivoice-pin": "123456"}, pin="123456"),
+        Connection(headers={"x-elevenvoice-pin": "123456"}, pin="123456"),
         store=store,
     )
 
@@ -327,10 +327,10 @@ def test_pin_is_consumption_only(monkeypatch, store):
 
 
 def test_wrong_pin_is_anonymous(monkeypatch, store):
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
 
     principal = resolve_principal(
-        Connection(headers={"x-omnivoice-pin": "654321"}, pin="123456"),
+        Connection(headers={"x-elevenvoice-pin": "654321"}, pin="123456"),
         store=store,
     )
 
@@ -338,7 +338,7 @@ def test_wrong_pin_is_anonymous(monkeypatch, store):
 
 
 def test_ws_ticket_is_consumed_and_attached_once(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
     ticket = store.issue_ws_ticket(session.token, "/ws/events", MASTER)
     connection = Connection(
@@ -357,7 +357,7 @@ def test_ws_ticket_is_consumed_and_attached_once(monkeypatch, store):
 
 
 def test_ws_ticket_accepts_only_its_asgi_configured_root_path_prefix(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
     ticket = store.issue_ws_ticket(session.token, "/ws/events", MASTER)
 
@@ -376,7 +376,7 @@ def test_ws_ticket_accepts_only_its_asgi_configured_root_path_prefix(monkeypatch
 
 
 def test_ws_ticket_rejects_unconfigured_lookalike_prefix(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
     ticket = store.issue_ws_ticket(session.token, "/ws/events", MASTER)
 
@@ -394,7 +394,7 @@ def test_ws_ticket_rejects_unconfigured_lookalike_prefix(monkeypatch, store):
 
 
 def test_invalid_ws_ticket_is_authoritative_over_legacy_query_key(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     connection = Connection(
         scope_type="websocket",
         path="/ws/events",
@@ -411,12 +411,12 @@ def test_invalid_ws_ticket_is_authoritative_over_legacy_query_key(monkeypatch, s
 
 
 def test_key_rotation_invalidates_attached_session_only_on_new_scope(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
     first_connection = Connection(headers={"authorization": f"Bearer {session.token}"})
     assert resolve_principal(first_connection, store=store).kind is PrincipalKind.ADMIN_SESSION
 
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "rotated")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "rotated")
     next_request = resolve_principal(
         Connection(headers={"authorization": f"Bearer {session.token}"}), store=store
     )
@@ -425,15 +425,15 @@ def test_key_rotation_invalidates_attached_session_only_on_new_scope(monkeypatch
 
 
 def test_key_removal_cannot_revive_session_when_same_key_returns(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     session = store.issue(MASTER)
 
-    monkeypatch.delenv("OMNIVOICE_API_KEY")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY")
     while_removed = resolve_principal(
         Connection(headers={"authorization": f"Bearer {session.token}"}),
         store=store,
     )
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     after_restore = resolve_principal(
         Connection(headers={"authorization": f"Bearer {session.token}"}),
         store=store,
@@ -444,7 +444,7 @@ def test_key_removal_cannot_revive_session_when_same_key_returns(monkeypatch, st
 
 
 def test_principal_for_reuses_scope_decision_without_reparsing(monkeypatch, store):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", MASTER)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", MASTER)
     connection = Connection(headers={"authorization": f"Bearer {MASTER}"})
 
     first = principal_for(connection, store=store)

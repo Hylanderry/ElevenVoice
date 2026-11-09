@@ -134,7 +134,7 @@ try:
     # Load the durable per-user config (the in-app Settings source of truth) so
     # env vars set once survive Tauri/Finder launches that don't inherit a shell
     # environment. This OVERRIDES launcher-injected defaults: the desktop app
-    # injects a stale OMNIVOICE_CACHE_DIR from its own config before startup, so
+    # injects a stale ELEVENVOICE_CACHE_DIR from its own config before startup, so
     # without override a models dir changed in Settings was ignored forever (#480).
     _load_startup_env(_discovered_env, _project_env)
 except ImportError:
@@ -157,7 +157,7 @@ importlib.import_module("services.cloud_account")
 # there (native_preload strictly precedes ml_imports).
 
 # Route HF/Torch caches to a single external directory when requested.
-_cache_dir = os.environ.get("OMNIVOICE_CACHE_DIR")
+_cache_dir = os.environ.get("ELEVENVOICE_CACHE_DIR")
 if _cache_dir:
     os.makedirs(_cache_dir, exist_ok=True)
     os.environ["HF_HOME"] = _cache_dir
@@ -235,7 +235,7 @@ from utils.fsops import safe_replace
 # 30-router import fan-out — now lives in `_phase_a_build` /
 # `_phase_a_finalize` below, so uvicorn can bind the socket and answer
 # `/health` + `/startup/progress` within ~1s of spawn instead of after all
-# of it. Under pytest (or OMNIVOICE_EAGER_INIT=1) it still runs at import,
+# of it. Under pytest (or ELEVENVOICE_EAGER_INIT=1) it still runs at import,
 # at the bottom of this module — same order, same side effects, so the
 # ~100 lifespan-less TestClient call sites see today's fully-built app.
 
@@ -249,7 +249,7 @@ class _LockTolerantRotatingFileHandler(RotatingFileHandler):
         except PermissionError:
             pass
 
-        rollover_logger = logging.getLogger("omnivoice.api")
+        rollover_logger = logging.getLogger("elevenvoice.api")
         for index in range(self.backupCount - 1, 0, -1):
             source = self.rotation_filename(f"{self.baseFilename}.{index}")
             target = self.rotation_filename(f"{self.baseFilename}.{index + 1}")
@@ -287,7 +287,7 @@ _LOG_FMT = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
 
 
 class _JsonFormatter(logging.Formatter):
-    """Single-line JSON-per-record formatter. Opt in with `OMNIVOICE_JSON_LOGS=1`.
+    """Single-line JSON-per-record formatter. Opt in with `ELEVENVOICE_JSON_LOGS=1`.
 
     Keeps every field unquoted-string-safe so downstream log shippers
     (Vector, Fluent Bit, grep) can stream without extra parsing.
@@ -307,9 +307,9 @@ class _JsonFormatter(logging.Formatter):
         return _json.dumps(payload, ensure_ascii=False)
 
 
-_json_logs = os.environ.get("OMNIVOICE_JSON_LOGS") == "1"
+_json_logs = os.environ.get("ELEVENVOICE_JSON_LOGS") == "1"
 logging.basicConfig(
-    level=os.environ.get("OMNIVOICE_LOG_LEVEL", "INFO"),
+    level=os.environ.get("ELEVENVOICE_LOG_LEVEL", "INFO"),
     format=_LOG_FMT,
 )
 
@@ -341,7 +341,7 @@ if _json_logs:
 # Rolling file handler so the Settings UI > Logs > Backend tab has something to read.
 # Attached to root so uvicorn, fastapi, and every `omnivoice.*` namespace land here.
 # Not attached under _disable_file_log to keep CI/headless tests quiet.
-if not os.environ.get("OMNIVOICE_DISABLE_FILE_LOG"):
+if not os.environ.get("ELEVENVOICE_DISABLE_FILE_LOG"):
     from core.config import (
         LOG_PATH as _LOG_PATH,
     )  # local import — avoids circular import at module top
@@ -362,9 +362,9 @@ if not os.environ.get("OMNIVOICE_DISABLE_FILE_LOG"):
         # filter too (install_redaction_filter is idempotent).
         install_redaction_filter()
     except Exception as _e:  # disk full, permission denied, etc. — don't block startup
-        logging.getLogger("omnivoice.api").warning("Runtime log file disabled: %s", _e)
+        logging.getLogger("elevenvoice.api").warning("Runtime log file disabled: %s", _e)
 
-logger = logging.getLogger("omnivoice.api")
+logger = logging.getLogger("elevenvoice.api")
 
 import asyncio
 import time
@@ -436,7 +436,7 @@ def _env_flag(name: str, default: bool = False) -> bool:
 # sites that expect `from main import app` to yield the fully-built app.
 # Server runs (desktop, Docker, `uvicorn main:app`, `python main.py`) get the
 # deferred path: socket up in ~1s, heavy work behind /startup/progress.
-_EAGER = _env_flag("OMNIVOICE_EAGER_INIT", default=("pytest" in sys.modules))
+_EAGER = _env_flag("ELEVENVOICE_EAGER_INIT", default=("pytest" in sys.modules))
 
 
 def _env_float(name: str, default: float) -> float:
@@ -458,8 +458,8 @@ def _capture_preload_delay_s() -> float:
     """Seconds after boot before the dictation (capture ASR) model warms.
 
     Late enough that it never competes with startup I/O or the TTS preload;
-    overridable via OMNIVOICE_CAPTURE_PRELOAD_DELAY (mostly for tests)."""
-    return _env_float("OMNIVOICE_CAPTURE_PRELOAD_DELAY", 30.0)
+    overridable via ELEVENVOICE_CAPTURE_PRELOAD_DELAY (mostly for tests)."""
+    return _env_float("ELEVENVOICE_CAPTURE_PRELOAD_DELAY", 30.0)
 
 def _watermark_preload_delay_s() -> float:
     """Seconds after boot before the AudioSeal generator warm-up fires.
@@ -468,7 +468,7 @@ def _watermark_preload_delay_s() -> float:
     env override must not retime the watermark warm too, and the two cold
     imports shouldn't fire on the same tick (CodeRabbit, PR #1577). Default
     35s sits ~5s past the capture-ASR warm for the same reason."""
-    return _env_float("OMNIVOICE_PRELOAD_WATERMARK_DELAY", 35.0)
+    return _env_float("ELEVENVOICE_PRELOAD_WATERMARK_DELAY", 35.0)
 
 
 def _capture_preload_ram_ok(min_free_bytes: int = 4 * 1024**3) -> bool:
@@ -484,8 +484,8 @@ def _capture_preload_ram_ok(min_free_bytes: int = 4 * 1024**3) -> bool:
 
 def _mcp_start_timeout_s() -> float:
     """Seconds to wait for the MCP session manager to start before giving up
-    and serving without it (#632). Overridable via OMNIVOICE_MCP_START_TIMEOUT_S."""
-    return max(_env_float("OMNIVOICE_MCP_START_TIMEOUT_S", 30.0), 0.001)
+    and serving without it (#632). Overridable via ELEVENVOICE_MCP_START_TIMEOUT_S."""
+    return max(_env_float("ELEVENVOICE_MCP_START_TIMEOUT_S", 30.0), 0.001)
 
 
 async def _serve_mcp(session_manager, ready: "asyncio.Event", stop: "asyncio.Event") -> None:
@@ -531,7 +531,7 @@ async def _start_mcp_session_manager(session_manager, *, timeout: float):
     except asyncio.TimeoutError:
         logger.warning(
             "MCP session manager did not signal ready within %.0fs (#632); "
-            "serving without waiting. Set OMNIVOICE_MCP_START_TIMEOUT_S to adjust.",
+            "serving without waiting. Set ELEVENVOICE_MCP_START_TIMEOUT_S to adjust.",
             timeout,
         )
         mounted = False
@@ -705,7 +705,7 @@ def _phase_a_build_inner() -> None:
             _detail = _sanitize(f"{type(exc).__name__}: {exc}")
         except Exception:  # noqa: BLE001 — never lose the signal to this
             _detail = type(exc).__name__
-        logging.getLogger("omnivoice.model").warning(
+        logging.getLogger("elevenvoice.model").warning(
             "torchaudio import failed during ml_imports (startup will "
             "continue degraded): %s",
             _detail,
@@ -771,6 +771,7 @@ def _phase_a_build_inner() -> None:
         dub_generate,
         dub_export,
         dub_delivery,  # Client delivery: pre-delivery check + package
+        agent_access,  # MCP / OpenAI-compatible API switches
         dub_translate,
         projects,
         glossary,
@@ -808,7 +809,7 @@ def _phase_a_build_inner() -> None:
     from api.routers import cloud_sync as _cloud_sync_router  # noqa: E402
     _router_modules.extend([
         system, profiles, profile_images, exports, generation, voice_convert, dub_core, dub_generate,
-        dub_export, dub_delivery, dub_translate, projects, glossary, engines, tools,
+        dub_export, dub_delivery, agent_access, dub_translate, projects, glossary, engines, tools,
         stories, setup, gallery, archetypes, describe_voice, community,
         batch, watermark, events, capture, capture_ws, speech_platform, dictation,
         openai_compat, tts_stream, marketplace, personas, sonitranslate,
@@ -821,7 +822,7 @@ def _phase_a_build_inner() -> None:
         from api.routers.system import _fast_download_status as _fd_status
         _fd = _fd_status()
         _xet_ver = f" {_fd['xet_version']}" if _fd.get("xet_version") else ""
-        logging.getLogger("omnivoice.model").info(
+        logging.getLogger("elevenvoice.model").info(
             "downloads: Xet %s (hf_xet%s installed=%s), high_perf=%s",
             "ACTIVE" if _fd["xet_active"] else "disabled → legacy LFS",
             _xet_ver, _fd["xet_installed"], _fd["high_performance"],
@@ -842,15 +843,15 @@ def _phase_a_finalize() -> None:
         app.include_router(_mod.router)
 
     # MCP server sub-mounted at /mcp; its session manager is stashed on
-    # app.state for Phase B to run. Opt-out via OMNIVOICE_MCP_DISABLE=1;
+    # app.state for Phase B to run. Opt-out via ELEVENVOICE_MCP_DISABLE=1;
     # best-effort (SystemExit included, #1156) so a missing mcp package
     # never breaks startup.
-    if os.environ.get("OMNIVOICE_MCP_DISABLE", "").strip().lower() not in ("1", "true", "yes", "on"):
+    if os.environ.get("ELEVENVOICE_MCP_DISABLE", "").strip().lower() not in ("1", "true", "yes", "on"):
         try:
             from mcp_server import mount_mcp
             mount_mcp(app)
         except (Exception, SystemExit) as _mcp_err:  # noqa: BLE001
-            logging.getLogger("omnivoice.api").info(
+            logging.getLogger("elevenvoice.api").info(
                 "MCP server not mounted (%s); /mcp disabled.", _mcp_err
             )
 
@@ -874,13 +875,13 @@ def _phase_a_finalize() -> None:
     _frontend_path = frontend_dist_dir()
     if frontend_available(_frontend_path):
         # Runtime API-base override (Docker / reverse-proxy): inject
-        # OMNIVOICE_PUBLIC_API_BASE into index.html; unset → untouched.
+        # ELEVENVOICE_PUBLIC_API_BASE into index.html; unset → untouched.
 
-        _public_api_base = os.environ.get("OMNIVOICE_PUBLIC_API_BASE", "").strip().rstrip("/")
+        _public_api_base = os.environ.get("ELEVENVOICE_PUBLIC_API_BASE", "").strip().rstrip("/")
         _index_path = os.path.join(_frontend_path, "index.html")
         if _public_api_base and not is_valid_public_api_base(_public_api_base):
-            logging.getLogger("omnivoice.api").warning(
-                "OMNIVOICE_PUBLIC_API_BASE=%r is not a valid http(s) URL; ignoring.",
+            logging.getLogger("elevenvoice.api").warning(
+                "ELEVENVOICE_PUBLIC_API_BASE=%r is not a valid http(s) URL; ignoring.",
                 _public_api_base,
             )
             _public_api_base = ""
@@ -903,7 +904,7 @@ def _phase_a_finalize() -> None:
         app.mount("/", StaticFiles(directory=_frontend_path, html=True), name="frontend")
     else:
 
-        logging.getLogger("omnivoice.api").info(
+        logging.getLogger("elevenvoice.api").info(
             "No web UI build at %s; \"/\" serves an explanation to other devices.",
             _frontend_path,
         )
@@ -1108,7 +1109,7 @@ async def _phase_b(app: FastAPI) -> None:
     # warm-ups below await it, so they still load the reconciled selections.
     _start_profile_reconcile(app)
     if _EAGER:
-        # Eager boots (pytest, OMNIVOICE_EAGER_INIT=1) promise the classic
+        # Eager boots (pytest, ELEVENVOICE_EAGER_INIT=1) promise the classic
         # synchronous startup: callers read engines the moment the lifespan
         # opens, and a reconcile importing runtimes beside them races those
         # imports. The deferral is for the served app.
@@ -1125,7 +1126,7 @@ async def _phase_b(app: FastAPI) -> None:
     # post-boot, skipped under 4 GB free RAM at warm time).
     app.state.capture_preload_task = None  # only assigned when it runs (#1000 class)
     capture_warmup_requested = _env_flag(
-        "OMNIVOICE_PRELOAD_CAPTURE_ASR", default=True
+        "ELEVENVOICE_PRELOAD_CAPTURE_ASR", default=True
     )
     if not capture_warmup_requested:
         logger.info(
@@ -1173,7 +1174,7 @@ async def _phase_b(app: FastAPI) -> None:
     # the two cold imports don't contend for the same disk, and no RAM guard
     # is needed. Runs on the watermark pool — where the model is used — not
     # the shared default executor.
-    if _env_flag("OMNIVOICE_PRELOAD_WATERMARK", default=True):
+    if _env_flag("ELEVENVOICE_PRELOAD_WATERMARK", default=True):
         async def _preload_watermark():
             await asyncio.sleep(_watermark_preload_delay_s())
             loop = asyncio.get_running_loop()
@@ -1191,7 +1192,7 @@ async def _phase_b(app: FastAPI) -> None:
 
             # Default startup may warm an existing local checkpoint but may
             # not fetch one. Only an explicit user opt-in permits a download.
-            raw_preload = os.environ.get("OMNIVOICE_PRELOAD_WATERMARK", "")
+            raw_preload = os.environ.get("ELEVENVOICE_PRELOAD_WATERMARK", "")
             allow_download = raw_preload.strip().lower() in {"1", "true", "yes", "on"}
 
             try:
@@ -1220,7 +1221,7 @@ async def _phase_b(app: FastAPI) -> None:
     app.state.mcp_task = mcp_task
     app.state.mcp_stop = mcp_stop
 
-    # VoiceStudio Cloud settings sync: idles (no Cloud call) unless main hands
+    # ElevenVoice Cloud settings sync: idles (no Cloud call) unless main hands
     # out a token, i.e. the user is signed in with sync switched on.
     from services.cloud_sync.service import get_service as _cloud_sync
 
@@ -1253,12 +1254,12 @@ async def lifespan(app: FastAPI):
     # within the window, dump every thread's stack to stderr (→ backend_err.log)
     # so the hang point is captured instead of invisible. Cancelled the instant
     # startup completes, so a normal (even slow-download) boot never trips it.
-    # Tune with OMNIVOICE_STARTUP_WATCHDOG_S (seconds; 0 disables). Best-effort —
+    # Tune with ELEVENVOICE_STARTUP_WATCHDOG_S (seconds; 0 disables). Best-effort —
     # never let the diagnostic itself break startup.
     _watchdog_armed = False
     try:
         import faulthandler
-        _wd = float(os.environ.get("OMNIVOICE_STARTUP_WATCHDOG_S", "300"))
+        _wd = float(os.environ.get("ELEVENVOICE_STARTUP_WATCHDOG_S", "300"))
         if _wd > 0 and hasattr(faulthandler, "dump_traceback_later"):
             faulthandler.dump_traceback_later(_wd, repeat=False, exit=False)
             _watchdog_armed = True
@@ -1544,7 +1545,7 @@ def _safe_validation_input(value):
        hand, and what several MCP/OpenAI-compat clients do on a bad path)
        raised ``UnicodeDecodeError`` *inside the error handler*. The client got
        a 500 where the request was merely malformed, and the escaping
-       exception dumped the entire body into omnivoice.log — a 145 KB WAV
+       exception dumped the entire body into elevenvoice.log — a 145 KB WAV
        wrote ~500 KB of log. For a local-first voice app that is user audio
        landing on disk in a file we invite people to paste into bug reports.
     2. Even when decodable, the whole body was mirrored into the response.
@@ -1682,7 +1683,7 @@ async def global_exception_handler(request: Request, exc: Exception):
                 # genuinely reportable bugs — suppressing the report button for
                 # every 503 would silence exactly the class users need to file.
                 "detail": (
-                    "[shutting_down] VoiceStudio is shutting down, so it didn't "
+                    "[shutting_down] ElevenVoice is shutting down, so it didn't "
                     "start loading the model. Reopen the app and try again."
                 )
             },
@@ -1717,13 +1718,13 @@ async def global_exception_handler(request: Request, exc: Exception):
 
     content = public_exception_response(
         exc,
-        fallback="VoiceStudio hit an internal error; check the backend log for details.",
+        fallback="ElevenVoice hit an internal error; check the backend log for details.",
     )
     content["error_class"] = _entry.get("error_class")
     # The Python exception TYPE rides along with the taxonomy class. The class
     # is "UNKNOWN" for most failures, which made every such 500 render the same
     # fixed sentence AND the same report (#2917/#2916/#2688); the type name is
-    # VoiceStudio-safe (a type, never user text) and is what tells a
+    # ElevenVoice-safe (a type, never user text) and is what tells a
     # RuntimeError from a KeyError. No substring of the message is copied.
     content["error_type"] = type(exc).__name__
     return JSONResponse(
@@ -1765,7 +1766,7 @@ class StartupGateMiddleware:
 
     Registered FIRST → innermost, so its 503s pass out through Bearer → CORS
     → BackendMarkerMiddleware and arrive with CORS headers + the
-    x-omnivoice-backend marker. Pure ASGI; permanently inert once ready.
+    x-elevenvoice-backend marker. Pure ASGI; permanently inert once ready.
     """
 
     def __init__(self, app):
@@ -1784,7 +1785,7 @@ class StartupGateMiddleware:
             status_code=503,
             content={
                 "detail": (
-                    f"[starting] VoiceStudio is still starting "
+                    f"[starting] ElevenVoice is still starting "
                     f"({_label or 'initializing'}). Retry shortly."
                 ),
                 "step": _step,
@@ -1826,7 +1827,7 @@ class NetworkAccessMiddleware:
         if _is_public_path(scope["path"]):
             return await self.app(scope, receive, send)
         supplied = (
-            request.headers.get("x-omnivoice-pin")
+            request.headers.get("x-elevenvoice-pin")
             or request.query_params.get("pin")
             or request.cookies.get("ov_pin")
             or ""
@@ -1851,14 +1852,14 @@ class NetworkAccessMiddleware:
 #: from whatever else might answer at the same URL (#1385). A rehosted UI
 #: whose API requests land on a static host or a proxy with no API route gets
 #: that host's 404 page; the frontend needs an authoritative "this really is
-#: a VoiceStudio backend" signal rather than guessing from the body shape,
+#: a ElevenVoice backend" signal rather than guessing from the body shape,
 #: since a proxy can return JSON too. Value is the version, which is also
 #: useful when a desktop app talks to an older remote backend.
-BACKEND_MARKER_HEADER = "x-omnivoice-backend"
+BACKEND_MARKER_HEADER = "x-elevenvoice-backend"
 
 
 class BackendMarkerMiddleware:
-    """Stamp ``x-omnivoice-backend: <version>`` on every response.
+    """Stamp ``x-elevenvoice-backend: <version>`` on every response.
 
     Pure ASGI, same reasoning as the gates below it: wrapping only the
     ``http.response.start`` message keeps streaming bodies streaming.
@@ -1895,7 +1896,7 @@ def _backend_marker_value() -> str:
 
 
 class BearerKeyMiddleware:
-    """When OMNIVOICE_API_KEY is set, non-loopback clients must present it on
+    """When ELEVENVOICE_API_KEY is set, non-loopback clients must present it on
     every HTTP + WebSocket request. Durable API-key transports remain compatible;
     the first-party UI may instead present a short-lived admin session. The
     middleware never reflects a presented master key into browser state.
@@ -1966,8 +1967,8 @@ class BearerKeyMiddleware:
         return await self.app(scope, receive, send)
 
 
-# Origin policy is single-sourced in core.csrf: the UI port (OMNIVOICE_UI_PORT,
-# alias VOICESTUDIO_UI_PORT) and OMNIVOICE_ALLOWED_ORIGINS feed both this CORS
+# Origin policy is single-sourced in core.csrf: the UI port (ELEVENVOICE_UI_PORT,
+# alias ELEVENVOICE_UI_PORT) and ELEVENVOICE_ALLOWED_ORIGINS feed both this CORS
 # allow-list and the CSRF origin checks, so the two can never disagree.
 from core.csrf import CORS_EXPOSED_HEADERS, allowed_origin_values, ui_port as _ui_port
 
@@ -1977,6 +1978,8 @@ _allowed = allowed_origin_values()
 # the two probe paths until the deferred startup completes (and is a no-op
 # forever after).
 from core.render_trace import RenderTraceMiddleware
+from core.agent_access import AgentAccessMiddleware  # noqa: E402
+app.add_middleware(AgentAccessMiddleware)
 app.add_middleware(RenderTraceMiddleware)
 app.add_middleware(StartupGateMiddleware)
 
@@ -1986,7 +1989,7 @@ app.add_middleware(StartupGateMiddleware)
 app.add_middleware(NetworkAccessMiddleware)
 
 # Remote-backend bearer gate (parity program Wave 2.3 / §R2). Inert unless
-# OMNIVOICE_API_KEY is set. Distinct from the PIN gate above: the PIN guards
+# ELEVENVOICE_API_KEY is set. Distinct from the PIN gate above: the PIN guards
 # casual LAN-share guests for one session; the API key is the durable
 # credential for running this backend remotely (Tailscale / Docker GPU box).
 # Covers WebSockets too — the PIN gate never did, because every WS endpoint
@@ -2018,7 +2021,7 @@ app.add_middleware(
 # Registered LAST, which in Starlette means OUTERMOST — so the marker lands on
 # every response. CORS is immediately inside it and outside both auth gates, so
 # preflights and gate-generated 401s retain the browser contract. The marker's
-# absence lets a client conclude that the responder is not VoiceStudio (#1385).
+# absence lets a client conclude that the responder is not ElevenVoice (#1385).
 app.add_middleware(BackendMarkerMiddleware)
 
 # Register canonical audio MIME types before any StaticFiles mount.
@@ -2114,7 +2117,7 @@ async def health():
 # Always 200, even post-ready — the one endpoint whose job is to say what the
 # backend is doing before it can serve, so "starting at step X" / "ready" /
 # "failed at step X" are distinguishable from "dead" (#1393 class). The shell
-# requires the x-omnivoice-backend marker header (stamped by the outermost
+# requires the x-elevenvoice-backend marker header (stamped by the outermost
 # middleware) before trusting this body.
 @app.get("/startup/progress", include_in_schema=False)
 def startup_progress_endpoint():
@@ -2178,7 +2181,7 @@ if __name__ == "__main__":
         print(format_text(_report), flush=True)
         sys.exit(0 if _report["summary"]["ok"] else 1)
 
-    # Single-sourced from OMNIVOICE_PORT so the bare `python main.py` path and
+    # Single-sourced from ELEVENVOICE_PORT so the bare `python main.py` path and
     # `--health-check` agree with the Rust sidecar / uvicorn-CLI `--port`.
     _port = network_share.backend_port()
 
@@ -2227,12 +2230,12 @@ if __name__ == "__main__":
     # Electron's backend supervisor must stay in sync.
     #
     # SECURITY: default to loopback (127.0.0.1) so the API isn't reachable
-    # from the LAN out of the box. VoiceStudio ships no authentication; binding
+    # from the LAN out of the box. ElevenVoice ships no authentication; binding
     # to 0.0.0.0 by default would expose every router on this process to any
     # host on the user's network. The Docker image never reaches this block:
     # its uvicorn ENTRYPOINT binds 0.0.0.0 itself (deploy/Dockerfile), and the
     # host-side `127.0.0.1:` port mapping is what keeps it loopback-only there.
-    _bind_host = os.environ.get("OMNIVOICE_BIND_HOST", "127.0.0.1")
+    _bind_host = os.environ.get("ELEVENVOICE_BIND_HOST", "127.0.0.1")
 
     def _port_taken(host: str, port: int) -> "OSError | None":
         """The EADDRINUSE error a bind would raise, or None if the port is free.
@@ -2259,7 +2262,7 @@ if __name__ == "__main__":
 
     def _fail_port_in_use(exc: "OSError | None") -> None:
         print(
-            f"FATAL: port {_port} is already in use — another VoiceStudio "
+            f"FATAL: port {_port} is already in use — another ElevenVoice "
             f"backend (or another app) is listening on it. Quit the other "
             f"instance and relaunch; if nothing is visibly running, an "
             f"orphaned backend from a previous session is still holding the "
@@ -2278,13 +2281,13 @@ if __name__ == "__main__":
         shell's "Last output" shows it instead of a bare exit code.
         """
         print(
-            f"FATAL: the operating system refused to let VoiceStudio listen on "
+            f"FATAL: the operating system refused to let ElevenVoice listen on "
             f"port {_port} (permission denied). On Windows a possible cause is "
             f"a reserved port range (check "
             f"`netsh interface ipv4 show excludedportrange protocol=tcp`) or "
             f"another program holding the port exclusively; on macOS/Linux "
             f"ports below 1024 need elevated rights. "
-            f"Choose another port by setting OMNIVOICE_PORT to a free one."
+            f"Choose another port by setting ELEVENVOICE_PORT to a free one."
             + (f" Underlying error: {exc}" if exc else ""),
             file=sys.stderr,
             flush=True,

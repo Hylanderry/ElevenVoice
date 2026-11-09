@@ -38,7 +38,7 @@ def test_nemo_parakeet_hint_does_not_imply_isolated_venv_exists():
     """Unlike dots-tts/moss-tts-v15/confucius4-tts, nemo-parakeet has no
     isolated-venv env var yet — the hint must not invent one."""
     hint = _INSTALL_HINTS["nemo-parakeet"]
-    assert "OMNIVOICE_NEMO_PARAKEET_DIR" not in hint
+    assert "ELEVENVOICE_NEMO_PARAKEET_DIR" not in hint
 
 
 def test_nemo_parakeet_hint_surfaced_in_list_backends():

@@ -22,12 +22,12 @@ from fastapi.testclient import TestClient
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
-MARKER = "x-omnivoice-backend"
+MARKER = "x-elevenvoice-backend"
 
 
 @pytest.fixture()
 def client(monkeypatch, tmp_path):
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import main
 
     return TestClient(main.app), main
@@ -60,8 +60,8 @@ def test_the_marker_survives_the_auth_gates(monkeypatch, tmp_path):
     # The PIN/API-key middlewares answer 401 themselves, outside any route.
     # Those rejections are responses too, and a client that gets one has
     # certainly reached a backend — it must not read as "wrong host".
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "secret-key-for-this-test")
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "secret-key-for-this-test")
     import importlib
 
     import main
@@ -78,7 +78,7 @@ def test_the_marker_survives_the_auth_gates(monkeypatch, tmp_path):
         )
         assert res.headers.get(MARKER), "auth-gate rejection lost the marker"
     finally:
-        monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
         importlib.reload(main)
 
 

@@ -18,7 +18,7 @@ A stub is recognizable because a bare ModuleType has neither ``__file__``
 
 If you need a fake module in a test, use ``monkeypatch.setitem(sys.modules,
 name, fake)`` inside the test — pytest restores it. For hermetic data dirs,
-rely on conftest.py's ``OMNIVOICE_DATA_DIR`` redirect instead of stubbing
+rely on conftest.py's ``ELEVENVOICE_DATA_DIR`` redirect instead of stubbing
 ``core.config``.
 """
 import sys

@@ -129,7 +129,7 @@ def classify_host(
 
     if caps.family != "cpu":
         if any(KERNEL_RISK_MARKER in n for n in caps.notes):
-            # The user forced CUDA (OMNIVOICE_FORCE_CUDA), so the engine runs
+            # The user forced CUDA (ELEVENVOICE_FORCE_CUDA), so the engine runs
             # on the GPU and may fail at kernel launch: a caveat, not a host
             # that cannot use its card.
             return "accelerated_caveat", {"family": caps.family, "device": caps.device_name}

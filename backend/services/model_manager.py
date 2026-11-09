@@ -13,7 +13,7 @@ from concurrent.futures import Executor, Future, ThreadPoolExecutor
 from utils.containment import contain_system_exit
 
 # ── Lazy imports ─────────────────────────────────────────────────────
-# torch and VoiceStudio are heavy (~2-3s import on Apple Silicon).
+# torch and ElevenVoice are heavy (~2-3s import on Apple Silicon).
 # Deferring them until first use cuts cold start from ~4s to ~1.5s,
 # so health/status endpoints respond immediately on boot.
 
@@ -83,7 +83,7 @@ def _import_omnivoice_locked():
         prepare_audio_imports()
         try:
             # The class is OmniVoice — a library identifier, not product
-            # branding. The VoiceStudio rename must not touch it (checkpoint
+            # branding. The ElevenVoice rename must not touch it (checkpoint
             # configs reference the class name via transformers architectures).
             from omnivoice.models.omnivoice import OmniVoice as _OV
         except ModuleNotFoundError as exc:
@@ -119,9 +119,9 @@ from core.generate_budget import (
     length_bonus_s,
 )
 
-logger = logging.getLogger("omnivoice.model")
+logger = logging.getLogger("elevenvoice.model")
 
-# Per-TTS-job VRAM headroom estimate. VoiceStudio's forward + autoregressive
+# Per-TTS-job VRAM headroom estimate. ElevenVoice's forward + autoregressive
 # decode peaks around 1.6 GB, but the interactive clone path co-loads WhisperX
 # large-v3 ASR (~3 GB) to transcribe the reference, so a *concurrent* clone job
 # is realistically ~5 GB. The old 2.5 GB budget over-committed: an 8 GB card
@@ -130,7 +130,7 @@ logger = logging.getLogger("omnivoice.model")
 # the wave of "Can't reach the local backend" crash reports on 8 GB GPUs
 # (#567/#570/#571/#580/#582/#583/#584). Budgeting 5 GB serializes to 1 worker on
 # ≤10 GB cards (no contention → no crash) while 16/24 GB cards still parallelize.
-# Power users override with OMNIVOICE_GPU_WORKERS.
+# Power users override with ELEVENVOICE_GPU_WORKERS.
 _GPU_VRAM_PER_JOB_GB = 5.0
 _GPU_WORKER_CAP = 4
 
@@ -194,19 +194,19 @@ def _pick_gpu_workers() -> int:
     """Pick a sensible GPU worker count from the runtime environment.
 
     Resolution order:
-      1. OMNIVOICE_GPU_WORKERS env var (explicit user override, clamped 1..16).
+      1. ELEVENVOICE_GPU_WORKERS env var (explicit user override, clamped 1..16).
       2. CUDA / ROCm: free VRAM // per-job budget, capped at 4.
       3. MPS / CPU / unknown: 1.
 
     Designed to fail safe — any exception → 1 worker, never propagated.
     """
-    override = os.environ.get("OMNIVOICE_GPU_WORKERS")
+    override = os.environ.get("ELEVENVOICE_GPU_WORKERS")
     if override:
         try:
             n = int(override)
             return max(1, min(16, n))
         except ValueError:
-            logger.warning("OMNIVOICE_GPU_WORKERS=%r is not an integer; ignoring", override)
+            logger.warning("ELEVENVOICE_GPU_WORKERS=%r is not an integer; ignoring", override)
     try:
         torch = _lazy_torch()
         if hasattr(torch, "cuda") and torch.cuda.is_available():
@@ -430,28 +430,28 @@ def __getattr__(name: str):
 # (generation.py, tts_stream.py) were the last unguarded dispatch — and the
 # residual on-main reports all fail on generate:start (audio). This is the same
 # guard generalised so every GPU dispatch shares one recovery path.
-_GENERATE_TIMEOUT_EXPLICIT = "OMNIVOICE_GENERATE_TIMEOUT_S" in os.environ
-GPU_JOB_TIMEOUT_S = float(os.environ.get("OMNIVOICE_GENERATE_TIMEOUT_S", "300.0"))
+_GENERATE_TIMEOUT_EXPLICIT = "ELEVENVOICE_GENERATE_TIMEOUT_S" in os.environ
+GPU_JOB_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_GENERATE_TIMEOUT_S", "300.0"))
 _CONFIGURED_GPU_JOB_TIMEOUT_S = GPU_JOB_TIMEOUT_S
 # CPU synthesis is healthy but substantially slower than accelerated inference.
 # Keep a separate, bounded floor so a short render on CPU is not abandoned at
 # the GPU-oriented five-minute deadline (#1588).
 #
-# #1787 review fix: an explicit OMNIVOICE_CPU_GENERATE_TIMEOUT_S must ALWAYS
-# govern CPU dispatches, even when OMNIVOICE_GENERATE_TIMEOUT_S is ALSO
+# #1787 review fix: an explicit ELEVENVOICE_CPU_GENERATE_TIMEOUT_S must ALWAYS
+# govern CPU dispatches, even when ELEVENVOICE_GENERATE_TIMEOUT_S is ALSO
 # explicit. Before this flag existed, `universal_override` below treated any
 # explicit GENERATE_TIMEOUT_S as authoritative for CPU too, so the Settings
 # panel's "CPU budget" row could be saved and silently never apply whenever
 # the "Accelerated" row was also set — the exact defect (a control that looks
 # like it works and doesn't) issue #1787 exists to remove. Setting ONLY
-# OMNIVOICE_GENERATE_TIMEOUT_S keeps its historical "universal" behavior
+# ELEVENVOICE_GENERATE_TIMEOUT_S keeps its historical "universal" behavior
 # unchanged (test_explicit_universal_generate_timeout_wins_on_cpu) — nobody
 # who already relies on that single-var override loses it. The only case that
 # changes is the previously-undocumented, previously-broken combination of
 # setting BOTH: the more specific (CPU) value now wins for CPU jobs, matching
 # what a user who filled in both Settings rows was told would happen.
-_CPU_GENERATE_TIMEOUT_EXPLICIT = "OMNIVOICE_CPU_GENERATE_TIMEOUT_S" in os.environ
-CPU_JOB_TIMEOUT_S = float(os.environ.get("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "600.0"))
+_CPU_GENERATE_TIMEOUT_EXPLICIT = "ELEVENVOICE_CPU_GENERATE_TIMEOUT_S" in os.environ
+CPU_JOB_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "600.0"))
 _CONFIGURED_CPU_JOB_TIMEOUT_S = CPU_JOB_TIMEOUT_S
 
 # Queue-wait budget — a SEPARATE, deliberately generous clock (#1190/#1202).
@@ -462,7 +462,7 @@ _CONFIGURED_CPU_JOB_TIMEOUT_S = CPU_JOB_TIMEOUT_S
 # serialization means); waiting *forever* is not, so the queue still has a
 # bound — crossing it means saturation, which is a retryable 503, not a
 # too-heavy job.
-GPU_QUEUE_TIMEOUT_S = float(os.environ.get("OMNIVOICE_GPU_QUEUE_TIMEOUT_S", "1800.0"))
+GPU_QUEUE_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_GPU_QUEUE_TIMEOUT_S", "1800.0"))
 
 # ── model-load heartbeats (#1367) ────────────────────────────────────────────
 # A first-use generate on a subprocess engine DOWNLOADS the model inside the
@@ -476,18 +476,18 @@ GPU_QUEUE_TIMEOUT_S = float(os.environ.get("OMNIVOICE_GPU_QUEUE_TIMEOUT_S", "180
 # each engine's main.py); 30s tolerates a stall between frames without keeping
 # a genuinely dead load alive for long.
 MODEL_LOAD_HEARTBEAT_GRACE_S = float(
-    os.environ.get("OMNIVOICE_MODEL_LOAD_HEARTBEAT_GRACE_S", "30.0"))
+    os.environ.get("ELEVENVOICE_MODEL_LOAD_HEARTBEAT_GRACE_S", "30.0"))
 # Cap on the EXTRA time heartbeats can buy beyond the normal execution budget.
 # Without a cap, a load that heartbeats but never finishes would hold its
 # worker forever. 1800s of extension ≈ a 5 GB model at ~2.5 MB/s on top of the
 # 300s base — beyond that, telling the user is better than silently waiting.
 #
-# OMNIVOICE_PROGRESS_EXTENSION_CAP_S names it. The old name,
-# OMNIVOICE_MODEL_LOAD_TIMEOUT_S, read as the load ceiling that
-# OMNIVOICE_MODEL_LOAD_TIMEOUT (no _S) really is; it stays accepted as a
+# ELEVENVOICE_PROGRESS_EXTENSION_CAP_S names it. The old name,
+# ELEVENVOICE_MODEL_LOAD_TIMEOUT_S, read as the load ceiling that
+# ELEVENVOICE_MODEL_LOAD_TIMEOUT (no _S) really is; it stays accepted as a
 # deprecated alias so existing configurations keep their value.
-PROGRESS_EXTENSION_CAP_ENV = "OMNIVOICE_PROGRESS_EXTENSION_CAP_S"
-PROGRESS_EXTENSION_CAP_LEGACY_ENV = "OMNIVOICE_MODEL_LOAD_TIMEOUT_S"
+PROGRESS_EXTENSION_CAP_ENV = "ELEVENVOICE_PROGRESS_EXTENSION_CAP_S"
+PROGRESS_EXTENSION_CAP_LEGACY_ENV = "ELEVENVOICE_MODEL_LOAD_TIMEOUT_S"
 
 
 def progress_extension_cap_s(env=os.environ) -> float:
@@ -515,7 +515,7 @@ PROGRESS_EXTENSION_BUDGETS = 3.0
 # the bug. At this grace the distinction is the honest one: a job that has not
 # finished a single chunk in a whole base budget really has stopped.
 GENERATE_PROGRESS_GRACE_S = float(
-    os.environ.get("OMNIVOICE_GENERATE_PROGRESS_GRACE_S", "300.0"))
+    os.environ.get("ELEVENVOICE_GENERATE_PROGRESS_GRACE_S", "300.0"))
 
 #: thread ident -> (monotonic time of its last heartbeat, how long it stays
 #: fresh). Written by report_model_load_activity() / report_generate_progress()
@@ -609,8 +609,8 @@ def generate_timeout_s(
     on long inputs. Lives here (not in a router) so every router shares it
     without importing generation.py.
 
-    Policy: floor at the configured OMNIVOICE_GENERATE_TIMEOUT_S (accelerated
-    hosts) or OMNIVOICE_CPU_GENERATE_TIMEOUT_S (CPU hosts — the latter wins
+    Policy: floor at the configured ELEVENVOICE_GENERATE_TIMEOUT_S (accelerated
+    hosts) or ELEVENVOICE_CPU_GENERATE_TIMEOUT_S (CPU hosts — the latter wins
     for CPU whenever it is itself explicit, even if the former also is; see
     the #1787 comment on the module-level constants), plus 1s per 40
     characters past a 1200-character free allowance — a wedged job is caught
@@ -761,7 +761,7 @@ def check_gpu_admission(*, what: str = "GPU job", executor=None) -> None:
         f"queued on {stats.get('workers', 1)} worker(s)). Nothing was started, "
         f"so this request is safe to retry as-is in about "
         f"{int(retry_after)}s. To raise throughput, run fewer "
-        f"concurrent requests, or set OMNIVOICE_GPU_WORKERS if the machine has "
+        f"concurrent requests, or set ELEVENVOICE_GPU_WORKERS if the machine has "
         f"spare VRAM.",
         retry_after=retry_after,
     )
@@ -932,7 +932,7 @@ async def run_on_gpu_pool_guarded(fn, *, what: str = "GPU job",
             f"never started, so nothing was computed and the request is safe "
             f"to retry as-is. The backend is alive but every worker is busy "
             f"with earlier jobs. Run fewer concurrent requests, or raise "
-            f"OMNIVOICE_GPU_WORKERS if the machine has spare VRAM.",
+            f"ELEVENVOICE_GPU_WORKERS if the machine has spare VRAM.",
             retry_after=_retry_after_estimate(stats),
         )
 
@@ -1239,11 +1239,11 @@ def _timeout_guidance(
         return (
             f"{what} was abandoned after {timeout:.0f}s without doing any "
             "work — it spent the whole time waiting on an internal lock, not "
-            "computing. This is a bug in VoiceStudio, not a limit of your "
+            "computing. This is a bug in ElevenVoice, not a limit of your "
             "machine, so shorter text or a lighter engine won't help. "
             "Restart the backend to clear it (Settings → Logs → Backend has "
             "the stack trace that was captured), and please report it with "
-            "that log at https://github.com/debpalash/VoiceStudio/issues — "
+            "that log at https://github.com/Hylanderry/ElevenVoice/issues — "
             "the trace names exactly where it stopped."
         )
     common = (
@@ -1490,7 +1490,7 @@ _model_lock = asyncio.Lock()
 #: `OmniVoiceBackend._ensure_loaded()` on a second pool worker holds only this
 #: lock. On a CUDA host the pool has up to four workers (#567), so the second
 #: route saw `model is None` — the preload had not finished — took this free
-#: lock, and ran `VoiceStudio.from_pretrained` CONCURRENTLY with the preload's.
+#: lock, and ran `ElevenVoice.from_pretrained` CONCURRENTLY with the preload's.
 #: Two overlapping native loads in one process is precisely what Windows
 #: answers with 0xC0000005 ("exit code -1073741819"), which is what #2394
 #: reported 16 s after startup while a background preload was in flight.
@@ -1597,7 +1597,7 @@ def _rocm_arch_remedy(device_arch: str, arch_list) -> str:
 
     install = (
         f"Install a ROCm PyTorch build that lists {device_arch}: "
-        "OMNIVOICE_TORCH_VARIANT=rocm setup installs torch 2.8.0 from the "
+        "ELEVENVOICE_TORCH_VARIANT=rocm setup installs torch 2.8.0 from the "
         "rocm6.4 index, which includes gfx1200/gfx1201 (RX 9000 series)."
     )
     if "HSA_OVERRIDE_GFX_VERSION" in device_arch:
@@ -1686,12 +1686,12 @@ def get_best_device():
             # for execution") — every generate would 500. Too-old (Pascal sm_61)
             # and too-new (Blackwell sm_120 on pre-cu128 wheels) both land here.
             # Fall back to CPU so the app WORKS (slowly) instead of dead-ending;
-            # OMNIVOICE_FORCE_CUDA=1 overrides for users who installed a matching
+            # ELEVENVOICE_FORCE_CUDA=1 overrides for users who installed a matching
             # torch and know the arch_list probe is wrong for their setup.
-            if not _env_flag("OMNIVOICE_FORCE_CUDA"):
+            if not _env_flag("ELEVENVOICE_FORCE_CUDA"):
                 logger.warning(
                     "Falling back to CPU: this GPU is unsupported by the installed "
-                    "PyTorch build (set OMNIVOICE_FORCE_CUDA=1 to force CUDA anyway)."
+                    "PyTorch build (set ELEVENVOICE_FORCE_CUDA=1 to force CUDA anyway)."
                 )
                 return "cpu"
         return "cuda"
@@ -1978,7 +1978,7 @@ _TORCH_COMPILE_MODE = "reduce-overhead"
 _CUDAGRAPH_COMPILE_MODES = frozenset({"reduce-overhead", "max-autotune"})
 
 _GRAPH_CAPTURE_FLOOR = (8, 0)
-_GRAPH_CAPTURE_OVERRIDE = "OMNIVOICE_FORCE_CUDAGRAPH"
+_GRAPH_CAPTURE_OVERRIDE = "ELEVENVOICE_FORCE_CUDAGRAPH"
 
 
 def _resolved_compile_mode(requested: str = _TORCH_COMPILE_MODE) -> str:
@@ -2107,7 +2107,7 @@ def should_preload_tts_asr() -> bool:
     TTS and ASR together, which can leave the desktop waiting indefinitely at
     model startup. Recognition engines remain available through lazy loading.
     """
-    preload_requested = _env_flag("OMNIVOICE_PRELOAD_TTS_ASR")
+    preload_requested = _env_flag("ELEVENVOICE_PRELOAD_TTS_ASR")
     return True if preload_requested else False
 
 
@@ -2273,7 +2273,7 @@ def _manual_cache_delete_hint(checkpoint: str) -> str:
             return ""
         from services.hf_cache_repair import repo_cache_dir
         return (
-            f" If the problem persists, quit VoiceStudio, delete "
+            f" If the problem persists, quit ElevenVoice, delete "
             f"{repo_cache_dir(checkpoint)} and restart — the model "
             "re-downloads automatically."
         )
@@ -2388,11 +2388,11 @@ def _repair_model_cache(checkpoint: str, *, force: bool = False) -> bool:
     # the last left off — cheap and idempotent. Counts/backoff are env-tunable
     # for restricted networks and kept fast (backoff=0) in tests.
     try:
-        retries = max(1, int(os.environ.get("OMNIVOICE_MODEL_REPAIR_RETRIES", "3")))
+        retries = max(1, int(os.environ.get("ELEVENVOICE_MODEL_REPAIR_RETRIES", "3")))
     except ValueError:
         retries = 3
     try:
-        backoff = max(0.0, float(os.environ.get("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "2")))
+        backoff = max(0.0, float(os.environ.get("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "2")))
     except ValueError:
         backoff = 2.0
 
@@ -2441,25 +2441,25 @@ def _repair_model_cache(checkpoint: str, *, force: bool = False) -> bool:
     return False
 
 
-_DEFAULT_OMNIVOICE_CHECKPOINT = "k2-fsa/OmniVoice"
+_DEFAULT_ELEVENVOICE_CHECKPOINT = "k2-fsa/OmniVoice"
 
 
 def resolve_omnivoice_checkpoint() -> str:
-    """Resolve the ElevenVoice TTS checkpoint from ``OMNIVOICE_MODEL``, self-healing
+    """Resolve the ElevenVoice TTS checkpoint from ``ELEVENVOICE_MODEL``, self-healing
     a misconfigured value.
 
     A valid checkpoint is either a HuggingFace repo id (``org/repo`` — contains a
     ``/``) or an existing local directory. A bare token like ``"omnivoice"`` — a
-    TTS *engine id* that leaked into ``OMNIVOICE_MODEL`` (e.g. a stale pref/env) —
+    TTS *engine id* that leaked into ``ELEVENVOICE_MODEL`` (e.g. a stale pref/env) —
     is neither, and would crash model load with *"omnivoice is not a local folder
     and is not a valid model identifier listed on huggingface.co/models"* (#693).
     Fall back to the default rather than 500 on every launch.
     """
-    checkpoint = os.environ.get("OMNIVOICE_MODEL", _DEFAULT_OMNIVOICE_CHECKPOINT).strip()
+    checkpoint = os.environ.get("ELEVENVOICE_MODEL", _DEFAULT_ELEVENVOICE_CHECKPOINT).strip()
     if not checkpoint:
-        return _DEFAULT_OMNIVOICE_CHECKPOINT
+        return _DEFAULT_ELEVENVOICE_CHECKPOINT
     if checkpoint == "test":
-        # Test-suite sentinel (tests/conftest.py sets OMNIVOICE_MODEL=test):
+        # Test-suite sentinel (tests/conftest.py sets ELEVENVOICE_MODEL=test):
         # return it verbatim. Self-healing it to the real default — "test"
         # is a bare token like the #693 engine-id leak — would hand every
         # app-booting test the real 2.3 GB k2-fsa/OmniVoice checkpoint,
@@ -2473,11 +2473,11 @@ def resolve_omnivoice_checkpoint() -> str:
     if "/" in checkpoint or "\\" in checkpoint or os.path.isabs(checkpoint):
         return checkpoint
     logger.warning(
-        "OMNIVOICE_MODEL=%r is not a HuggingFace repo id (org/repo) or a local "
+        "ELEVENVOICE_MODEL=%r is not a HuggingFace repo id (org/repo) or a local "
         "path — falling back to %s (#693).",
-        checkpoint, _DEFAULT_OMNIVOICE_CHECKPOINT,
+        checkpoint, _DEFAULT_ELEVENVOICE_CHECKPOINT,
     )
-    return _DEFAULT_OMNIVOICE_CHECKPOINT
+    return _DEFAULT_ELEVENVOICE_CHECKPOINT
 
 
 #: CPython's exact executor-rejection message once interpreter shutdown began
@@ -2657,16 +2657,16 @@ def _load_model_sync():
 
     lid = register_listener(_on_hf_progress)
     try:
-        _set_loading("importing", "Importing PyTorch & VoiceStudio runtime…")
-        logger.info("Importing PyTorch & VoiceStudio runtime…")
+        _set_loading("importing", "Importing PyTorch & ElevenVoice runtime…")
+        logger.info("Importing PyTorch & ElevenVoice runtime…")
         torch = _lazy_torch()
-        VoiceStudio = _lazy_omnivoice()
+        ElevenVoice = _lazy_omnivoice()
         device = get_best_device()
         from omnivoice.utils.dtype import tts_dtype_name
 
         checkpoint = resolve_omnivoice_checkpoint()
         _set_loading("loading_weights", f"Loading TTS weights on {device}…")
-        logger.info("Loading VoiceStudio model on device: %s", device)
+        logger.info("Loading ElevenVoice model on device: %s", device)
         preload_asr = should_preload_tts_asr()
         if preload_asr:
             logger.info("PyTorch Whisper will preload after the TTS model is ready.")
@@ -2675,7 +2675,7 @@ def _load_model_sync():
         _preflight_truncated_weights(checkpoint)
 
         def _load():
-            return VoiceStudio.from_pretrained(
+            return ElevenVoice.from_pretrained(
                 checkpoint, device_map=device,
                 dtype=getattr(torch, tts_dtype_name(device)), load_asr=False,
             )
@@ -2858,7 +2858,7 @@ def _load_model_sync():
                 raise RuntimeError(
                     "The transcription model's files are damaged. Open "
                     "the engine's Weights list in Model Catalogue, delete the transcription (ASR) model, "
-                    "and install it again; or set OMNIVOICE_PRELOAD_TTS_ASR=0 "
+                    "and install it again; or set ELEVENVOICE_PRELOAD_TTS_ASR=0 "
                     "to stop preloading it alongside TTS."
                 ) from asr_exc
 
@@ -2964,10 +2964,10 @@ def _load_model_sync():
         # metadata can be overwritten by a loader that completed after its
         # caller timed out. Instance metadata keeps /model/status honest.
         try:
-            setattr(_model, "_voicestudio_checkpoint", checkpoint)
+            setattr(_model, "_elevenvoice_checkpoint", checkpoint)
             setattr(
                 _model,
-                "_voicestudio_loaded_at",
+                "_elevenvoice_loaded_at",
                 time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             )
         except Exception:
@@ -2977,7 +2977,7 @@ def _load_model_sync():
             logger.debug("Could not attach resident model identity", exc_info=True)
 
         _set_loading("ready", "Model ready", progress=100)
-        logger.info("VoiceStudio model loaded successfully.")
+        logger.info("ElevenVoice model loaded successfully.")
         return _model
     except ModelLoadInterruptedByShutdown:
         raise
@@ -3032,10 +3032,10 @@ def _model_load_timeout() -> float:
     Backstop for any hang the HF per-read socket timeouts don't catch
     (a wedged torch.compile, a deadlock, etc.). Generous by default so a
     legitimate cold multi-GB download on a slow link still completes;
-    overridable via OMNIVOICE_MODEL_LOAD_TIMEOUT for very slow networks.
+    overridable via ELEVENVOICE_MODEL_LOAD_TIMEOUT for very slow networks.
     """
     try:
-        return max(30.0, float(os.environ.get("OMNIVOICE_MODEL_LOAD_TIMEOUT", "1200")))
+        return max(30.0, float(os.environ.get("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "1200")))
     except (ValueError, TypeError):
         return 1200.0
 
@@ -3289,7 +3289,7 @@ async def get_model(*, allow_load: bool = True):
     # Opportunistic profile samples must never load weights, including when
     # ASR or idle cleanup evicted them after the caller's residency check.
     if not allow_load:
-        raise RuntimeError("VoiceStudio model is not loaded")
+        raise RuntimeError("ElevenVoice model is not loaded")
 
     if running_on_gpu_pool():
         # Same reasoning as _heal_tts_placement below, applied to the COLD
@@ -3384,14 +3384,14 @@ def _release_idle_tts_memory(stage):
 def _should_make_room_for_generate():
     """Decide whether to free idle GPU memory before a generate (#730/#1190).
 
-    Modes (OMNIVOICE_FREE_VRAM_BEFORE_GENERATE):
+    Modes (ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE):
       auto (default): free when free system RAM is below the unified headroom,
         mirroring _make_room_before_tts_load. A roomy machine pays nothing.
       always: free before every generate (small per-call cost from gc.collect +
         cache drop).
       never: opt out.
     """
-    mode = os.environ.get("OMNIVOICE_FREE_VRAM_BEFORE_GENERATE", "auto").strip().lower()
+    mode = os.environ.get("ELEVENVOICE_FREE_VRAM_BEFORE_GENERATE", "auto").strip().lower()
     if mode == "never":
         return False
     if mode == "always":
@@ -3582,8 +3582,8 @@ def get_model_status():
     checkpoint = None
     loaded_at = None
     if is_loaded:
-        checkpoint = getattr(model, "_voicestudio_checkpoint", None)
-        loaded_at = getattr(model, "_voicestudio_loaded_at", None)
+        checkpoint = getattr(model, "_elevenvoice_checkpoint", None)
+        loaded_at = getattr(model, "_elevenvoice_loaded_at", None)
         if not checkpoint:
             try:
                 checkpoint = resolve_omnivoice_checkpoint()
@@ -3624,11 +3624,18 @@ def _resolve_idle_timeout() -> float:
     takes effect without a restart."""
     try:
         from core import prefs
-        return float(prefs.resolve(
+        timeout = float(prefs.resolve(
             "idle_timeout_seconds",
-            env="OMNIVOICE_IDLE_TIMEOUT_S",
+            env="ELEVENVOICE_IDLE_TIMEOUT_S",
             default=IDLE_TIMEOUT_SECONDS,
         ))
+        # An agent (MCP or /v1) used the engine recently: keep the model warm
+        # so its next call doesn't pay for a reload. 0 still means "never unload".
+        from core import agent_access
+        explicit = os.environ.get("ELEVENVOICE_IDLE_TIMEOUT_S") or prefs.get("idle_timeout_seconds") is not None
+        if timeout > 0 and not explicit and agent_access.agent_recently_active():
+            timeout = max(timeout, agent_access.AGENT_WARM_SECONDS)
+        return timeout
     except (TypeError, ValueError, ImportError):
         return float(IDLE_TIMEOUT_SECONDS)
 
@@ -3711,7 +3718,7 @@ async def idle_worker():
         # lock is still held across it, so no load can interleave.
         async with _model_lock:
             if model is not None and time.time() - _last_used > idle_timeout:
-                logger.info("Idle timeout reached. Unloading VoiceStudio model to free VRAM.")
+                logger.info("Idle timeout reached. Unloading ElevenVoice model to free VRAM.")
                 await run_release(_release_idle_model)
         await run_release(_release_idle_side_models, idle_timeout)
 
@@ -3892,7 +3899,7 @@ def release_after_oom(error: BaseException) -> None:
 
 
 def unload_shared_model() -> bool:
-    """Drop the shared VoiceStudio model and actually give the memory back.
+    """Drop the shared ElevenVoice model and actually give the memory back.
 
     The order is the entire point of this function. Clearing the reference has
     to come FIRST, then the allocator caches. ``free_vram()`` run while
@@ -3943,7 +3950,7 @@ def _has_dedicated_vram():
 # so a box with less than this much headroom cannot hold both — and on a Mac the
 # loser is the whole backend process (the OS kills it). Tunable for bigger boxes.
 _UNIFIED_OFFLOAD_HEADROOM_GB = float(
-    os.environ.get("OMNIVOICE_UNIFIED_OFFLOAD_HEADROOM_GB", "6.0")
+    os.environ.get("ELEVENVOICE_UNIFIED_OFFLOAD_HEADROOM_GB", "6.0")
 )
 
 
@@ -4332,8 +4339,8 @@ def _relocate_shared_model(m, device: str) -> None:
 # this is a no-op.
 
 OFFLOAD_AFTER_GENERATION_PREF = "offload_tts_after_generation"
-OFFLOAD_AFTER_GENERATION_ENV = "OMNIVOICE_OFFLOAD_AFTER_GENERATION"
-_OFFLOAD_GRACE_ENV = "OMNIVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S"
+OFFLOAD_AFTER_GENERATION_ENV = "ELEVENVOICE_OFFLOAD_AFTER_GENERATION"
+_OFFLOAD_GRACE_ENV = "ELEVENVOICE_OFFLOAD_AFTER_GENERATION_GRACE_S"
 _OFFLOAD_GRACE_DEFAULT_S = 3.0
 # While a dub/batch/audiobook job is active the offload re-checks this often,
 # so the setting still applies after the job finishes without a GPU drain.
@@ -4384,7 +4391,7 @@ def _truthy_setting(value) -> bool:
 
 
 def offload_after_generation_enabled() -> bool:
-    """Env ``OMNIVOICE_OFFLOAD_AFTER_GENERATION`` > prefs.json > False.
+    """Env ``ELEVENVOICE_OFFLOAD_AFTER_GENERATION`` > prefs.json > False.
     Resolved per call so a Settings change applies without a restart."""
     try:
         # Imported by name at call time: core.prefs reaches this module back

@@ -41,7 +41,7 @@ def fresh_app(monkeypatch, tmp_path):
     only need the engines router for these tests so we mount it
     directly, matching the pattern in tests/backend/test_engine_spawn_token.py.
     """
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
 
     # Wipe cached services so each test gets a clean _LAST_ERRORS dict +
     # _REGISTRY (the engines router imports them on first call).
@@ -102,7 +102,7 @@ def test_engines_response_includes_new_fields(fresh_app):
 
 
 def test_engines_response_marks_environment_pinned_families(fresh_app, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "pytorch-whisper")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "pytorch-whisper")
     body = _client(fresh_app).get("/engines").json()
 
     assert body["asr"]["env_override"] is True
@@ -337,7 +337,7 @@ def test_mps_api_hides_alias_but_accepts_it_for_selection(fresh_app, monkeypatch
     from api.routers import engines
 
     _force_host(monkeypatch, "mps")
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND", raising=False)
     _pin_omnivoice_inventory(monkeypatch, engines, with_alias=True)
     monkeypatch.setattr(engines.tts_backend, "active_backend_id", lambda: "omnivoice-subprocess")
     catalogue = _asgi_request(fresh_app, "GET", "/engines/tts").json()
@@ -472,7 +472,7 @@ def test_select_llm_never_routing_gated(fresh_app, monkeypatch):
 #
 # The ASR family was always wired in _FAMILIES on paper, but no UI called it
 # and nothing exercised it — the Settings picker now does. Lock the contract:
-# a pick persists to prefs["asr_backend"], `OMNIVOICE_ASR_BACKEND` still wins
+# a pick persists to prefs["asr_backend"], `ELEVENVOICE_ASR_BACKEND` still wins
 # over the pick, and unknown / not-ready ids are 400s.
 
 
@@ -508,7 +508,7 @@ def test_select_asr_persists_pref_and_echoes_active(fresh_app, monkeypatch):
     from services import asr_backend as asr_mod
 
     _force_cpu_host(monkeypatch)
-    monkeypatch.delenv("OMNIVOICE_ASR_BACKEND", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_BACKEND", raising=False)
     _, restore = _register_fake_asr(asr_mod, "fake-asr")
     try:
         r = _client(fresh_app).post(
@@ -524,7 +524,7 @@ def test_select_asr_persists_pref_and_echoes_active(fresh_app, monkeypatch):
 
 
 def test_select_asr_env_var_still_wins(fresh_app, monkeypatch):
-    """CRITICAL backward-compat: an existing `OMNIVOICE_ASR_BACKEND` pin keeps
+    """CRITICAL backward-compat: an existing `ELEVENVOICE_ASR_BACKEND` pin keeps
     winning over a Settings pick — the pick persists to prefs (for when the
     pin is lifted) but the active id stays the env value, and the response
     says so via env_override."""
@@ -532,7 +532,7 @@ def test_select_asr_env_var_still_wins(fresh_app, monkeypatch):
     from services import asr_backend as asr_mod
 
     _force_cpu_host(monkeypatch)
-    monkeypatch.setenv("OMNIVOICE_ASR_BACKEND", "pytorch-whisper")
+    monkeypatch.setenv("ELEVENVOICE_ASR_BACKEND", "pytorch-whisper")
     _, restore = _register_fake_asr(asr_mod, "fake-asr-pinned")
     try:
         r = _client(fresh_app).post(
@@ -798,8 +798,8 @@ def test_engine_health_is_admin_gated(fresh_app):
 
 
 def test_server_mode_engine_mutations_require_api_key(fresh_app, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     client = _client(fresh_app, host="172.17.0.1")
 
     requests = [
@@ -817,8 +817,8 @@ def test_server_mode_engine_mutations_require_api_key(fresh_app, monkeypatch):
 
 def test_server_mode_engine_health_requires_api_key(fresh_app, monkeypatch):
     """Health is a GET but can spawn a sidecar, so it is not discovery."""
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     client = _client(fresh_app, host="172.17.0.1")
 
     response = client.get("/engines/omnivoice/health")
@@ -828,8 +828,8 @@ def test_server_mode_engine_health_requires_api_key(fresh_app, monkeypatch):
 
 def test_server_mode_sidecar_install_stays_desktop_only(fresh_app, monkeypatch):
     """An API key cannot remotely trigger the mutable-source installer."""
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret")
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret")
     client = _client(fresh_app, host="172.17.0.1")
 
     response = client.post(
@@ -1063,7 +1063,7 @@ def test_setup_snippet_present_for_path_gated_engines(fresh_app):
         assert "setup_snippet" in entry
     # IndexTTS-2 is path-gated → exact export line, single-sourced in the backend.
     assert by_id["indextts2"]["setup_snippet"] == (
-        "export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts"
+        "export ELEVENVOICE_INDEXTTS_DIR=/path/to/index-tts"
     )
     # A bundled engine has no path gate → null.
     assert by_id["omnivoice"]["setup_snippet"] is None

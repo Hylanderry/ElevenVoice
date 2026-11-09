@@ -3,17 +3,17 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * shadcn/ui Input — new-york style, themed through the VoiceStudio token bridge
+ * shadcn/ui Input — new-york style, themed through the ElevenVoice token bridge
  * (see index.css). `border-input`/`text-foreground`/`placeholder:text-muted-
  * foreground`/`focus-visible:ring-ring`/`aria-invalid:border-destructive`
- * resolve to the VoiceStudio palette, so it shows the chrome border, muted
+ * resolve to the ElevenVoice palette, so it shows the chrome border, muted
  * placeholder, and brand-pink focus ring, recoloring with every [data-theme].
  * Shared form primitives in ../../ui/Input.jsx wrap this input shell.
  */
 /**
  * inputBaseClass — the shadcn/ui Input shell: chrome border, transparent fill,
  * muted placeholder, brand focus ring, destructive invalid state, all resolved
- * through the VoiceStudio token bridge so it tracks every [data-theme].
+ * through the ElevenVoice token bridge so it tracks every [data-theme].
  *
  * Exported for the legacy form wrappers in ../../ui/Input.jsx. Existing native-select
  * callers retain their event API; new or redesigned choices use the shared

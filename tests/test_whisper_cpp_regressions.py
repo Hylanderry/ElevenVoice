@@ -17,8 +17,8 @@ def invocation(tmp_path, monkeypatch, m):
     return str(audio)
 
 def test_default_language_is_auto_and_cpu_pin_wins(invocation, monkeypatch, m):
-    monkeypatch.setenv('OMNIVOICE_DEVICE', 'cpu')
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_BACKEND', 'vulkan')
+    monkeypatch.setenv('ELEVENVOICE_DEVICE', 'cpu')
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_BACKEND', 'vulkan')
     def run(cmd, **kwargs):
         assert cmd[cmd.index('-l') + 1] == 'auto'
         assert '-ng' in cmd
@@ -54,7 +54,7 @@ def test_failure_does_not_retry_or_leak_stderr(invocation, monkeypatch, m):
 def test_local_model_strict_preflight(tmp_path, monkeypatch, m):
     model = tmp_path / 'ggml-base.bin'
     model.write_bytes(b'weights')
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_MODEL', str(model))
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_MODEL', str(model))
     assert m.ab.asr_model_missing_error(backend_id='whisper-cpp', require_installed=True) is None
 
 def test_unsupported_json_retry_has_single_timeout_budget(invocation, monkeypatch, m):
@@ -110,7 +110,7 @@ def test_resampling_filters_above_nyquist(tmp_path, m):
 
 
 def test_licence_repository_is_not_a_local_path(tmp_path, monkeypatch, m):
-    monkeypatch.setenv('OMNIVOICE_WHISPER_CPP_MODEL', str(tmp_path / 'private.bin'))
+    monkeypatch.setenv('ELEVENVOICE_WHISPER_CPP_MODEL', str(tmp_path / 'private.bin'))
     assert m.ab.backend_model_repos(m.WhisperCppBackend()) == []
 
 
@@ -119,7 +119,7 @@ def test_missing_local_model_has_manual_install_guidance(monkeypatch, m):
     missing = m.ab.asr_model_missing_error(backend_id='whisper-cpp', require_installed=True)
     assert missing['reason'] == 'manual_install'
     assert missing['recommended'] is None
-    assert 'OMNIVOICE_WHISPER_CPP_MODEL' in m.ab.asr_model_missing_detail(missing)
+    assert 'ELEVENVOICE_WHISPER_CPP_MODEL' in m.ab.asr_model_missing_detail(missing)
 
 @pytest.mark.parametrize('filename, expected', [('ggml-base.en.bin', False), ('ggml-base.bin', True)])
 def test_translation_requires_multilingual_model(tmp_path, monkeypatch, m, filename, expected):

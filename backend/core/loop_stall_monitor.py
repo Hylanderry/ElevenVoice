@@ -6,7 +6,7 @@ reports "backend busy / not responding" while the log shows only unrelated 200s
 - nothing names the culprit (#2970, #2876, #2840, #2794, #2756). A daemon
 thread pings the loop and, if a ping goes unanswered for the threshold, dumps
 every thread's Python stack once per stall. Pure diagnostics: never raises into
-startup, and ``OMNIVOICE_LOOP_STALL_S=0`` disables it.
+startup, and ``ELEVENVOICE_LOOP_STALL_S=0`` disables it.
 """
 from __future__ import annotations
 
@@ -17,14 +17,14 @@ import sys
 import threading
 import time
 
-logger = logging.getLogger("omnivoice.loop_stall")
+logger = logging.getLogger("elevenvoice.loop_stall")
 _DEFAULT_THRESHOLD_S = 4.0
 _POLL_S = 1.0
 
 
 def stall_threshold() -> float:
     try:
-        return float(os.environ.get("OMNIVOICE_LOOP_STALL_S", _DEFAULT_THRESHOLD_S))
+        return float(os.environ.get("ELEVENVOICE_LOOP_STALL_S", _DEFAULT_THRESHOLD_S))
     except ValueError:
         return _DEFAULT_THRESHOLD_S
 

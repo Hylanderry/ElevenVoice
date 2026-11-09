@@ -53,8 +53,8 @@ def main() -> None:
         raise FileExistsError(f"Refusing to replace existing media tools: {args.output}")
     # A new private cache forces the existing acquisition path to verify the
     # pinned archive instead of trusting a previously writable tool cache.
-    with tempfile.TemporaryDirectory(prefix="voicestudio-mas-media-") as cache:
-        os.environ["OMNIVOICE_DATA_DIR"] = cache
+    with tempfile.TemporaryDirectory(prefix="elevenvoice-mas-media-") as cache:
+        os.environ["ELEVENVOICE_DATA_DIR"] = cache
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
         from services import media_tools
         result = media_tools.acquire_bundled(wait=True)

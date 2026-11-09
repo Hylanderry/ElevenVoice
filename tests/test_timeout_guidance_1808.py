@@ -2,7 +2,7 @@
 
 #1797 moved the compute-time budget into Settings → Performance & Device, but
 three branches of `_timeout_guidance` still told the user to raise
-OMNIVOICE_GENERATE_TIMEOUT_S. That sends someone to set an environment variable
+ELEVENVOICE_GENERATE_TIMEOUT_S. That sends someone to set an environment variable
 for a value the app now exposes as a slider — and on Windows in particular,
 setting one durably is exactly the trap the project's own docs warn against.
 
@@ -15,7 +15,7 @@ import pytest
 
 from services.model_manager import _timeout_guidance
 
-_ENV_VAR = "OMNIVOICE_GENERATE_TIMEOUT_S"
+_ENV_VAR = "ELEVENVOICE_GENERATE_TIMEOUT_S"
 _SETTINGS = "Settings → Performance & Device"
 
 

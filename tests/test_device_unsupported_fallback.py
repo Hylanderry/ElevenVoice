@@ -22,7 +22,7 @@ def cuda_host(monkeypatch):
     )
     monkeypatch.setattr(mm, "_lazy_torch", lambda: SimpleNamespace())
     monkeypatch.setattr(mm, "_configure_rocm_if_needed", lambda _torch: None)
-    monkeypatch.delenv("OMNIVOICE_FORCE_CUDA", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FORCE_CUDA", raising=False)
 
 
 def test_unsupported_gpu_falls_back_to_cpu(cuda_host, monkeypatch):
@@ -42,5 +42,5 @@ def test_force_cuda_overrides_the_fallback(cuda_host, monkeypatch):
     monkeypatch.setattr(
         mm, "check_device_compatibility", lambda: (False, "unsupported arch"),
     )
-    monkeypatch.setenv("OMNIVOICE_FORCE_CUDA", "1")
+    monkeypatch.setenv("ELEVENVOICE_FORCE_CUDA", "1")
     assert mm.get_best_device() == "cuda"

@@ -8,8 +8,8 @@ import sqlite3
 import pytest
 import torch
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import core.db as _db
 
@@ -201,7 +201,7 @@ def api(tmp_path, monkeypatch):
             return torch.zeros(1, 24000)
 
     monkeypatch.setitem(tts._REGISTRY, _Engine.id, _Engine)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", _Engine.id)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", _Engine.id)
     return TestClient(app, client=("127.0.0.1", 50000))
 
 

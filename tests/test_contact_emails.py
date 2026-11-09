@@ -1,4 +1,4 @@
-"""VoiceStudio publishes exactly four contact addresses (owner-set 2026-10-02;
+"""ElevenVoice publishes exactly four contact addresses (owner-set 2026-10-02;
 sponsor@ added by the owner in #3674, 2026-10-29).
 
     hi@voicestudio.sh        general, business, licensing, collaboration
@@ -31,10 +31,10 @@ _NOREPLY_DOMAIN = "users.noreply.github.com"
 _TEST_PATH = re.compile(r"(^|/)(tests?|__tests__|fixtures)/|\.test\.[a-z]+$|_test\.py$")
 # Vendored copyright notices retain upstream identities, not project contacts.
 _NATIVE_LICENCE_PATH = re.compile(
-    r"^mobile/(?:ios/VoiceStudio/Resources/NativeLicences/[^/]+\.txt"
+    r"^mobile/(?:ios/ElevenVoice/Resources/NativeLicences/[^/]+\.txt"
     r"|android/app/src/main/assets/licenses/native-[^/]+\.txt"
     # LAME (LGPL) is vendored unmodified for MP3 export; its source headers name its authors.
-    r"|ios/VoiceStudioKit/Sources/VSNative/Lame/.+)$"
+    r"|ios/ElevenVoiceKit/Sources/VSNative/Lame/.+)$"
 )
 
 
@@ -78,7 +78,7 @@ def test_only_project_contact_addresses_are_published():
 
 
 def test_ssh_usernames_are_not_contact_addresses():
-    assert list(_email_addresses('`ssh://aur@aur.archlinux.org/voicestudio-git.git`')) == []
+    assert list(_email_addresses('`ssh://aur@aur.archlinux.org/elevenvoice-git.git`')) == []
     assert list(_email_addresses('ssh://git@github.com/owner/repo.git')) == []
     assert list(_email_addresses('Contact aur@aur.archlinux.org')) == ['aur@aur.archlinux.org']
     assert list(_email_addresses('ssh://git@example.org/repo.git; owner@example.net')) == ['owner@example.net']

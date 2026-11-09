@@ -139,7 +139,7 @@ def test_venv_probe_prefers_omnivoice_indextts_dir(
 ):
     """Probe 1 wins when both Probe 1 and Probe 2 are viable.
 
-    Existing v0.2.7 users with OMNIVOICE_INDEXTTS_DIR + .venv must keep
+    Existing v0.2.7 users with ELEVENVOICE_INDEXTTS_DIR + .venv must keep
     using their venv even after upgrading to v0.3.x.
     """
     omv_dir = tmp_path / "user_indextts_clone"
@@ -153,7 +153,7 @@ def test_venv_probe_prefers_omnivoice_indextts_dir(
     _make_fake_venv(engines_venv)
     _install_stub_indextts(engines_venv)
 
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(omv_dir))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(omv_dir))
 
     # Patch probe to honour our PYTHONPATH stubbing.
     def wrapped(python_path: Path) -> bootstrap.ProbeResult:
@@ -179,8 +179,8 @@ def test_venv_probe_prefers_omnivoice_indextts_dir(
 def test_venv_probe_falls_back_to_engines_path(
     monkeypatch, tmp_path, isolated_engines_venv
 ):
-    """Probe 2 fires when OMNIVOICE_INDEXTTS_DIR is unset."""
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    """Probe 2 fires when ELEVENVOICE_INDEXTTS_DIR is unset."""
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
     engines_venv = isolated_engines_venv
     py_path = _make_fake_venv(engines_venv)
     _install_stub_indextts(engines_venv)
@@ -194,10 +194,10 @@ def test_venv_probe_falls_back_to_engines_path(
 def test_venv_probe_bootstraps_when_neither_exists(
     monkeypatch, tmp_path, isolated_engines_venv
 ):
-    """No venvs on disk + OMNIVOICE_INDEXTTS_DIR set => uv venv + uv pip install."""
+    """No venvs on disk + ELEVENVOICE_INDEXTTS_DIR set => uv venv + uv pip install."""
     omv_dir = tmp_path / "user_clone_no_venv"
     omv_dir.mkdir()
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(omv_dir))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(omv_dir))
     # Pretend uv is available at a stub path.
     fake_uv = tmp_path / "uv-stub"
     fake_uv.write_text("# fake")
@@ -234,13 +234,13 @@ def test_venv_probe_bootstraps_when_neither_exists(
 def test_venv_probe_raises_clear_error_when_no_install_possible(
     monkeypatch, tmp_path, isolated_engines_venv
 ):
-    """No venv on disk AND OMNIVOICE_INDEXTTS_DIR unset => raise with docs link."""
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    """No venv on disk AND ELEVENVOICE_INDEXTTS_DIR unset => raise with docs link."""
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
     # Engines venv directory is the per-test tmpdir; it's empty.
     with pytest.raises(RuntimeError) as excinfo:
         bootstrap.resolve_indextts_venv()
     message = str(excinfo.value)
-    assert "OMNIVOICE_INDEXTTS_DIR" in message
+    assert "ELEVENVOICE_INDEXTTS_DIR" in message
     assert "docs/engines/indextts.md" in message
 
 
@@ -258,7 +258,7 @@ def test_is_indextts_installed_no_spawn(
     """
     engines_venv = isolated_engines_venv
     _make_fake_venv(engines_venv)
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
 
     # Hard-fail if anyone calls subprocess.run during is_indextts_installed.
     def boom(*args, **kw):
@@ -274,7 +274,7 @@ def test_is_indextts_installed_returns_false_when_no_venv(
     monkeypatch, tmp_path, isolated_engines_venv
 ):
     """Negative path — no venv anywhere returns False without spawning."""
-    monkeypatch.delenv("OMNIVOICE_INDEXTTS_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INDEXTTS_DIR", raising=False)
     # isolated_engines_venv is an empty tmpdir; no fake venv created.
 
     def boom(*args, **kw):
@@ -310,7 +310,7 @@ def test_hf_home_marker_present_after_bootstrap(
     user_venv = omv_dir / ".venv"
     _make_fake_venv(user_venv)
     _install_stub_indextts(user_venv)
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(omv_dir))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(omv_dir))
 
     _patch_probe_to_use_pythonpath(monkeypatch, user_venv)
 
@@ -329,7 +329,7 @@ def test_resolve_caches_result(monkeypatch, tmp_path, isolated_engines_venv):
     user_venv = omv_dir / ".venv"
     _make_fake_venv(user_venv)
     _install_stub_indextts(user_venv)
-    monkeypatch.setenv("OMNIVOICE_INDEXTTS_DIR", str(omv_dir))
+    monkeypatch.setenv("ELEVENVOICE_INDEXTTS_DIR", str(omv_dir))
 
     _patch_probe_to_use_pythonpath(monkeypatch, user_venv)
 

@@ -33,7 +33,7 @@ Design rules:
   ``llm_skill.<id>.enabled`` ("1"/"0", absent = enabled) and
   ``llm_skill.<id>.provider`` (provider id, absent/empty = active provider).
   Keys stay in the provider registry (encrypted) — nothing secret here.
-* ``OMNIVOICE_LLM_BACKEND=off`` remains the global kill switch: it also
+* ``ELEVENVOICE_LLM_BACKEND=off`` remains the global kill switch: it also
   silences skills routed through a per-skill override.
 """
 from __future__ import annotations
@@ -43,7 +43,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
-logger = logging.getLogger("omnivoice.llm_skills")
+logger = logging.getLogger("elevenvoice.llm_skills")
 
 _ENABLED_KEY = "llm_skill.{sid}.enabled"
 _PROVIDER_KEY = "llm_skill.{sid}.provider"
@@ -175,7 +175,7 @@ def resolve_skill(skill_id: str) -> SkillResolution:
         source = "active" if provider is not None else "none"
 
     from core import prefs
-    backend_pin = os.environ.get("OMNIVOICE_LLM_BACKEND")
+    backend_pin = os.environ.get("ELEVENVOICE_LLM_BACKEND")
     backend_off = backend_pin == "off" or (
         not backend_pin and not override and prefs.get("llm_backend") == "off"
     )
@@ -211,7 +211,7 @@ class SkillClient:
 
 def _default_timeout() -> float:
     try:
-        return float(os.environ.get("OMNIVOICE_LLM_TIMEOUT", "45"))
+        return float(os.environ.get("ELEVENVOICE_LLM_TIMEOUT", "45"))
     except ValueError:
         return 45.0
 
@@ -277,7 +277,7 @@ def skill_backend(skill_id: str, active: Optional[Callable[[], Any]] = None):
       path, env/prefs overrides included;
     * override → an OpenAICompatBackend bound to that provider, or OffBackend
       when the provider is unconfigured, openai is missing, or the global
-      ``OMNIVOICE_LLM_BACKEND=off`` kill switch is set.
+      ``ELEVENVOICE_LLM_BACKEND=off`` kill switch is set.
     """
     from services.llm_backend import OffBackend, OpenAICompatBackend
 
@@ -289,7 +289,7 @@ def skill_backend(skill_id: str, active: Optional[Callable[[], Any]] = None):
             return active()
         from services import llm_backend
         return llm_backend.get_active_llm_backend()
-    if os.environ.get("OMNIVOICE_LLM_BACKEND") == "off":
+    if os.environ.get("ELEVENVOICE_LLM_BACKEND") == "off":
         return OffBackend()
     if not res.ready:
         return OffBackend()

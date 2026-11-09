@@ -23,7 +23,7 @@ def load_setup():
 def test_missing_rocm_vcredist_stops_both_paths_without_download_or_process(monkeypatch, args):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", " ROCm ")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", " ROCm ")
     monkeypatch.setattr(ctypes, "WinDLL", Mock(side_effect=OSError("not installed")), raising=False)
     download = Mock(side_effect=AssertionError("unapproved prerequisite download"))
     process = Mock(side_effect=AssertionError("process before prerequisite"))
@@ -43,7 +43,7 @@ def test_missing_rocm_vcredist_stops_both_paths_without_download_or_process(monk
 def test_present_rocm_vcredist_continues_without_download(monkeypatch, args):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.setenv("OMNIVOICE_TORCH_VARIANT", "rocm")
+    monkeypatch.setenv("ELEVENVOICE_TORCH_VARIANT", "rocm")
     monkeypatch.setattr(ctypes, "WinDLL", Mock(return_value=object()), raising=False)
     monkeypatch.setattr(urllib.request, "urlretrieve", lambda *a: pytest.fail("unexpected download"))
     monkeypatch.setattr(setup.subprocess, "run", lambda *a, **k: pytest.fail("unexpected subprocess"))
@@ -58,7 +58,7 @@ def test_present_rocm_vcredist_continues_without_download(monkeypatch, args):
 def test_default_windows_prerequisite_auto_install_keeps_preexisting_behavior(monkeypatch):
     setup = load_setup()
     monkeypatch.setattr(setup.sys, "platform", "win32")
-    monkeypatch.delenv("OMNIVOICE_TORCH_VARIANT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TORCH_VARIANT", raising=False)
     monkeypatch.setattr(ctypes, "WinDLL", Mock(side_effect=[OSError("missing"), object()]), raising=False)
     download = Mock()
     process = Mock(return_value=SimpleNamespace(returncode=0))

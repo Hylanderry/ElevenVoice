@@ -1,5 +1,5 @@
 {
-  description = "VoiceStudio — Open-source, local-first voice cloning and speech generation studio";
+  description = "ElevenVoice — Open-source, local-first voice cloning and speech generation studio";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -95,7 +95,7 @@
       packages = forAllSystems (pkgs:
         let
           fhsEnv = pkgs.buildFHSEnv {
-            name = "voicestudio-fhs";
+            name = "elevenvoice-fhs";
             targetPkgs = pkgs: commonPackagesFor pkgs ++ (with pkgs; [
               gcc
               gnumake
@@ -104,7 +104,7 @@
               zlib
             ]);
             # uv must use its own managed CPython, not a Nix store Python.
-            # No OMNIVOICE_PORT here: an explicit port disables the app's
+            # No ELEVENVOICE_PORT here: an explicit port disables the app's
             # fallback when the default backend port is reserved.
             profile = ''
               export UV_PYTHON_PREFERENCE="only-managed"

@@ -95,16 +95,16 @@ def test_generation_runs_inside_bin(gguf_binary, gguf_engine, monkeypatch):
 
 
 @pytest.mark.parametrize("env", [
-    {"OMNIVOICE_GGUF_BACKEND": "metal"},
-    {"OMNIVOICE_GGUF_DEVICE": "1"},
-    {"OMNIVOICE_GGUF_BACKEND": "vulkan", "OMNIVOICE_GGUF_DEVICE": "-1"},
+    {"ELEVENVOICE_GGUF_BACKEND": "metal"},
+    {"ELEVENVOICE_GGUF_DEVICE": "1"},
+    {"ELEVENVOICE_GGUF_BACKEND": "vulkan", "ELEVENVOICE_GGUF_DEVICE": "-1"},
 ])
 def test_bad_device_override_is_an_engine_error(gguf_binary, gguf_engine, monkeypatch, env):
     """Generation and the probe expect RuntimeError; a bare ValueError escaped them."""
     for key, value in env.items():
         monkeypatch.setenv(key, value)
     _capture_run(monkeypatch, gguf_engine)
-    with pytest.raises(RuntimeError, match="OMNIVOICE_GGUF_BACKEND"):
+    with pytest.raises(RuntimeError, match="ELEVENVOICE_GGUF_BACKEND"):
         gguf_engine.OmniVoiceGGUFBackend.probe_load(timeout=1)
     assert gguf_engine.select_default_engine() == "omnivoice"
 

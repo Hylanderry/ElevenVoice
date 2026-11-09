@@ -1,4 +1,4 @@
-"""LLM provider registry for every VoiceStudio LLM skill.
+"""LLM provider registry for every ElevenVoice LLM skill.
 
 OpenAI-compatible, native SDK and desktop CLI transports share the same
 completion interface. This module resolves configuration without contacting
@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import urlsplit
 
-logger = logging.getLogger("omnivoice.llm_providers")
+logger = logging.getLogger("elevenvoice.llm_providers")
 
 # Settings-store row names (non-secret overrides live in the plaintext table;
 # keys live in the encrypted secret table under ``llm_key.<id>``).
@@ -223,13 +223,13 @@ _PROVIDERS: tuple[Provider, ...] = (
     Provider("sdk", "LiteLLM (other providers)", "", "",
              key_envs=("LITELLM_API_KEY",), model_env="LITELLM_MODEL", transport="sdk"),
     Provider("claude-code", "Claude Code (CLI)", "", "",
-             transport="cli", sdk_provider="claude", model_env="VOICESTUDIO_CLAUDE_MODEL"),
+             transport="cli", sdk_provider="claude", model_env="ELEVENVOICE_CLAUDE_MODEL"),
     Provider("codex-cli", "Codex (CLI)", "", "",
-             transport="cli", sdk_provider="codex", model_env="VOICESTUDIO_CODEX_MODEL"),
+             transport="cli", sdk_provider="codex", model_env="ELEVENVOICE_CODEX_MODEL"),
     Provider("pi-cli", "Pi (CLI)", "", "",
-             transport="cli", sdk_provider="pi", model_env="VOICESTUDIO_PI_MODEL"),
+             transport="cli", sdk_provider="pi", model_env="ELEVENVOICE_PI_MODEL"),
     Provider("opencode-cli", "OpenCode (CLI)", "", "",
-             transport="cli", sdk_provider="opencode", model_env="VOICESTUDIO_OPENCODE_MODEL"),
+             transport="cli", sdk_provider="opencode", model_env="ELEVENVOICE_OPENCODE_MODEL"),
     Provider("custom", "Custom (OpenAI-compatible)", "", "",
              key_envs=("TRANSLATE_API_KEY",), base_url_env="TRANSLATE_BASE_URL",
              model_env="TRANSLATE_MODEL", key_optional=True,
@@ -289,7 +289,7 @@ def resolve_base_url(p: Provider, *, substitute: bool = True) -> str:
 
 #: How long a discovered model id is trusted. Bounded rather than permanent
 #: because the user can swap the loaded model inside LM Studio without touching
-#: VoiceStudio at all — an unbounded cache would keep sending the unloaded name
+#: ElevenVoice at all — an unbounded cache would keep sending the unloaded name
 #: and 404 every translation until a restart (greptile).
 DISCOVERY_TTL_S = 300.0
 
@@ -357,7 +357,7 @@ def _probe_lmstudio_loaded_model(
         root = base_url.rstrip("/")
         if root.endswith("/v1"):
             root = root[:-3]
-        headers = {"User-Agent": "VoiceStudio LM Studio model probe"}
+        headers = {"User-Agent": "ElevenVoice LM Studio model probe"}
         if api_key and api_key != "local":
             headers["Authorization"] = f"Bearer {api_key}"
         request = urllib.request.Request(
@@ -540,11 +540,11 @@ def configuration_error(p: Provider, *, require_model: bool = True) -> Optional[
 
     if p.transport == "cli":
         from services.llm_cli import executable
-        return None if executable(p.sdk_provider) else "Install and sign in to the selected CLI, then restart VoiceStudio."
+        return None if executable(p.sdk_provider) else "Install and sign in to the selected CLI, then restart ElevenVoice."
     if p.transport == "sdk":
         import importlib.util
         if importlib.util.find_spec("litellm") is None:
-            return "Install the LiteLLM SDK in the VoiceStudio backend."
+            return "Install the LiteLLM SDK in the ElevenVoice backend."
         if require_model and not configured_model(p):
             return "Set the Model in Settings > Models > LLM."
         if p.id == "sdk" and require_model and "/" not in configured_model(p):
@@ -709,7 +709,7 @@ def describe(p: Provider) -> dict:
         "active_from_env": _active_env_pin() is not None,
         "activation_blocked": bool(
             (_active_env_pin() and _active_env_pin() != p.id)
-            or os.environ.get("OMNIVOICE_LLM_BACKEND") not in (None, "", "openai-compat")
+            or os.environ.get("ELEVENVOICE_LLM_BACKEND") not in (None, "", "openai-compat")
         ),
         "configured": is_configured(p),
     }

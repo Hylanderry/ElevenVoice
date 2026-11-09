@@ -97,11 +97,11 @@ def runtime_customization() -> str:
     return (
         "import os\nimport mimetypes\nfrom pathlib import Path\n"
         "mimetypes.knownfiles = []\nmimetypes.init(files=[])\n"
-        "os.environ['VOICESTUDIO_BUNDLED_CODE_ONLY'] = '1'\n"
-        "os.environ['VOICESTUDIO_BUNDLED_RESOURCES'] = str(Path(__file__).resolve().parents[4])\n"
-        "from _voicestudio_bundled_code import install\n"
+        "os.environ['ELEVENVOICE_BUNDLED_CODE_ONLY'] = '1'\n"
+        "os.environ['ELEVENVOICE_BUNDLED_RESOURCES'] = str(Path(__file__).resolve().parents[4])\n"
+        "from _elevenvoice_bundled_code import install\n"
         "if not install():\n    raise SystemExit('Bundled code policy is inactive')\n"
-        "from _voicestudio_sandbox_bookmarks import restore\nrestore()\n"
+        "from _elevenvoice_sandbox_bookmarks import restore\nrestore()\n"
     )
 
 
@@ -119,8 +119,8 @@ def stage_phonemizer(runtime: Path, packages: Path) -> list[dict]:
     start = original.index("        # will be automatically destroyed after use\n")
     end = original.index("        # finally load the library copy and initialize it.", start)
     patched = original[:start] + (
-        "        # VoiceStudio MAS: lease a separately signed immutable image.\n"
-        "        from _voicestudio_espeak_pool import claim\n"
+        "        # ElevenVoice MAS: lease a separately signed immutable image.\n"
+        "        from _elevenvoice_espeak_pool import claim\n"
         "        self._vs_lease = claim(library_path)\n"
         "        weakref.finalize(self, self._vs_lease.close)\n"
         "        espeak_copy = self._vs_lease.path\n\n"
@@ -133,7 +133,7 @@ def stage_phonemizer(runtime: Path, packages: Path) -> list[dict]:
         target.parent.mkdir(parents=True)
         shutil.copy2(library, target)
     helper = Path(__file__).resolve().parents[1] / "backend/core/bundled_espeak.py"
-    shutil.copy2(helper, packages / "_voicestudio_espeak_pool.py")
+    shutil.copy2(helper, packages / "_elevenvoice_espeak_pool.py")
     api.write_text(patched, encoding="utf-8")
     return [{"path": str(api.relative_to(runtime)), "sourceSha256": expected,
              "patchedSha256": sha256(api), "reason": "Use signed espeak instance images without runtime code copies"}]
@@ -168,8 +168,8 @@ def stage_runtime(base: Path, packages: Path, output: Path, lock: Path, version:
         if customization.exists():
             raise ValueError("The runtime already contains a sitecustomize module")
         policy = Path(__file__).resolve().parents[1] / "backend/core/bundled_code.py"
-        shutil.copy2(policy, destination_packages / "_voicestudio_bundled_code.py")
-        shutil.copy2(policy.with_name("sandbox_bookmarks.py"), destination_packages / "_voicestudio_sandbox_bookmarks.py")
+        shutil.copy2(policy, destination_packages / "_elevenvoice_bundled_code.py")
+        shutil.copy2(policy.with_name("sandbox_bookmarks.py"), destination_packages / "_elevenvoice_sandbox_bookmarks.py")
         customization.write_text(runtime_customization(), encoding="utf-8")
         patches = stage_phonemizer(scratch, destination_packages)
         check_tree(scratch)

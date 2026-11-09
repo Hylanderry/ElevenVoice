@@ -36,7 +36,7 @@ try {
       },
     },
   });
-  await page.goto((process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912') + '/#/clone');
+  await page.goto((process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912') + '/#/clone');
   await page.getByRole('button', { name: 'Preset fixture', exact: true }).first().click();
   const trigger = page.getByRole('button', { name: 'Preset voice', exact: true });
   await trigger.click();

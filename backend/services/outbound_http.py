@@ -12,7 +12,7 @@ from api.dependencies import is_local_host
 
 
 class UnsafeEndpoint(ValueError):
-    """The configured endpoint is outside VoiceStudio's trusted networks."""
+    """The configured endpoint is outside ElevenVoice's trusted networks."""
 
 
 class EndpointHTTPError(OSError):
@@ -38,7 +38,7 @@ def resolve_trusted_endpoint(url: str) -> ResolvedEndpoint:
     """Validate and resolve a root HTTP(S) endpoint to one trusted address.
 
     Loopback is trusted by default. Non-loopback targets require an explicit
-    match in ``OMNIVOICE_TRUSTED_NETWORKS``, the same policy used for remote
+    match in ``ELEVENVOICE_TRUSTED_NETWORKS``, the same policy used for remote
     inference consumers. Every DNS answer must be trusted; mixed answers are
     rejected rather than choosing a convenient one.
     """
@@ -65,7 +65,7 @@ def resolve_trusted_endpoint(url: str) -> ResolvedEndpoint:
         raise UnsafeEndpoint("endpoint host could not be resolved") from exc
     ips = list(dict.fromkeys(answer[4][0] for answer in answers))
     if not ips or any(not is_local_host(ip) for ip in ips):
-        raise UnsafeEndpoint("endpoint is outside loopback or OMNIVOICE_TRUSTED_NETWORKS")
+        raise UnsafeEndpoint("endpoint is outside loopback or ELEVENVOICE_TRUSTED_NETWORKS")
     return ResolvedEndpoint(parsed.scheme, parsed.hostname, port, ips[0])
 
 

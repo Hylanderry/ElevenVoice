@@ -61,7 +61,7 @@ def test_nllb_batching_scales_with_large_cuda_memory(monkeypatch):
     from api.routers import dub_translate
     import torch
 
-    monkeypatch.delenv("OMNIVOICE_NLLB_BATCH_SIZE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_NLLB_BATCH_SIZE", raising=False)
     monkeypatch.setattr(dub_translate, "_nllb_device", "cuda")
     monkeypatch.setattr(torch.cuda, "mem_get_info", lambda: (20 * 1024**3, 24 * 1024**3))
 
@@ -73,7 +73,7 @@ def test_nllb_stays_warm_only_with_safe_cuda_headroom(monkeypatch):
     from api.routers import dub_translate
     import torch
 
-    monkeypatch.delenv("OMNIVOICE_UNLOAD_NLLB", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_UNLOAD_NLLB", raising=False)
     monkeypatch.setattr(dub_translate, "_nllb_device", "cuda")
     monkeypatch.setattr(torch.cuda, "mem_get_info", lambda: (18 * 1024**3, 24 * 1024**3))
     assert dub_translate._should_unload_nllb() is False
@@ -81,7 +81,7 @@ def test_nllb_stays_warm_only_with_safe_cuda_headroom(monkeypatch):
     monkeypatch.setattr(torch.cuda, "mem_get_info", lambda: (6 * 1024**3, 24 * 1024**3))
     assert dub_translate._should_unload_nllb() is True
 
-    monkeypatch.setenv("OMNIVOICE_UNLOAD_NLLB", "1")
+    monkeypatch.setenv("ELEVENVOICE_UNLOAD_NLLB", "1")
     assert dub_translate._should_unload_nllb() is True
 
 
@@ -133,8 +133,8 @@ async def test_nllb_batches_segments_by_target_language(monkeypatch):
     monkeypatch.setattr(dub_translate, "_nllb_device", "cpu")
     monkeypatch.setattr(translation_engines, "is_installed", lambda _: True)
     monkeypatch.setattr(translation_engines, "is_ready", lambda _: True)
-    monkeypatch.setenv("OMNIVOICE_NLLB_BATCH_SIZE", "2")
-    monkeypatch.setenv("OMNIVOICE_UNLOAD_NLLB", "0")
+    monkeypatch.setenv("ELEVENVOICE_NLLB_BATCH_SIZE", "2")
+    monkeypatch.setenv("ELEVENVOICE_UNLOAD_NLLB", "0")
 
     request = TranslateRequest(
         provider="nllb",
@@ -205,7 +205,7 @@ async def test_nllb_mps_fallback_releases_the_old_allocator(monkeypatch):
     monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True)
     monkeypatch.setattr(translation_engines, "is_installed", lambda _: True)
     monkeypatch.setattr(translation_engines, "is_ready", lambda _: True)
-    monkeypatch.setenv("OMNIVOICE_UNLOAD_NLLB", "0")
+    monkeypatch.setenv("ELEVENVOICE_UNLOAD_NLLB", "0")
 
     response = await dub_translate.dub_translate(
         TranslateRequest(
@@ -751,7 +751,7 @@ async def test_openai_autofit_fit_pass_is_budget_bounded(monkeypatch):
     from services import speech_rate
     _install_fake_openai(monkeypatch, content="hola mundo")
 
-    monkeypatch.setenv("OMNIVOICE_CINEMATIC_BUDGET_S", "0.3")
+    monkeypatch.setenv("ELEVENVOICE_CINEMATIC_BUDGET_S", "0.3")
 
     def _slow_fit(text, *, slot_seconds, target_lang, source_text=None, strict=False):
         time.sleep(3.0)  # far over the 0.3s budget

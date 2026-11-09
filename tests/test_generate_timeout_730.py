@@ -77,12 +77,12 @@ def test_guard_happy_path_returns_value(model_manager):
 def test_guard_timeout_env_default(model_manager, monkeypatch):
     """The generate bound is env-overridable (parity with the ASR bound)."""
     import importlib
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
     mm = importlib.reload(model_manager)
     try:
         assert mm.GPU_JOB_TIMEOUT_S == 123.5
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
@@ -172,7 +172,7 @@ def test_explicit_universal_generate_timeout_wins_on_cpu(model_manager, monkeypa
     import types
     import core.device_caps as caps
 
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
     mm = importlib.reload(model_manager)
     monkeypatch.setattr(
         caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cpu")
@@ -180,18 +180,18 @@ def test_explicit_universal_generate_timeout_wins_on_cpu(model_manager, monkeypa
     try:
         assert mm.generate_timeout_s("A short CPU render") == 123.5
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
 # ── #1787 review fix: the two Settings rows must be genuinely independent ──
 # CodeRabbit/Greptile P1: the Settings panel presents "Accelerated (GPU)
 # budget" and "CPU budget" as two independent rows, but the legacy
-# `universal_override` logic above let an explicit OMNIVOICE_GENERATE_TIMEOUT_S
+# `universal_override` logic above let an explicit ELEVENVOICE_GENERATE_TIMEOUT_S
 # silently govern CPU jobs too — so a user who saved BOTH rows had their CPU
 # save ignored with no indication anything was wrong. An explicit CPU value
 # must always win for CPU dispatches, while the single-var "universal"
-# behavior (only OMNIVOICE_GENERATE_TIMEOUT_S set) stays byte-for-byte
+# behavior (only ELEVENVOICE_GENERATE_TIMEOUT_S set) stays byte-for-byte
 # unchanged for backward compatibility (see test above).
 
 def test_explicit_cpu_budget_wins_even_with_explicit_universal_override(
@@ -203,8 +203,8 @@ def test_explicit_cpu_budget_wins_even_with_explicit_universal_override(
     import types
     import core.device_caps as caps
 
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
     mm = importlib.reload(model_manager)
     monkeypatch.setattr(
         caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cpu")
@@ -212,8 +212,8 @@ def test_explicit_cpu_budget_wins_even_with_explicit_universal_override(
     try:
         assert mm.generate_timeout_s("A short CPU render") == 999.0
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
-        monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
@@ -224,8 +224,8 @@ def test_explicit_cpu_budget_does_not_affect_gpu_dispatches(model_manager, monke
     import types
     import core.device_caps as caps
 
-    monkeypatch.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
+    monkeypatch.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
     mm = importlib.reload(model_manager)
     monkeypatch.setattr(
         caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cuda")
@@ -233,8 +233,8 @@ def test_explicit_cpu_budget_does_not_affect_gpu_dispatches(model_manager, monke
     try:
         assert mm.generate_timeout_s("A short CUDA render") == 123.5
     finally:
-        monkeypatch.delenv("OMNIVOICE_GENERATE_TIMEOUT_S", raising=False)
-        monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 
@@ -245,7 +245,7 @@ def test_cpu_budget_alone_still_wins_without_universal_override(model_manager, m
     import types
     import core.device_caps as caps
 
-    monkeypatch.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
+    monkeypatch.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "999.0")
     mm = importlib.reload(model_manager)
     monkeypatch.setattr(
         caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cpu")
@@ -253,7 +253,7 @@ def test_cpu_budget_alone_still_wins_without_universal_override(model_manager, m
     try:
         assert mm.generate_timeout_s("A short CPU render") == 999.0
     finally:
-        monkeypatch.delenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", raising=False)
         importlib.reload(mm)
 
 

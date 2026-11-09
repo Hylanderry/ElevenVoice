@@ -89,5 +89,5 @@ export function createProjectLibrary(store: LongformDurableStore) {
   };
 }
 export const projectLibrary = createProjectLibrary(
-  createIndexedDbLongformStore(undefined, 'voicestudio.electron.longform.projects'),
+  createIndexedDbLongformStore(undefined, 'elevenvoice.electron.longform.projects'),
 );

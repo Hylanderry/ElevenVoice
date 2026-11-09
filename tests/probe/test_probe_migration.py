@@ -1,4 +1,4 @@
-"""DB migration — boot against a copy of the checked-in omnivoice_data fixture so
+"""DB migration — boot against a copy of the checked-in elevenvoice_data fixture so
 alembic runs its UPGRADE path on existing user data (backward-compat constraint).
 Subprocess-isolated; the model load is short-circuited."""
 

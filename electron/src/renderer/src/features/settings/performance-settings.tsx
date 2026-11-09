@@ -139,13 +139,13 @@ export function PerformanceSettings() {
         <p className="p-4 text-sm text-muted-foreground">{t('settings.generate_budget_desc')}</p>
         <BudgetRow
           kind="gpu"
-          envKey="OMNIVOICE_GENERATE_TIMEOUT_S"
+          envKey="ELEVENVOICE_GENERATE_TIMEOUT_S"
           current={info.data?.generate_timeout_s}
           shadowed={!!info.data?.generate_timeout_shadowed}
         />
         <BudgetRow
           kind="cpu"
-          envKey="OMNIVOICE_CPU_GENERATE_TIMEOUT_S"
+          envKey="ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"
           current={info.data?.cpu_generate_timeout_s}
           shadowed={!!info.data?.cpu_generate_timeout_shadowed}
         />

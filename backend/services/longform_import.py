@@ -55,7 +55,7 @@ _NO_BOM_WIDE_PREFIXES = tuple(
     for char in "< \t\r\n"
 )
 
-logger = logging.getLogger("omnivoice.longform_import")
+logger = logging.getLogger("elevenvoice.longform_import")
 
 
 def _declared_encoding(raw: bytes) -> str | None:

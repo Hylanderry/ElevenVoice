@@ -24,7 +24,7 @@ export function installForeignDomGuard(target: typeof Node | undefined = globalT
     if (warned) return;
     warned = true;
     console.warn(
-      'VoiceStudio: the page was changed outside the app (often browser translation); recovering.',
+      'ElevenVoice: the page was changed outside the app (often browser translation); recovering.',
     );
   };
   proto.removeChild = function removeChild<T extends Node>(this: Node, child: T): T {

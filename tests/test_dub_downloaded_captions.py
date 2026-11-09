@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 
 @pytest.mark.parametrize("header", ["NOTE", "NOTE translator explanation", "NOTE\ttranslator explanation"])

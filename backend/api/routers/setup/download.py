@@ -44,7 +44,7 @@ from .models import (
     disk_space_error,
 )
 
-logger = logging.getLogger("omnivoice.setup.download")
+logger = logging.getLogger("elevenvoice.setup.download")
 router = APIRouter()
 
 # Cooldown: prevent rapid re-install after a failure. Maps repo_id → last_fail_time.
@@ -104,8 +104,8 @@ def _download_max_workers() -> int:
     """Parallel-FILES worker count for snapshot_download (FDL-02). Default 8 —
     don't crank it: Xet already parallelises *within* each file via concurrent
     byte-range gets, so a high count just multiplies buffer pressure. Override
-    via prefs / OMNIVOICE_DOWNLOAD_MAX_WORKERS for power users."""
-    raw = prefs.resolve("download_max_workers", env="OMNIVOICE_DOWNLOAD_MAX_WORKERS", default=8)
+    via prefs / ELEVENVOICE_DOWNLOAD_MAX_WORKERS for power users."""
+    raw = prefs.resolve("download_max_workers", env="ELEVENVOICE_DOWNLOAD_MAX_WORKERS", default=8)
     try:
         return max(1, int(raw))
     except (TypeError, ValueError):
@@ -182,9 +182,9 @@ def _segmented_enabled() -> bool:
     real live progress, and falls back to snapshot_download on any error so it
     can never compromise a correct install. Default-on so first-run downloads are
     fast out of the box (pairs with an HF token for higher rate limits); set
-    OMNIVOICE_SEGMENTED_DOWNLOAD=0 to force the single-stream path."""
+    ELEVENVOICE_SEGMENTED_DOWNLOAD=0 to force the single-stream path."""
     return _truthy(prefs.resolve(
-        "segmented_downloader", env="OMNIVOICE_SEGMENTED_DOWNLOAD", default=True,
+        "segmented_downloader", env="ELEVENVOICE_SEGMENTED_DOWNLOAD", default=True,
     ))
 
 

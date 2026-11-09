@@ -20,7 +20,7 @@ function readStored() {
   try {
     return parseThemePreferences(
       localStorage.getItem(THEME_STORAGE_KEY),
-      localStorage.getItem('voicestudio.theme'),
+      localStorage.getItem('elevenvoice.theme'),
     );
   } catch {
     return parseThemePreferences(null);

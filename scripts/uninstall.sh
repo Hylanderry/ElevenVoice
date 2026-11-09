@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 #
-# VoiceStudio — clean uninstaller (macOS + Linux).
+# ElevenVoice — clean uninstaller (macOS + Linux).
 #
-# Finds every folder VoiceStudio wrote (app data, the managed Python env, config,
+# Finds every folder ElevenVoice wrote (app data, the managed Python env, config,
 # logs) and — separately, because it's a SHARED cache — the Hugging Face model
 # cache, prints each with its size, and removes them. Dry-run by default: it
 # prints what it WOULD delete and stops, so you always see the plan first.
 #
 #   scripts/uninstall.sh            # dry-run: list targets + sizes, delete nothing
-#   scripts/uninstall.sh --yes      # delete the VoiceStudio data/env/config/logs
+#   scripts/uninstall.sh --yes      # delete the ElevenVoice data/env/config/logs
 #   scripts/uninstall.sh --yes --models   # also delete the shared HF model cache
 #
 # Honors custom locations via the same env vars the app reads:
-#   OMNIVOICE_DATA_DIR, OMNIVOICE_CACHE_DIR, HF_HOME, HF_HUB_CACHE
-# Export the ones you set for VoiceStudio before running, and it targets those.
+#   ELEVENVOICE_DATA_DIR, ELEVENVOICE_CACHE_DIR, HF_HOME, HF_HUB_CACHE
+# Export the ones you set for ElevenVoice before running, and it targets those.
 #
-# Covers the Electron desktop app (its VoiceStudio app folder: managed Python
+# Covers the Electron desktop app (its ElevenVoice app folder: managed Python
 # runtime, window state, logs, updater cache) and the folders a final Tauri
-# install left behind (com.debpalash.omnivoice-studio).
+# install left behind (com.hylanderry.elevenvoice).
 #
 # Without --app it never deletes the app binary itself (that's a per-platform
 # step — see docs/install/uninstall.md), and it never touches anything outside
@@ -41,11 +41,11 @@ for arg in "$@"; do
 done
 
 # Final Tauri installs used this identifier for their config + Python env.
-LEGACY_IDENTIFIER="com.debpalash.omnivoice-studio"
+LEGACY_IDENTIFIER="com.hylanderry.elevenvoice"
 # Electron app folder (app.getPath('userData'); electron/src/main/app-identity.ts)
 # and electron-updater's download cache (package name + "-updater").
-ELECTRON_APP_NAME="VoiceStudio"
-ELECTRON_UPDATER_CACHE="voicestudio-electron-updater"
+ELECTRON_APP_NAME="ElevenVoice"
+ELECTRON_UPDATER_CACHE="elevenvoice-electron-updater"
 OS="$(uname -s)"
 
 # ── Resolve platform default paths (mirrors the app) ────────────────────────
@@ -78,7 +78,7 @@ case "$OS" in
     # Final Tauri installs wrote backend logs outside the app-data dir.
     logs_extra=(
       "${XDG_CACHE_HOME:-$HOME/.cache}/$ELECTRON_UPDATER_CACHE"
-      "${XDG_STATE_HOME:-$HOME/.local/state}/VoiceStudio"
+      "${XDG_STATE_HOME:-$HOME/.local/state}/ElevenVoice"
     )
     models_default="$HOME/.cache/huggingface"
     ;;
@@ -88,17 +88,17 @@ case "$OS" in
 esac
 
 # ── Apply env overrides the app honors ──────────────────────────────────────
-DATA_DIR="${OMNIVOICE_DATA_DIR:-$data_default}"
-# Model cache precedence matches the app: OMNIVOICE_CACHE_DIR → HF_HOME → HF_HUB_CACHE → default.
-MODELS_DIR="${OMNIVOICE_CACHE_DIR:-${HF_HOME:-${HF_HUB_CACHE:-$models_default}}}"
+DATA_DIR="${ELEVENVOICE_DATA_DIR:-$data_default}"
+# Model cache precedence matches the app: ELEVENVOICE_CACHE_DIR → HF_HOME → HF_HUB_CACHE → default.
+MODELS_DIR="${ELEVENVOICE_CACHE_DIR:-${HF_HOME:-${HF_HUB_CACHE:-$models_default}}}"
 # Durable per-user env file — backend/core/user_env.py, same path on every OS.
-# It persists OMNIVOICE_CACHE_DIR (and can hold HF_TOKEN); leaving it behind
+# It persists ELEVENVOICE_CACHE_DIR (and can hold HF_TOKEN); leaving it behind
 # silently redirected a fresh reinstall's model cache to the old location.
 USER_ENV_DIR="$HOME/.config/omnivoice"
 
 # A custom runtime location the Electron app created (and therefore owns) is
 # recorded in runtime-location.json. Only an owned, absolute folder named
-# VoiceStudio that holds the app's project is removed — the same rule the
+# ElevenVoice that holds the app's project is removed — the same rule the
 # in-app uninstall applies; a reused Tauri environment is recorded unowned and
 # kept. The file must be exactly the object the app writes
 # ({"root": "...", "owned": true}); anything else is ignored, so a damaged or
@@ -110,7 +110,7 @@ electron_owned_runtime() {
   root=$(printf '%s' "$content" | sed -n 's/^[[:space:]]*{[[:space:]]*"root"[[:space:]]*:[[:space:]]*"\([^"\\]*\)"[[:space:]]*,[[:space:]]*"owned"[[:space:]]*:[[:space:]]*true[[:space:]]*}[[:space:]]*$/\1/p')
   case "$root" in /*) ;; *) return 0 ;; esac
   [ "$root" = "$electron_user_data/runtime" ] && return 0
-  [ "$(basename "$root" | tr '[:upper:]' '[:lower:]')" = "voicestudio" ] || return 0
+  [ "$(basename "$root" | tr '[:upper:]' '[:lower:]')" = "elevenvoice" ] || return 0
   [ -d "$root/project" ] || return 0
   printf '%s\n' "$root"
 }
@@ -123,12 +123,12 @@ app_targets=()
 if [ "$REMOVE_APP" -eq 1 ]; then
   case "$OS" in
     Darwin)
-      for app_dir in "/Applications/VoiceStudio.app" "$HOME/Applications/VoiceStudio.app"; do
+      for app_dir in "/Applications/ElevenVoice.app" "$HOME/Applications/ElevenVoice.app"; do
         [ -e "$app_dir" ] && app_targets+=("$app_dir")
       done
       ;;
     Linux)
-      [ -e "$HOME/.local/bin/VoiceStudio" ] && app_targets+=("$HOME/.local/bin/VoiceStudio")
+      [ -e "$HOME/.local/bin/ElevenVoice" ] && app_targets+=("$HOME/.local/bin/ElevenVoice")
       ;;
   esac
 fi
@@ -142,10 +142,10 @@ for d in "${logs_extra[@]:-}"; do [ -n "$d" ] && [ -e "$d" ] && app_targets+=("$
 
 human_size() { du -sh "$1" 2>/dev/null | cut -f1 || echo "?"; }
 
-echo "VoiceStudio uninstaller ($OS)"
+echo "ElevenVoice uninstaller ($OS)"
 echo "----------------------------------"
 if [ "${#app_targets[@]}" -eq 0 ]; then
-  echo "No VoiceStudio app data / env / config folders found at the default or"
+  echo "No ElevenVoice app data / env / config folders found at the default or"
   echo "env-configured locations. Nothing to remove."
 else
   echo "App data, managed Python env, config, and logs:"

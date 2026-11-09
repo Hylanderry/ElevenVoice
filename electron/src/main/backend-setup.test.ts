@@ -22,7 +22,7 @@ const mocks = vi.hoisted(() => ({
   inFlight: vi.fn(async (_cache: string) => 0),
   hosts: vi.fn(async () => new Map<string, string>()),
 }));
-vi.mock('electron', () => ({ app: { isPackaged: true, getPath: () => '/private/voicestudio' } }));
+vi.mock('electron', () => ({ app: { isPackaged: true, getPath: () => '/private/elevenvoice' } }));
 vi.mock('node:child_process', () => ({ spawn: mocks.spawn, spawnSync: vi.fn() }));
 vi.mock('node:fs', async (importOriginal) => {
   const original = await importOriginal<typeof import('node:fs')>();
@@ -148,8 +148,8 @@ it('reports a resumable runtime when startup finds an interrupted install marker
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.interrupted.mockResolvedValueOnce(true);
   const supervisor = new BackendSupervisor();
 
@@ -168,8 +168,8 @@ it('publishes packaged startup preflight failures instead of rejecting startup',
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.ready.mockRejectedValueOnce(new Error('runtime metadata unreadable'));
   const supervisor = new BackendSupervisor();
 
@@ -185,13 +185,13 @@ it('passes a live nested-operation drain descriptor to POSIX managed backends', 
   const linux = managedBackendSpawnOptions(3900, 'auto', 'linux');
   expect(linux.drainFd).toBe(3);
   expect(linux.stdio).toEqual(['pipe', 'pipe', 'pipe', 'pipe']);
-  expect(linux.env.OMNIVOICE_DESKTOP_CONTAINED).toBe('1');
-  expect(linux.env.OMNIVOICE_DESKTOP_DRAIN_FD).toBe('3');
+  expect(linux.env.ELEVENVOICE_DESKTOP_CONTAINED).toBe('1');
+  expect(linux.env.ELEVENVOICE_DESKTOP_DRAIN_FD).toBe('3');
 
   const windows = managedBackendSpawnOptions(3900, 'auto', 'win32');
   expect(windows.drainFd).toBeNull();
   expect(windows.stdio).toEqual(['pipe', 'pipe', 'pipe']);
-  expect(windows.env.OMNIVOICE_DESKTOP_DRAIN_FD).toBeUndefined();
+  expect(windows.env.ELEVENVOICE_DESKTOP_DRAIN_FD).toBeUndefined();
 });
 
 it('passes the packaged analytics destination to its managed backend', () => {
@@ -235,7 +235,7 @@ it('uses the lightweight health contract for recurring liveness probes', async (
     async (_input: string | URL | Request) =>
       new Response(JSON.stringify({ status: 'ok', version: '0.5.2' }), {
         status: 200,
-        headers: { 'content-type': 'application/json', 'x-omnivoice-backend': '0.5.2' },
+        headers: { 'content-type': 'application/json', 'x-elevenvoice-backend': '0.5.2' },
       }),
   );
   vi.stubGlobal('fetch', fetchMock);
@@ -258,7 +258,7 @@ it('attaches to a healthy replacement instead of reporting its exited child as c
     .mockResolvedValue(
       new Response(JSON.stringify({ status: 'ok', version: '0.5.2' }), {
         status: 200,
-        headers: { 'content-type': 'application/json', 'x-omnivoice-backend': '0.5.2' },
+        headers: { 'content-type': 'application/json', 'x-elevenvoice-backend': '0.5.2' },
       }),
     );
   vi.stubGlobal('fetch', fetchMock);
@@ -285,7 +285,7 @@ it('attaches to a healthy replacement instead of reporting its exited child as c
   expect(supervisor.status.stage).toBe('ready');
   expect(supervisor.status.managed).toBe(false);
   expect(supervisor.status.exitCode).toBeUndefined();
-  expect(supervisor.status.logTail).toContain('Attached to the replacement VoiceStudio backend.');
+  expect(supervisor.status.logTail).toContain('Attached to the replacement ElevenVoice backend.');
   await supervisor.shutdown();
   vi.useRealTimers();
 });
@@ -303,7 +303,7 @@ it.each([
     forbidden: 'local runtime',
   },
 ])('scopes spawn-failure advice to the $label launch', ({ backendCmd, advice, forbidden }) => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', backendCmd);
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', backendCmd);
   const child = Object.assign(new EventEmitter(), {
     stdin: null,
     stdout: null,
@@ -335,8 +335,8 @@ it('startup and retry await explicit setup without staging, spawning or installi
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   expect(supervisor.status.stage).toBe('setup_required');
@@ -356,8 +356,8 @@ it('shows a stalled download with its source host once in-flight bytes stop grow
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.hosts.mockResolvedValue(new Map([['torch', 'download-r2.pytorch.org']]));
   let received = 0;
   mocks.inFlight.mockImplementation(async () => received);
@@ -425,8 +425,8 @@ it('a failed explicit installation returns to setup and allows another attempt',
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.install.mockRejectedValue(new Error('offline'));
   const supervisor = new BackendSupervisor();
   await supervisor.start();
@@ -444,8 +444,8 @@ it('clean retry removes only the owned default project before reinstalling', asy
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.install.mockRejectedValue(new Error('offline'));
   const supervisor = new BackendSupervisor();
   await supervisor.start();
@@ -466,8 +466,8 @@ it('clean retry refuses an environment the Electron app does not own', async () 
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   (supervisor as unknown as { runtimeProject: string }).runtimeProject = '/shared/tauri/project';
@@ -483,8 +483,8 @@ it('exposes actionable storage failures without requiring log parsing', async ()
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.install.mockRejectedValue(
     Object.assign(new Error('full'), { code: 'ENOSPC', requiredGib: 5 }),
   );
@@ -518,8 +518,8 @@ it('serializes cleanup and does not reinstall after shutdown during cleanup', as
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   let finish!: () => void;
   mocks.rm.mockImplementationOnce(
     () =>
@@ -549,8 +549,8 @@ it('publishes cleanup permission failures and allows retry', async () => {
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.rm.mockRejectedValueOnce(Object.assign(new Error('runtime is locked'), { code: 'EPERM' }));
   const supervisor = new BackendSupervisor();
   await supervisor.start();
@@ -572,8 +572,8 @@ it('reserves setup before asynchronous checks and cancels stale preflight', asyn
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   let finish!: (ready: boolean) => void;
@@ -603,8 +603,8 @@ it.each(['ready', 'compatible'] as const)(
         throw new Error('no backend');
       }),
     );
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     mocks[kind].mockResolvedValue(true);
     mocks.dependencies.mockResolvedValue(false);
     const supervisor = new BackendSupervisor();
@@ -621,7 +621,7 @@ it.each([true, false])(
   'preserves a selected unowned runtime (project exists: %s)',
   async (projectExists) => {
     const { resolve, join } = await import('node:path');
-    const selected = resolve('/selected/VoiceStudio');
+    const selected = resolve('/selected/ElevenVoice');
     mocks.runtimeConfig = { root: selected, owned: false };
     mocks.existingProject = projectExists;
     mocks.existingRoot = true;
@@ -634,8 +634,8 @@ it.each([true, false])(
         throw new Error('no backend');
       }),
     );
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     const supervisor = new BackendSupervisor();
     await supervisor.start();
     expect(supervisor.status.stage).toBe('setup_required');
@@ -644,7 +644,7 @@ it.each([true, false])(
     ).toBe(true);
     expect(mocks.install).not.toHaveBeenCalled();
     await supervisor.setupRuntime();
-    expect(mocks.install.mock.calls[0][1]).toBe(join('/private/voicestudio', 'runtime', 'project'));
+    expect(mocks.install.mock.calls[0][1]).toBe(join('/private/elevenvoice', 'runtime', 'project'));
     expect(mocks.runtimeConfig?.root).not.toBe(selected);
     expect(mocks.rm).not.toHaveBeenCalled();
     expect(mocks.stage).not.toHaveBeenCalled();
@@ -656,7 +656,7 @@ it.each(['.DS_Store', 'desktop.ini'])(
   'preserves a selected runtime containing a metadata-named directory (%s)',
   async (name) => {
     const { resolve, join } = await import('node:path');
-    const selected = resolve('/selected/VoiceStudio');
+    const selected = resolve('/selected/ElevenVoice');
     mocks.runtimeConfig = { root: selected, owned: false };
     mocks.existingProject = false;
     mocks.rootEntries = [name];
@@ -671,8 +671,8 @@ it.each(['.DS_Store', 'desktop.ini'])(
         throw new Error('no backend');
       }),
     );
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     const supervisor = new BackendSupervisor();
     await supervisor.start();
     expect(supervisor.status.stage).toBe('setup_required');
@@ -681,7 +681,7 @@ it.each(['.DS_Store', 'desktop.ini'])(
     ).toBe(true);
     expect(mocks.install).not.toHaveBeenCalled();
     await supervisor.setupRuntime();
-    expect(mocks.install.mock.calls[0][1]).toBe(join('/private/voicestudio', 'runtime', 'project'));
+    expect(mocks.install.mock.calls[0][1]).toBe(join('/private/elevenvoice', 'runtime', 'project'));
     expect(mocks.runtimeConfig?.root).not.toBe(selected);
     expect(mocks.rm).not.toHaveBeenCalled();
     expect(mocks.stage).not.toHaveBeenCalled();
@@ -691,7 +691,7 @@ it.each(['.DS_Store', 'desktop.ini'])(
 
 it('installs into a newly selected custom destination that does not yet exist', async () => {
   const { resolve, join } = await import('node:path');
-  const selected = resolve('/selected/VoiceStudio');
+  const selected = resolve('/selected/ElevenVoice');
   mocks.runtimeConfig = { root: selected, owned: false };
   mocks.install.mockRejectedValue(new Error('offline'));
   vi.stubGlobal(
@@ -700,8 +700,8 @@ it('installs into a newly selected custom destination that does not yet exist', 
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   await supervisor.setupRuntime();
@@ -716,7 +716,7 @@ it.each([[[] as string[]], [['.DS_Store', 'desktop.ini']]])(
     // The folder picker lets users create the destination ("New Folder"), so an
     // empty selected root is new, not another installation to preserve.
     const { resolve, join } = await import('node:path');
-    const selected = resolve('/selected/VoiceStudio');
+    const selected = resolve('/selected/ElevenVoice');
     mocks.runtimeConfig = { root: selected, owned: false };
     mocks.existingRoot = true;
     mocks.rootEntries = entries;
@@ -727,8 +727,8 @@ it.each([[[] as string[]], [['.DS_Store', 'desktop.ini']]])(
         throw new Error('no backend');
       }),
     );
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     const supervisor = new BackendSupervisor();
     await supervisor.start();
     await supervisor.setupRuntime();
@@ -740,7 +740,7 @@ it.each([[[] as string[]], [['.DS_Store', 'desktop.ini']]])(
 
 it('reuses a healthy default runtime after explicit setup leaves an unowned environment', async () => {
   const { resolve, join } = await import('node:path');
-  mocks.runtimeConfig = { root: resolve('/selected/VoiceStudio'), owned: false };
+  mocks.runtimeConfig = { root: resolve('/selected/ElevenVoice'), owned: false };
   mocks.existingRoot = true;
   mocks.ready.mockResolvedValue(true);
   mocks.dependencies.mockImplementation(async (project?: string) => !project?.includes('selected'));
@@ -750,8 +750,8 @@ it('reuses a healthy default runtime after explicit setup leaves an unowned envi
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   expect(supervisor.status.stage).toBe('setup_required');
@@ -759,7 +759,7 @@ it('reuses a healthy default runtime after explicit setup leaves an unowned envi
   await supervisor.setupRuntime();
   expect(mocks.install).not.toHaveBeenCalled();
   expect(mocks.dependencies).toHaveBeenCalledWith(
-    join('/private/voicestudio', 'runtime', 'project'),
+    join('/private/elevenvoice', 'runtime', 'project'),
   );
   expect(restart).toHaveBeenCalledOnce();
   restart.mockRestore();
@@ -768,7 +768,7 @@ it('reuses a healthy default runtime after explicit setup leaves an unowned envi
 
 // ── #2215: the packaged uv has to reach the backend ────────────────────────
 //
-// The backend resolves uv as OMNIVOICE_BUNDLED_UV first and `shutil.which`
+// The backend resolves uv as ELEVENVOICE_BUNDLED_UV first and `shutil.which`
 // second. The packaged uv lives in resources/tools — on nobody's PATH — and a
 // GUI launch inherits no shell PATH additions either, so `which` found nothing
 // and every one-click sidecar installer (sidecar_install plus the IndexTTS,
@@ -786,34 +786,34 @@ function stubUvOnPath(): string {
 }
 
 it('hands the located uv to the backend so sidecar preflight can find it', () => {
-  vi.stubEnv('OMNIVOICE_BUNDLED_UV', '');
+  vi.stubEnv('ELEVENVOICE_BUNDLED_UV', '');
   const uv = stubUvOnPath();
 
   const { env } = managedBackendSpawnOptions(3900);
 
-  expect(env.OMNIVOICE_BUNDLED_UV).toBe(uv);
+  expect(env.ELEVENVOICE_BUNDLED_UV).toBe(uv);
 });
 
 it.runIf(process.platform !== 'win32')(
   'does not hand a non-executable uv candidate to the backend',
   () => {
-    vi.stubEnv('OMNIVOICE_BUNDLED_UV', '');
+    vi.stubEnv('ELEVENVOICE_BUNDLED_UV', '');
     const uv = stubUvOnPath();
     chmodSync(uv, 0o600);
 
     const { env } = managedBackendSpawnOptions(3900);
 
-    expect(env.OMNIVOICE_BUNDLED_UV).not.toBe(uv);
+    expect(env.ELEVENVOICE_BUNDLED_UV).not.toBe(uv);
   },
 );
 
 it('never overrides a uv the user pinned themselves', () => {
-  vi.stubEnv('OMNIVOICE_BUNDLED_UV', '/pinned/uv');
+  vi.stubEnv('ELEVENVOICE_BUNDLED_UV', '/pinned/uv');
   stubUvOnPath();
 
   const { env } = managedBackendSpawnOptions(3900);
 
-  expect(env.OMNIVOICE_BUNDLED_UV).toBe('/pinned/uv');
+  expect(env.ELEVENVOICE_BUNDLED_UV).toBe('/pinned/uv');
 });
 
 it('drops a blank uv pin when this host has no uv to offer', () => {
@@ -829,13 +829,13 @@ it('only ever names a uv that is really there', () => {
   // or stale value reads as "the shell tried and failed" rather than "the
   // shell had nothing to say". Whether this host has a uv at all is not the
   // point — that it never names one it cannot stand behind, is.
-  vi.stubEnv('OMNIVOICE_BUNDLED_UV', '');
+  vi.stubEnv('ELEVENVOICE_BUNDLED_UV', '');
 
   const { env } = managedBackendSpawnOptions(3900);
 
-  if (env.OMNIVOICE_BUNDLED_UV !== undefined) {
-    expect(env.OMNIVOICE_BUNDLED_UV).not.toBe('');
-    expect(existsSync(env.OMNIVOICE_BUNDLED_UV)).toBe(true);
+  if (env.ELEVENVOICE_BUNDLED_UV !== undefined) {
+    expect(env.ELEVENVOICE_BUNDLED_UV).not.toBe('');
+    expect(existsSync(env.ELEVENVOICE_BUNDLED_UV)).toBe(true);
   }
 });
 
@@ -855,22 +855,22 @@ function stubResourcesPath(path: string): void {
 }
 
 it('serves LAN devices the web UI packaged with this app version', () => {
-  vi.stubEnv('OMNIVOICE_FRONTEND_DIST', '');
-  stubResourcesPath(join('/opt', 'VoiceStudio', 'resources'));
+  vi.stubEnv('ELEVENVOICE_FRONTEND_DIST', '');
+  stubResourcesPath(join('/opt', 'ElevenVoice', 'resources'));
 
   const { env } = managedBackendSpawnOptions(3900);
 
-  expect(env.OMNIVOICE_FRONTEND_DIST).toBe(
-    join('/opt', 'VoiceStudio', 'resources', 'frontend', 'dist'),
+  expect(env.ELEVENVOICE_FRONTEND_DIST).toBe(
+    join('/opt', 'ElevenVoice', 'resources', 'frontend', 'dist'),
   );
-  expect(bundledWebUiPath()).toBe(env.OMNIVOICE_FRONTEND_DIST);
+  expect(bundledWebUiPath()).toBe(env.ELEVENVOICE_FRONTEND_DIST);
 });
 
 it('keeps a web UI directory the user pinned themselves', () => {
-  vi.stubEnv('OMNIVOICE_FRONTEND_DIST', '/custom/web');
-  stubResourcesPath(join('/opt', 'VoiceStudio', 'resources'));
+  vi.stubEnv('ELEVENVOICE_FRONTEND_DIST', '/custom/web');
+  stubResourcesPath(join('/opt', 'ElevenVoice', 'resources'));
 
-  expect(managedBackendSpawnOptions(3900).env.OMNIVOICE_FRONTEND_DIST).toBe('/custom/web');
+  expect(managedBackendSpawnOptions(3900).env.ELEVENVOICE_FRONTEND_DIST).toBe('/custom/web');
 });
 
 it('exposes the current process signal separately from the durable crash journal', async () => {
@@ -915,8 +915,8 @@ function impersonateHost(identity: { platform: NodeJS.Platform; arch: string }):
 it('leaves an Intel Mac parked without invoking the runtime installer', async () => {
   impersonateHost({ platform: 'darwin', arch: 'x64' });
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('fixture has no backend')));
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const subject = new BackendSupervisor();
 
   await subject.start();
@@ -955,8 +955,8 @@ it('labels Rosetta separately while keeping installation unavailable', async () 
     Object.assign(app, { runningUnderARM64Translation: false });
   });
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('fixture has no backend')));
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const subject = new BackendSupervisor();
   await subject.start();
   await subject.setupRuntime();
@@ -967,8 +967,8 @@ it('labels Rosetta separately while keeping installation unavailable', async () 
 });
 
 it('lets a failed start move the runtime to another folder', async () => {
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   const supervisor = new BackendSupervisor();
   await supervisor.start();
   for (const stage of ['failed', 'crashed', 'port_in_use'] as const) {

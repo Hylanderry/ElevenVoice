@@ -36,7 +36,7 @@ def _ed():
 @pytest.fixture(autouse=True)
 def _fresh_state(monkeypatch):
     monkeypatch.setattr(_ed(), "_RESOLVED", None)
-    for key in ("PHONEMIZER_ESPEAK_DATA_PATH", "ESPEAK_DATA_PATH", "OMNIVOICE_ESPEAK_DATA_CACHE"):
+    for key in ("PHONEMIZER_ESPEAK_DATA_PATH", "ESPEAK_DATA_PATH", "ELEVENVOICE_ESPEAK_DATA_CACHE"):
         monkeypatch.delenv(key, raising=False)
 
 
@@ -96,7 +96,7 @@ def test_long_wheel_path_is_replaced_by_a_short_copy(real_loader, tmp_path, monk
     ed = _ed()
     long_data = _core_copy(Path(real_loader.get_data_path()), _long_dir(tmp_path) / "espeak-ng-data")
     cache = Path(os.path.realpath(tmp_path)) / "c"
-    monkeypatch.setenv("OMNIVOICE_ESPEAK_DATA_CACHE", str(cache))
+    monkeypatch.setenv("ELEVENVOICE_ESPEAK_DATA_CACHE", str(cache))
     loader = SimpleNamespace(
         get_library_path=real_loader.get_library_path,
         get_data_path=lambda: str(long_data),
@@ -181,8 +181,8 @@ def test_shared_cache_directory_is_not_trusted(tmp_path):
     ed = _ed()
     source = Path(_fake_loader(tmp_path).get_data_path())
     root = tmp_path / "shared"
-    (root / "voicestudio-espeak").mkdir(parents=True)
-    os.chmod(root / "voicestudio-espeak", 0o777)
+    (root / "elevenvoice-espeak").mkdir(parents=True)
+    os.chmod(root / "elevenvoice-espeak", 0o777)
     assert ed._cached_copy(source, root) is None
 
 

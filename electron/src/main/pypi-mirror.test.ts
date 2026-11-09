@@ -116,7 +116,7 @@ describe('"Auto" PyPI mirror speed check (#3444)', () => {
       expect.objectContaining({
         headers: expect.objectContaining({
           Range: `bytes=0-${PYPI_SPEED_SAMPLE_BYTES - 1}`,
-          'User-Agent': 'VoiceStudio-setup',
+          'User-Agent': 'ElevenVoice-setup',
         }),
       }),
     ]);

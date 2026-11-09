@@ -44,7 +44,7 @@ from core.logging_utils import log_safe
 from core.path_security import UnsafePath, resolve_within, safe_filename
 from core.safe_archive import ArchiveError, copy_member, open_bounded_zip, read_member
 
-logger = logging.getLogger("omnivoice.marketplace")
+logger = logging.getLogger("elevenvoice.marketplace")
 
 router = APIRouter(prefix="/marketplace", tags=["Voice Marketplace"])
 
@@ -332,7 +332,7 @@ def publish_to_marketplace(
     """Publish a voice profile to the local marketplace directory.
 
     This saves a .omnivoice bundle to the marketplace folder so other
-    VoiceStudio instances on the same machine (or shared network drive)
+    ElevenVoice instances on the same machine (or shared network drive)
     can discover and import it.
     """
     with db_conn() as conn:

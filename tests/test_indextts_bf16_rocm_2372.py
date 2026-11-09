@@ -5,7 +5,7 @@ rocBLAS/Tensile segfaults on the first bfloat16 GEMM — below Python, so the
 sidecar died with ``closed pipe mid-generate`` on every synthesis. The old
 code trusted the claim. Now the claim is checked with a tiny GEMM in a child
 process, where a segfault is only a non-zero exit, and a failed check makes
-the model load with fp32 (the reporter's verified ``OMNIVOICE_INDEXTTS_FP16=0``
+the model load with fp32 (the reporter's verified ``ELEVENVOICE_INDEXTTS_FP16=0``
 workaround, minus the manual step).
 """
 from __future__ import annotations
@@ -140,9 +140,9 @@ def test_the_probe_runs_the_sidecars_own_interpreter_and_is_bounded(sidecar, mon
 def _probe_timeout(sidecar, monkeypatch, value=None) -> float:
     """The timeout _bf16_probe passes to subprocess.run for an env value."""
     if value is None:
-        monkeypatch.delenv("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", raising=False)
     else:
-        monkeypatch.setenv("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", value)
+        monkeypatch.setenv("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", value)
     seen = {}
 
     def _run(argv, **kwargs):
@@ -160,7 +160,7 @@ def _probe_timeout(sidecar, monkeypatch, value=None) -> float:
 @pytest.mark.parametrize("env", [None, "45.5", "30", "abc", "inf", "-5"])
 def test_the_probe_budget_never_outlasts_the_parents_silence_deadline(sidecar, monkeypatch, env):
     """Fail-before/pass-after for the #2424 review: the fixed 120 s budget
-    ignored OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S, so a tuned-down deadline
+    ignored ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S, so a tuned-down deadline
     (floor 30 s) could have the parent's watchdog kill the sidecar mid-probe
     — before _heartbeat starts and re-arms it."""
     timeout = _probe_timeout(sidecar, monkeypatch, env)
@@ -183,9 +183,9 @@ def test_the_sidecar_and_the_parent_read_the_same_recv_deadline(sidecar, monkeyp
     parent_deadline = IndexTTS2Backend.recv_timeout_s.fget
     for value in (None, "45.5", "30", "abc", "inf", "-5", "1e9"):
         if value is None:
-            monkeypatch.delenv("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", raising=False)
+            monkeypatch.delenv("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", raising=False)
         else:
-            monkeypatch.setenv("OMNIVOICE_INDEXTTS_RECV_TIMEOUT_S", value)
+            monkeypatch.setenv("ELEVENVOICE_INDEXTTS_RECV_TIMEOUT_S", value)
         assert sidecar._parent_recv_deadline_s() == parent_deadline(None), value
 
 
@@ -204,7 +204,7 @@ def test_the_verdict_reaches_the_model_constructor(sidecar, monkeypatch, tmp_pat
 
 
 def test_disabling_reduced_precision_short_circuits_the_probe(sidecar, monkeypatch):
-    """OMNIVOICE_INDEXTTS_FP16=0 keeps its meaning: no bf16, and no probe
+    """ELEVENVOICE_INDEXTTS_FP16=0 keeps its meaning: no bf16, and no probe
     subprocess to decide it."""
     monkeypatch.setattr(sidecar, "_bf16_probe", _must_not_probe(sidecar))
     kw = sidecar._model_init_kwargs("/nowhere", version="2.5", reduced_precision=False)

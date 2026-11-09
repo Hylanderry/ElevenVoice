@@ -3,13 +3,13 @@ import { expect, it } from 'vitest';
 import { join } from 'node:path';
 import { scopedStorage, scopedStorageEnv } from './storage-scope';
 
-const root = join('E:', 'VoiceStudio');
+const root = join('E:', 'ElevenVoice');
 
 it('puts data, models and every temp variable under the chosen location (#2971)', () => {
   const s = scopedStorage(root);
   expect(scopedStorageEnv(root)).toEqual({
-    OMNIVOICE_DATA_DIR: s.data,
-    OMNIVOICE_CACHE_DIR: s.models,
+    ELEVENVOICE_DATA_DIR: s.data,
+    ELEVENVOICE_CACHE_DIR: s.models,
     TEMP: s.temp,
     TMP: s.temp,
     TMPDIR: s.temp,
@@ -18,8 +18,8 @@ it('puts data, models and every temp variable under the chosen location (#2971)'
 });
 
 it('keeps values the user already set explicitly', () => {
-  const out = scopedStorageEnv(root, { OMNIVOICE_CACHE_DIR: 'D:\\models', TEMP: 'D:\\t' });
-  expect(out.OMNIVOICE_CACHE_DIR).toBeUndefined();
+  const out = scopedStorageEnv(root, { ELEVENVOICE_CACHE_DIR: 'D:\\models', TEMP: 'D:\\t' });
+  expect(out.ELEVENVOICE_CACHE_DIR).toBeUndefined();
   expect(out.TEMP).toBeUndefined();
-  expect(out.OMNIVOICE_DATA_DIR).toBe(scopedStorage(root).data);
+  expect(out.ELEVENVOICE_DATA_DIR).toBe(scopedStorage(root).data);
 });

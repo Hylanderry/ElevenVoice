@@ -1,6 +1,6 @@
 """Process-bound credentials for the first-party remote administration UI.
 
-The durable ``OMNIVOICE_API_KEY`` is an operator secret, not a browser session.
+The durable ``ELEVENVOICE_API_KEY`` is an operator secret, not a browser session.
 This module exchanges it for opaque, bounded-lifetime credentials without
 depending on FastAPI or persisting a verifier to disk.
 """
@@ -395,7 +395,7 @@ def _process_store() -> AdminSessionStore:
     anchor = sys.modules.get(_ANCHOR_MODULE_NAME)
     if not isinstance(anchor, ModuleType):
         anchor = ModuleType(_ANCHOR_MODULE_NAME)
-        anchor.__doc__ = "Process-global anchor for the VoiceStudio admin-session store."
+        anchor.__doc__ = "Process-global anchor for the ElevenVoice admin-session store."
         sys.modules[_ANCHOR_MODULE_NAME] = anchor
     store = getattr(anchor, "admin_session_store", None)
     if store is None:

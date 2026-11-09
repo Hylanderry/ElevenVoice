@@ -7,17 +7,17 @@ import pytest
 
 @pytest.mark.parametrize("env,expected", [
     ({}, "http://127.0.0.1:3900"),
-    ({"OMNIVOICE_PORT": "3912"}, "http://127.0.0.1:3912"),
-    ({"OMNIVOICE_PORT": "3912", "OMNIVOICE_BIND_HOST": "0.0.0.0"}, "http://127.0.0.1:3912"),
-    ({"OMNIVOICE_BIND_HOST": "::"}, "http://[::1]:3900"),
-    ({"OMNIVOICE_BIND_HOST": "192.168.1.5", "OMNIVOICE_PORT": "4000"}, "http://192.168.1.5:4000"),
-    ({"OMNIVOICE_API_URL": "https://proxy.example/vs/", "OMNIVOICE_PORT": "4000"},
+    ({"ELEVENVOICE_PORT": "3912"}, "http://127.0.0.1:3912"),
+    ({"ELEVENVOICE_PORT": "3912", "ELEVENVOICE_BIND_HOST": "0.0.0.0"}, "http://127.0.0.1:3912"),
+    ({"ELEVENVOICE_BIND_HOST": "::"}, "http://[::1]:3900"),
+    ({"ELEVENVOICE_BIND_HOST": "192.168.1.5", "ELEVENVOICE_PORT": "4000"}, "http://192.168.1.5:4000"),
+    ({"ELEVENVOICE_API_URL": "https://proxy.example/vs/", "ELEVENVOICE_PORT": "4000"},
      "https://proxy.example/vs"),
 ])
 def test_backend_self_url(monkeypatch, env, expected):
     from services.network_share import backend_self_url
 
-    for name in ("OMNIVOICE_PORT", "OMNIVOICE_BIND_HOST", "OMNIVOICE_API_URL"):
+    for name in ("ELEVENVOICE_PORT", "ELEVENVOICE_BIND_HOST", "ELEVENVOICE_API_URL"):
         monkeypatch.delenv(name, raising=False)
     for name, value in env.items():
         monkeypatch.setenv(name, value)
@@ -26,16 +26,16 @@ def test_backend_self_url(monkeypatch, env, expected):
 
 @pytest.mark.parametrize("env,expected", [
     ({}, "http://127.0.0.1:3900"),
-    ({"OMNIVOICE_HOST": "10.0.0.2", "OMNIVOICE_PORT": "3912"}, "http://10.0.0.2:3912"),
+    ({"ELEVENVOICE_HOST": "10.0.0.2", "ELEVENVOICE_PORT": "3912"}, "http://10.0.0.2:3912"),
     # A remote backend behind a TLS proxy with a path prefix (exported by the
     # Integrations → Model Context Protocol card) keeps scheme and prefix.
-    ({"OMNIVOICE_URL": "https://gpu.example/voicestudio/", "OMNIVOICE_PORT": "1"},
-     "https://gpu.example/voicestudio"),
+    ({"ELEVENVOICE_URL": "https://gpu.example/elevenvoice/", "ELEVENVOICE_PORT": "1"},
+     "https://gpu.example/elevenvoice"),
 ])
 def test_mcp_shim_targets_the_configured_backend(monkeypatch, env, expected):
     from mcp_shim.__main__ import _base_url
 
-    for name in ("OMNIVOICE_URL", "OMNIVOICE_HOST", "OMNIVOICE_PORT"):
+    for name in ("ELEVENVOICE_URL", "ELEVENVOICE_HOST", "ELEVENVOICE_PORT"):
         monkeypatch.delenv(name, raising=False)
     for name, value in env.items():
         monkeypatch.setenv(name, value)
@@ -59,16 +59,16 @@ def test_no_backend_module_hard_codes_the_default_port():
 @pytest.mark.parametrize("url,sent", [
     ("http://127.0.0.1:3912", True),
     ("http://[::1]:3900", True),
-    ("https://gpu.example/voicestudio", True),
+    ("https://gpu.example/elevenvoice", True),
     ("http://192.168.1.5:3900", False),  # plain http off-host: never leak the key
 ])
 def test_api_key_only_travels_over_https_or_loopback(monkeypatch, url, sent):
     from mcp_shim.__main__ import _credentials_allowed
     from services.network_share import backend_auth_headers
 
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "k" * 40)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "k" * 40)
     expected = {"Authorization": "Bearer " + "k" * 40} if sent else {}
     assert backend_auth_headers(url) == expected
     assert _credentials_allowed(url) is sent
-    monkeypatch.delenv("OMNIVOICE_API_KEY")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY")
     assert backend_auth_headers(url) == {}

@@ -239,7 +239,7 @@ export default function useAppData() {
       const saved = sanitizeOmniUi(JSON.parse(localStorage.getItem(OMNI_UI_KEY) || '{}'));
       if (saved.uiScale) setUiScale(saved.uiScale);
       if (saved.text) setText(saved.text);
-      // Legacy shim (voice-studio-unification P4): the old 'clone'/'design'
+      // Legacy shim (elevenvoice-unification P4): the old 'clone'/'design'
       // navigation modes are now one 'studio' workspace; the split lives on
       // as the defineMethod ('audio'|'design').
       if (saved.mode === 'clone') {

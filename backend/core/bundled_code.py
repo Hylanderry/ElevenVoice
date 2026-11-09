@@ -31,9 +31,9 @@ def install() -> bool:
     global _installed
     if _installed:
         return _installed
-    if os.environ.get("VOICESTUDIO_BUNDLED_CODE_ONLY") != "1":
+    if os.environ.get("ELEVENVOICE_BUNDLED_CODE_ONLY") != "1":
         return False
-    raw = os.environ.get("VOICESTUDIO_BUNDLED_RESOURCES", "")
+    raw = os.environ.get("ELEVENVOICE_BUNDLED_RESOURCES", "")
     if not raw or not Path(raw).is_absolute():
         raise SystemExit("BUNDLED_CODE_POLICY: missing signed resource directory")
     root = Path(raw).resolve()

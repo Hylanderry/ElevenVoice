@@ -12,7 +12,7 @@ def backend_module():
 
 @pytest.fixture
 def non_cloning_mlx(monkeypatch, backend_module):
-    monkeypatch.setenv("OMNIVOICE_MLX_AUDIO_MODEL", "kokoro")
+    monkeypatch.setenv("ELEVENVOICE_MLX_AUDIO_MODEL", "kokoro")
     monkeypatch.setattr(
         backend_module.MLXAudioBackend,
         "_ensure_loaded",

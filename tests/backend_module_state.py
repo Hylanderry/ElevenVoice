@@ -1,7 +1,7 @@
 """Restore backend module identity after ``sys.modules`` surgery.
 
 Some suites purge ``core`` / ``api`` / ``services`` / ``main`` and re-import
-them under a temporary ``OMNIVOICE_DATA_DIR``. Purging again afterwards is not
+them under a temporary ``ELEVENVOICE_DATA_DIR``. Purging again afterwards is not
 enough: test modules collected earlier still hold the ORIGINAL module objects,
 while later in-test imports would resolve fresh twins. A test then patches one
 copy (``core.db.DB_PATH``) while the code under test reads the other

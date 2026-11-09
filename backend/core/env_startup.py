@@ -2,7 +2,7 @@
 import logging
 import os
 
-logger = logging.getLogger("omnivoice.env_startup")
+logger = logging.getLogger("elevenvoice.env_startup")
 
 
 def _load_project_env(dotenv, path):

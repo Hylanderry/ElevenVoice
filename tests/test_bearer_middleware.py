@@ -6,8 +6,8 @@ address exercises the loopback bypass, the SPA-shell exemption, and the
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 from starlette.websockets import WebSocketDisconnect
@@ -18,7 +18,7 @@ def key_env(monkeypatch):
     from services.admin_sessions import admin_session_store
 
     admin_session_store.clear()
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     yield "s3cret-key"
     admin_session_store.clear()
 
@@ -30,13 +30,13 @@ def _client(addr=("10.0.0.5", 1)):
 
 
 def test_inert_without_env(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     c = _client()  # non-loopback
     assert c.get("/health").status_code == 200
 
 
 def test_whitespace_only_env_is_not_an_api_key(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "   ")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "   ")
     c = _client()
     response = c.get("/v1/audio/voices")
     assert response.status_code == 200
@@ -72,7 +72,7 @@ def test_non_loopback_with_bearer_passes(key_env):
 
 
 def test_trusted_network_without_explicit_credential_still_passes(key_env, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
 
     response = _client().get("/v1/audio/voices")
 
@@ -80,7 +80,7 @@ def test_trusted_network_without_explicit_credential_still_passes(key_env, monke
 
 
 def test_invalid_explicit_header_is_authoritative_on_trusted_network(key_env, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
+    monkeypatch.setenv("ELEVENVOICE_TRUSTED_NETWORKS", "10.0.0.0/24")
 
     response = _client().get(
         "/v1/audio/voices",
@@ -147,7 +147,7 @@ def test_key_rotation_invalidates_admin_session(key_env, monkeypatch):
     c.cookies.set("ov_session", session.token)
     assert c.get("/v1/audio/voices").status_code == 200
 
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "rotated-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "rotated-key")
 
     assert c.get("/v1/audio/voices").status_code == 401
 

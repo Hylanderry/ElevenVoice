@@ -32,8 +32,8 @@ from pathlib import Path
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _BACKEND = Path(__file__).resolve().parents[1] / "backend"
 
@@ -331,7 +331,7 @@ def test_openai_compat_maps_timeouts_to_retryable_503(mm):
         http = oc._typed_speech_http_error(err)
         assert http is not None, "TimeoutError fell through to the generic 500"
         assert http.status_code == 503
-        assert http.headers["X-OmniVoice-Retryable"] == "true"
+        assert http.headers["X-ElevenVoice-Retryable"] == "true"
         assert int(http.headers["Retry-After"]) >= 1
     assert oc._typed_speech_http_error(mm.GpuPoolBusyError(
         "busy", retry_after=42)).headers["Retry-After"] == "42"
@@ -395,7 +395,7 @@ def test_speech_429s_at_submit_when_the_pool_is_saturated(mm, client, monkeypatc
     })
     assert res.status_code == 429, res.text
     assert int(res.headers["Retry-After"]) >= 1
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
     assert "saturated" in res.json()["detail"]
 
 
@@ -411,7 +411,7 @@ def test_speech_timeout_is_a_retryable_503_not_a_500(mm, client, monkeypatch):
         "model": "slow-gen-fake", "input": "Hello.", "response_format": "wav",
     })
     assert res.status_code == 503, res.text
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
     assert int(res.headers["Retry-After"]) >= 1
 
 

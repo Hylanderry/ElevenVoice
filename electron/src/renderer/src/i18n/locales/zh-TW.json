@@ -1316,7 +1316,7 @@
     "compute_device_auto": "自動（建議）",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "運算裝置",
-    "compute_device_env_pinned": "已由環境變數 OMNIVOICE_DEVICE 固定",
+    "compute_device_env_pinned": "已由環境變數 ELEVENVOICE_DEVICE 固定",
     "perf_title": "效能",
     "generate_timeout_cpu_note": "當生成執行於 CPU 上時使用。一旦在此處儲存，此值將始終控制 CPU 生成 — 與上方的加速預算無關。",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1482,7 +1482,7 @@
     "remote_backend_confirm_title": "使用未經驗證的後端？",
     "llmskills_needs_setup": "需要設定",
     "audio_tools_ytdlp_restored": "測試 yt-dlp 已復原 — 重新啟動後端以套用。",
-    "remote_backend_hint": "使用 <1> 在另一台機器上啟動後端OMNIVOICE_API_KEY</1> 設置，透過尾網到達它，然後將此應用程式指向它。",
+    "remote_backend_hint": "使用 <1> 在另一台機器上啟動後端ELEVENVOICE_API_KEY</1> 設置，透過尾網到達它，然後將此應用程式指向它。",
     "audio_tools_manual_hint": "更喜歡您的套件管理器？自行安裝 FFmpeg（macOS：brew install ffmpeg · Debian/Ubuntu：sudo apt install ffmpeg · Windows：winget install ffmpeg）並按使用系統副本。該應用程式從未在系統範圍內安裝任何內容。",
     "review_mode": "複習模式",
     "review_mode_desc": "在管道階段之間暫停，以便您可以查看 ASR/翻譯輸出。",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "找到了 {{gpu}}，但此 PyTorch 版本（{{torch}}）沒有其計算架構對應的核心，因此引擎在 CPU 上執行。",
     "gpu_report_state_unknown": "無法判斷 GPU 狀態。",
     "gpu_report_option_vulkan_engines": "使用自帶 GPU 執行環境的引擎：audio.cpp 透過 Vulkan 在 AMD Radeon GPU 上執行（設定 → 模型 → 安裝執行環境）。",
-    "gpu_report_option_rocm_windows_manual": "在支援的 Windows 11 x64 AMD 硬體上，可透過 OMNIVOICE_TORCH_VARIANT=rocm 啟用 ElevenVoice 的 ROCm 7.2.1 安裝。若已安裝，請重新執行安裝程式並檢查 AMD 的驅動程式與硬體相容性表。選用引擎有各自的限制，請參閱 Windows 安裝指南。",
-    "gpu_report_option_rocm_variant_linux": "設定 OMNIVOICE_TORCH_VARIANT=rocm 並重新執行安裝程式，即可安裝 ROCm 版 PyTorch。",
+    "gpu_report_option_rocm_windows_manual": "在支援的 Windows 11 x64 AMD 硬體上，可透過 ELEVENVOICE_TORCH_VARIANT=rocm 啟用 ElevenVoice 的 ROCm 7.2.1 安裝。若已安裝，請重新執行安裝程式並檢查 AMD 的驅動程式與硬體相容性表。選用引擎有各自的限制，請參閱 Windows 安裝指南。",
+    "gpu_report_option_rocm_variant_linux": "設定 ELEVENVOICE_TORCH_VARIANT=rocm 並重新執行安裝程式，即可安裝 ROCm 版 PyTorch。",
     "gpu_report_option_rocm_device_access": "請確認 amdgpu 驅動程式已載入，且目前使用者可以開啟 /dev/kfd（render 和 video 群組）。",
     "gpu_report_option_reinstall_cuda_torch": "重新安裝執行環境，讓它安裝 CUDA 版 PyTorch。",
     "gpu_report_option_update_nvidia_driver": "更新 NVIDIA 驅動程式（Linux 需 R525 或更新版本，Windows 需 R528.33 或更新版本）並重新啟動 ElevenVoice。",
@@ -2242,7 +2242,7 @@
     "failed": "無法啟動本機引擎。",
     "idle": "正在等待本機引擎…",
     "log_label": "引擎日誌",
-    "port_in_use": "連接埠 {{port}} 已被其他程式占用。請關閉該程式，或將 OMNIVOICE_PORT 設為可用的連接埠，然後重試。",
+    "port_in_use": "連接埠 {{port}} 已被其他程式占用。請關閉該程式，或將 ELEVENVOICE_PORT 設為可用的連接埠，然後重試。",
     "elapsed": "已經過 {{seconds}} 秒",
     "first_run_hint": "首次執行需要準備 Python 環境，可能需要幾分鐘。",
     "port_in_use_short": "連接埠 {{port}} 已被占用",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "這是已安裝的應用程式，無法編輯。請改選 git clone 的資料夾。",
       "not_git": "此資料夾不是 git clone。ZIP 下載無法使用，請使用 git clone。",
-      "not_voicestudio": "此資料夾中找不到 ElevenVoice 複本。",
+      "not_elevenvoice": "此資料夾中找不到 ElevenVoice 複本。",
       "read_only": "ElevenVoice 無法寫入此資料夾。請選擇你自己的資料夾。"
     },
     "chooseFailed": "無法使用此資料夾。請重試或選擇其他資料夾。",
@@ -3311,10 +3311,10 @@
       "workflow": "n8n 工作流程",
       "dockerRunPowerShell": "執行容器（Windows PowerShell）"
     },
-    "apiBearerHint": "此後端為遠端後端：請在 shell 中將 OMNIVOICE_API_KEY 設為其 API 金鑰。範例會從那裡讀取金鑰，且從不包含金鑰。",
+    "apiBearerHint": "此後端為遠端後端：請在 shell 中將 ELEVENVOICE_API_KEY 設為其 API 金鑰。範例會從那裡讀取金鑰，且從不包含金鑰。",
     "apiInsecureHint": "遠端後端的 API 金鑰需要 https://。使用金鑰前，請將此後端置於 https 之後（例如 Tailscale Serve）。",
     "dockerGpuHint": "GPU：NVIDIA 需要 --gpus all（在 Compose 中為 GPU 裝置預留）。AMD 使用 :stable-rocm 標籤並掛載 /dev/kfd 與 /dev/dri。請參閱 Docker 安裝指南。",
-    "openaiAgentsHint": "將 OpenAI Agents SDK 的語音管線指向 ElevenVoice，用於語音轉文字與文字轉語音。請讓 ElevenVoice 保持執行。使用遠端後端時，請在執行前設定 OMNIVOICE_API_KEY。將 AGENT_LLM_BASE_URL 與 AGENT_LLM_MODEL 設定為代理要使用的語言模型伺服器。",
+    "openaiAgentsHint": "將 OpenAI Agents SDK 的語音管線指向 ElevenVoice，用於語音轉文字與文字轉語音。請讓 ElevenVoice 保持執行。使用遠端後端時，請在執行前設定 ELEVENVOICE_API_KEY。將 AGENT_LLM_BASE_URL 與 AGENT_LLM_MODEL 設定為代理要使用的語言模型伺服器。",
     "category": {
       "all": "全部",
       "comms": "通話與語音代理",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "存取 PIN",
       "api_key_label": "API 金鑰（選填）",
-      "api_key_help": "僅在伺服器設定了 OMNIVOICE_API_KEY 時才需要。金鑰會換取工作階段，且不會被儲存。",
+      "api_key_help": "僅在伺服器設定了 ELEVENVOICE_API_KEY 時才需要。金鑰會換取工作階段，且不會被儲存。",
       "connect": "連線",
       "connecting": "連線中…",
       "connected_to": "已連線到 {{host}}",
@@ -3789,9 +3789,9 @@
       "last_seen": "上次上線：{{time}}",
       "forget": "移除",
       "error_unreachable": "無法連線到 {{host}}。請確認 ElevenVoice 正在執行、網路分享已開啟，並且這支手機與電腦在同一網路或 Tailscale 中。",
-      "error_not_voicestudio": "{{host}} 有回應，但不是 ElevenVoice 伺服器。請檢查位址和連接埠。",
+      "error_not_elevenvoice": "{{host}} 有回應，但不是 ElevenVoice 伺服器。請檢查位址和連接埠。",
       "error_pin": "PIN 遭拒。每次開啟分享都會產生新的 PIN，請重新掃描 QR 碼。",
-      "error_api_key": "API 金鑰遭拒。請檢查伺服器上 OMNIVOICE_API_KEY 設定的金鑰。",
+      "error_api_key": "API 金鑰遭拒。請檢查伺服器上 ELEVENVOICE_API_KEY 設定的金鑰。",
       "error_session_expired": "工作階段已過期。請重新輸入 API 金鑰以重新連線。",
       "error_insecure": "僅允許對區域網路或 Tailscale 中的位址使用 http://。其他伺服器請使用 https://。",
       "error_invalid_url": "這看起來不是伺服器位址。範例：http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "{{percent}}% 的音訊削波失真",
     "duration_ok": "符合原始長度",
     "duration_issue": "{{track_seconds}} 秒，比原始 {{source_seconds}} 秒更長"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

@@ -10,15 +10,15 @@ const browser = await chromium.launch({
   headless: true,
 });
 const page = await browser.newPage();
-const out = mkdtempSync(join(tmpdir(), 'voicestudio-sidebar-'));
-const ui = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const out = mkdtempSync(join(tmpdir(), 'elevenvoice-sidebar-'));
+const ui = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 try {
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
     // The expanded navigation is under test, so keep it open beside the library.
-    const saved = JSON.parse(localStorage.getItem('voicestudio.workspace-layout') || '{}');
+    const saved = JSON.parse(localStorage.getItem('elevenvoice.workspace-layout') || '{}');
     localStorage.setItem(
-      'voicestudio.workspace-layout',
+      'elevenvoice.workspace-layout',
       JSON.stringify({ ...saved, autoCollapseSidebar: false }),
     );
   });
@@ -135,7 +135,7 @@ try {
   const macStartupPage = await browser.newPage();
   try {
     await macStartupPage.addInitScript(() => {
-      Object.defineProperty(window, 'voicestudio', {
+      Object.defineProperty(window, 'elevenvoice', {
         value: {
           app: {
             version: 'test',
@@ -169,7 +169,7 @@ try {
       });
     });
     await macStartupPage.goto(ui + '/#/clone');
-    const startupBrand = macStartupPage.getByRole('banner').getByText('VoiceStudio', {
+    const startupBrand = macStartupPage.getByRole('banner').getByText('ElevenVoice', {
       exact: true,
     });
     await startupBrand.waitFor();
@@ -184,12 +184,12 @@ try {
   const macPage = await browser.newPage();
   try {
     await macPage.addInitScript(() => {
-      localStorage.setItem('voicestudio.setup.complete.v1', '1');
+      localStorage.setItem('elevenvoice.setup.complete.v1', '1');
       localStorage.setItem(
-        'voicestudio.workspace-layout',
+        'elevenvoice.workspace-layout',
         JSON.stringify({ autoCollapseSidebar: false }),
       );
-      Object.defineProperty(window, 'voicestudio', {
+      Object.defineProperty(window, 'elevenvoice', {
         value: {
           app: {
             version: 'test',
@@ -236,15 +236,15 @@ try {
     await macNotifications.locator('button:has(.lucide-bell)').click();
     await macPage.locator('[data-slot=popover-content][data-open]').waitFor({ state: 'visible' });
     await macPage.keyboard.press('Escape');
-    const brandLink = macSidebar.getByRole('link', { name: /^VoiceStudio v\S+/ });
+    const brandLink = macSidebar.getByRole('link', { name: /^ElevenVoice v\S+/ });
     const brandBounds = await brandLink.boundingBox();
     // The traffic lights have their own row above the brand.
     assert.ok(brandBounds && brandBounds.y >= 28, 'macOS brand must sit below the traffic lights');
     assert.ok(
       await brandLink
-        .getByText('VoiceStudio', { exact: true })
+        .getByText('ElevenVoice', { exact: true })
         .evaluate((element) => element.scrollWidth <= element.clientWidth),
-      'macOS titlebar must show the complete VoiceStudio wordmark',
+      'macOS titlebar must show the complete ElevenVoice wordmark',
     );
     const expandedSettings = macSidebar.getByRole('link', { name: 'Settings', exact: true });
     const expandedDevice = macSidebar.getByRole('button', { name: /^Local:/ });
@@ -321,7 +321,7 @@ try {
   );
 } finally {
   await browser.close();
-  if (process.env.VOICESTUDIO_KEEP_SMOKE_ARTIFACTS !== '1') {
+  if (process.env.ELEVENVOICE_KEEP_SMOKE_ARTIFACTS !== '1') {
     rmSync(out, { recursive: true, force: true });
   }
 }

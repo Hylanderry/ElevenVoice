@@ -27,7 +27,7 @@ import os
 import numpy as np
 import soundfile as sf
 
-logger = logging.getLogger("omnivoice.speaker_clone")
+logger = logging.getLogger("elevenvoice.speaker_clone")
 
 MIN_REF_DURATION_S = 5.0   # below this the clone is thin and unstable
 MAX_REF_DURATION_S = 15.0  # above this is just wasted reference context

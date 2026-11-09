@@ -24,7 +24,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-logger = logging.getLogger("omnivoice.hf_progress")
+logger = logging.getLogger("elevenvoice.hf_progress")
 
 # Context-scoped active repo_id. Set in the install/delete handler so every
 # tqdm event fired while a snapshot_download runs can be stamped with the

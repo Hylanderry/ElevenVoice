@@ -6,7 +6,7 @@ from core.config import DB_PATH
 from core import db_backup
 from core.version import APP_VERSION
 
-logger = logging.getLogger("omnivoice.db")
+logger = logging.getLogger("elevenvoice.db")
 
 _IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _TYPE_RE = re.compile(r"^[A-Za-z0-9_ '\"\(\)\-\.]+$")
@@ -158,7 +158,7 @@ _BASE_SCHEMA = """
     );
 
     -- Wave 2.2: per-agent MCP voice bindings. An MCP client (Claude Code,
-    -- Cursor, …) identified by the X-OmniVoice-Client-Id header it sends is
+    -- Cursor, …) identified by the X-ElevenVoice-Client-Id header it sends is
     -- bound to a default voice profile / engine. Fresh installs create it
     -- here; v0.3.x upgrades get it via alembic 0004.
     CREATE TABLE IF NOT EXISTS mcp_client_bindings (
@@ -218,7 +218,7 @@ _BASE_SCHEMA = """
     );
     CREATE INDEX IF NOT EXISTS idx_call_sessions_created ON call_sessions(created_at);
 
-    -- Legacy tables kept for existing installs; the feature moved to VoiceStudio Pro.
+    -- Legacy tables kept for existing installs; the feature moved to ElevenVoice Pro.
     CREATE TABLE IF NOT EXISTS remote_workers (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL DEFAULT '',
@@ -300,7 +300,7 @@ _BASE_SCHEMA = """
     CREATE INDEX IF NOT EXISTS idx_remote_attempts_task ON remote_task_attempts(task_id);
     CREATE INDEX IF NOT EXISTS idx_remote_attempts_worker ON remote_task_attempts(worker_id, state);
 
-    -- VoiceStudio Cloud settings sync (S1). Same DDL as alembic 0014_cloud_sync.
+    -- ElevenVoice Cloud settings sync (S1). Same DDL as alembic 0014_cloud_sync.
     CREATE TABLE IF NOT EXISTS cloud_sync_state (
         organization_id TEXT PRIMARY KEY,
         device_id TEXT,
@@ -598,7 +598,7 @@ def _run_alembic_upgrade() -> None:
       (nothing was applied; warn + `_reconcile_additive_columns` keeps the
       schema converged, exactly the pre-existing #552/#547 behavior).
     - migrations actually pending → the DB is snapshotted first
-      (``omnivoice.db.backup-<version>-<n>``, newest 3 kept), then upgraded.
+      (``elevenvoice.db.backup-<version>-<n>``, newest 3 kept), then upgraded.
     - a migration fails **while executing** → raise :class:`MigrationError`:
       startup stops with a message naming the backup, instead of silently
       running the app on a half-migrated DB.
@@ -622,7 +622,7 @@ def _run_alembic_upgrade() -> None:
         # app's logging. env.py's fileConfig() — even with
         # disable_existing_loggers=False — replaces the root logger's handlers
         # and applies [logger_root] level=WARN, so every boot that actually
-        # migrated (first run, upgrades) lost the omnivoice.log file handler
+        # migrated (first run, upgrades) lost the elevenvoice.log file handler
         # and all INFO logging for the rest of the process — including the
         # graceful-shutdown trace, making a SIGTERM'd clean quit look like a
         # silent crash (#1174). env.py checks this attribute; the standalone
@@ -676,13 +676,13 @@ def _run_alembic_upgrade() -> None:
         )
         msg = (
             f"Database migration failed while running: {exc}. "
-            f"VoiceStudio stopped instead of running on a partially migrated database, "
+            f"ElevenVoice stopped instead of running on a partially migrated database, "
             f"and nothing was auto-restored (your database at {DB_PATH} was left "
             f"exactly as the failed migration left it). "
             f"{backup_note}. "
             "What to do: relaunch to retry; if it keeps failing, report it at "
-            "https://github.com/debpalash/VoiceStudio/issues (keep the backup file). "
-            "To roll back manually: quit the app, replace omnivoice.db with the backup "
+            "https://github.com/Hylanderry/ElevenVoice/issues (keep the backup file). "
+            "To roll back manually: quit the app, replace elevenvoice.db with the backup "
             "file, and reinstall the previous version."
         )
         logger.error(msg)

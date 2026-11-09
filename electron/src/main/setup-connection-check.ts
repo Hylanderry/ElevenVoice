@@ -71,7 +71,7 @@ export async function checkSetupConnection(
         {
           agent,
           signal,
-          headers: { Range: `bytes=0-${SETUP_CHECK_BYTES - 1}`, 'User-Agent': 'VoiceStudio-setup' },
+          headers: { Range: `bytes=0-${SETUP_CHECK_BYTES - 1}`, 'User-Agent': 'ElevenVoice-setup' },
         },
         (response) => {
           responses.add(response);

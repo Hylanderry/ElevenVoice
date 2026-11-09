@@ -17,9 +17,9 @@ test('CI crawls every fault mode, split only by route shard', () => {
   // push behind the runner limit, so the only axis is the route shard, kept at three.
   assert.doesNotMatch(job, /matrix\.mode/, 'shard by route only, never by fault mode');
   assert.match(job, /shard: \[1, 2, 3\]/);
-  assert.match(job, /VOICESTUDIO_CRAWL_SHARD: \$\{\{ matrix\.shard \}\}\/3/);
+  assert.match(job, /ELEVENVOICE_CRAWL_SHARD: \$\{\{ matrix\.shard \}\}\/3/);
   // Narrowing the modes or routes in CI would silently skip the faults this job exists for.
-  assert.doesNotMatch(job, /VOICESTUDIO_CRAWL_(MODES|ROUTES)/);
+  assert.doesNotMatch(job, /ELEVENVOICE_CRAWL_(MODES|ROUTES)/);
   assert.match(crawler, /const MODES = \['fixture', 'http-500', 'network-error', 'bad-json'\]/);
 });
 

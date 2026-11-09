@@ -5,7 +5,7 @@ import type { StepKind } from './workflow-model';
 import { STEP_ICONS } from './workflow-step-node';
 
 /** Drag payload type for dropping a palette step onto the canvas. */
-export const STEP_DRAG_TYPE = 'application/x-voicestudio-workflow-step';
+export const STEP_DRAG_TYPE = 'application/x-elevenvoice-workflow-step';
 
 const GROUPS: StepKind[][] = [
   ['start', 'audio'],

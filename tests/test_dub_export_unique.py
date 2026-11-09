@@ -28,7 +28,7 @@ def _make_wav(path: Path, seconds: float = 0.5, sr: int = 16000) -> None:
 
 @pytest.fixture
 def app_client(tmp_path, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import core.config as _cfg
     importlib.reload(_cfg)
     # Reload core.tasks so TaskManager gets a fresh asyncio.Queue bound to the

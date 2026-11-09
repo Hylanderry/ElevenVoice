@@ -1,7 +1,7 @@
 """A weight download that FAILS must not surface as "internal error" (#2298).
 
 Field report (#2298): KittenTTS on Windows, first generate, HTTP 500 —
-"VoiceStudio hit an internal error; check the backend log for details."
+"ElevenVoice hit an internal error; check the backend log for details."
 The reporter had a Hugging Face mirror configured and it was unreachable, so
 the engine's lazy first-use weight fetch raised a connectivity error.
 
@@ -11,7 +11,7 @@ weights inside `generate()`. But that warm-up only translated
 ``TimeoutError``/``ModelLoadTimeout`` into an actionable 503. Every other
 load failure — the download refused, DNS gone, the mirror down, the file
 truncated, the cache corrupt — escaped the route uncaught and was rendered by
-the global 500 handler as "VoiceStudio hit an internal error", which names
+the global 500 handler as "ElevenVoice hit an internal error", which names
 neither the engine nor the fact that a model download was what failed.
 
 So the two halves of the same event disagreed: a download that STALLS is
@@ -22,8 +22,8 @@ Engine-stub pattern from tests/test_load_budget_split_1033.py.
 """
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import importlib
 
@@ -114,7 +114,7 @@ def test_generate_names_the_failed_model_load_not_an_internal_error(
 
     assert res.status_code == 503, res.text
     assert res.headers["Retry-After"] == "30"
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
     detail = res.json()["detail"]
     assert "hit an internal error" not in detail
     assert "mirror-down-engine" in detail
@@ -134,7 +134,7 @@ def test_generate_keeps_the_mirror_remedy_that_the_500_already_carried(
 
     assert res.status_code == 503, res.text
     assert res.headers["Retry-After"] == "30"
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
     body = res.json()
     assert "Hugging Face mirror" in body["detail"]
     assert body.get("docs_topic") == "HF_MIRROR_UNREACHABLE"
@@ -173,7 +173,7 @@ def test_speech_route_gets_the_same_treatment(client, monkeypatch, mirror_config
 
     assert res.status_code == 503, res.text
     assert res.headers["Retry-After"] == "30"
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
     assert "hit an internal error" not in res.text
 
 
@@ -193,7 +193,7 @@ def test_a_stalled_download_still_reports_the_load_budget(client, monkeypatch):
     assert res.status_code == 503, res.text
     assert "model-load budget" in res.json()["detail"]
     assert res.headers["Retry-After"] == "30"
-    assert res.headers["X-OmniVoice-Retryable"] == "true"
+    assert res.headers["X-ElevenVoice-Retryable"] == "true"
 
 
 def test_speech_shutdown_preserves_graceful_response(client, monkeypatch):

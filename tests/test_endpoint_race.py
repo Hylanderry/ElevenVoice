@@ -22,7 +22,7 @@ def er(monkeypatch, tmp_path):
     from core import prefs
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     monkeypatch.delenv("HF_ENDPOINT", raising=False)
-    monkeypatch.delenv("OMNIVOICE_HF_ENDPOINT_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_HF_ENDPOINT_MODE", raising=False)
     import services.endpoint_race as er_mod
     monkeypatch.setattr(er_mod, "_FAILOVER_ATTEMPTED", set())
     return er_mod
@@ -258,7 +258,7 @@ def test_pref_endpoint_forces_manual(er):
 
 
 def test_env_opt_out_forces_manual(er, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_HF_ENDPOINT_MODE", "manual")
+    monkeypatch.setenv("ELEVENVOICE_HF_ENDPOINT_MODE", "manual")
     assert er.mode() == "manual"
     assert er.ensure_decision() is None
     assert er.effective_endpoint() is None  # canonical, no probes

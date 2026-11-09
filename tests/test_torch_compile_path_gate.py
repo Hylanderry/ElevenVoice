@@ -70,7 +70,7 @@ def test_compile_allowed_on_a_clean_path(monkeypatch):
 def test_compile_skipped_when_the_torch_path_has_a_space(monkeypatch, caplog):
     """The regression: this used to attempt, fail in clang++, and log the wreck."""
     ee = _env(monkeypatch, torch_file=SPACED)
-    with caplog.at_level("INFO", logger="omnivoice.engine_env"):
+    with caplog.at_level("INFO", logger="elevenvoice.engine_env"):
         assert ee.should_torch_compile("cuda") is False
     assert any("whitespace" in r.getMessage() for r in caplog.records), (
         "the skip must say WHY, or it is indistinguishable from the other skips"
@@ -81,7 +81,7 @@ def test_force_env_still_overrides(monkeypatch, caplog):
     """Consistent with the arch gate: the user can insist — and is told."""
     ee = _env(monkeypatch, torch_file=SPACED)
     monkeypatch.setenv(ee._FORCE_COMPILE_ENV, "1")
-    with caplog.at_level("WARNING", logger="omnivoice.engine_env"):
+    with caplog.at_level("WARNING", logger="elevenvoice.engine_env"):
         assert ee.should_torch_compile("cuda") is True
     assert any(
         "forced" in r.getMessage().lower() for r in caplog.records
@@ -91,7 +91,7 @@ def test_force_env_still_overrides(monkeypatch, caplog):
 def test_skip_message_names_the_escape_hatch(monkeypatch, caplog):
     """A skip the user cannot override is a dead end; the hint must be there."""
     ee = _env(monkeypatch, torch_file=SPACED)
-    with caplog.at_level("INFO", logger="omnivoice.engine_env"):
+    with caplog.at_level("INFO", logger="elevenvoice.engine_env"):
         assert ee.should_torch_compile("cuda") is False
     assert any(ee._FORCE_COMPILE_ENV in r.getMessage() for r in caplog.records)
 
@@ -103,7 +103,7 @@ def test_home_directory_is_not_logged_verbatim(monkeypatch, caplog):
 
     home = str(_pl.Path.home())
     ee = _env(monkeypatch, torch_file=f"{home}/Library/Application Support/x/torch/__init__.py")
-    with caplog.at_level("INFO", logger="omnivoice.engine_env"):
+    with caplog.at_level("INFO", logger="elevenvoice.engine_env"):
         ee.should_torch_compile("cuda")
     joined = " ".join(r.getMessage() for r in caplog.records)
     assert home not in joined, f"home directory leaked into the log: {joined}"

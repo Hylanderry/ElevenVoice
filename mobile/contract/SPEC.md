@@ -1,11 +1,11 @@
-# VoiceStudio mobile — app contract
+# ElevenVoice mobile — app contract
 
 Both native apps (iOS: Swift/SwiftUI, `mobile/ios/`; Android: Kotlin/Compose,
 `mobile/android/`) implement **exactly this spec**. A feature ships on both or
 on neither (default features must work on every platform).
 
 The apps run models **on the phone** and can also drive the user's own
-VoiceStudio computer (desktop app, Docker or server) over LAN, Tailscale or a
+ElevenVoice computer (desktop app, Docker or server) over LAN, Tailscale or a
 remote URL. **Phone first:** once its models are downloaded every feature works
 offline with no computer; pairing adds the computer's engines. No cloud relay,
 no accounts. M1 (below) is the computer connection; M2 is on-device inference.
@@ -116,8 +116,8 @@ All tabs work without pairing once on-device models are installed (see M2); the 
    - Scan QR (camera) of the desktop "Network" share panel: URL
      `http(s)://<host>:<port>/?pin=<6 digits>`. Also manual entry: URL + optional
      PIN + optional API key.
-   - Validate with `GET /health` (must be a VoiceStudio response).
-   - PIN: send `X-OmniVoice-Pin` on every request.
+   - Validate with `GET /health` (must be a ElevenVoice response).
+   - PIN: send `X-ElevenVoice-Pin` on every request.
    - API key: exchange once via `POST /api/auth/session` with
      `Authorization: Bearer <key>` and body `{"transport":"bearer"}`; store only
      the returned session (Keychain / Android Keystore-backed storage) and
@@ -155,7 +155,7 @@ All tabs work without pairing once on-device models are installed (see M2); the 
      leaves the phone: nothing but requests to the paired host), About
      (version from the root `package.json`, licenses incl. Inter, model
      licenses link to the host).
-   - **Donate**, **VoiceStudio Pro** and **Other Apps** open native pages on
+   - **Donate**, **ElevenVoice Pro** and **Other Apps** open native pages on
      both platforms. Their bundled `support.json` catalog and project artwork
      work offline, without pairing, analytics or automatic provider requests.
      Donation destinations reuse the desktop's optional giving channels; gifts
@@ -360,14 +360,14 @@ Settings → Privacy states this.
   withdrawal blocks it again.
 - Real inference smoke test in CI with the smallest models (cached): TTS
   produces audio and ASR transcribes it back (iOS on the macOS runner via
-  VoiceStudioKit; Android on an `x86_64` emulator).
+  ElevenVoiceKit; Android on an `x86_64` emulator).
 - Routing: phone / computer / download prompt choices, and offline use with no
   computer paired.
 
 ## Reporting generated content
 
 Google Play's AI-generated content policy requires an in-app way to report
-offensive output; both apps ship it. The server is VoiceStudio's app API
+offensive output; both apps ship it. The server is ElevenVoice's app API
 (`POST /v1/content-reports`, spec `api/openapi/v1.yaml` in the vssaas
 repository). It needs no sign-in and accepts no audio or identifiers.
 
@@ -398,7 +398,7 @@ repository). It needs no sign-in and accepts no audio or identifiers.
 - **Request:** `POST <base>/v1/content-reports`, `Content-Type:
   application/json`, `Idempotency-Key` and no `Authorization`. Every build,
   debug included, uses `https://appapi.voicestudio.sh` unless
-  `VOICESTUDIO_CONTENT_REPORTS_URL` (an https URL, from the environment or the
+  `ELEVENVOICE_CONTENT_REPORTS_URL` (an https URL, from the environment or the
   git-ignored `mobile/.env`; see `mobile/.env.example`) points it elsewhere, such
   as `https://dev-appapi.voicestudio.sh` for testing. The key (32 characters of
   `A-Za-z0-9`) is made when the sheet opens and reused when the user retries,

@@ -26,12 +26,12 @@ import logging
 import os
 from dataclasses import dataclass, field
 
-logger = logging.getLogger("omnivoice.asr.sherpa")
+logger = logging.getLogger("elevenvoice.asr.sherpa")
 
 # CPU only — strict cross-platform default-parity rule. Overridable for
 # power users on a verified GPU build, but the default never diverges.
-_PROVIDER = os.environ.get("OMNIVOICE_SHERPA_ASR_PROVIDER", "cpu")
-_NUM_THREADS = int(os.environ.get("OMNIVOICE_SHERPA_ASR_THREADS", "2"))
+_PROVIDER = os.environ.get("ELEVENVOICE_SHERPA_ASR_PROVIDER", "cpu")
+_NUM_THREADS = int(os.environ.get("ELEVENVOICE_SHERPA_ASR_THREADS", "2"))
 
 # The 0.6B models need more than the 2-thread default to hold a comfortable
 # real-time factor. At 2 threads Parakeet measures RTF ~0.33 on older x64 —
@@ -51,7 +51,7 @@ _LARGE_MODEL_THREADS = 4
 
 def _threads_for(spec: "SherpaModelSpec") -> int:
     """Thread count for this model, honouring the env override verbatim."""
-    if "OMNIVOICE_SHERPA_ASR_THREADS" in os.environ:
+    if "ELEVENVOICE_SHERPA_ASR_THREADS" in os.environ:
         return _NUM_THREADS
     if not getattr(spec, "heavy", False):
         return _NUM_THREADS
@@ -72,8 +72,8 @@ def _endpoint_rules() -> tuple[float, float]:
             return float(os.environ.get(env, "") or default)
         except (TypeError, ValueError):
             return default
-    return (_f("OMNIVOICE_DICTATION_ENDPOINT_R1", 1.0),
-            _f("OMNIVOICE_DICTATION_ENDPOINT_R2", 0.6))
+    return (_f("ELEVENVOICE_DICTATION_ENDPOINT_R1", 1.0),
+            _f("ELEVENVOICE_DICTATION_ENDPOINT_R2", 0.6))
 
 
 @dataclass(frozen=True)
@@ -390,7 +390,7 @@ def is_installed(spec: SherpaModelSpec) -> bool:
 
     Do not use ``snapshot_download(local_files_only=True)`` for this probe.
     ``huggingface_hub.constants.HF_HUB_CACHE`` is fixed when that module is
-    first imported, while VoiceStudio can restore its cache directory later
+    first imported, while ElevenVoice can restore its cache directory later
     from the durable user settings. Resolve the live root and the recorded
     revision ourselves so readiness and loading cannot disagree after a cache
     move, desktop relaunch, or stale snapshot (#1707).

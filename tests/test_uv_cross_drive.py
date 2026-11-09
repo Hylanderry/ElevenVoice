@@ -85,7 +85,7 @@ def test_uv_env_moves_no_cache_on_the_default_cache_volume(tmp_path, monkeypatch
 def test_uv_env_colocates_cache_on_a_foreign_volume(tmp_path, monkeypatch):
     monkeypatch.delenv("UV_CACHE_DIR", raising=False)
     monkeypatch.delenv("UV_PYTHON_INSTALL_DIR", raising=False)
-    monkeypatch.setenv("OMNIVOICE_SENTINEL", "keep-me")
+    monkeypatch.setenv("ELEVENVOICE_SENTINEL", "keep-me")
     monkeypatch.setattr(si, "_same_volume", lambda a, b: False)
 
     engines = tmp_path / "engines"
@@ -95,7 +95,7 @@ def test_uv_env_colocates_cache_on_a_foreign_volume(tmp_path, monkeypatch):
     assert env["UV_PYTHON_INSTALL_DIR"] == str(engines / ".uv-python")
     # A copy of the parent env, not a from-scratch dict — uv still needs
     # PATH, proxies, HF/UV mirrors, etc.
-    assert env["OMNIVOICE_SENTINEL"] == "keep-me"
+    assert env["ELEVENVOICE_SENTINEL"] == "keep-me"
 
 
 def test_uv_env_respects_user_pinned_cache_dir(tmp_path, monkeypatch):
@@ -159,12 +159,12 @@ def test_run_logged_forwards_env_to_the_child():
 
 
 def test_run_logged_env_none_inherits_parent_environment(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_INHERIT_PROBE", "inherited")
+    monkeypatch.setenv("ELEVENVOICE_INHERIT_PROBE", "inherited")
     job = _job()
     rc = si._run_logged(
         job,
         [sys.executable, "-c",
-         "import os; print(os.environ.get('OMNIVOICE_INHERIT_PROBE', 'MISSING'))"],
+         "import os; print(os.environ.get('ELEVENVOICE_INHERIT_PROBE', 'MISSING'))"],
         timeout=30,
     )
     assert rc == 0
@@ -182,7 +182,7 @@ def test_sidecar_create_venv_passes_colocation_env(monkeypatch, tmp_path):
         repo_url="https://example.invalid/repo.git",
         tarball_url="https://example.invalid/tar.gz",
         checkout_dirname="checkout",
-        env_var="OMNIVOICE_PROBE_DIR",
+        env_var="ELEVENVOICE_PROBE_DIR",
         probe_module="probe",
         required_bytes=1,
     )
@@ -251,7 +251,7 @@ def test_every_bootstrap_uv_call_passes_env(path):
 
 # ── Engine installs never inherit the app's uv config ─────────────────────
 #
-# The backend runs inside VoiceStudio's tree, so a uv process it starts
+# The backend runs inside ElevenVoice's tree, so a uv process it starts
 # discovers the app's pyproject.toml and applies its [tool.uv]
 # constraint-dependencies (torch==2.8.0). Resolved that way,
 # torch==2.9.1+cu128 (MOSS-TTS-v1.5) and torch==2.7.0 (Confucius4) are

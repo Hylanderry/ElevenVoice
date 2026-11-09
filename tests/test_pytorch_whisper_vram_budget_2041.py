@@ -11,7 +11,7 @@ def pick(monkeypatch):
     torch = pytest.importorskip("torch")
     from services import asr_backend as ab
 
-    for name in ("OMNIVOICE_PYTORCH_ASR_MODEL", "OMNIVOICE_ASR_VRAM_PREFLIGHT"):
+    for name in ("ELEVENVOICE_PYTORCH_ASR_MODEL", "ELEVENVOICE_ASR_VRAM_PREFLIGHT"):
         monkeypatch.setenv(name, "x")  # recorded, so the teardown restores it
         monkeypatch.delenv(name)
     monkeypatch.setattr("services.model_manager.get_best_device", lambda: "cuda:0")
@@ -46,7 +46,7 @@ def test_an_unknown_model_gets_the_conservative_budget(pick):
 
 def test_the_fallback_warning_names_the_model_and_the_opt_out(pick):
     pick(1.0)
-    assert "OMNIVOICE_ASR_VRAM_PREFLIGHT=0" in pick.warnings[-1]
+    assert "ELEVENVOICE_ASR_VRAM_PREFLIGHT=0" in pick.warnings[-1]
     assert "whisper-large-v3-turbo" in pick.warnings[-1]
 
 

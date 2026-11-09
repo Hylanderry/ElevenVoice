@@ -6,7 +6,7 @@ import { buildCommit } from '../../config/build-commit.mjs';
 const sha = '0123456789abcdef0123456789abcdef01234567';
 
 test('an explicit build commit wins over CI and the checkout', () => {
-  const env = { VOICESTUDIO_BUILD_COMMIT: 'ABCDEF1234567', GITHUB_SHA: sha };
+  const env = { ELEVENVOICE_BUILD_COMMIT: 'ABCDEF1234567', GITHUB_SHA: sha };
   assert.equal(buildCommit(env, () => 'ffffffffffff'), 'abcdef123');
 });
 
@@ -23,7 +23,7 @@ test('no git history reports unknown', () => {
 });
 
 test('values that are not commit ids are ignored, never copied into a report', () => {
-  const env = { VOICESTUDIO_BUILD_COMMIT: 'main; rm -rf /', GITHUB_SHA: 'not-a-sha' };
+  const env = { ELEVENVOICE_BUILD_COMMIT: 'main; rm -rf /', GITHUB_SHA: 'not-a-sha' };
   assert.equal(buildCommit(env, () => 'HEAD'), 'unknown');
-  assert.equal(buildCommit({ VOICESTUDIO_BUILD_COMMIT: 'abc' }, () => ''), 'unknown');
+  assert.equal(buildCommit({ ELEVENVOICE_BUILD_COMMIT: 'abc' }, () => ''), 'unknown');
 });

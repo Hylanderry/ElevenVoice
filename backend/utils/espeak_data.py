@@ -39,7 +39,7 @@ import tempfile
 import threading
 from pathlib import Path
 
-logger = logging.getLogger("omnivoice.espeak")
+logger = logging.getLogger("elevenvoice.espeak")
 
 _LOCK = threading.Lock()
 _RESOLVED: str | None = None
@@ -101,7 +101,7 @@ def espeak_resolves(library: str, candidate: str) -> bool | None:
 
 
 def _cache_roots() -> list[Path]:
-    roots: list[str | None] = [os.environ.get("OMNIVOICE_ESPEAK_DATA_CACHE")]
+    roots: list[str | None] = [os.environ.get("ELEVENVOICE_ESPEAK_DATA_CACHE")]
     if sys.platform == "win32":
         roots.append(os.environ.get("PROGRAMDATA"))
         roots.append(os.environ.get("PUBLIC"))
@@ -234,7 +234,7 @@ def _cached_copy(source: Path, root: Path) -> Path | None:
     except OSError:
         return None
     digest = hashlib.sha256(stamp.encode("utf-8", "replace")).hexdigest()[:10]
-    parent = root / "voicestudio-espeak"
+    parent = root / "elevenvoice-espeak"
     target = parent / digest
     try:
         parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -368,6 +368,6 @@ def ensure_espeak_data_path(*, _loader=None) -> str | None:
         raise EspeakDataError(
             "espeak-ng cannot open its data directory (the path is "
             "too long, contains characters it cannot read, or the data is "
-            "unreadable) and no usable shorter copy could be made. Set OMNIVOICE_ESPEAK_DATA_CACHE to a short, "
+            "unreadable) and no usable shorter copy could be made. Set ELEVENVOICE_ESPEAK_DATA_CACHE to a short, "
             "writable ASCII folder (for example C:\\espeak) and retry."
         )

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { INTEGRATION_CATALOG, integrationSlug } from '@shared/config/integration-catalog';
 import { integrationSetup } from './setup-registry';
 import { INTEGRATION_CATEGORIES, integrationCategoryKey } from './integration-categories';
+import { AgentAccessPanel } from './agent-access-panel';
 import './integrations-page.css';
 
 export function IntegrationsPage() {
@@ -55,6 +56,7 @@ export function IntegrationsPage() {
       </WorkspaceHeader>
       <main className="integrations-content">
         <div className="integrations-container">
+          <AgentAccessPanel />
           <div className="integrations-toolbar">
             <label className="integrations-search">
               <SearchIcon aria-hidden="true" />

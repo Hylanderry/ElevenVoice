@@ -26,7 +26,7 @@ from typing import Optional
 
 from core.db import db_conn
 
-logger = logging.getLogger("omnivoice.jobs")
+logger = logging.getLogger("elevenvoice.jobs")
 
 # Per-job event cap. Above this, the oldest row is dropped on every insert.
 _EVENT_CAP_PER_JOB = 500

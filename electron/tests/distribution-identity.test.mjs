@@ -16,13 +16,13 @@ for (const distribution of ['direct', 'microsoft-store', 'snap-store', 'mac-app-
       ],
       {
         cwd: root,
-        env: { ...process.env, VOICESTUDIO_DISTRIBUTION: distribution },
+        env: { ...process.env, ELEVENVOICE_DISTRIBUTION: distribution },
         encoding: 'utf8',
       },
     ).trim();
     assert.equal(
       applicationId,
-      distribution === 'mac-app-store' ? 'sh.voicestudio.pro' : 'com.elevenvoice.desktop',
+      distribution === 'mac-app-store' ? 'sh.elevenvoice.pro' : 'com.elevenvoice.desktop',
     );
   });
 }
@@ -44,8 +44,8 @@ for (const [arch, target] of [
           cwd: root,
           env: {
             ...process.env,
-            VOICESTUDIO_DISTRIBUTION: 'mac-app-store',
-            VOICESTUDIO_RUST_TARGET: target,
+            ELEVENVOICE_DISTRIBUTION: 'mac-app-store',
+            ELEVENVOICE_RUST_TARGET: target,
           },
           encoding: 'utf8',
         },

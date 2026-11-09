@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-const ui = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902';
-const backend = process.env.VOICESTUDIO_BACKEND_URL || 'http://127.0.0.1:3900';
+const ui = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902';
+const backend = process.env.ELEVENVOICE_BACKEND_URL || 'http://127.0.0.1:3900';
 
 async function json(path) {
   const response = await fetch(backend + path, { signal: AbortSignal.timeout(15_000) });
@@ -74,8 +74,8 @@ const browser = await chromium.launch({
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
-    localStorage.setItem('voicestudio.language', 'en');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.language', 'en');
   });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));

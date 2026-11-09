@@ -19,7 +19,7 @@ import soundfile as sf
 
 import pytest
 
-# conftest.py puts `backend/` on sys.path and points OMNIVOICE_DATA_DIR at a
+# conftest.py puts `backend/` on sys.path and points ELEVENVOICE_DATA_DIR at a
 # throwaway tmpdir before the router imports OUTPUTS_DIR / VOICES_DIR from
 # the REAL core.config (the old sys.modules stub leaked at collection time
 # and broke later importers in mixed runs — see conftest.py).

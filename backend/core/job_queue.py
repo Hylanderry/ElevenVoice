@@ -21,7 +21,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Dict, List, Optional
 
-logger = logging.getLogger("omnivoice.jobs")
+logger = logging.getLogger("elevenvoice.jobs")
 
 
 class JobState(str, enum.Enum):

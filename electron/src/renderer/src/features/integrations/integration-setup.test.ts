@@ -37,17 +37,17 @@ it('exports client-specific HTTP configuration for the actual backend and port',
   const claude = mcpSetup('claude-code', 'http://127.0.0.1:3912');
   const cursor = mcpSetup('cursor', 'https://voice.example/backend/');
   expect(claude?.file).toBe('.mcp.json');
-  expect(JSON.parse(claude!.text).mcpServers.voicestudio).toEqual({
+  expect(JSON.parse(claude!.text).mcpServers.elevenvoice).toEqual({
     type: 'http',
     url: 'http://127.0.0.1:3912/mcp/',
-    headers: { 'X-OmniVoice-Client-Id': 'claude-code' },
+    headers: { 'X-ElevenVoice-Client-Id': 'claude-code' },
   });
   expect(cursor?.file).toBe('.cursor/mcp.json');
-  expect(JSON.parse(cursor!.text).mcpServers.voicestudio).toEqual({
+  expect(JSON.parse(cursor!.text).mcpServers.elevenvoice).toEqual({
     url: 'https://voice.example/backend/mcp/',
     headers: {
-      'X-OmniVoice-Client-Id': 'cursor',
-      Authorization: 'Bearer ${env:OMNIVOICE_API_KEY}',
+      'X-ElevenVoice-Client-Id': 'cursor',
+      Authorization: 'Bearer ${env:ELEVENVOICE_API_KEY}',
     },
   });
 });
@@ -80,7 +80,7 @@ it('exports a manual n8n workflow to the current backend without credentials', (
   expect(request.parameters.method).toBe('POST');
   expect(JSON.parse(request.parameters.jsonBody)).toEqual({
     model: 'tts-1',
-    input: 'VoiceStudio',
+    input: 'ElevenVoice',
     voice: 'default',
     response_format: 'wav',
   });
@@ -116,9 +116,9 @@ it('exports Codex CLI as a config.toml Streamable HTTP server table', () => {
   expect(codex?.format).toBe('toml');
   expect(codex?.text).toBe(
     [
-      '[mcp_servers.voicestudio]',
+      '[mcp_servers.elevenvoice]',
       'url = "http://127.0.0.1:3912/mcp/"',
-      'http_headers = { "X-OmniVoice-Client-Id" = "codex-cli" }',
+      'http_headers = { "X-ElevenVoice-Client-Id" = "codex-cli" }',
       '',
     ].join('\n'),
   );
@@ -130,7 +130,7 @@ function lookup(key: string) {
     .split('.')
     .reduce<unknown>((node, part) => (node as Record<string, unknown>)?.[part], en);
 }
-it('backs every "Works with VoiceStudio" entry with a real catalog route, blocks and strings', () => {
+it('backs every "Works with ElevenVoice" entry with a real catalog route, blocks and strings', () => {
   const base = 'http://127.0.0.1:3912';
   for (const [slug, setup] of Object.entries(INTEGRATION_SETUPS)) {
     expect(getIntegrationBySlug(slug), slug).toBeDefined();
@@ -167,51 +167,51 @@ it('gives the API and container cards runnable snippets for the right endpoints 
     .blocks('')!
     .map((block) => block.text)
     .join('\n');
-  expect(docker).toContain('palashdeb/omnivoice-studio:stable');
+  expect(docker).toContain('palashdeb/elevenvoice:stable');
   const ghcr = INTEGRATION_SETUPS['github-container-registry'].blocks('')!;
   expect(ghcr.map((block) => block.text).join('\n')).toContain(
-    'ghcr.io/debpalash/voicestudio:stable',
+    'ghcr.io/hylanderry/elevenvoice:stable',
   );
   const mcp = INTEGRATION_SETUPS['model-context-protocol'].blocks('http://127.0.0.1:3912')!;
   expect(mcp[0].text).toContain('URL: http://127.0.0.1:3912/mcp/\n');
-  const local = JSON.parse(mcp[1].text).mcpServers.voicestudio;
+  const local = JSON.parse(mcp[1].text).mcpServers.elevenvoice;
   expect(local.args).toEqual(['-m', 'backend.mcp_shim']);
   expect(local.env).toEqual({
-    OMNIVOICE_URL: 'http://127.0.0.1:3912',
-    OMNIVOICE_CLIENT_ID: '<your-client-id>',
+    ELEVENVOICE_URL: 'http://127.0.0.1:3912',
+    ELEVENVOICE_CLIENT_ID: '<your-client-id>',
   });
   expect(text).not.toContain('Authorization');
 });
 it('keeps remote scheme, path prefix and credential placeholders without exporting secrets', () => {
-  const remote = 'https://gpu.example/voicestudio/';
+  const remote = 'https://gpu.example/elevenvoice/';
   const [http, stdio] = INTEGRATION_SETUPS['model-context-protocol'].blocks(remote)!;
-  expect(http.text).toContain('Header: Authorization: Bearer $OMNIVOICE_API_KEY');
+  expect(http.text).toContain('Header: Authorization: Bearer $ELEVENVOICE_API_KEY');
   expect(INTEGRATION_SETUPS['elevenvoice-api'].blocks(remote)![0].hintKey).toBe(
     'integrationCatalog.apiBearerHint',
   );
-  expect(JSON.parse(stdio.text).mcpServers.voicestudio.env).toEqual({
-    OMNIVOICE_URL: 'https://gpu.example/voicestudio',
-    OMNIVOICE_CLIENT_ID: '<your-client-id>',
-    OMNIVOICE_API_KEY: '<backend API key>',
+  expect(JSON.parse(stdio.text).mcpServers.elevenvoice.env).toEqual({
+    ELEVENVOICE_URL: 'https://gpu.example/elevenvoice',
+    ELEVENVOICE_CLIENT_ID: '<your-client-id>',
+    ELEVENVOICE_API_KEY: '<backend API key>',
   });
   const api = INTEGRATION_SETUPS['elevenvoice-api'].blocks(remote)!;
   for (const id of ['speech', 'transcription'])
     expect(api.find((block) => block.id === id)!.text).toContain(
-      '-H "Authorization: Bearer $OMNIVOICE_API_KEY"',
+      '-H "Authorization: Bearer $ELEVENVOICE_API_KEY"',
     );
   expect(api.find((block) => block.id === 'python')!.text).toContain(
-    'api_key=os.environ.get("OMNIVOICE_API_KEY", "not-needed")',
+    'api_key=os.environ.get("ELEVENVOICE_API_KEY", "not-needed")',
   );
   // Each MCP client references the key through its own env interpolation.
   const header = (slug: string) =>
-    JSON.parse(mcpSetup(slug, remote)!.text).mcpServers.voicestudio.headers;
+    JSON.parse(mcpSetup(slug, remote)!.text).mcpServers.elevenvoice.headers;
   expect(header('claude-code')).toEqual({
-    'X-OmniVoice-Client-Id': 'claude-code',
-    Authorization: 'Bearer ${OMNIVOICE_API_KEY}',
+    'X-ElevenVoice-Client-Id': 'claude-code',
+    Authorization: 'Bearer ${ELEVENVOICE_API_KEY}',
   });
-  expect(header('cursor').Authorization).toBe('Bearer ${env:OMNIVOICE_API_KEY}');
+  expect(header('cursor').Authorization).toBe('Bearer ${env:ELEVENVOICE_API_KEY}');
   expect(mcpSetup('codex-cli', remote)!.text).toContain(
-    'bearer_token_env_var = "OMNIVOICE_API_KEY"',
+    'bearer_token_env_var = "ELEVENVOICE_API_KEY"',
   );
 });
 it('never sends an API key to a remote plain-http backend', () => {
@@ -219,7 +219,7 @@ it('never sends an API key to a remote plain-http backend', () => {
   for (const slug of ['claude-code', 'cursor', 'codex-cli'])
     expect(mcpSetup(slug, insecure)!.text).not.toMatch(/Authorization|bearer_token/);
   const stdio = INTEGRATION_SETUPS['model-context-protocol'].blocks(insecure)![1];
-  expect(JSON.parse(stdio.text).mcpServers.voicestudio.env.OMNIVOICE_API_KEY).toBeUndefined();
+  expect(JSON.parse(stdio.text).mcpServers.elevenvoice.env.ELEVENVOICE_API_KEY).toBeUndefined();
   const api = INTEGRATION_SETUPS['elevenvoice-api']
     .blocks(insecure)!
     .map((block) => block.text)
@@ -239,10 +239,10 @@ it('never sends an API key to a remote plain-http backend', () => {
 import { openaiAgentsSetup } from './openai-agents-setup';
 it('points the OpenAI Agents voice pipeline at the current backend without a stored key', () => {
   const setup = openaiAgentsSetup('openai-agents', 'https://voice.example/backend/');
-  expect(setup?.file).toBe('voicestudio_agents.py');
+  expect(setup?.file).toBe('elevenvoice_agents.py');
   expect(setup!.text).toContain('base_url="https://voice.example/backend/v1"');
   expect(setup!.text).toContain(
-    'api_key=os.environ.get("OMNIVOICE_API_KEY", "not-needed-locally")',
+    'api_key=os.environ.get("ELEVENVOICE_API_KEY", "not-needed-locally")',
   );
   expect(setup!.text).toContain('tts_model="gpt-4o-mini-tts"');
   expect(setup!.text).toContain('stt_model="gpt-4o-transcribe"');
@@ -276,8 +276,8 @@ it('gives Windows a PowerShell docker run with a CSPRNG key and backtick continu
     expect(ps.language).toBe('powershell');
     expect(ps.text).not.toMatch(/^export |\\$/m);
     expect(ps.text).toContain('RandomNumberGenerator');
-    expect(ps.text).toContain('-e OMNIVOICE_API_KEY="$env:OMNIVOICE_API_KEY" `');
-    expect(ps.text.trimEnd()).toMatch(/(?:voicestudio|omnivoice-studio):stable$/);
+    expect(ps.text).toContain('-e ELEVENVOICE_API_KEY="$env:ELEVENVOICE_API_KEY" `');
+    expect(ps.text.trimEnd()).toMatch(/(?:elevenvoice|elevenvoice):stable$/);
   }
 });
 it('mounts the host model cache at the image HF_HOME and adds no dead bind knob', () => {
@@ -286,11 +286,11 @@ it('mounts the host model cache at the image HF_HOME and adds no dead bind knob'
       .blocks('')!
       .map((block) => block.text)
       .join('\n');
-    // deploy/Dockerfile: HF_HOME=/app/omnivoice_data/huggingface.
-    expect(text).toContain('.cache/huggingface:/app/omnivoice_data/huggingface');
+    // deploy/Dockerfile: HF_HOME=/app/elevenvoice_data/huggingface.
+    expect(text).toContain('.cache/huggingface:/app/elevenvoice_data/huggingface');
     expect(text).not.toContain('/root/.cache/huggingface');
     // The image ENTRYPOINT binds 0.0.0.0 itself; the env var does nothing.
-    expect(text).not.toContain('OMNIVOICE_BIND_HOST');
+    expect(text).not.toContain('ELEVENVOICE_BIND_HOST');
     expect(text).toMatch(/:stable\b/);
   }
 });
@@ -298,7 +298,7 @@ it('reads the Agents SDK key only for a remote https backend', () => {
   for (const url of ['http://192.168.1.5:3900', 'http://127.0.0.1:3900']) {
     const text = openaiAgentsSetup('openai-agents', url)!.text;
     expect(text).toContain('api_key="not-needed-locally"');
-    expect(text).not.toContain('OMNIVOICE_API_KEY');
+    expect(text).not.toContain('ELEVENVOICE_API_KEY');
   }
   expect(integrationSetup('openai-agents')!.blocks('http://192.168.1.5:3900')![0].hintKey).toBe(
     'integrationCatalog.apiInsecureHint',
@@ -311,4 +311,13 @@ it('shows an official bundled logo, never the generic placeholder, on every visi
     expect(entry, slug).toBeTruthy();
     expect(entry!.logoUrl, slug).not.toBe(genericLogo);
   }
+});
+
+it('Hermes Agent gets a YAML mcp_servers entry for the local engine', () => {
+  const hermes = mcpSetup('hermes-agent', 'http://127.0.0.1:3912');
+  expect(hermes?.file).toBe('~/.hermes/config.yaml');
+  expect(hermes?.text).toContain('mcp_servers:');
+  expect(hermes?.text).toContain('url: "http://127.0.0.1:3912/mcp/"');
+  expect(hermes?.text).toContain('"X-ElevenVoice-Client-Id": "hermes-agent"');
+  expect(hermes?.text).not.toContain('Authorization');
 });

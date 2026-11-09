@@ -1,4 +1,4 @@
-"""OMNIVOICE_TRUST_HOST_LOOPBACK: the Docker host's own browser may skip the
+"""ELEVENVOICE_TRUST_HOST_LOOPBACK: the Docker host's own browser may skip the
 share PIN (#3003), and nothing else may.
 
 Inside a container the host's 127.0.0.1 browser arrives from the default
@@ -46,16 +46,16 @@ def routes(tmp_path, monkeypatch):
     globs = _auth_globals()
     monkeypatch.setitem(globs, "_PROC_ROUTE_V4", str(v4))
     monkeypatch.setitem(globs, "_PROC_ROUTE_V6", str(v6))
-    monkeypatch.delenv("OMNIVOICE_TRUSTED_NETWORKS", raising=False)
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_TRUST_HOST_LOOPBACK", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TRUSTED_NETWORKS", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_TRUST_HOST_LOOPBACK", raising=False)
     return v4
 
 
 @pytest.fixture
 def trusted(routes, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_TRUST_HOST_LOOPBACK", "1")
+    monkeypatch.setenv("ELEVENVOICE_TRUST_HOST_LOOPBACK", "1")
     return routes
 
 
@@ -86,7 +86,7 @@ def test_unset_host_gateway_still_needs_pin(routes):
 
 @pytest.mark.parametrize("value", ["", "0", "false", "no"])
 def test_falsy_values_keep_the_pin(routes, monkeypatch, value):
-    monkeypatch.setenv("OMNIVOICE_TRUST_HOST_LOOPBACK", value)
+    monkeypatch.setenv("ELEVENVOICE_TRUST_HOST_LOOPBACK", value)
     assert _pin_required(_client(GATEWAY).get("/v1/audio/voices"))
 
 
@@ -114,7 +114,7 @@ def test_set_other_bridge_container_still_needs_pin(trusted):
 
 
 def test_set_lan_client_with_valid_pin_still_passes(trusted):
-    response = _client(LAN).get("/v1/audio/voices", headers={"X-OmniVoice-Pin": PIN})
+    response = _client(LAN).get("/v1/audio/voices", headers={"X-ElevenVoice-Pin": PIN})
     assert response.status_code == 200
 
 
@@ -148,7 +148,7 @@ def test_uvicorn_proxy_headers_do_not_trust_the_gateway_by_default(trusted):
 
 
 def test_requires_server_mode(trusted, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_SERVER_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SERVER_MODE", raising=False)
     assert _pin_required(_client(GATEWAY).get("/v1/audio/voices"))
 
 
@@ -160,7 +160,7 @@ def test_missing_route_table_fails_closed(trusted, tmp_path, monkeypatch):
 
 
 def test_does_not_replace_the_api_key(trusted, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "s3cret-key")
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "s3cret-key")
     response = _client(GATEWAY).get("/v1/audio/voices")
     assert response.status_code == 401
     assert response.json() == {"detail": "API key required"}

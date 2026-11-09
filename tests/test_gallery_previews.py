@@ -226,7 +226,7 @@ def sandbox(tmp_path, monkeypatch, signer, _live_gallery):
     """Point the gallery at a throwaway data dir, host and trust root."""
     monkeypatch.setattr(gallery, "DATA_DIR", str(tmp_path))
     monkeypatch.setattr(gallery, "UPDATER_PUBKEY", signer.pubkey)
-    monkeypatch.setenv("OMNIVOICE_GALLERY_URL", StubGallery.BASE)
+    monkeypatch.setenv("ELEVENVOICE_GALLERY_URL", StubGallery.BASE)
     # Local renders are the competing cache tier; isolate them too so route
     # tests cannot pass/fail based on a developer's real outputs directory.
     from api.routers import archetypes as router_mod
@@ -524,7 +524,7 @@ def test_preview_serves_the_gallery_file_without_touching_the_engine(client, san
     resp = client.get(f"/archetypes/{item['id']}/preview")
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "audio/mpeg"
-    assert resp.headers["X-OmniVoice-Preview-Source"] == "gallery"
+    assert resp.headers["X-ElevenVoice-Preview-Source"] == "gallery"
     assert resp.content == _mp3(b"G")
 
 
@@ -545,7 +545,7 @@ def test_offline_gallery_miss_still_renders_locally(client, sandbox, stub, monke
     item, _ = _first_archetype()
     resp = client.get(f"/archetypes/{item['id']}/preview")
     assert resp.status_code == 200
-    assert resp.headers["X-OmniVoice-Preview-Source"] == "local"
+    assert resp.headers["X-ElevenVoice-Preview-Source"] == "local"
     assert resp.content == local_wav
     assert not [r for r in caplog.records if r.levelno >= 30]
 
@@ -564,7 +564,7 @@ def test_local_retry_bypasses_present_gallery_file(client, sandbox, monkeypatch)
     monkeypatch.setattr("api.routers.archetypes._render_archetype_wav", _render)
     resp = client.get(f"/archetypes/{item['id']}/preview?local=true")
     assert resp.status_code == 200
-    assert resp.headers["X-OmniVoice-Preview-Source"] == "local"
+    assert resp.headers["X-ElevenVoice-Preview-Source"] == "local"
     assert resp.content == local_wav
 
 

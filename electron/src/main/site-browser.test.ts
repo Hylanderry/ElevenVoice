@@ -21,7 +21,7 @@ vi.mock('electron', async () => {
   let id = 0;
   class Contents extends EventEmitter {
     id = ++id;
-    mainFrame = { url: 'app://voicestudio/index.html' };
+    mainFrame = { url: 'app://elevenvoice/index.html' };
     destroyed = false;
     navigationHistory = {
       canGoBack: vi.fn(() => true),
@@ -111,7 +111,7 @@ describe('website URL policy', () => {
     'javascript:alert(1)',
     'data:text/html,test',
     'file:///etc/passwd',
-    'app://voicestudio',
+    'app://elevenvoice',
     'https://user:pass@site.test',
     '',
     'https://',
@@ -184,7 +184,7 @@ it('denies every browser IPC to remote content and subframes', () => {
     expect(() =>
       mocks.handlers.get(`site-browser:${name}`)!({
         sender: child.webContents,
-        senderFrame: { url: 'app://voicestudio/index.html' },
+        senderFrame: { url: 'app://elevenvoice/index.html' },
       }),
     ).toThrow('Untrusted browser request');
   }

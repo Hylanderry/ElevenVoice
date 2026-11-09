@@ -6,7 +6,7 @@ surfaces as an honest "the backend crashed (exit code X)" notice. But that
 forensics lives in the SHELL — a ``bun run dev`` browser session, a Docker
 deployment, or a LAN-share client has no shell, so when the backend process
 dies there (OOM kill, shutdown race, native abort) the only user-visible
-signal is "Can't reach the local VoiceStudio backend" with ZERO diagnostics —
+signal is "Can't reach the local ElevenVoice backend" with ZERO diagnostics —
 exactly the shape of issue #1164.
 
 This module is the backend-side equivalent, watcher-free by design (a dead
@@ -21,7 +21,7 @@ process can't report its own death):
     means the previous run died without running shutdown — an unclean death.
     It is converted into a crash record in ``last_run_crash.json`` carrying
     the window the death happened in, the last known activity, and a scrubbed
-    tail of ``omnivoice.log`` — the evidence a #1164-class report needs.
+    tail of ``elevenvoice.log`` — the evidence a #1164-class report needs.
 
 The record store mirrors the shell's marker store semantics on purpose
 (``crash.rs``): newest-first, capped at :data:`MAX_RECORDS`, acknowledgment
@@ -55,7 +55,7 @@ from typing import Any, Optional
 from core.config import DATA_DIR, LOG_PATH
 from core.version import APP_VERSION
 
-logger = logging.getLogger("omnivoice.run_sentinel")
+logger = logging.getLogger("elevenvoice.run_sentinel")
 
 SENTINEL_PATH = os.path.join(DATA_DIR, "run_sentinel.json")
 CRASH_RECORD_PATH = os.path.join(DATA_DIR, "last_run_crash.json")
@@ -273,7 +273,7 @@ def clear_sentinel() -> bool:
 
 
 def _scrubbed_log_tail(lines: int = LOG_TAIL_LINES) -> list[str]:
-    """Last `lines` of omnivoice.log, scrubbed — the record can end up in a
+    """Last `lines` of elevenvoice.log, scrubbed — the record can end up in a
     prefilled GitHub issue, so it must never carry secrets or home paths."""
     try:
         from core.scrub import scrub_text
@@ -372,7 +372,7 @@ def detect_unclean_shutdown(now: float | None = None) -> Optional[dict]:
             if pid and pid != os.getpid() and _previous_run_alive(
                 pid, sentinel.get("started_at")
             ):
-                # Another VoiceStudio backend is live against this DATA_DIR
+                # Another ElevenVoice backend is live against this DATA_DIR
                 # (second --reload worker, second container on a shared
                 # volume). Its sentinel is not evidence of anything — leave
                 # it alone and don't write ours over it.

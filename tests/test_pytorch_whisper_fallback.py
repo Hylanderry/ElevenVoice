@@ -2,7 +2,7 @@
 
 On machines where WhisperX / faster-whisper can't load cuDNN 8
 (`cudnn_ops_infer64_8.dll` missing), the PyTorch-Whisper backend should build
-its own transformers pipeline on demand — without OMNIVOICE_PRELOAD_TTS_ASR=1
+its own transformers pipeline on demand — without ELEVENVOICE_PRELOAD_TTS_ASR=1
 and without loading the full TTS model.
 """
 import sys
@@ -80,7 +80,7 @@ def test_ensure_loaded_eagerly_builds_pipeline(monkeypatch):
 
 
 def test_low_free_vram_routes_pytorch_whisper_to_cpu(monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_ASR_VRAM_PREFLIGHT", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ASR_VRAM_PREFLIGHT", raising=False)
     import torch
 
     monkeypatch.setattr("services.model_manager.get_best_device", lambda: "cuda:0")
@@ -109,7 +109,7 @@ def test_pytorch_asr_model_overridable_via_env(monkeypatch):
     fake_tf.pipeline = fake_pipeline
     monkeypatch.setitem(sys.modules, "transformers", fake_tf)
     monkeypatch.setattr("services.model_manager.get_best_device", lambda: "cpu")
-    monkeypatch.setenv("OMNIVOICE_PYTORCH_ASR_MODEL", "openai/whisper-small")
+    monkeypatch.setenv("ELEVENVOICE_PYTORCH_ASR_MODEL", "openai/whisper-small")
 
     ab.PyTorchWhisperBackend(asr_pipe=None)._ensure_pipe()
     assert captured["kw"]["model"] == "openai/whisper-small"

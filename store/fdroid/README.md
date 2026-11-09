@@ -1,7 +1,7 @@
-# VoiceStudio Android distribution
+# ElevenVoice Android distribution
 
 The publisher-operated repository for F-Droid clients is
-`https://debpalash.github.io/VoiceStudio/fdroid/repo`. It distributes the unchanged,
+`https://debpalash.github.io/ElevenVoice/fdroid/repo`. It distributes the unchanged,
 release-signed APK from the latest stable GitHub Release. This is separate from
 inclusion in F-Droid.org's main catalogue.
 
@@ -20,7 +20,7 @@ in-place update between differently signed installations.
 ## Obtainium
 
 Add `https://github.com/debpalash/VoiceStudio` in Obtainium, or import
-[the generated import file](https://debpalash.github.io/VoiceStudio/obtainium.json).
+[the generated import file](https://debpalash.github.io/ElevenVoice/obtainium.json).
 The repository's landing page also has
 an import link. Obtainium follows published APK releases, not CI artifacts or
 unreleased commits on `main`. Prereleases are an explicit client choice.
@@ -36,7 +36,7 @@ repository workflow after publishing a stable release: a `GITHUB_TOKEN` release
 cannot trigger a second workflow through its `release` event. They rebuild the indexes with the persistent key
 in the `github-pages` environment and publish only the generated public site.
 
-The environment needs `FDROID_REPO_KEYSTORE_B64` (PKCS12, alias `voicestudio`)
+The environment needs `FDROID_REPO_KEYSTORE_B64` (PKCS12, alias `elevenvoice`)
 and `FDROID_REPO_PASSWORD`. Keep an offline backup of that key and password.
 Losing or rotating the index key requires users to trust a new repository.
 Private keys and credentials are never checked in or copied into Pages artifacts.
@@ -49,9 +49,9 @@ index signatures/certificates before publishing. A signing change fails closed.
 Local preparation uses an isolated environment:
 
 ```sh
-uv venv /tmp/voicestudio-fdroid-tools --python 3.11
-uv pip sync --require-hashes --python /tmp/voicestudio-fdroid-tools/bin/python store/fdroid/requirements.txt
-/tmp/voicestudio-fdroid-tools/bin/python tests/test_android_repository.py
+uv venv /tmp/elevenvoice-fdroid-tools --python 3.11
+uv pip sync --require-hashes --python /tmp/elevenvoice-fdroid-tools/bin/python store/fdroid/requirements.txt
+/tmp/elevenvoice-fdroid-tools/bin/python tests/test_android_repository.py
 ```
 
 Use the workflow for production signing. Do not publish a pull request's preview

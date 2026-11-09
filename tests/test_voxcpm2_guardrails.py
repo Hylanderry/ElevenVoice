@@ -19,7 +19,7 @@ All tests use a fake `voxcpm` module / fake model (test_engines.py pattern) —
 no real model, so they run on every CI box.
 """
 import os
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import logging
 import sys
@@ -101,7 +101,7 @@ def test_version_floor_load_time_warning(monkeypatch, caplog):
     monkeypatch.setitem(sys.modules, "voxcpm", fake)
     monkeypatch.setattr(tts_backend, "_voxcpm_installed_version", lambda: "2.0.2")
     backend = tts_backend.VoxCPM2Backend()
-    with caplog.at_level(logging.WARNING, logger="omnivoice.tts"):
+    with caplog.at_level(logging.WARNING, logger="elevenvoice.tts"):
         backend._ensure_loaded()
     assert any("voxcpm>=2.0.3" in r.getMessage() for r in caplog.records)
 

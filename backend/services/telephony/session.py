@@ -22,9 +22,9 @@ from collections import OrderedDict, deque
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Protocol
 
-logger = logging.getLogger("omnivoice.telephony")
+logger = logging.getLogger("elevenvoice.telephony")
 
-END_MARK = "voicestudio-end"
+END_MARK = "elevenvoice-end"
 START_TIMEOUT_S = 10.0
 TOKEN_TTL_S = 60.0
 

@@ -78,15 +78,15 @@ def rtx4070(inventory):
 
 @pytest.fixture(autouse=True)
 def _no_forced_cuda(monkeypatch):
-    """The classifier reads OMNIVOICE_FORCE_CUDA from the environment, so a
+    """The classifier reads ELEVENVOICE_FORCE_CUDA from the environment, so a
     shell or CI job that exports it would change every verdict here."""
-    monkeypatch.delenv("OMNIVOICE_FORCE_CUDA", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_FORCE_CUDA", raising=False)
 
 
 @pytest.fixture
 def forced_cuda(_no_forced_cuda, monkeypatch):
-    """OMNIVOICE_FORCE_CUDA=1 asks for CUDA anyway; the loader honors it."""
-    monkeypatch.setenv("OMNIVOICE_FORCE_CUDA", "1")
+    """ELEVENVOICE_FORCE_CUDA=1 asks for CUDA anyway; the loader honors it."""
+    monkeypatch.setenv("ELEVENVOICE_FORCE_CUDA", "1")
 
 
 def _mismatch_note(device_caps) -> str:
@@ -159,7 +159,7 @@ def test_the_verdict_does_not_depend_on_what_the_probe_advertised(
 def test_a_forced_cuda_host_is_a_caveat_not_an_unusable_host(
     device_caps, gpu_report, m5000m, forced_cuda
 ):
-    """OMNIVOICE_FORCE_CUDA=1 runs the engine on the GPU anyway, so the host
+    """ELEVENVOICE_FORCE_CUDA=1 runs the engine on the GPU anyway, so the host
     is usable and the risk is a caveat - the state that used to cover it."""
     caps = _advertised_caps(device_caps, _mismatch_note(device_caps))
     code, params = gpu_report.classify_host(caps, (m5000m,), CUDA_BUILD)
@@ -315,8 +315,8 @@ def test_only_sidecars_with_a_separate_interpreter_get_their_own_build(
 @pytest.mark.parametrize(("module", "cls_name", "env_var"), [
     ("engines.omnivoice_subprocess", "OmniVoiceSubprocessBackend", None),
     ("services.subprocess_asr", "IsolatedFasterWhisperBackend", None),
-    ("engines.pockettts", "PocketTTSBackend", "OMNIVOICE_POCKETTTS_DIR"),
-    ("engines.supertonic3.backend", "Supertonic3Backend", "OMNIVOICE_SUPERTONIC3_DIR"),
+    ("engines.pockettts", "PocketTTSBackend", "ELEVENVOICE_POCKETTTS_DIR"),
+    ("engines.supertonic3.backend", "Supertonic3Backend", "ELEVENVOICE_SUPERTONIC3_DIR"),
 ])
 def test_shares_parent_torch_agrees_with_venv_python(module, cls_name, env_var, monkeypatch):
     """The cheap answer the GPU report reads must match the interpreter the

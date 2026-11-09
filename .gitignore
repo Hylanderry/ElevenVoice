@@ -74,7 +74,7 @@ research/
 #  Runtime data & artifacts
 #  (app-local state — safe to regenerate)
 # ─────────────────────────────────────────────────────────────────────────
-omnivoice_data/
+elevenvoice_data/
 /data/
 /local/
 /results/
@@ -88,21 +88,21 @@ omnivoice_data/
 
 # ─────────────────────────────────────────────────────────────────────────
 #  Frozen regression fixture (GATE-01) — explicit allow-list.
-#  The patterns above (omnivoice_data/, *.db, *.wav) would otherwise hide
-#  tests/fixtures/omnivoice_data/ from git. Phase 0 requires this fixture
+#  The patterns above (elevenvoice_data/, *.db, *.wav) would otherwise hide
+#  tests/fixtures/elevenvoice_data/ from git. Phase 0 requires this fixture
 #  to be checked in (no LFS) so every PR's smoke matrix loads it.
 #
 #  We only un-ignore the EXACT files the seed script produces. The backend
 #  creates runtime subdirs (dub_jobs/, outputs/, preview/, etc.) when the
 #  smoke test boots — those stay ignored.
 # ─────────────────────────────────────────────────────────────────────────
-!tests/fixtures/omnivoice_data/
-!tests/fixtures/omnivoice_data/README.md
-!tests/fixtures/omnivoice_data/omnivoice.db
-!tests/fixtures/omnivoice_data/voices/
-!tests/fixtures/omnivoice_data/voices/test-voice/
-!tests/fixtures/omnivoice_data/voices/test-voice/profile.json
-!tests/fixtures/omnivoice_data/voices/test-voice/sample.wav
+!tests/fixtures/elevenvoice_data/
+!tests/fixtures/elevenvoice_data/README.md
+!tests/fixtures/elevenvoice_data/elevenvoice.db
+!tests/fixtures/elevenvoice_data/voices/
+!tests/fixtures/elevenvoice_data/voices/test-voice/
+!tests/fixtures/elevenvoice_data/voices/test-voice/profile.json
+!tests/fixtures/elevenvoice_data/voices/test-voice/sample.wav
 
 # ─────────────────────────────────────────────────────────────────────────
 #  Bundled demo assets (synthetic, rendered by scripts/build_demos.sh).

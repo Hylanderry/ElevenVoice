@@ -17,7 +17,7 @@ export function launchSmokeBrowser({ fallbackChannel } = {}) {
 export async function openMockedPage(browser, { viewport, fixtures = {}, handle } = {}) {
   const page = await browser.newPage(viewport ? { viewport } : {});
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
   });
   const responses = { ...BASE_API_FIXTURES, ...fixtures };
   await page.route('**/api/**', async (route, request) => {

@@ -19,7 +19,7 @@ import { CATEGORY_BY_ID } from './settingsCategories';
 import { useAppStore } from '../../store';
 import { isTauri } from './native';
 import Row from './Row';
-import VoiceStudioMark from '../brand/VoiceStudioMark';
+import ElevenVoiceMark from '../brand/ElevenVoiceMark';
 
 /**
  * Where a failing self-check can be fixed inside the app — diagnose check id
@@ -86,8 +86,8 @@ export default function AboutTab({
         label={t('about.app')}
         value={
           <span className="inline-flex items-center gap-[var(--space-2)]" translate="no">
-            <VoiceStudioMark className="size-5 text-[var(--chrome-accent)]" />
-            VoiceStudio
+            <ElevenVoiceMark className="size-5 text-[var(--chrome-accent)]" />
+            ElevenVoice
           </span>
         }
       />

@@ -61,10 +61,10 @@ it.each(['ready', 'timeout', 'shutdown'])(
   'waits for an identified starting fallback: %s',
   async (outcome) => {
     vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-    vi.stubEnv('OMNIVOICE_PORT', '');
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
-    vi.stubEnv('OMNIVOICE_STARTUP_BUDGET_S', '10');
+    vi.stubEnv('ELEVENVOICE_PORT', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_STARTUP_BUDGET_S', '10');
     mocks.occupied.add(4900);
     let ready = false;
     vi.stubGlobal(
@@ -75,7 +75,7 @@ it.each(['ready', 'timeout', 'shutdown'])(
           JSON.stringify({ status: ready ? 'ok' : 'starting', version: 'test' }),
           {
             status: ready ? 200 : 503,
-            headers: { 'x-omnivoice-backend': 'test' },
+            headers: { 'x-elevenvoice-backend': 'test' },
           },
         );
       }),
@@ -102,9 +102,9 @@ it.each(['ready', 'timeout', 'shutdown'])(
 it.each([false, true])(
   'recovers a denied default and retries it on restart (existing default backend: %s)',
   async (existingDefault) => {
-    vi.stubEnv('OMNIVOICE_PORT', '');
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_PORT', '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     let runningPort = 0;
     const child = Object.assign(new EventEmitter(), {
       stdin: null,
@@ -125,7 +125,7 @@ it.each([false, true])(
         if (!runningPort || !url.startsWith(`http://127.0.0.1:${runningPort}/`))
           throw new Error('unreachable');
         return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-          headers: { 'x-omnivoice-backend': 'test' },
+          headers: { 'x-elevenvoice-backend': 'test' },
         });
       }),
     );
@@ -135,8 +135,8 @@ it.each([false, true])(
       expect(runningPort).toBe(4900);
       await vi.waitFor(() => expect(supervisor.status.stage).toBe('ready'));
       expect(supervisor.status.baseUrl).toBe('http://127.0.0.1:4900');
-      expect(mocks.spawn.mock.calls[0][2].env.OMNIVOICE_PORT).toBe('4900');
-      vi.stubEnv('VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES', '1');
+      expect(mocks.spawn.mock.calls[0][2].env.ELEVENVOICE_PORT).toBe('4900');
+      vi.stubEnv('ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES', '1');
       const second = new BackendSupervisor();
       try {
         await second.start();
@@ -179,9 +179,9 @@ it.each([false, true])(
 );
 
 it.each([200, 404])('skips unrelated occupied fallback listeners (HTTP %s)', async (status) => {
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   mocks.occupied.add(4900);
   let runningPort = 0;
   mocks.spawn.mockImplementation((_command: string, args: string[]) => {
@@ -200,7 +200,7 @@ it.each([200, 404])('skips unrelated occupied fallback listeners (HTTP %s)', asy
         return new Response(JSON.stringify({ status: 'ok', version: 'test' }), { status });
       if (runningPort && url.startsWith(`http://127.0.0.1:${runningPort}/`))
         return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-          headers: { 'x-omnivoice-backend': 'test' },
+          headers: { 'x-elevenvoice-backend': 'test' },
         });
       throw new Error('unreachable');
     }),
@@ -222,17 +222,17 @@ it.each([200, 404])('skips unrelated occupied fallback listeners (HTTP %s)', asy
 
 it('gives a replacement its full handoff grace after a late startup exit', async () => {
   vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-  vi.stubEnv('OMNIVOICE_PORT', '');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
-  vi.stubEnv('OMNIVOICE_STARTUP_BUDGET_S', '10');
+  vi.stubEnv('ELEVENVOICE_PORT', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_STARTUP_BUDGET_S', '10');
   let ready = false;
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => {
       if (!ready) throw new Error('starting');
       return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-        headers: { 'x-omnivoice-backend': 'test' },
+        headers: { 'x-elevenvoice-backend': 'test' },
       });
     }),
   );
@@ -290,15 +290,15 @@ it('bounds fallback attempts when all candidates are denied', async () => {
 it.each(['explicit port', 'custom command', 'external backend', 'healthy backend'])(
   'never changes the port for an %s',
   async (kind) => {
-    vi.stubEnv('OMNIVOICE_PORT', kind === 'explicit port' ? '3900' : '');
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', kind === 'custom command' ? '["custom-python"]' : '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', kind === 'external backend' ? '1' : '');
+    vi.stubEnv('ELEVENVOICE_PORT', kind === 'explicit port' ? '3900' : '');
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', kind === 'custom command' ? '["custom-python"]' : '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', kind === 'external backend' ? '1' : '');
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
         if (kind !== 'healthy backend') throw new Error('unreachable');
         return new Response(JSON.stringify({ status: 'ok', version: 'test' }), {
-          headers: { 'x-omnivoice-backend': 'test' },
+          headers: { 'x-elevenvoice-backend': 'test' },
         });
       }),
     );
@@ -318,15 +318,15 @@ it.each(['explicit port', 'custom command', 'external backend', 'healthy backend
 );
 
 it.each(['', '3900'])(
-  'does not attach to an unmarked health responder on the configured port (OMNIVOICE_PORT=%j)',
+  'does not attach to an unmarked health responder on the configured port (ELEVENVOICE_PORT=%j)',
   async (portEnv) => {
     vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
-    vi.stubEnv('OMNIVOICE_PORT', portEnv);
-    vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-    vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+    vi.stubEnv('ELEVENVOICE_PORT', portEnv);
+    vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+    vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
     mocks.occupied.add(3900);
     // Another local service owns the port and happens to answer the same
-    // liveness shape, without the VoiceStudio marker header.
+    // liveness shape, without the ElevenVoice marker header.
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string) => {
@@ -346,7 +346,7 @@ it.each(['', '3900'])(
       await supervisor.start();
       expect(supervisor.status.stage).not.toBe('ready');
       expect(mocks.spawn).toHaveBeenCalledOnce();
-      expect(mocks.spawn.mock.calls[0][2].env.OMNIVOICE_PORT).toBe('3900');
+      expect(mocks.spawn.mock.calls[0][2].env.ELEVENVOICE_PORT).toBe('3900');
       // The spawned backend cannot bind and exits; the user gets the
       // actionable port-in-use message rather than a foreign attachment.
       child.emit('exit', 78, null);

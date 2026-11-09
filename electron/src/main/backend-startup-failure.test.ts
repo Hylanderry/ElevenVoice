@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   spawn: vi.fn(),
 }));
 
-vi.mock('electron', () => ({ app: { isPackaged: true, getPath: () => '/private/voicestudio' } }));
+vi.mock('electron', () => ({ app: { isPackaged: true, getPath: () => '/private/elevenvoice' } }));
 vi.mock('node:child_process', () => ({ spawn: mocks.spawn, spawnSync: vi.fn() }));
 vi.mock('node:fs/promises', () => ({ rm: vi.fn() }));
 vi.mock('./runtime-project', () => ({
@@ -42,10 +42,10 @@ interface SupervisorInternals {
 
 const FATAL_STARTUP =
   "FATAL: backend startup failed during 'ml_imports': Could not find module " +
-  "'~\\AppData\\Roaming\\VoiceStudio\\runtime\\project\\.venv\\Lib\\site-packages\\torchaudio\\lib\\libtorchaudio.pyd' " +
+  "'~\\AppData\\Roaming\\ElevenVoice\\runtime\\project\\.venv\\Lib\\site-packages\\torchaudio\\lib\\libtorchaudio.pyd' " +
   '(or one of its dependencies).';
 /** The project this install created: the only kind a crash-time repair may rebuild. */
-const OWN_PROJECT = join('/private/voicestudio', 'runtime', 'project');
+const OWN_PROJECT = join('/private/elevenvoice', 'runtime', 'project');
 const ACCESS_LOG = 'INFO: 127.0.0.1:50081 - "GET /health HTTP/1.1" 503 Service Unavailable';
 
 /** A child that never answers, so the shell reports the crash instead of attaching. */
@@ -96,8 +96,8 @@ beforeEach(() => {
       throw new Error('no backend');
     }),
   );
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
 });
 
 afterEach(() => {

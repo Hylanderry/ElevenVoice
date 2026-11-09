@@ -1,4 +1,4 @@
-export const SETTINGS_ROUTE_STORAGE_KEY = 'voicestudio.settings.last-route';
+export const SETTINGS_ROUTE_STORAGE_KEY = 'elevenvoice.settings.last-route';
 
 const settingsRoutes = new Set([
   '/settings/appearance',

@@ -22,7 +22,7 @@ it.each([false, true])('preserves existing custom/portable storage without rewri
     ? { install_mode: 'portable', portable_dir: base }
     : { data_dir: data, models_dir: models };
   writeFileSync(join(base, 'config.json'), JSON.stringify(config));
-  expect(legacyStorageEnv([base])).toEqual({ OMNIVOICE_DATA_DIR: data, OMNIVOICE_CACHE_DIR: models });
+  expect(legacyStorageEnv([base])).toEqual({ ELEVENVOICE_DATA_DIR: data, ELEVENVOICE_CACHE_DIR: models });
   for (const file of files) expect(readFileSync(join(data, file), 'utf8')).toBe(`existing ${file}`);
   expect(JSON.parse(readFileSync(join(base, 'config.json'), 'utf8'))).toEqual(config);
 });
@@ -36,5 +36,5 @@ it('continues past a root with no custom paths and supports older camelCase keys
   const first = root(), second = root();
   writeFileSync(join(first, 'config.json'), '{}');
   writeFileSync(join(second, 'config.json'), JSON.stringify({ dataDir: second }));
-  expect(legacyStorageEnv([first, second])).toEqual({ OMNIVOICE_DATA_DIR: second });
+  expect(legacyStorageEnv([first, second])).toEqual({ ELEVENVOICE_DATA_DIR: second });
 });

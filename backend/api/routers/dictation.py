@@ -35,7 +35,7 @@ from core import prefs
 from services import sherpa_dictation as sd
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.dictation")
+logger = logging.getLogger("elevenvoice.dictation")
 
 # Pref keys (the binding contract — the frontend writes exactly these).
 PREF_ENABLED = "dictation.enabled"

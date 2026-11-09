@@ -21,7 +21,7 @@ def test_operator_overrides_are_reported(monkeypatch):
 
     monkeypatch.setattr(model_manager, "GPU_QUEUE_TIMEOUT_S", 7200.0)
     monkeypatch.setattr(model_manager, "CPU_JOB_TIMEOUT_S", 4000.0)
-    monkeypatch.setenv("OMNIVOICE_MODEL_LOAD_TIMEOUT", "9000")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_LOAD_TIMEOUT", "9000")
     budget = model_manager.generate_budget_s()
     assert budget["queueWait"] == 7200.0
     assert budget["executionBase"] >= 4000.0

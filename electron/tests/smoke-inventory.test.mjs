@@ -68,7 +68,7 @@ test('renderer smokes do not depend on a live backend', () => {
   const live = listSmokes(dir)
     .filter((smoke) => smoke.kind === 'renderer')
     .filter(({ file }) =>
-      /(127\.0\.0\.1|localhost):3900|VOICESTUDIO_BACKEND_URL/.test(
+      /(127\.0\.0\.1|localhost):3900|ELEVENVOICE_BACKEND_URL/.test(
         readFileSync(join(dir, file), 'utf8'),
       ),
     )

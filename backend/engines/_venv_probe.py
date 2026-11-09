@@ -15,7 +15,7 @@ run, a spinning disk, a network share, or Windows with real-time AV scanning
 every DLL it touches. The per-engine bounds were 10 s (IndexTTS) and 15 s (the
 rest), and a bound that elapsed was treated as a **negative**: the candidate
 was dropped exactly as if importing had raised. So on the machines where the
-import is slowest, a perfectly good ``OMNIVOICE_INDEXTTS_DIR`` install was
+import is slowest, a perfectly good ``ELEVENVOICE_INDEXTTS_DIR`` install was
 silently discarded and the user got "IndexTTS-2 is not installed" or a 500 on
 the first generation after launch — reported with a precise root cause in
 #1414. A negative result is also not memoised, so every retry paid the whole
@@ -56,14 +56,14 @@ ProbeResult = Literal["yes", "no", "unproven"]
 DEFAULT_PROBE_TIMEOUT_S = 60.0
 
 #: Applies to every engine.
-_GLOBAL_ENV = "OMNIVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S"
+_GLOBAL_ENV = "ELEVENVOICE_ENGINE_IMPORT_PROBE_TIMEOUT_S"
 
 
 def probe_timeout_s(engine: str) -> float:
     """Resolve the probe bound: per-engine env → global env → default.
 
     ``engine`` is the short slug used in the env var, e.g. ``"indextts"`` →
-    ``OMNIVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S``. A malformed, non-positive
+    ``ELEVENVOICE_INDEXTTS_IMPORT_PROBE_TIMEOUT_S``. A malformed, non-positive
     or non-finite value is ignored rather than honoured: disabling the bound
     would let one wedged candidate hang engine resolution forever, and
     ``inf`` in particular parses cleanly but makes ``subprocess.run`` raise
@@ -71,7 +71,7 @@ def probe_timeout_s(engine: str) -> float:
     one place a user could reach it (CodeRabbit).
     """
     for name in (
-        f"OMNIVOICE_{engine.upper()}_IMPORT_PROBE_TIMEOUT_S",
+        f"ELEVENVOICE_{engine.upper()}_IMPORT_PROBE_TIMEOUT_S",
         _GLOBAL_ENV,
     ):
         raw = (os.environ.get(name) or "").strip()
@@ -132,7 +132,7 @@ def venv_can_import(
         logger.warning(
             "%s import probe for %s did not finish within %.0fs — keeping it "
             "as a fallback rather than treating slow as broken (#1414). Raise "
-            "OMNIVOICE_%s_IMPORT_PROBE_TIMEOUT_S if this host is simply slow.",
+            "ELEVENVOICE_%s_IMPORT_PROBE_TIMEOUT_S if this host is simply slow.",
             engine, log_safe(python_path), timeout, engine.upper(),
         )
         return "unproven"

@@ -18,7 +18,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query, Depends
 from core.browser_guard import reject_cross_site_get
 
-logger = logging.getLogger("omnivoice.setup.models")
+logger = logging.getLogger("elevenvoice.setup.models")
 router = APIRouter()
 
 # ── Model Catalog (loaded from YAML; services/model_catalogue.py) ─────────
@@ -600,28 +600,28 @@ def recommendations():
 
     if is_mac_arm:
         rationale = (
-            "Apple Silicon preset: VoiceStudio (required) covers multilingual TTS + "
+            "Apple Silicon preset: ElevenVoice (required) covers multilingual TTS + "
             "cloning on its own. The optional picks are Metal-native: MLX Whisper "
             "large-v3 for dubbing/transcription, Whisper Turbo (MLX) + Parakeet TDT "
             "v3 for live dictation, Kokoro + KittenTTS for instant English TTS."
         )
     elif has_cuda:
         rationale = (
-            "NVIDIA preset: VoiceStudio (required) runs standalone. Optional ASR picks "
+            "NVIDIA preset: ElevenVoice (required) runs standalone. Optional ASR picks "
             "are CUDA-accelerated via CTranslate2 — Whisper large-v3 for dubbing "
             "(best word timestamps) and Turbo for 5× faster transcription. Whisper "
             "Tiny provides broad-language local dictation. KittenTTS adds CPU-realtime English."
         )
     elif has_rocm:
         rationale = (
-            "AMD/ROCm preset: VoiceStudio (required) runs standalone. CTranslate2 has "
+            "AMD/ROCm preset: ElevenVoice (required) runs standalone. CTranslate2 has "
             "no ROCm backend, so the PyTorch Whisper large-v3 build is the "
             "GPU-accelerated ASR route; faster-whisper works on CPU, and Whisper Tiny "
             "provides broad-language local dictation."
         )
     else:
         rationale = (
-            "CPU preset: VoiceStudio (required) runs standalone. Optional picks favour "
+            "CPU preset: ElevenVoice (required) runs standalone. Optional picks favour "
             "speed on CPU — Whisper small (int8) as the light default, large-v3 for "
             "accuracy and Turbo when you can spare the time and RAM, Whisper Tiny "
             "(ONNX) for live dictation, KittenTTS for instant English TTS."

@@ -11,11 +11,11 @@ import { presentReadmeMedia } from "./readme-media/present.mjs";
 import { captureAccess } from "./readme-media/access.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const base = process.env.VOICESTUDIO_CAPTURE_URL || `http://localhost:${DEFAULT_ELECTRON_DEV_PORT}`;
+const base = process.env.ELEVENVOICE_CAPTURE_URL || `http://localhost:${DEFAULT_ELECTRON_DEV_PORT}`;
 const appOrigin = new URL(base).origin;
-const output = resolve(process.env.VOICESTUDIO_CAPTURE_OUTPUT || join(root, "docs/media/electron"));
-const demoReady = process.env.VOICESTUDIO_CAPTURE_DEMO_READY === "1";
-const scratch = await mkdtemp(join(tmpdir(), "voicestudio-presentation-"));
+const output = resolve(process.env.ELEVENVOICE_CAPTURE_OUTPUT || join(root, "docs/media/electron"));
+const demoReady = process.env.ELEVENVOICE_CAPTURE_DEMO_READY === "1";
+const scratch = await mkdtemp(join(tmpdir(), "elevenvoice-presentation-"));
 const appViewport = { width: 1360, height: 850 };
 const demoModel = "k2-fsa/OmniVoice";
 const captures = [
@@ -44,20 +44,20 @@ const shownProfiles = new Set();
 
 try {
   await context.addInitScript(() => {
-    localStorage.setItem("voicestudio.setup.complete.v1", "1");
-    localStorage.setItem("voicestudio.locale", "en");
+    localStorage.setItem("elevenvoice.setup.complete.v1", "1");
+    localStorage.setItem("elevenvoice.locale", "en");
     localStorage.setItem(
-      "voicestudio.theme.v2",
+      "elevenvoice.theme.v2",
       JSON.stringify({ mode: "dark", light: "default", dark: "default" }),
     );
     localStorage.setItem(
-      "voicestudio.clone.settings.v1",
+      "elevenvoice.clone.settings.v1",
       JSON.stringify({
         selectedProfileId: "demo0001",
-        text: "Every voice has a story.\n\nBring yours to life with VoiceStudio. Clone a familiar tone, design a new character, or carry your words across languages.\n\nCreated on your machine. Ready for your next story.",
+        text: "Every voice has a story.\n\nBring yours to life with ElevenVoice. Clone a familiar tone, design a new character, or carry your words across languages.\n\nCreated on your machine. Ready for your next story.",
       }),
     );
-    localStorage.setItem("omnivoice.demoClonePrompted", "1");
+    localStorage.setItem("elevenvoice.demoClonePrompted", "1");
   });
   // No personal records or user mutations. Presentation readiness is an explicit
   // browser-only fixture: no model is downloaded, loaded or installed on the host.
@@ -223,7 +223,7 @@ try {
   };
   await writeFile(join(output, "capture-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
   console.log(JSON.stringify(manifest, null, 2));
-  if (process.env.VOICESTUDIO_CAPTURE_KEEP_RAW === "1") console.log(`Raw captures: ${scratch}`);
+  if (process.env.ELEVENVOICE_CAPTURE_KEEP_RAW === "1") console.log(`Raw captures: ${scratch}`);
   else await rm(scratch, { recursive: true, force: true });
 } finally {
   await context.close();

@@ -9,8 +9,8 @@ import sqlite3
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def test_changelog_endpoint_returns_structured_releases(settings_mod, tmp_path, 
         "## [0.3.9] — 2026-07-02\n\n### Fixed\n\n- **Old.** Fix. (#2)\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OMNIVOICE_CHANGELOG", str(f))
+    monkeypatch.setenv("ELEVENVOICE_CHANGELOG", str(f))
 
     out = settings_mod.get_changelog(limit_versions=1)
     assert out["available"] is True
@@ -38,13 +38,13 @@ def test_changelog_endpoint_returns_structured_releases(settings_mod, tmp_path, 
 
 
 def test_changelog_endpoint_degrades_when_missing(settings_mod, tmp_path, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_CHANGELOG", str(tmp_path / "absent.md"))
+    monkeypatch.setenv("ELEVENVOICE_CHANGELOG", str(tmp_path / "absent.md"))
     out = settings_mod.get_changelog(limit_versions=5)
     assert out == {"available": False, "releases": []}
 
 
 def test_db_backup_state_none_then_latest(settings_mod, tmp_path, monkeypatch):
-    db = tmp_path / "omnivoice.db"
+    db = tmp_path / "elevenvoice.db"
     monkeypatch.setattr("core.config.DB_PATH", str(db))
 
     out = settings_mod.get_db_backup_state()

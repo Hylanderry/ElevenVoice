@@ -73,7 +73,7 @@ function legacyEnvelope(script: string): StorageValue<TestState> {
       storyProjects: [{ id: 'p_book', name: 'Book', script, tracks: [], cast: [] }],
       script,
       meta: { title: 'Book' },
-      lexicon: { VoiceStudio: 'voice studio' },
+      lexicon: { ElevenVoice: 'voice studio' },
       voiceCast: {},
     },
   };
@@ -106,11 +106,11 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    const hydrated = await controller.storage.getItem('omnivoice.app');
+    const hydrated = await controller.storage.getItem('elevenvoice.app');
     expect(hydrated?.state.script).toBe('legacy manuscript');
     expect(events).toEqual(['indexeddb']);
 
-    controller.storage.setItem('omnivoice.app', { ...hydrated!, version: 9 });
+    controller.storage.setItem('elevenvoice.app', { ...hydrated!, version: 9 });
     expect(events).toEqual(['indexeddb', 'localStorage']);
     const compact = (local.storage.setItem as any).value;
     expect(compact.state).not.toHaveProperty('script');
@@ -129,8 +129,8 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    await controller.storage.getItem('omnivoice.app');
-    controller.storage.setItem('omnivoice.app', envelope);
+    await controller.storage.getItem('elevenvoice.app');
+    controller.storage.setItem('elevenvoice.app', envelope);
     await vi.advanceTimersByTimeAsync(250);
     await controller.flushPendingWrites();
 
@@ -149,7 +149,7 @@ describe('split long-form persistence', () => {
       durableStore: durable.store,
       currentVersion: 9,
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
     expect(restored?.state.script).toBe(largeScript);
     expect(restored).not.toBeNull();
     expect((restored!.state.storyProjects as TestState[])[0].script).toBe(largeScript);
@@ -168,8 +168,8 @@ describe('split long-form persistence', () => {
       warn: (warning) => warnings.push(warning),
     });
 
-    const hydrated = await controller.storage.getItem('omnivoice.app');
-    controller.storage.setItem('omnivoice.app', { ...hydrated!, version: 9 });
+    const hydrated = await controller.storage.getItem('elevenvoice.app');
+    controller.storage.setItem('elevenvoice.app', { ...hydrated!, version: 9 });
 
     expect(local.read()).toEqual(legacy);
     expect(durable.read()?.payload.script).toBe(largeScript);
@@ -183,7 +183,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
     expect(restored?.state.script).toBe(largeScript);
     expect(restored).not.toBeNull();
     expect((restored!.state.storyProjects as TestState[])[0].name).toBe('Book');
@@ -204,13 +204,13 @@ describe('split long-form persistence', () => {
       warn: (warning) => warnings.push(warning),
     });
 
-    const hydrated = await controller.storage.getItem('omnivoice.app');
+    const hydrated = await controller.storage.getItem('elevenvoice.app');
     expect(local.read()).toEqual(legacy);
     expect(local.storage.setItem).not.toHaveBeenCalled();
 
     // Zustand's post-hydration v9 write retries IndexedDB, then falls back to
     // the still-full local envelope instead of trimming the only durable copy.
-    controller.storage.setItem('omnivoice.app', { ...hydrated!, version: 9 });
+    controller.storage.setItem('elevenvoice.app', { ...hydrated!, version: 9 });
     await vi.advanceTimersByTimeAsync(250);
     await controller.flushPendingWrites();
 
@@ -236,15 +236,15 @@ describe('split long-form persistence', () => {
     const second = legacyEnvelope('fallback B');
     second.version = 9;
 
-    await controller.storage.getItem('omnivoice.app');
-    controller.storage.setItem('omnivoice.app', first);
+    await controller.storage.getItem('elevenvoice.app');
+    controller.storage.setItem('elevenvoice.app', first);
     await controller.flushPendingWrites();
     expect(durable.read()?.payload.script).toBe('durable A');
 
     vi.mocked(durable.store.write).mockRejectedValueOnce(
       new DOMException('content intentionally omitted', 'QuotaExceededError'),
     );
-    controller.storage.setItem('omnivoice.app', second);
+    controller.storage.setItem('elevenvoice.app', second);
     await controller.flushPendingWrites();
     expect(local.read()?.state.script).toBe('fallback B');
     expect(durable.read()?.payload.script).toBe('durable A');
@@ -255,7 +255,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
 
     expect(restored?.state.script).toBe('fallback B');
     expect(durable.read()?.payload.script).toBe('fallback B');
@@ -280,7 +280,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    const restored = await controller.storage.getItem('omnivoice.app');
+    const restored = await controller.storage.getItem('elevenvoice.app');
 
     expect(restored?.state.script).toBe('later fallback B');
     expect(durable.read()?.payload.script).toBe('later fallback B');
@@ -296,8 +296,8 @@ describe('split long-form persistence', () => {
     });
     const persisted = legacyEnvelope('durable manuscript');
     persisted.version = 9;
-    await initial.storage.getItem('omnivoice.app');
-    initial.storage.setItem('omnivoice.app', persisted);
+    await initial.storage.getItem('elevenvoice.app');
+    initial.storage.setItem('elevenvoice.app', persisted);
     await initial.flushPendingWrites();
     vi.mocked(durable.store.read).mockClear();
     vi.mocked(durable.store.read).mockRejectedValueOnce(
@@ -310,7 +310,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    const restored = await controller.storage.getItem('omnivoice.app');
+    const restored = await controller.storage.getItem('elevenvoice.app');
 
     expect(restored?.state.script).toBe('durable manuscript');
     expect(restored?.state.longformPersistenceError).toBe(false);
@@ -327,8 +327,8 @@ describe('split long-form persistence', () => {
     });
     const persisted = legacyEnvelope('durable manuscript');
     persisted.version = 9;
-    await initial.storage.getItem('omnivoice.app');
-    initial.storage.setItem('omnivoice.app', persisted);
+    await initial.storage.getItem('elevenvoice.app');
+    initial.storage.setItem('elevenvoice.app', persisted);
     await initial.flushPendingWrites();
     vi.mocked(durable.store.write).mockClear();
     vi.mocked(durable.store.read).mockRejectedValue(
@@ -342,14 +342,14 @@ describe('split long-form persistence', () => {
       readAttempts: 2,
       warn: () => {},
     });
-    const unavailable = await controller.storage.getItem('omnivoice.app');
+    const unavailable = await controller.storage.getItem('elevenvoice.app');
     expect(unavailable?.state).not.toHaveProperty('script');
     expect(unavailable?.state.longformPersistenceError).toBe(true);
 
     const unrelatedUpdate = legacyEnvelope('fresh defaults');
     unrelatedUpdate.version = 9;
     unrelatedUpdate.state.theme = 'light';
-    controller.storage.setItem('omnivoice.app', unrelatedUpdate);
+    controller.storage.setItem('elevenvoice.app', unrelatedUpdate);
     await controller.flushPendingWrites();
 
     expect(durable.store.write).not.toHaveBeenCalled();
@@ -361,7 +361,7 @@ describe('split long-form persistence', () => {
       durableStore: durable.store,
       currentVersion: 9,
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
     expect(restored?.state.script).toBe('durable manuscript');
   });
 
@@ -383,10 +383,10 @@ describe('split long-form persistence', () => {
       warn: () => {},
     });
 
-    const unavailable = await controller.storage.getItem('omnivoice.app');
+    const unavailable = await controller.storage.getItem('elevenvoice.app');
     expect(unavailable?.state.longformPersistenceError).toBe(true);
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('must not overwrite'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('must not overwrite'));
     await controller.flushPendingWrites();
     expect(write).not.toHaveBeenCalled();
   });
@@ -413,7 +413,7 @@ describe('split long-form persistence', () => {
       warn: () => {},
     });
 
-    const unavailable = await controller.storage.getItem('omnivoice.app');
+    const unavailable = await controller.storage.getItem('elevenvoice.app');
     expect(unavailable?.state.longformPersistenceError).toBe(true);
     await expect(controller.clearDurable()).resolves.toBeUndefined();
     expect(local.read()).toMatchObject({
@@ -428,7 +428,7 @@ describe('split long-form persistence', () => {
       readAttempts: 1,
       warn: () => {},
     });
-    const recovered = await reloaded.storage.getItem('omnivoice.app');
+    const recovered = await reloaded.storage.getItem('elevenvoice.app');
     expect(recovered?.state.longformPersistenceError).toBe(false);
     expect(recovered?.state).not.toHaveProperty('script');
   });
@@ -459,9 +459,9 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
 
-    await controller.storage.removeItem('omnivoice.app');
+    await controller.storage.removeItem('elevenvoice.app');
 
     expect(local.read()).toMatchObject({
       longformPendingDurableClear: true,
@@ -477,7 +477,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
     expect(restored?.state).not.toHaveProperty('script');
     expect(restored?.state).not.toHaveProperty('theme');
     expect(restored?.state.longformPersistenceError).toBe(false);
@@ -488,7 +488,7 @@ describe('split long-form persistence', () => {
       durableStore,
       currentVersion: 9,
     });
-    await recovered.storage.getItem('omnivoice.app');
+    await recovered.storage.getItem('elevenvoice.app');
     expect(durableValue).toBeNull();
     expect(local.read()).toBeNull();
   });
@@ -503,9 +503,9 @@ describe('split long-form persistence', () => {
       durableStore: durable.store,
       currentVersion: 9,
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
 
-    await controller.storage.removeItem('omnivoice.app');
+    await controller.storage.removeItem('elevenvoice.app');
 
     expect(durable.read()).toBeNull();
     expect(local.read()).toBeNull();
@@ -541,7 +541,7 @@ describe('split long-form persistence', () => {
       warn: () => {},
     });
 
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
     unavailable = false;
     await controller.clearDurable();
     expect(local.read()).not.toHaveProperty('longformPendingDurableClear');
@@ -557,7 +557,7 @@ describe('split long-form persistence', () => {
       durableStore,
       currentVersion: 9,
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
 
     expect(restored?.state.script).toBe('new project after recovery');
     expect(durableStore.clear).toHaveBeenCalledTimes(clearCalls);
@@ -579,7 +579,7 @@ describe('split long-form persistence', () => {
       },
       warn: () => {},
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
 
     await expect(controller.clearDurable()).rejects.toHaveProperty('name', 'SecurityError');
     expect(durable.store.clear).not.toHaveBeenCalled();
@@ -598,9 +598,9 @@ describe('split long-form persistence', () => {
       },
       warn: () => {},
     });
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('pending reset failure'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('pending reset failure'));
 
-    await expect(controller.storage.removeItem('omnivoice.app')).rejects.toHaveProperty(
+    await expect(controller.storage.removeItem('elevenvoice.app')).rejects.toHaveProperty(
       'name',
       'SecurityError',
     );
@@ -646,7 +646,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       warn: () => {},
     });
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('in-flight reset failure'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('in-flight reset failure'));
     const flushing = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
@@ -682,7 +682,7 @@ describe('split long-form persistence', () => {
       },
       warn: () => {},
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
 
     await expect(controller.clearDurable()).rejects.toHaveProperty(
       'name',
@@ -718,7 +718,7 @@ describe('split long-form persistence', () => {
       },
       warn: () => {},
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
 
     await expect(controller.clearDurable()).rejects.toHaveProperty(
       'name',
@@ -732,7 +732,7 @@ describe('split long-form persistence', () => {
 
   it('reports a failed full fallback flush instead of acknowledging persistence', async () => {
     const raw = new Map<string, string>([
-      ['omnivoice.app', JSON.stringify(legacyEnvelope('last physical copy'))],
+      ['elevenvoice.app', JSON.stringify(legacyEnvelope('last physical copy'))],
     ]);
     const localController = createCoalescedJsonStorage({
       getStorage: () => ({
@@ -756,14 +756,14 @@ describe('split long-form persistence', () => {
       flushLocalStorage: () => localController.flushPendingWrites(),
       warn: () => {},
     });
-    const hydrated = await controller.storage.getItem('omnivoice.app');
-    controller.storage.setItem('omnivoice.app', { ...hydrated!, version: 9 });
+    const hydrated = await controller.storage.getItem('elevenvoice.app');
+    controller.storage.setItem('elevenvoice.app', { ...hydrated!, version: 9 });
 
     await expect(controller.flushPendingWrites()).rejects.toHaveProperty(
       'name',
       LONGFORM_LOCAL_FALLBACK_WRITE_ERROR,
     );
-    expect(JSON.parse(raw.get('omnivoice.app')!).state.script).toBe('last physical copy');
+    expect(JSON.parse(raw.get('elevenvoice.app')!).state.script).toBe('last physical copy');
   });
 
   it('flushes a full local fallback when pagehide already ran the local listener', async () => {
@@ -790,14 +790,14 @@ describe('split long-form persistence', () => {
     const cleanupLocal = localController.installPersistenceLifecycleFlush();
     const cleanupLongform = controller.installLifecycleFlush();
 
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
     const envelope = legacyEnvelope('pagehide fallback');
     envelope.version = 9;
-    controller.storage.setItem('omnivoice.app', envelope);
+    controller.storage.setItem('elevenvoice.app', envelope);
     window.dispatchEvent(new Event('pagehide'));
     await controller.flushPendingWrites();
 
-    expect(JSON.parse(raw.get('omnivoice.app')!).state.script).toBe('pagehide fallback');
+    expect(JSON.parse(raw.get('elevenvoice.app')!).state.script).toBe('pagehide fallback');
     cleanupLongform();
     cleanupLocal();
   });
@@ -824,17 +824,17 @@ describe('split long-form persistence', () => {
     const cleanupLocal = localController.installPersistenceLifecycleFlush();
     const cleanupLongform = controller.installLifecycleFlush();
 
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
     const envelope = legacyEnvelope('successfully committed manuscript');
     envelope.version = 9;
     envelope.state.coverRef = { filename: 'cover.png', serverPath: '/covers/cover.png' };
     envelope.state.lastOutput = 'book.m4b';
-    controller.storage.setItem('omnivoice.app', envelope);
+    controller.storage.setItem('elevenvoice.app', envelope);
     window.dispatchEvent(new Event('pagehide'));
     await controller.flushPendingWrites();
 
-    expect(raw.get('omnivoice.app')).toBeDefined();
-    const compact = JSON.parse(raw.get('omnivoice.app')!);
+    expect(raw.get('elevenvoice.app')).toBeDefined();
+    const compact = JSON.parse(raw.get('elevenvoice.app')!);
     expect(compact.state).toMatchObject({
       theme: 'dark',
       currentProjectId: 'p_book',
@@ -873,7 +873,7 @@ describe('split long-form persistence', () => {
     });
     const cleanup = controller.installLifecycleFlush();
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('blocked pagehide edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('blocked pagehide edit'));
     const flushing = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
@@ -896,7 +896,7 @@ describe('split long-form persistence', () => {
     const envelope = legacyEnvelope('remove me');
     envelope.version = 9;
 
-    controller.storage.setItem('omnivoice.app', envelope);
+    controller.storage.setItem('elevenvoice.app', envelope);
     await controller.flushPendingWrites();
     expect(durable.read()?.payload.script).toBe('remove me');
 
@@ -904,7 +904,7 @@ describe('split long-form persistence', () => {
     // trim this recoverable v8 fallback as well as delete IndexedDB.
     local.replace(legacyEnvelope('legacy fallback'));
     await controller.clearDurable();
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('must not return'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('must not return'));
     await vi.runAllTimersAsync();
 
     expect(durable.read()).toBeNull();
@@ -933,7 +933,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
     await controller.clearDurable();
 
     const reloaded = createLongformPersistence({
@@ -941,7 +941,7 @@ describe('split long-form persistence', () => {
       durableStore: durable.store,
       currentVersion: 9,
     });
-    const restored = await reloaded.storage.getItem('omnivoice.app');
+    const restored = await reloaded.storage.getItem('elevenvoice.app');
     expect(restored?.state).toMatchObject({
       theme: 'dark',
       currentProjectId: null,
@@ -977,7 +977,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('in flight'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('in flight'));
     const flushing = controller.flushPendingWrites();
     await Promise.resolve();
     expect(durableStore.write).toHaveBeenCalledOnce();
@@ -1017,7 +1017,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('delete while blocked'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('delete while blocked'));
     const flushing = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
@@ -1036,7 +1036,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       getRole: () => 'readonly',
     });
-    const restored = await timedOutReload.storage.getItem('omnivoice.app');
+    const restored = await timedOutReload.storage.getItem('elevenvoice.app');
     expect(restored?.state).not.toHaveProperty('script');
 
     releaseWrite();
@@ -1069,12 +1069,12 @@ describe('split long-form persistence', () => {
       durableStore,
       currentVersion: 9,
     });
-    await controller.storage.getItem('omnivoice.app');
+    await controller.storage.getItem('elevenvoice.app');
     const latest = legacyEnvelope('reset this project');
     latest.version = 9;
     latest.state.theme = 'light';
 
-    controller.storage.setItem('omnivoice.app', latest);
+    controller.storage.setItem('elevenvoice.app', latest);
     const flushing = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
@@ -1118,11 +1118,11 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('first edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('first edit'));
     const draining = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('latest edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('latest edit'));
     releaseFirstWrite();
     await draining;
 
@@ -1157,13 +1157,13 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
     });
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('first edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('first edit'));
     const firstFlush = controller.flushPendingWrites();
     await vi.waitFor(() => expect(durableStore.write).toHaveBeenCalledOnce());
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('second edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('second edit'));
     const secondFlush = controller.flushPendingWrites();
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('latest edit'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('latest edit'));
     const exitFlush = controller.flushPendingWritesForExit();
     expect(local.read()?.state.script).toBe('latest edit');
 
@@ -1180,7 +1180,7 @@ describe('split long-form persistence', () => {
       currentVersion: 9,
       getRole: () => 'readonly',
     });
-    const restored = await timedOutReload.storage.getItem('omnivoice.app');
+    const restored = await timedOutReload.storage.getItem('elevenvoice.app');
     expect(restored?.state.script).toBe('latest edit');
 
     releases[2]();
@@ -1198,7 +1198,7 @@ describe('split long-form persistence', () => {
       warn: () => {},
     });
 
-    controller.storage.setItem('omnivoice.app', legacyEnvelope('durable exit copy'));
+    controller.storage.setItem('elevenvoice.app', legacyEnvelope('durable exit copy'));
 
     await expect(controller.flushPendingWritesForExit()).resolves.toBeUndefined();
     expect(durable.read()?.payload.script).toBe('durable exit copy');

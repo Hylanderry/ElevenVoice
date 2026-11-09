@@ -36,8 +36,8 @@ describe('the generate hook announces the loss on both paths', () => {
   const src = read('hooks/useTTS.js');
 
   it('reads the dropped-chunk count from the classic response headers', () => {
-    expect(src).toMatch(/X-OmniVoice-Dropped-Chunks/);
-    expect(src).toMatch(/X-OmniVoice-Dropped-Text/);
+    expect(src).toMatch(/X-ElevenVoice-Dropped-Chunks/);
+    expect(src).toMatch(/X-ElevenVoice-Dropped-Text/);
   });
 
   it('passes onWarning to the streaming call', () => {

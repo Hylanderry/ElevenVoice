@@ -30,18 +30,18 @@ try {
     ['Dubbing', 'Batch Dubbing', '/batch'],
   ];
   for (const [group, item, path] of routes) {
-    await page.goto((process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912') + '/#/design');
+    await page.goto((process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912') + '/#/design');
     const rail = page.locator('[data-slot=compact-main-sidebar]');
     await rail.waitFor();
     await rail.getByRole('button', { name: group, exact: true }).click();
     const link = page.getByRole('link', { name: item, exact: true });
     await link.waitFor();
-    if (process.env.VOICESTUDIO_SCREENSHOT && item === 'Clone')
-      await page.screenshot({ path: process.env.VOICESTUDIO_SCREENSHOT, animations: 'disabled' });
+    if (process.env.ELEVENVOICE_SCREENSHOT && item === 'Clone')
+      await page.screenshot({ path: process.env.ELEVENVOICE_SCREENSHOT, animations: 'disabled' });
     await link.click();
     await page.waitForURL('**/#' + path, { timeout: 3000 });
   }
-  await page.goto((process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912') + '/#/design');
+  await page.goto((process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912') + '/#/design');
   const rail = page.locator('[data-slot=compact-main-sidebar]');
   await rail.waitFor();
   const voice = rail.getByRole('button', { name: 'Voice', exact: true });

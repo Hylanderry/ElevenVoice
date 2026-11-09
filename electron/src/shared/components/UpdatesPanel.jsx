@@ -202,7 +202,7 @@ export default function UpdatesPanel() {
             </div>
           </div>
 
-          {/* Data-safety line: the backend snapshots omnivoice.db before every
+          {/* Data-safety line: the backend snapshots elevenvoice.db before every
               schema migration (i.e. before the first run of an updated build). */}
           <div className="updates-panel__backup" data-testid="backup-line">
             <ShieldCheck size={14} aria-hidden="true" />

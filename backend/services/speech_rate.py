@@ -24,7 +24,7 @@ from services.llm_backend import get_active_llm_backend, OffBackend
 # so there is no import cycle.
 from services.translator import refine_output_ok
 
-logger = logging.getLogger("omnivoice.speech_rate")
+logger = logging.getLogger("elevenvoice.speech_rate")
 
 # LLM Skills registry id — Settings → LLM Skills can disable the slot-fit
 # LLM pass or route it to a specific provider. Disabled == the no-llm path.
@@ -204,7 +204,7 @@ async def adjust_for_measured_slot_many(
     if not rows:
         return {}
     loop = asyncio.get_running_loop()
-    sem = asyncio.Semaphore(concurrency or int(os.environ.get("OMNIVOICE_LLM_CONCURRENCY", "6")))
+    sem = asyncio.Semaphore(concurrency or int(os.environ.get("ELEVENVOICE_LLM_CONCURRENCY", "6")))
 
     async def _one(key, line, slot, measured, lang, source, before, after):
         async with sem:
@@ -384,7 +384,7 @@ async def adjust_for_slot_many(
     items = list(items)
     if not items:
         return {}
-    sem = asyncio.Semaphore(concurrency or int(os.environ.get("OMNIVOICE_LLM_CONCURRENCY", "6")))
+    sem = asyncio.Semaphore(concurrency or int(os.environ.get("ELEVENVOICE_LLM_CONCURRENCY", "6")))
 
     async def _one(key, text, slot, tgt, src, strict):
         async with sem:

@@ -15,7 +15,7 @@ EXPECTED_MEMBERS = {
     "self_check.json",
     "errors.json",
     "render_traces.json",
-    "logs/omnivoice.log.txt",
+    "logs/elevenvoice.log.txt",
     "logs/crash_log.txt",
 }
 
@@ -23,7 +23,7 @@ EXPECTED_MEMBERS = {
 @pytest.fixture()
 def bundle_env(monkeypatch, tmp_path):
     """Isolated log files + output dir, with a secret planted in the log."""
-    log = tmp_path / "omnivoice.log"
+    log = tmp_path / "elevenvoice.log"
     log.write_text(
         "2026-01-01 INFO startup ok\n"
         "2026-01-01 ERROR failed for /home/eve/voice.wav token=hf_"
@@ -101,7 +101,7 @@ def test_asr_import_failure_preserves_tts_execution_evidence(monkeypatch):
 def test_bundle_log_tails_are_scrubbed(bundle_env):
     path = build_bundle(include_network=False)
     with zipfile.ZipFile(path) as zf:
-        log_tail = zf.read("logs/omnivoice.log.txt").decode()
+        log_tail = zf.read("logs/elevenvoice.log.txt").decode()
         crash_tail = zf.read("logs/crash_log.txt").decode()
     assert "/home/eve" not in log_tail
     assert "hf_" + "Z" * 34 not in log_tail
@@ -114,4 +114,4 @@ def test_bundle_survives_missing_logs(bundle_env, monkeypatch, tmp_path):
     monkeypatch.setattr(diagnostic_bundle, "CRASH_LOG_PATH", str(tmp_path / "missing_crash.txt"))
     path = build_bundle(include_network=False)
     with zipfile.ZipFile(path) as zf:
-        assert "(no file at" in zf.read("logs/omnivoice.log.txt").decode()
+        assert "(no file at" in zf.read("logs/elevenvoice.log.txt").decode()

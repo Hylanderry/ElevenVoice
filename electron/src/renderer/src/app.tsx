@@ -81,7 +81,7 @@ export function App() {
     return () => window.removeEventListener('keydown', onKeyDown, true);
   }, []);
   useEffect(() => {
-    void window.voicestudio?.capture
+    void window.elevenvoice?.capture
       ?.labels({
         show: `${t('common.open')} ${t('app.name')}`,
         start: t('transcriptions.capture'),

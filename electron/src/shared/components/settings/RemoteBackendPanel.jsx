@@ -1,7 +1,7 @@
 /**
  * Settings → Sharing → Remote backend panel (parity program Wave 2.3).
  *
- * Point this app at a VoiceStudio backend running elsewhere (a GPU box over
+ * Point this app at a ElevenVoice backend running elsewhere (a GPU box over
  * Tailscale, a Docker deployment). Persists only the URL. A supplied master
  * credential is exchanged for a short-lived session and removed from the UI;
  * it never enters localStorage or an ordinary health request.
@@ -10,7 +10,7 @@
  * base would brick every API call after the reload), and saving a URL that
  * hasn't passed a connection test asks for confirmation first.
  *
- * Pairs with the backend's OMNIVOICE_API_KEY bearer gate; full recipe in
+ * Pairs with the backend's ELEVENVOICE_API_KEY bearer gate; full recipe in
  * docs/remote-gpu.md.
  */
 import React, { useState } from 'react';
@@ -26,7 +26,7 @@ import { reloadAfterApplicationPersistence } from '../../utils/persistenceLifecy
 import { SettingsSection, SettingRow, InfoHint, SettingsInput } from './primitives';
 import { Button, Badge } from '../../ui';
 
-const REMOTE_GPU_DOCS_URL = 'https://github.com/debpalash/VoiceStudio/blob/main/docs/remote-gpu.md';
+const REMOTE_GPU_DOCS_URL = 'https://github.com/Hylanderry/ElevenVoice#readme';
 
 /** A saved backend base must be a parseable absolute http(s) URL. */
 export function isValidBackendUrl(value) {
@@ -192,7 +192,7 @@ export default function RemoteBackendPanel({ reload = reloadAfterApplicationPers
         <InfoHint learnMoreHref={REMOTE_GPU_DOCS_URL}>
           <Trans
             i18nKey="settings.remote_backend_hint"
-            defaults="Start the backend on the other machine with <1>OMNIVOICE_API_KEY</1> set, reach it over your tailnet, and point this app at it."
+            defaults="Start the backend on the other machine with <1>ELEVENVOICE_API_KEY</1> set, reach it over your tailnet, and point this app at it."
             components={{ 1: <code /> }}
           />
         </InfoHint>
@@ -224,7 +224,7 @@ export default function RemoteBackendPanel({ reload = reloadAfterApplicationPers
             autoComplete="off"
             disabled={testing || saving}
             placeholder={t('settings.remote_backend_key_placeholder', {
-              defaultValue: 'value of OMNIVOICE_API_KEY on the server',
+              defaultValue: 'value of ELEVENVOICE_API_KEY on the server',
             })}
             aria-label={t('settings.remote_backend_key', { defaultValue: 'API key' })}
             data-testid="remote-backend-key"

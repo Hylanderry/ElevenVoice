@@ -20,22 +20,22 @@ def manager(monkeypatch):
     module._OmniVoice = None
     module.model = None
     module._shutting_down.clear()
-    monkeypatch.setenv("OMNIVOICE_MODEL", "example/test-checkpoint")
+    monkeypatch.setenv("ELEVENVOICE_MODEL", "example/test-checkpoint")
     return module
 
 
 def test_preload_flag_recognises_each_enabled_spelling(manager, monkeypatch):
     observed = {}
     for spelling in ("on", " YES ", "TRUE", "1", "true"):
-        monkeypatch.setenv("OMNIVOICE_PRELOAD_TTS_ASR", spelling)
+        monkeypatch.setenv("ELEVENVOICE_PRELOAD_TTS_ASR", spelling)
         observed[spelling] = manager.should_preload_tts_asr()
     assert observed == dict.fromkeys(observed, True)
 
 
 def test_preload_flag_defaults_off_and_rejects_zero(manager, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_PRELOAD_TTS_ASR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PRELOAD_TTS_ASR", raising=False)
     assert manager.should_preload_tts_asr() is False
-    monkeypatch.setenv("OMNIVOICE_PRELOAD_TTS_ASR", "0")
+    monkeypatch.setenv("ELEVENVOICE_PRELOAD_TTS_ASR", "0")
     assert manager.should_preload_tts_asr() is False
 
 
@@ -61,7 +61,7 @@ def _configure_sync_load(manager, monkeypatch):
 
 
 def test_sync_load_keeps_asr_out_of_from_pretrained_by_default(manager, monkeypatch):
-    monkeypatch.delenv("OMNIVOICE_PRELOAD_TTS_ASR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_PRELOAD_TTS_ASR", raising=False)
     loaded, calls = _configure_sync_load(manager, monkeypatch)
 
     result = manager._load_model_sync()
@@ -71,13 +71,13 @@ def test_sync_load_keeps_asr_out_of_from_pretrained_by_default(manager, monkeypa
         "device_map": "cuda", "dtype": "half", "load_asr": False,
     })]
     assert result.llm is not None
-    assert result._voicestudio_checkpoint == "example/test-checkpoint"
-    assert result._voicestudio_loaded_at.endswith("Z")
+    assert result._elevenvoice_checkpoint == "example/test-checkpoint"
+    assert result._elevenvoice_loaded_at.endswith("Z")
     loaded.load_asr_model.assert_not_called()
 
 
 def test_opt_in_loads_asr_after_tts(manager, monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_PRELOAD_TTS_ASR", "yes")
+    monkeypatch.setenv("ELEVENVOICE_PRELOAD_TTS_ASR", "yes")
     loaded, calls = _configure_sync_load(manager, monkeypatch)
 
     manager._load_model_sync()
@@ -89,10 +89,10 @@ def test_opt_in_loads_asr_after_tts(manager, monkeypatch):
 def test_checkpoint_resolution_preserves_test_sentinel_and_repairs_engine_id(
     manager, monkeypatch
 ):
-    monkeypatch.setenv("OMNIVOICE_MODEL", "test")
+    monkeypatch.setenv("ELEVENVOICE_MODEL", "test")
     assert manager.resolve_omnivoice_checkpoint() == "test"
-    monkeypatch.setenv("OMNIVOICE_MODEL", "omnivoice")
-    assert manager.resolve_omnivoice_checkpoint() == manager._DEFAULT_OMNIVOICE_CHECKPOINT
+    monkeypatch.setenv("ELEVENVOICE_MODEL", "omnivoice")
+    assert manager.resolve_omnivoice_checkpoint() == manager._DEFAULT_ELEVENVOICE_CHECKPOINT
 
 
 def _configure_preload(manager, monkeypatch, *, cached):
@@ -137,7 +137,7 @@ def model_manager(manager, monkeypatch):
     monkeypatch.setattr(
         device_caps, "detect_host_caps", lambda: types.SimpleNamespace(family="cpu")
     )
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", "omnivoice")
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", "omnivoice")
     return manager
 
 
@@ -173,7 +173,7 @@ def test_preload_skips_other_selected_engines(model_manager, monkeypatch, family
     monkeypatch.setattr(
         device_caps, "detect_host_caps", lambda: types.SimpleNamespace(family=family)
     )
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND")
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND")
     prefs.set_("tts_backend", backend_id)
 
     def unexpected(*args, **kwargs):
@@ -200,7 +200,7 @@ def test_preload_respects_engine_environment_override(
     from core import prefs
 
     prefs.set_("tts_backend", saved)
-    monkeypatch.setenv("OMNIVOICE_TTS_BACKEND", override)
+    monkeypatch.setenv("ELEVENVOICE_TTS_BACKEND", override)
     monkeypatch.setattr(model_manager, "_checkpoint_in_local_cache", lambda c: True)
     loaded = types.SimpleNamespace(llm=object())
 
@@ -218,7 +218,7 @@ def test_preload_keeps_default_omnivoice_warmup(model_manager, monkeypatch):
     """Missing engine preferences and overrides preserve the default warm-up."""
     from core import prefs
 
-    monkeypatch.delenv("OMNIVOICE_TTS_BACKEND")
+    monkeypatch.delenv("ELEVENVOICE_TTS_BACKEND")
     prefs.delete("tts_backend")
     monkeypatch.setattr(model_manager, "_checkpoint_in_local_cache", lambda c: True)
     loaded = types.SimpleNamespace(llm=object())

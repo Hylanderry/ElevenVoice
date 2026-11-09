@@ -1,7 +1,7 @@
 // Integration directory links, not sponsors, rankings, or connected accounts.
 // Capabilities are not declared here: the Electron setup registry
 // (electron/src/renderer/src/features/integrations/setup-registry.ts) is the
-// only place that claims what an entry actually does with VoiceStudio.
+// only place that claims what an entry actually does with ElevenVoice.
 // Official icon sources and verification links: docs/integration-directory.md.
 import genericLogo from '../assets/integrations/integration-generic.svg';
 import twilioLogo from '../assets/integrations/twilio.png';
@@ -15,7 +15,8 @@ import mcpLogo from '../assets/integrations/mcp.png';
 import claudeLogo from '../assets/integrations/claude.svg';
 import cursorLogo from '../assets/integrations/cursor.svg';
 import openaiLogo from '../assets/integrations/openai.svg';
-import voiceStudioLogo from '../assets/integrations/voicestudio.svg';
+import hermesAgentLogo from '../assets/integrations/hermes-agent.svg';
+import elevenVoiceLogo from '../assets/integrations/elevenvoice.svg';
 
 export const VOICE_AI_DIRECTORY = [
   {
@@ -81,8 +82,13 @@ export const VOICE_AI_DIRECTORY = [
     logoUrl: openaiLogo,
   },
   {
+    name: 'Hermes Agent',
+    url: 'https://github.com/NousResearch/hermes-agent',
+    logoUrl: hermesAgentLogo,
+  },
+  {
     name: 'ElevenVoice API',
-    url: 'https://github.com/debpalash/VoiceStudio',
-    logoUrl: voiceStudioLogo,
+    url: 'https://github.com/Hylanderry/ElevenVoice',
+    logoUrl: elevenVoiceLogo,
   },
 ];

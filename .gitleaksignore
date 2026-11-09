@@ -13,4 +13,4 @@ f6d634e19902c0fd0e64947e635359d5bc1f85de:electron/tests/fake-health-backend.test
 97ee0f37079c06a8e2e80eb3625bc60885bc8a27:docs/mobile.md:curl-auth-header:114
 
 # The Crockford base32 alphabet that generates the report idempotency key, not a credential.
-4dab817e78d54b055967860581687eeb5bb77472:mobile/android/core/network/src/main/kotlin/com/voicestudio/mobile/network/ContentReports.kt:generic-api-key:38
+4dab817e78d54b055967860581687eeb5bb77472:mobile/android/core/network/src/main/kotlin/com/elevenvoice/mobile/network/ContentReports.kt:generic-api-key:38

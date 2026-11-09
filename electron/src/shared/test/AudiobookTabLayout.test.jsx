@@ -107,7 +107,7 @@ describe('AudiobookTab — Write/Cast/Produce tabs', () => {
   it('persists the workspace tab across visits', () => {
     const { unmount } = render(withI18n(<AudiobookTab profiles={[]} />));
     switchTab(en.audiobook.tab_voices);
-    expect(localStorage.getItem('omnivoice.audiobook.tab')).toBe('voices');
+    expect(localStorage.getItem('elevenvoice.audiobook.tab')).toBe('voices');
     unmount();
     render(withI18n(<AudiobookTab profiles={[]} />));
     expect(tabTrigger(en.audiobook.tab_voices)).toHaveAttribute('aria-selected', 'true');

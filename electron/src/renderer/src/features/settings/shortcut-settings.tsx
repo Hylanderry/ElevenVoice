@@ -16,7 +16,7 @@ import { SettingsSection, SettingsRow } from './settings-layout';
 
 export function ShortcutSettings() {
   const { t } = useTranslation();
-  const api = window.voicestudio?.capture;
+  const api = window.elevenvoice?.capture;
   const client = useQueryClient();
   const prefs = useDictationPreferences();
   const shortcut = useQuery({

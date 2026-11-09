@@ -48,7 +48,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-logger = logging.getLogger("omnivoice.win_accept_guard")
+logger = logging.getLogger("elevenvoice.win_accept_guard")
 
 # Client-side resets that only lose that one connection. winerror values from
 # winerror.h / winsock2.h; ConnectionReset/AbortedError cover the errno mapping.

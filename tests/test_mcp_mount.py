@@ -9,8 +9,8 @@ import base64
 import json
 import os
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -52,7 +52,7 @@ def test_list_voices_returns_valid_json(monkeypatch):
         """Supply profiles in-process so the test needs no running backend."""
         return profiles
 
-    monkeypatch.delenv("OMNIVOICE_API_URL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_API_URL", raising=False)
     server = create_mcp_server(app=app)
     result = asyncio.run(server.call_tool("list_voices", {}))
     content = result[0] if isinstance(result, tuple) else result
@@ -77,7 +77,7 @@ def json_response_server(monkeypatch):
             """Return controlled API data to isolate MCP response serialization."""
             return payload
 
-        monkeypatch.delenv("OMNIVOICE_API_URL", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_API_URL", raising=False)
         return create_mcp_server(app=app)
 
     return build
@@ -185,9 +185,9 @@ def test_main_mounts_mcp_route(monkeypatch):
     ("bound to a different event loop"). The mount happens at import time.
 
     Reload main with the disable flag cleared so this is independent of any
-    earlier test that reloaded main (e.g. with OMNIVOICE_MCP_DISABLE set).
+    earlier test that reloaded main (e.g. with ELEVENVOICE_MCP_DISABLE set).
     """
-    monkeypatch.delenv("OMNIVOICE_MCP_DISABLE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_DISABLE", raising=False)
     import importlib
     import main as _main
     importlib.reload(_main)
@@ -196,7 +196,7 @@ def test_main_mounts_mcp_route(monkeypatch):
 
 
 def test_mcp_disable_env_skips_mount(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MCP_DISABLE", "1")
+    monkeypatch.setenv("ELEVENVOICE_MCP_DISABLE", "1")
     import importlib
     import main as _main
     importlib.reload(_main)
@@ -204,7 +204,7 @@ def test_mcp_disable_env_skips_mount(monkeypatch):
         assert "/mcp" not in _mount_paths(_main.app)
     finally:
         # Restore the default app so other tests see /mcp mounted again.
-        monkeypatch.delenv("OMNIVOICE_MCP_DISABLE", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_MCP_DISABLE", raising=False)
         importlib.reload(_main)
 
 
@@ -241,10 +241,10 @@ def test_sniff_audio_ext_matches_magic_bytes(raw, ext):
 
 
 def test_mcp_allowed_hosts_env_extends_allowlist(monkeypatch):
-    """OMNIVOICE_MCP_ALLOWED_HOSTS must extend the transport-security allowlist."""
+    """ELEVENVOICE_MCP_ALLOWED_HOSTS must extend the transport-security allowlist."""
     from mcp_server import create_mcp_server
 
-    monkeypatch.setenv("OMNIVOICE_MCP_ALLOWED_HOSTS", "host.containers.internal:*,10.0.0.1:*")
+    monkeypatch.setenv("ELEVENVOICE_MCP_ALLOWED_HOSTS", "host.containers.internal:*,10.0.0.1:*")
     server = create_mcp_server()
     allowed = server.settings.transport_security.allowed_hosts
     assert "host.containers.internal:*" in allowed

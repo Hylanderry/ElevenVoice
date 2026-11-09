@@ -6,8 +6,8 @@ import {
   instructToVdStates,
   mergeDescribedAttrs,
 } from '@shared/utils/voiceInstruct';
-export const STORAGE = 'voicestudio.design.v1';
-export const DESIGN_DRAFT_EVENT = 'voicestudio:design-draft';
+export const STORAGE = 'elevenvoice.design.v1';
+export const DESIGN_DRAFT_EVENT = 'elevenvoice:design-draft';
 
 /** A detail the user chose explicitly, and the description that was in effect then. */
 export interface DesignPick {

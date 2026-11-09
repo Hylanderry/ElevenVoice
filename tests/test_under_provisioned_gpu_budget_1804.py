@@ -225,7 +225,7 @@ def test_an_explicit_universal_budget_is_honoured_verbatim(monkeypatch, floor):
     # inside a `finally` leaves the module constants describing an environment
     # pytest is about to put back, and every later test reads the mismatch.
     with monkeypatch.context() as m:
-        m.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "123.5")
+        m.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "123.5")
         mm = importlib.reload(mm_mod)
         m.setattr(caps, "detect_host_caps", lambda: _gpu(4.0))
         assert mm.generate_timeout_s(
@@ -331,8 +331,8 @@ def test_both_budgets_explicit_leaves_the_accelerated_one_in_charge(monkeypatch,
     mm_mod = importlib.import_module("services.model_manager")
 
     with monkeypatch.context() as m:  # see the note on the test above
-        m.setenv("OMNIVOICE_GENERATE_TIMEOUT_S", "200")
-        m.setenv("OMNIVOICE_CPU_GENERATE_TIMEOUT_S", "600")
+        m.setenv("ELEVENVOICE_GENERATE_TIMEOUT_S", "200")
+        m.setenv("ELEVENVOICE_CPU_GENERATE_TIMEOUT_S", "600")
         mm = importlib.reload(mm_mod)
         m.setattr(caps, "detect_host_caps", lambda: _gpu(4.0))
         assert mm.generate_timeout_s(

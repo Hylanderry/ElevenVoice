@@ -21,7 +21,7 @@ export const RECOVERY_JOB_TYPE: Record<Mode, string> = {
   audiobook: 'audiobook',
 };
 
-const DISMISSED_KEY = 'voicestudio.longform.dismissed-recoveries';
+const DISMISSED_KEY = 'elevenvoice.longform.dismissed-recoveries';
 
 function readDismissed(): string[] {
   try {

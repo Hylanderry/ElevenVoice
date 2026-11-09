@@ -25,7 +25,7 @@ three layers, all defined here so the policy cannot drift between callers:
    are cut locally from the downloaded file, never from a URL.
 
 Private destinations are allowed only when the user opts in with
-``OMNIVOICE_ALLOW_PRIVATE_URL_IMPORTS=1`` (for example to import from a media
+``ELEVENVOICE_ALLOW_PRIVATE_URL_IMPORTS=1`` (for example to import from a media
 server on their own network). Configured HTTP(S)/SOCKS proxies remain
 reachable: with a proxy the proxy resolves the destination, so only layer 1
 and 3 apply there.
@@ -47,7 +47,7 @@ from urllib.parse import urlsplit
 
 from core.user_env import DESKTOP_ENV_FILE_HINT
 
-ALLOW_PRIVATE_ENV = "OMNIVOICE_ALLOW_PRIVATE_URL_IMPORTS"
+ALLOW_PRIVATE_ENV = "ELEVENVOICE_ALLOW_PRIVATE_URL_IMPORTS"
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
 _ALLOWED_SCHEMES = frozenset({"http", "https"})
 
@@ -60,7 +60,7 @@ PRIVATE_DESTINATION_DETAIL = (
     "network, or a link-local service), which URL imports don't fetch. Use a "
     "public link or download the file and add it directly. To import from a "
     f"server on your own network, set {ALLOW_PRIVATE_ENV}=1 "
-    f"({DESKTOP_ENV_FILE_HINT}) and restart VoiceStudio. A VPN or proxy app "
+    f"({DESKTOP_ENV_FILE_HINT}) and restart ElevenVoice. A VPN or proxy app "
     "in TUN or fake-IP mode (such as Clash, Surge or sing-box, which answer "
     "with 198.18.x.x addresses) can cause this for public links too: turn on "
     "that mode's real-IP DNS option, or set the same variable."

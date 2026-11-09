@@ -16,12 +16,12 @@ import types
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 # Tighten the partial-tick so the test doesn't sit waiting 2 s for the
 # silence path.
-os.environ["OMNIVOICE_STREAM_INTERVAL"] = "0.1"
-os.environ["OMNIVOICE_STREAM_SILENCE"] = "0.2"
+os.environ["ELEVENVOICE_STREAM_INTERVAL"] = "0.1"
+os.environ["ELEVENVOICE_STREAM_SILENCE"] = "0.2"
 
 # These tests exercise the WS protocol with stubbed transcription and assume
 # ASR weights are installed — neutralize the no-ASR preflight (which otherwise
@@ -207,13 +207,13 @@ def test_empty_binary_frame_acts_as_eof(client):
 def test_slow_llm_never_blocks_final_beyond_budget(client, monkeypatch):
     """P0 regression (the measured ~51s stall): with refinement armed and a
     slow/dead LLM, the `final` must arrive within the hard
-    OMNIVOICE_REFINE_TIMEOUT_S budget, NOT after the LLM's full latency.
+    ELEVENVOICE_REFINE_TIMEOUT_S budget, NOT after the LLM's full latency.
 
     Fail-before: the handler awaited ``maybe_refine`` unbounded, so a 3s (in
     prod, ~51s) LLM held the `final` — the pill hung "Transcribing…". Pass-
     after: the final ships the unrefined (but polished) text within the budget.
     """
-    monkeypatch.setenv("OMNIVOICE_REFINE_TIMEOUT_S", "0.3")
+    monkeypatch.setenv("ELEVENVOICE_REFINE_TIMEOUT_S", "0.3")
 
     def _slow(_t, **_kw):
         time.sleep(3.0)  # a dead endpoint would never answer in the test window
@@ -246,30 +246,30 @@ def test_slow_llm_never_blocks_final_beyond_budget(client, monkeypatch):
 # ── Capture-ASR background warm-up gating (dictation v2) ─────────────────────
 #
 # The dictation model warms in the background BY DEFAULT (~30s post-boot);
-# OMNIVOICE_PRELOAD_CAPTURE_ASR=0 opts out, and the warm-up is skipped when
+# ELEVENVOICE_PRELOAD_CAPTURE_ASR=0 opts out, and the warm-up is skipped when
 # the machine is under 4 GB of free RAM.
 
 
 def test_capture_preload_defaults_on(monkeypatch):
     import main
-    monkeypatch.delenv("OMNIVOICE_PRELOAD_CAPTURE_ASR", raising=False)
-    assert main._env_flag("OMNIVOICE_PRELOAD_CAPTURE_ASR", default=True)
-    assert not main._env_flag("OMNIVOICE_PRELOAD_CAPTURE_ASR", default=False)
+    monkeypatch.delenv("ELEVENVOICE_PRELOAD_CAPTURE_ASR", raising=False)
+    assert main._env_flag("ELEVENVOICE_PRELOAD_CAPTURE_ASR", default=True)
+    assert not main._env_flag("ELEVENVOICE_PRELOAD_CAPTURE_ASR", default=False)
     for value in ("1", " true ", "TRUE", "yes", "on"):
-        monkeypatch.setenv("OMNIVOICE_PRELOAD_CAPTURE_ASR", value)
-        assert main._env_flag("OMNIVOICE_PRELOAD_CAPTURE_ASR", default=False)
+        monkeypatch.setenv("ELEVENVOICE_PRELOAD_CAPTURE_ASR", value)
+        assert main._env_flag("ELEVENVOICE_PRELOAD_CAPTURE_ASR", default=False)
     for value in ("", "0", "false", "disabled", "garbage"):
-        monkeypatch.setenv("OMNIVOICE_PRELOAD_CAPTURE_ASR", value)
-        assert not main._env_flag("OMNIVOICE_PRELOAD_CAPTURE_ASR", default=True)
+        monkeypatch.setenv("ELEVENVOICE_PRELOAD_CAPTURE_ASR", value)
+        assert not main._env_flag("ELEVENVOICE_PRELOAD_CAPTURE_ASR", default=True)
 
 
 def test_capture_preload_delay_default_and_override(monkeypatch):
     import main
-    monkeypatch.delenv("OMNIVOICE_CAPTURE_PRELOAD_DELAY", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_CAPTURE_PRELOAD_DELAY", raising=False)
     assert main._capture_preload_delay_s() == 30.0
-    monkeypatch.setenv("OMNIVOICE_CAPTURE_PRELOAD_DELAY", "0")
+    monkeypatch.setenv("ELEVENVOICE_CAPTURE_PRELOAD_DELAY", "0")
     assert main._capture_preload_delay_s() == 0.0
-    monkeypatch.setenv("OMNIVOICE_CAPTURE_PRELOAD_DELAY", "junk")
+    monkeypatch.setenv("ELEVENVOICE_CAPTURE_PRELOAD_DELAY", "junk")
     assert main._capture_preload_delay_s() == 30.0
 
 
@@ -315,11 +315,11 @@ def test_pause_outlasts_silence_timeout_and_resume_keeps_audio(client, monkeypat
     assert sizes == [40_000]
 
 
-@pytest.mark.parametrize("origin", ["app://voicestudio", "app://voicestudio.evil", "app://other-app"])
+@pytest.mark.parametrize("origin", ["app://elevenvoice", "app://elevenvoice.evil", "app://other-app"])
 def test_electron_stream_origin_and_final_delivery(client, monkeypatch, origin):
     from starlette.websockets import WebSocketDisconnect
-    monkeypatch.delenv("OMNIVOICE_ALLOWED_ORIGINS", raising=False)
-    if origin != "app://voicestudio":
+    monkeypatch.delenv("ELEVENVOICE_ALLOWED_ORIGINS", raising=False)
+    if origin != "app://elevenvoice":
         with pytest.raises(WebSocketDisconnect) as error:
             with client.websocket_connect("/ws/transcribe", headers={"origin": origin}):
                 pass
@@ -337,7 +337,7 @@ def test_electron_stream_origin_and_final_delivery(client, monkeypatch, origin):
 
 def test_electron_http_preflight_uses_the_same_desktop_origin(client):
     response = client.options("/system/info", headers={
-        "origin": "app://voicestudio", "access-control-request-method": "GET",
+        "origin": "app://elevenvoice", "access-control-request-method": "GET",
     })
     assert response.status_code == 200
-    assert response.headers["access-control-allow-origin"] == "app://voicestudio"
+    assert response.headers["access-control-allow-origin"] == "app://elevenvoice"

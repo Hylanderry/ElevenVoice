@@ -863,9 +863,9 @@ describe('EngineCompatibilityMatrix', () => {
             id: 'indextts2',
             display_name: 'IndexTTS-2',
             available: false,
-            reason: 'IndexTTS-2 venv not found. Set OMNIVOICE_INDEXTTS_DIR.',
+            reason: 'IndexTTS-2 venv not found. Set ELEVENVOICE_INDEXTTS_DIR.',
             install_hint: 'git clone index-tts/index-tts',
-            setup_snippet: 'export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts',
+            setup_snippet: 'export ELEVENVOICE_INDEXTTS_DIR=/path/to/index-tts',
             last_error: null,
             isolation_mode: 'subprocess',
             gpu_compat: ['cuda', 'cpu'],
@@ -886,7 +886,7 @@ describe('EngineCompatibilityMatrix', () => {
     await waitForRow('indextts2');
     openDetails('indextts2');
     const snippet = screen.getByTestId('setup-snippet-indextts2');
-    expect(snippet).toHaveTextContent('export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts');
+    expect(snippet).toHaveTextContent('export ELEVENVOICE_INDEXTTS_DIR=/path/to/index-tts');
     expect(
       within(snippet).getByRole('button', { name: /copy setup command/i }),
     ).toBeInTheDocument();
@@ -1340,7 +1340,7 @@ describe('EngineCompatibilityMatrix', () => {
       ...res.tts.backends[2],
       available: false,
       reason: 'IndexTTS-2 venv not found.',
-      setup_snippet: 'export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts',
+      setup_snippet: 'export ELEVENVOICE_INDEXTTS_DIR=/path/to/index-tts',
       one_click_install: true,
     };
     return res;
@@ -1611,7 +1611,7 @@ describe('EngineCompatibilityMatrix', () => {
 
   it('keeps the setup snippet top-level on rows without a one-click installer', async () => {
     const res = makeEnginesResponse();
-    res.tts.backends[1].setup_snippet = 'export OMNIVOICE_SHERPA_MODEL=/m';
+    res.tts.backends[1].setup_snippet = 'export ELEVENVOICE_SHERPA_MODEL=/m';
     render(
       <EngineCompatibilityMatrix
         family="tts"

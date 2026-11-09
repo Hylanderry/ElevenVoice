@@ -28,7 +28,7 @@ def _isolated_prefs(monkeypatch, tmp_path):
     import os as _os
     from core import prefs
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
-    for k in ("HF_ENDPOINT", "OMNIVOICE_HF_ENDPOINT_MODE"):
+    for k in ("HF_ENDPOINT", "ELEVENVOICE_HF_ENDPOINT_MODE"):
         if k in _os.environ:
             monkeypatch.delenv(k)
 
@@ -282,7 +282,7 @@ def test_preflight_amd_flags_warn_when_no_rocm_torch():
 
 @pytest.mark.parametrize("platform_, expect", [
     ("win32", "audio.cpp"),
-    ("linux", "OMNIVOICE_TORCH_VARIANT=rocm"),
+    ("linux", "ELEVENVOICE_TORCH_VARIANT=rocm"),
 ])
 def test_preflight_sees_a_radeon_without_rocm_smi(monkeypatch, platform_, expect):
     """Windows ships no rocm-smi: the old probe reported "No compatible GPU" for
@@ -373,7 +373,7 @@ def test_preflight_names_the_cpu_build_and_the_rocm_opt_in(monkeypatch, platform
     info = _radeon_preflight(monkeypatch, platform_, cpu_torch)
     note = " ".join(info["notes"])
     assert "CPU-only build" in note and "CUDA" not in note
-    assert "OMNIVOICE_TORCH_VARIANT=rocm" in note
+    assert "ELEVENVOICE_TORCH_VARIANT=rocm" in note
     assert "no ROCm build" not in note
     if platform_ == "win32":
         assert "docs/install/windows-rocm.md" in note

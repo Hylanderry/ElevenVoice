@@ -24,18 +24,18 @@ def test_export_history_access(tmp_path, monkeypatch, credential):
 
     monkeypatch.setattr(exports, "db_conn", connection)
     monkeypatch.setattr(exports.event_bus, "emit", lambda *args: None)
-    monkeypatch.setenv("OMNIVOICE_API_KEY", "test-history-key")
-    monkeypatch.delenv("OMNIVOICE_SERVER_MODE", raising=False)
-    monkeypatch.delenv("OMNIVOICE_TRUSTED_NETWORKS", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_API_KEY", "test-history-key")
+    monkeypatch.delenv("ELEVENVOICE_SERVER_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_TRUSTED_NETWORKS", raising=False)
     app = FastAPI()
     app.state.network_share = SimpleNamespace(pin="123456")
     if credential == "bare-server":
-        monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-        monkeypatch.delenv("OMNIVOICE_API_KEY")
+        monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+        monkeypatch.delenv("ELEVENVOICE_API_KEY")
         app.state.network_share.pin = None
     app.include_router(exports.router)
     headers = {"Authorization": "Bearer test-history-key"} if credential == "key" else (
-        {"x-omnivoice-pin": "123456"} if credential == "pin" else {})
+        {"x-elevenvoice-pin": "123456"} if credential == "pin" else {})
     host = "127.0.0.1" if credential == "local" else "203.0.113.5"
     if credential == "invalid-key":
         headers = {"Authorization": "Bearer wrong"}

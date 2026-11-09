@@ -57,7 +57,7 @@ from services.dictation_cleanup import join_dictation_pieces, polish_dictation
 from services.text_polish import polish_text
 
 router = APIRouter()
-logger = logging.getLogger("omnivoice.capture_ws")
+logger = logging.getLogger("elevenvoice.capture_ws")
 
 
 def _timing(value):
@@ -70,15 +70,15 @@ def _timing(value):
     """
     return round(value, 2) if isinstance(value, (int, float)) else None
 
-SPEECH_PROTOCOL = "voicestudio.speech.v1"
+SPEECH_PROTOCOL = "elevenvoice.speech.v1"
 PLATFORM_STREAM_PATH = "/v1/audio/transcriptions/stream"
 
 # How often (seconds) to run transcription on the accumulated buffer.
 # Shorter = more responsive but more GPU load.
-PARTIAL_INTERVAL_S = float(os.environ.get("OMNIVOICE_STREAM_INTERVAL", "2.0"))
+PARTIAL_INTERVAL_S = float(os.environ.get("ELEVENVOICE_STREAM_INTERVAL", "2.0"))
 
 # Maximum silence before we auto-finalize (seconds of no new audio).
-SILENCE_TIMEOUT_S = float(os.environ.get("OMNIVOICE_STREAM_SILENCE", "3.0"))
+SILENCE_TIMEOUT_S = float(os.environ.get("ELEVENVOICE_STREAM_SILENCE", "3.0"))
 
 # Minimum buffer size before first partial (bytes of raw audio).
 MIN_BUFFER_BYTES = 64000  # ~2s of 16-bit mono 16kHz — needs enough WebM frames for ffmpeg
@@ -324,7 +324,7 @@ async def ws_transcribe(websocket: WebSocket):
     # inline the check before accept(). Without it, any local process could
     # stream the user's microphone over this endpoint.
     # Wave 2.3 (remote backend): a non-loopback client that presents the
-    # OMNIVOICE_API_KEY bearer is the thin-client dictation case — the mic
+    # ELEVENVOICE_API_KEY bearer is the thin-client dictation case — the mic
     # lives on the user's machine, the GPU here — and is allowed through.
     host = websocket.client.host if websocket.client else None
     if not is_local_host(host) and not ws_remote_authorized(websocket):
@@ -570,7 +570,7 @@ async def ws_transcribe(websocket: WebSocket):
                     polish_dictation, result.get("text", ""), result.get("language"),
                 )
             # Wave 2.1: optional local-LLM refinement of the final text.
-            # HARD-BOUNDED (maybe_refine_async, ~4s OMNIVOICE_REFINE_TIMEOUT_S):
+            # HARD-BOUNDED (maybe_refine_async, ~4s ELEVENVOICE_REFINE_TIMEOUT_S):
             # a slow/dead LLM can never delay this `final` beyond the budget —
             # it falls back to the unrefined (but polished) text. Best-effort:
             # never let refinement turn a good final into an error. The raw
@@ -621,7 +621,7 @@ async def ws_transcribe(websocket: WebSocket):
 
 # How often the offline-kind handler re-decodes the live window for a partial
 # (streaming-kind decodes every frame, no cadence needed).
-SHERPA_OFFLINE_PARTIAL_S = float(os.environ.get("OMNIVOICE_SHERPA_OFFLINE_PARTIAL", "0.8"))
+SHERPA_OFFLINE_PARTIAL_S = float(os.environ.get("ELEVENVOICE_SHERPA_OFFLINE_PARTIAL", "0.8"))
 
 # Utterance gate for the offline-kind handler: once the trailing this-many
 # seconds of the live buffer fall below the RMS floor, the utterance is
@@ -629,8 +629,8 @@ SHERPA_OFFLINE_PARTIAL_S = float(os.environ.get("OMNIVOICE_SHERPA_OFFLINE_PARTIA
 # decode is thereby bounded by one utterance instead of the whole session
 # (the old full-buffer re-decode was O(n²)), and a sentence commits ~0.6s
 # after the user stops speaking instead of only at EOF.
-SHERPA_OFFLINE_SILENCE_S = float(os.environ.get("OMNIVOICE_SHERPA_OFFLINE_SILENCE", "0.6"))
-SHERPA_OFFLINE_RMS_FLOOR = float(os.environ.get("OMNIVOICE_SHERPA_OFFLINE_RMS", "0.01"))
+SHERPA_OFFLINE_SILENCE_S = float(os.environ.get("ELEVENVOICE_SHERPA_OFFLINE_SILENCE", "0.6"))
+SHERPA_OFFLINE_RMS_FLOOR = float(os.environ.get("ELEVENVOICE_SHERPA_OFFLINE_RMS", "0.01"))
 
 
 #: Seconds of audio retained for silent-model recovery. Recovery only needs
@@ -653,7 +653,7 @@ def _bounded_recovery_tail_seconds(value: str | None) -> float:
 
 
 RECOVERY_TAIL_SECONDS = _bounded_recovery_tail_seconds(
-    os.environ.get("OMNIVOICE_DICTATION_RECOVERY_TAIL_S")
+    os.environ.get("ELEVENVOICE_DICTATION_RECOVERY_TAIL_S")
 )
 
 
@@ -1002,7 +1002,7 @@ async def _run_sherpa_streaming(websocket: WebSocket, spec):
             )
         if full:
             # Hard-bounded refinement (~4s): never delays this summary `final`
-            # beyond OMNIVOICE_REFINE_TIMEOUT_S even with a dead LLM endpoint.
+            # beyond ELEVENVOICE_REFINE_TIMEOUT_S even with a dead LLM endpoint.
             try:
                 from services.refinement import maybe_refine_async
                 refined = await maybe_refine_async(full)

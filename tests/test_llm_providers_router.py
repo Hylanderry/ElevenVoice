@@ -18,8 +18,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _HAS_OPENAI = __import__("importlib").util.find_spec("openai") is not None
 pytestmark = pytest.mark.skipif(not _HAS_OPENAI, reason="openai package not installed")
@@ -133,7 +133,7 @@ def test_first_editor_save_cannot_auto_enable_cloud_before_verification(settings
 
 def test_connect_pin_rejection_never_probes(settings_mod, monkeypatch):
     from fastapi import HTTPException
-    monkeypatch.setenv("OMNIVOICE_LLM_BACKEND", "off")
+    monkeypatch.setenv("ELEVENVOICE_LLM_BACKEND", "off")
     monkeypatch.setattr(settings_mod, "test_llm_provider", lambda pid: pytest.fail("blocked connection probed"))
     with pytest.raises(HTTPException) as err:
         settings_mod.connect_llm_provider("ollama")
@@ -175,7 +175,7 @@ def test_activation_rejects_incomplete_provider_without_changing_selection(setti
     assert settings_mod.list_llm_providers()["active"] == "groq"
 
 
-@pytest.mark.parametrize("pin,value", [("LLM_DEFAULT_PROVIDER", "groq"), ("OMNIVOICE_LLM_BACKEND", "off")])
+@pytest.mark.parametrize("pin,value", [("LLM_DEFAULT_PROVIDER", "groq"), ("ELEVENVOICE_LLM_BACKEND", "off")])
 def test_activation_honors_environment_pins(settings_mod, monkeypatch, pin, value):
     from fastapi import HTTPException
     monkeypatch.setenv(pin, value)

@@ -31,7 +31,7 @@ export const SUPPORTED_LOCALES = [
 
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
 
-const LOCALE_KEY = 'voicestudio.locale';
+const LOCALE_KEY = 'elevenvoice.locale';
 const localeModules = import.meta.glob<{ default: Record<string, unknown> }>([
   './locales/*.json',
   '!./locales/en.json',

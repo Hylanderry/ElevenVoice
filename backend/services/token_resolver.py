@@ -27,7 +27,7 @@ import time
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-logger = logging.getLogger("omnivoice.token_resolver")
+logger = logging.getLogger("elevenvoice.token_resolver")
 
 Source = Literal["app", "env", "hf-cli"]
 _PRIORITY: tuple[Source, ...] = ("app", "env", "hf-cli")

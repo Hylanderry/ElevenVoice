@@ -48,9 +48,9 @@ describe('matchCategories — search matching', () => {
     expect(matchCategories('models directory')).toContain('storage');
   });
 
-  it('uses the concise VoiceStudio API label', () => {
-    expect(CATEGORY_BY_ID.openapi.defaultLabel).toBe('VoiceStudio API');
-    expect(en.settings.openapi).toBe('VoiceStudio API');
+  it('uses the concise ElevenVoice API label', () => {
+    expect(CATEGORY_BY_ID.openapi.defaultLabel).toBe('ElevenVoice API');
+    expect(en.settings.openapi).toBe('ElevenVoice API');
   });
 
   it('keywordKeys match through the active locale, so localized setting names find their category', () => {

@@ -13,10 +13,10 @@ import { TwilioSetup, TWILIO_DOCS } from './twilio-setup';
 import { DEFAULT_BACKEND_PORT } from '@shared/app-config';
 
 /**
- * Directory entries VoiceStudio actually works with, keyed by catalog slug.
+ * Directory entries ElevenVoice actually works with, keyed by catalog slug.
  *
  * An entry here is the only thing that earns a card the "Works with
- * VoiceStudio" badge and capability chips; every other catalog entry is an
+ * ElevenVoice" badge and capability chips; every other catalog entry is an
  * external link. Add a connector by adding one entry: its capabilities and
  * its copyable setup blocks for the current backend address.
  */
@@ -62,15 +62,15 @@ export interface IntegrationSetup {
   blocks: (baseUrl: string) => SetupBlock[] | null;
   /**
    * An interactive setup panel for connectors that are configured and run
-   * inside VoiceStudio rather than exported as snippets (e.g. Twilio). An
+   * inside ElevenVoice rather than exported as snippets (e.g. Twilio). An
    * entry needs copyable blocks, a panel, or both.
    */
   panel?: ComponentType<IntegrationPanelProps>;
 }
 
-const REPO_DOCS = 'https://github.com/debpalash/VoiceStudio/blob/main/docs';
-const DOCKER_HUB_IMAGE = 'palashdeb/omnivoice-studio';
-const GHCR_IMAGE = 'ghcr.io/debpalash/voicestudio';
+const REPO_DOCS = 'https://github.com/Hylanderry/ElevenVoice/blob/main/docs';
+const DOCKER_HUB_IMAGE = 'palashdeb/elevenvoice';
+const GHCR_IMAGE = 'ghcr.io/hylanderry/elevenvoice';
 // Published images keep this stable even when a desktop build chooses another local default.
 const PUBLISHED_CONTAINER_PORT = 3900;
 
@@ -99,15 +99,15 @@ function mcpClient(slug: keyof typeof MCP_CLIENTS): IntegrationSetup {
 
 function dockerRun(image: string) {
   return [
-    'export OMNIVOICE_API_KEY="$(python3 -c \'import secrets; print(secrets.token_urlsafe(32))\')"',
+    'export ELEVENVOICE_API_KEY="$(python3 -c \'import secrets; print(secrets.token_urlsafe(32))\')"',
     '',
     'docker run -d --name omnivoice \\',
     `  -p 127.0.0.1:${DEFAULT_BACKEND_PORT}:${PUBLISHED_CONTAINER_PORT} \\`,
-    `  -e OMNIVOICE_PORT=${PUBLISHED_CONTAINER_PORT} \\`,
-    '  -e OMNIVOICE_API_KEY="$OMNIVOICE_API_KEY" \\',
-    '  -v omnivoice-data:/app/omnivoice_data \\',
+    `  -e ELEVENVOICE_PORT=${PUBLISHED_CONTAINER_PORT} \\`,
+    '  -e ELEVENVOICE_API_KEY="$ELEVENVOICE_API_KEY" \\',
+    '  -v omnivoice-data:/app/elevenvoice_data \\',
     // The image's HF_HOME; mounting the host cache there reuses its downloads.
-    '  -v ~/.cache/huggingface:/app/omnivoice_data/huggingface \\',
+    '  -v ~/.cache/huggingface:/app/elevenvoice_data/huggingface \\',
     `  ${image}:stable`,
     '',
   ].join('\n');
@@ -118,14 +118,14 @@ function dockerRunPowerShell(image: string) {
   return [
     '$bytes = New-Object byte[] 32',
     '[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)',
-    "$env:OMNIVOICE_API_KEY = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')",
+    "$env:ELEVENVOICE_API_KEY = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')",
     '',
     'docker run -d --name omnivoice `',
     `  -p 127.0.0.1:${DEFAULT_BACKEND_PORT}:${PUBLISHED_CONTAINER_PORT} \``,
-    `  -e OMNIVOICE_PORT=${PUBLISHED_CONTAINER_PORT} \``,
-    '  -e OMNIVOICE_API_KEY="$env:OMNIVOICE_API_KEY" `',
-    '  -v omnivoice-data:/app/omnivoice_data `',
-    '  -v "${HOME}/.cache/huggingface:/app/omnivoice_data/huggingface" `',
+    `  -e ELEVENVOICE_PORT=${PUBLISHED_CONTAINER_PORT} \``,
+    '  -e ELEVENVOICE_API_KEY="$env:ELEVENVOICE_API_KEY" `',
+    '  -v omnivoice-data:/app/elevenvoice_data `',
+    '  -v "${HOME}/.cache/huggingface:/app/elevenvoice_data/huggingface" `',
     `  ${image}:stable`,
     '',
   ].join('\n');
@@ -139,12 +139,12 @@ function dockerCompose(image: string) {
     '    ports:',
     `      - "127.0.0.1:${DEFAULT_BACKEND_PORT}:${PUBLISHED_CONTAINER_PORT}"`,
     '    environment:',
-    `      - OMNIVOICE_PORT=${PUBLISHED_CONTAINER_PORT}`,
-    '      - OMNIVOICE_API_KEY=${OMNIVOICE_API_KEY:?set a long random key}',
-    '      - OMNIVOICE_DATA_DIR=/app/omnivoice_data',
-    '      - HF_HOME=/app/omnivoice_data/huggingface',
+    `      - ELEVENVOICE_PORT=${PUBLISHED_CONTAINER_PORT}`,
+    '      - ELEVENVOICE_API_KEY=${ELEVENVOICE_API_KEY:?set a long random key}',
+    '      - ELEVENVOICE_DATA_DIR=/app/elevenvoice_data',
+    '      - HF_HOME=/app/elevenvoice_data/huggingface',
     '    volumes:',
-    '      - omnivoice-data:/app/omnivoice_data',
+    '      - omnivoice-data:/app/elevenvoice_data',
     '    restart: unless-stopped',
     'volumes:',
     '  omnivoice-data:',
@@ -186,6 +186,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
   'claude-code': mcpClient('claude-code'),
   cursor: mcpClient('cursor'),
   'codex-cli': mcpClient('codex-cli'),
+  'hermes-agent': mcpClient('hermes-agent'),
   'model-context-protocol': {
     capabilities: ['mcp'],
     taglineKey: 'integrationCatalog.tagline.mcp',
@@ -208,7 +209,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
             'Transport: Streamable HTTP',
             `Header: ${MCP_CLIENT_ID_HEADER}: <your-client-id>`,
             // Remote https: the key comes from the client's environment.
-            ...(bearer ? ['Header: Authorization: Bearer $OMNIVOICE_API_KEY'] : []),
+            ...(bearer ? ['Header: Authorization: Bearer $ELEVENVOICE_API_KEY'] : []),
             '',
           ].join('\n'),
         },
@@ -220,15 +221,15 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
           text: JSON.stringify(
             {
               mcpServers: {
-                voicestudio: {
+                elevenvoice: {
                   command: 'python',
                   args: ['-m', 'backend.mcp_shim'],
-                  cwd: '/path/to/VoiceStudio',
+                  cwd: '/path/to/ElevenVoice',
                   // The full base keeps https and any reverse-proxy path prefix.
                   env: {
-                    OMNIVOICE_URL: base,
-                    OMNIVOICE_CLIENT_ID: '<your-client-id>',
-                    ...(bearer ? { OMNIVOICE_API_KEY: '<backend API key>' } : {}),
+                    ELEVENVOICE_URL: base,
+                    ELEVENVOICE_CLIENT_ID: '<your-client-id>',
+                    ...(bearer ? { ELEVENVOICE_API_KEY: '<backend API key>' } : {}),
                   },
                 },
               },
@@ -252,7 +253,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
       // remotes get no key at all (it would cross the network in clear text).
       const policy = remoteAuth(baseUrl);
       const auth =
-        policy === 'bearer' ? ['  -H "Authorization: Bearer $OMNIVOICE_API_KEY" \\'] : [];
+        policy === 'bearer' ? ['  -H "Authorization: Bearer $ELEVENVOICE_API_KEY" \\'] : [];
       return [
         {
           id: 'base',
@@ -275,7 +276,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
             `curl ${base}/v1/audio/speech \\`,
             ...auth,
             '  -H "Content-Type: application/json" \\',
-            '  -d \'{"model":"tts-1","voice":"default","input":"Hello from VoiceStudio.","response_format":"wav"}\' \\',
+            '  -d \'{"model":"tts-1","voice":"default","input":"Hello from ElevenVoice.","response_format":"wav"}\' \\',
             '  --output speech.wav',
             '',
           ].join('\n'),
@@ -303,12 +304,12 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
             'client = OpenAI(',
             `    base_url="${base}/v1",`,
             policy === 'bearer'
-              ? '    api_key=os.environ.get("OMNIVOICE_API_KEY", "not-needed"),'
-              : '    api_key="voicestudio",',
+              ? '    api_key=os.environ.get("ELEVENVOICE_API_KEY", "not-needed"),'
+              : '    api_key="elevenvoice",',
             ')',
             '',
             'with client.audio.speech.with_streaming_response.create(',
-            '    model="tts-1", voice="default", input="Hello from VoiceStudio.",',
+            '    model="tts-1", voice="default", input="Hello from ElevenVoice.",',
             '    response_format="wav",',
             ') as response:',
             '    response.stream_to_file("speech.wav")',
@@ -324,7 +325,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
   docker: container(DOCKER_HUB_IMAGE, `${REPO_DOCS}/install/docker.md`),
   'github-container-registry': container(GHCR_IMAGE, `${REPO_DOCS}/install/docker.md`),
   'openai-agents': {
-    // VoiceStudio serves the pipeline's speech-to-text and text-to-speech; the
+    // ElevenVoice serves the pipeline's speech-to-text and text-to-speech; the
     // agent's language model is a local OpenAI-compatible server of the user's.
     capabilities: ['speechApi', 'transcriptionApi', 'localLlm'],
     taglineKey: 'integrationCatalog.tagline.openaiAgents',

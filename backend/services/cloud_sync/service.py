@@ -21,7 +21,7 @@ from services.cloud_sync.events import POLL_SECONDS, EventStream
 from services.cloud_sync.record_ids import ensure_sync_ids
 from services.cloud_sync.store import SyncStore, new_idempotency_key
 
-logger = logging.getLogger("omnivoice.cloud_sync")
+logger = logging.getLogger("elevenvoice.cloud_sync")
 
 DEBOUNCE_SECONDS = 1.5
 CHOICE_KEYS = ("settings", "shortcuts", "favorites")
@@ -46,8 +46,8 @@ def _os_version() -> str:
 
 
 def _device_name() -> str:
-    name = (socket.gethostname() or "VoiceStudio").split(".")[0].strip()
-    return (name or "VoiceStudio")[:64]
+    name = (socket.gethostname() or "ElevenVoice").split(".")[0].strip()
+    return (name or "ElevenVoice")[:64]
 
 
 def clean_choices(raw: Any) -> dict:

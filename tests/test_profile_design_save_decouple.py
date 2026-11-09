@@ -25,8 +25,8 @@ from pathlib import Path
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 _VD = {"Gender": "female", "Age": "young adult", "Pitch": "high pitch"}
 _VD_AUTO = {"Gender": "Auto", "Age": "Auto", "Pitch": "Auto"}
@@ -35,7 +35,7 @@ _VD_AUTO = {"Gender": "Auto", "Age": "Auto", "Pitch": "Auto"}
 @pytest.fixture()
 def iso(tmp_path, monkeypatch):
     """Isolated data dir + freshly-reloaded config/db/profiles modules."""
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     import core.config as cfg
     importlib.reload(cfg)
     import core.db as db

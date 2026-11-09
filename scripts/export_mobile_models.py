@@ -33,7 +33,7 @@ from services.model_licenses import safe_file  # noqa: E402
 
 CAPABILITIES = {
     "tts": "sherpa-onnx", "asr": "sherpa-onnx", "asr-stream": "sherpa-onnx",
-    "clone": "omnivoice.cpp", "translate": "llama.cpp",
+    "clone": "elevenvoice.cpp", "translate": "llama.cpp",
 }
 RUNTIMES = {key: {runtime} for key,runtime in CAPABILITIES.items()}
 RUNTIMES["clone"].add("sherpa-onnx")
@@ -109,7 +109,7 @@ def validate_source(source: dict[str, Any], *, pinned: bool = True) -> None:
         if (type(model.get("min_ram_gb")) not in (int, float) or model["min_ram_gb"] <= 0
                 or model["min_ram_gb"] > 128):
             raise ValueError(f"{mid}: invalid minimum RAM")
-        if (model["capability"] == "translate" or model["runtime"] == "omnivoice.cpp") and model["min_ram_gb"] < 6:
+        if (model["capability"] == "translate" or model["runtime"] == "elevenvoice.cpp") and model["min_ram_gb"] < 6:
             raise ValueError(f"{mid}: cloning/translation require at least 6 GB RAM")
         languages = model.get("languages")
         if (not isinstance(languages, list) or not languages

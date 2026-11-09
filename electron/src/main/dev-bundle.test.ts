@@ -176,7 +176,7 @@ describe('Electron binary resolution', () => {
 });
 
 describe('macOS development bundle branding', () => {
-  it('uses a VoiceStudio bundle while preserving Electron development detection', () => {
+  it('uses a ElevenVoice bundle while preserving Electron development detection', () => {
     const plan = createMacDevBundlePlan({
       electronExecutable: '/source/Electron.app/Contents/MacOS/Electron',
       electronVersion: '44.3.0',
@@ -188,11 +188,11 @@ describe('macOS development bundle branding', () => {
 
     expect(plan.sourceBundle).toBe(resolve('/source/Electron.app'));
     expect(plan.destinationBundle).toBe(
-      join(resolve('/cache'), '44.3.0-0.5.6-arm64-1024-123_5', 'VoiceStudio.app'),
+      join(resolve('/cache'), '44.3.0-0.5.6-arm64-1024-123_5', 'ElevenVoice.app'),
     );
     expect(basename(plan.destinationExecutable)).toBe('Electron');
     expect(plan.destinationExecutable).toContain(
-      join('VoiceStudio.app', 'Contents', 'MacOS', 'Electron'),
+      join('ElevenVoice.app', 'Contents', 'MacOS', 'Electron'),
     );
   });
 });
@@ -258,7 +258,7 @@ describe('macOS development bundle cache pruning', () => {
 describe.skipIf(process.platform !== 'darwin')('macOS cache cleanup safety', () => {
   it('preserves a bundle used by an already-running Electron instance', async () => {
     const root = mkdtempSync(join(tmpdir(), 'vs-dev-active-'));
-    const executable = join(root, 'active', 'VoiceStudio.app', 'Contents', 'MacOS', 'Electron');
+    const executable = join(root, 'active', 'ElevenVoice.app', 'Contents', 'MacOS', 'Electron');
     mkdirSync(join(executable, '..'), { recursive: true });
     mkdirSync(join(root, 'current'));
     writeFileSync(executable, '');

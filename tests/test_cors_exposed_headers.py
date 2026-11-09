@@ -37,7 +37,7 @@ def _client_header_reads() -> dict[str, set[str]]:
 
 def test_scan_finds_the_generate_take_headers():
     reads = _client_header_reads()
-    for name in ("x-audio-id", "x-seed", "x-omnivoice-routing", "x-gen-time"):
+    for name in ("x-audio-id", "x-seed", "x-elevenvoice-routing", "x-gen-time"):
         assert name in reads, f"header scan no longer sees {name}; fix the regex"
 
 

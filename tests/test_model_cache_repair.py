@@ -206,8 +206,8 @@ def test_repair_returns_false_when_download_fails(model_manager, monkeypatch):
         raise OSError("network down")
 
     monkeypatch.setattr(huggingface_hub, "snapshot_download", boom)
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")  # no real sleeps
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "3")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")  # no real sleeps
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "3")
     assert model_manager._repair_model_cache("test/checkpoint") is False
     # #739: a transient failure must be retried, not given up on after one try.
     assert len(calls) == 3
@@ -228,8 +228,8 @@ def test_repair_retries_then_succeeds(model_manager, monkeypatch):
         return "/cache/test/checkpoint"
 
     monkeypatch.setattr(huggingface_hub, "snapshot_download", flaky)
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "3")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "3")
     assert model_manager._repair_model_cache("test/checkpoint") is True
     assert attempts["n"] == 3
 
@@ -246,7 +246,7 @@ def test_repair_failover_switches_endpoint_after_network_failure(model_manager, 
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     monkeypatch.setattr(er, "_FAILOVER_ATTEMPTED", set())
     monkeypatch.delenv("HF_ENDPOINT", raising=False)
-    monkeypatch.delenv("OMNIVOICE_HF_ENDPOINT_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_HF_ENDPOINT_MODE", raising=False)
     # The re-race finds canonical dead and the mirror alive.
     monkeypatch.setattr(
         er, "probe_endpoint",
@@ -266,8 +266,8 @@ def test_repair_failover_switches_endpoint_after_network_failure(model_manager, 
         return "/cache/test/checkpoint"
 
     monkeypatch.setattr(huggingface_hub, "snapshot_download", flaky)
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "3")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "3")
     assert model_manager._repair_model_cache("test/checkpoint") is True
     # Attempt 1: canonical (no endpoint kwarg) fails → failover; attempt 2
     # carries the mirror endpoint and succeeds.
@@ -294,8 +294,8 @@ def test_repair_failover_skipped_for_non_network_failures(model_manager, monkeyp
         huggingface_hub, "snapshot_download",
         lambda **k: (_ for _ in ()).throw(OSError("No space left on device")),
     )
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "2")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "2")
     assert model_manager._repair_model_cache("test/checkpoint") is False
 
 
@@ -309,7 +309,7 @@ def test_repair_retries_are_env_tunable(model_manager, monkeypatch):
         huggingface_hub, "snapshot_download",
         lambda **k: calls.append(k) or (_ for _ in ()).throw(OSError("down")),
     )
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_BACKOFF_S", "0")
-    monkeypatch.setenv("OMNIVOICE_MODEL_REPAIR_RETRIES", "1")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_BACKOFF_S", "0")
+    monkeypatch.setenv("ELEVENVOICE_MODEL_REPAIR_RETRIES", "1")
     assert model_manager._repair_model_cache("test/checkpoint") is False
     assert len(calls) == 1

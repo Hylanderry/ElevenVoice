@@ -28,7 +28,7 @@ describe('take metadata', () => {
     expect(takeSettings(item).refText).toBe('');
   });
   it('uses known history fields when metadata is malformed or absent', () => {
-    localStorage.setItem('voicestudio.take-settings.v1', '{');
+    localStorage.setItem('elevenvoice.take-settings.v1', '{');
     expect(takeSettings(item)).toEqual({
       text: item.text,
       language: 'French',
@@ -73,7 +73,7 @@ describe('take metadata', () => {
   it('reusing legacy take metadata clears emotion from an unrelated recording', async () => {
     // Old takes only saved a handful of controls: absent emotion must mean Off.
     localStorage.setItem(
-      'voicestudio.take-settings.v1',
+      'elevenvoice.take-settings.v1',
       JSON.stringify({
         take: { speed: 1.25, steps: 24, selectedProfileId: 'different-voice' },
       }),
@@ -110,12 +110,12 @@ describe('take metadata', () => {
       emotionText: 'gentle and hopeful',
       emotionAlpha: 0.25,
     });
-    const raw = JSON.parse(localStorage.getItem('voicestudio.take-settings.v1') || '{}');
+    const raw = JSON.parse(localStorage.getItem('elevenvoice.take-settings.v1') || '{}');
     raw.take.emotionMode = 'invalid';
     raw.take.emotionText = 42;
     raw.take.emotionAlpha = 999;
     raw.take.emotionVector = [3];
-    localStorage.setItem('voicestudio.take-settings.v1', JSON.stringify(raw));
+    localStorage.setItem('elevenvoice.take-settings.v1', JSON.stringify(raw));
     expect(takeSettings(item)).toMatchObject({
       emotionMode: 'none',
       emotionText: '',
@@ -136,7 +136,7 @@ describe('take metadata', () => {
     'resets corrupt %s conditioning without dropping unrelated take settings',
     async (_case, emotion) => {
       localStorage.setItem(
-        'voicestudio.take-settings.v1',
+        'elevenvoice.take-settings.v1',
         JSON.stringify({
           take: {
             speed: 1.45,
@@ -166,7 +166,7 @@ describe('take metadata', () => {
   it('keeps valid vector conditioning together with its selected mode', () => {
     const vector = [0.4, 0.1, 0, 0, 0, 0.2, 0.1, 0.2];
     localStorage.setItem(
-      'voicestudio.take-settings.v1',
+      'elevenvoice.take-settings.v1',
       JSON.stringify({ take: { emotionMode: 'vector', emotionVector: vector, speed: 1.25 } }),
     );
     expect(takeSettings(item)).toMatchObject({
@@ -212,7 +212,7 @@ describe('take metadata', () => {
   });
   it('ignores malformed stored quality values', () => {
     localStorage.setItem(
-      'voicestudio.take-settings.v1',
+      'elevenvoice.take-settings.v1',
       JSON.stringify({ take: { wavBits: 20, effectPreset: 'loud', speed: 'fast' } }),
     );
     const restored = takeSettings(item);

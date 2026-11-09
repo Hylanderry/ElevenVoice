@@ -276,7 +276,7 @@ def test_a_permission_denied_bind_gets_its_own_actionable_message(tmp_path):
     """#2460: `[Errno 13]` / WSAEACCES 10013 on bind (a Windows excluded port
     range, or a privileged port) is not "port in use". It used to surface as a
     bare `exit code 3` -- uvicorn's startup-failure code -- with nothing about
-    reserved ranges or OMNIVOICE_PORT. The watcher records it separately (never
+    reserved ranges or ELEVENVOICE_PORT. The watcher records it separately (never
     as ``bind_error``: the in-use advice would be wrong) and the shell's
     "Last output" then carries the explanation."""
     guard = _read("backend", "main.py")
@@ -298,7 +298,7 @@ def test_a_permission_denied_bind_gets_its_own_actionable_message(tmp_path):
     )
     proc = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
     assert proc.returncode == 1, proc.stderr
-    assert "excludedportrange" in proc.stderr and "OMNIVOICE_PORT" in proc.stderr
+    assert "excludedportrange" in proc.stderr and "ELEVENVOICE_PORT" in proc.stderr
     assert "already in use" not in proc.stderr
     assert "_watcher.denied_error is not None" in _read("backend", "main.py"), (
         "the denied-bind watcher is never consulted in main.py"

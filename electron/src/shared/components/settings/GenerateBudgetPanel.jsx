@@ -3,8 +3,8 @@
  *
  * Surfaces the two env vars that bound how long one synthesis job is allowed
  * to run before it is abandoned as "too heavy for the available compute" —
- * `OMNIVOICE_GENERATE_TIMEOUT_S` (accelerated/GPU-family hosts) and
- * `OMNIVOICE_CPU_GENERATE_TIMEOUT_S` (CPU-only hosts, which are legitimately
+ * `ELEVENVOICE_GENERATE_TIMEOUT_S` (accelerated/GPU-family hosts) and
+ * `ELEVENVOICE_CPU_GENERATE_TIMEOUT_S` (CPU-only hosts, which are legitimately
  * slower). Before this panel the only control was the env var itself, which a
  * desktop-installer user has no obvious way to set — the timeout error told
  * people to "raise the generation timeout" with no UI path to do it (#1774,
@@ -83,7 +83,7 @@ function BudgetRow({ envKey, label, note, currentValue, shadowed }) {
         toast(
           t('settings.generate_timeout_shadowed_toast', {
             defaultValue:
-              'Saved, but an environment variable outside VoiceStudio is currently setting this — it will keep being used until that variable is removed.',
+              'Saved, but an environment variable outside ElevenVoice is currently setting this — it will keep being used until that variable is removed.',
           }),
           { icon: '⚠️', duration: 10000 },
         );
@@ -91,7 +91,7 @@ function BudgetRow({ envKey, label, note, currentValue, shadowed }) {
         setSaveShadowed(false);
         toast.success(
           t('settings.generate_timeout_saved', {
-            defaultValue: 'Saved. Restart VoiceStudio for the new budget to take effect.',
+            defaultValue: 'Saved. Restart ElevenVoice for the new budget to take effect.',
           }),
         );
       }
@@ -128,7 +128,7 @@ function BudgetRow({ envKey, label, note, currentValue, shadowed }) {
         isShadowed
           ? t('settings.generate_timeout_shadowed_note', {
               defaultValue:
-                'An environment variable outside VoiceStudio (shell, .env file, or container) is currently setting this — your saved value here is ignored until that variable is removed.',
+                'An environment variable outside ElevenVoice (shell, .env file, or container) is currently setting this — your saved value here is ignored until that variable is removed.',
             })
           : note
       }
@@ -189,7 +189,7 @@ export default function GenerateBudgetPanel() {
       })}
     >
       <BudgetRow
-        envKey="OMNIVOICE_GENERATE_TIMEOUT_S"
+        envKey="ELEVENVOICE_GENERATE_TIMEOUT_S"
         label={t('settings.generate_timeout_gpu', { defaultValue: 'Accelerated (GPU) budget' })}
         note={t('settings.generate_timeout_gpu_note', {
           defaultValue:
@@ -199,7 +199,7 @@ export default function GenerateBudgetPanel() {
         shadowed={info?.generate_timeout_shadowed}
       />
       <BudgetRow
-        envKey="OMNIVOICE_CPU_GENERATE_TIMEOUT_S"
+        envKey="ELEVENVOICE_CPU_GENERATE_TIMEOUT_S"
         label={t('settings.generate_timeout_cpu', { defaultValue: 'CPU budget' })}
         note={t('settings.generate_timeout_cpu_note', {
           defaultValue:

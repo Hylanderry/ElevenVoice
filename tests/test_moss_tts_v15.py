@@ -51,7 +51,7 @@ def test_install_hint_present():
     from services.tts_backend import _INSTALL_HINTS
 
     hint = _INSTALL_HINTS.get("moss-tts-v15", "")
-    assert "OMNIVOICE_MOSS_TTS_V15_DIR" in hint
+    assert "ELEVENVOICE_MOSS_TTS_V15_DIR" in hint
     assert "OpenMOSS" in hint
     assert "CUDA/CPU" not in hint
     backend = importlib.import_module("engines.moss_tts_v15").MossTTSV15Backend
@@ -69,7 +69,7 @@ def test_sidecar_script_ships():
 
 def test_default_model_source_is_pinned(monkeypatch):
     from engines.moss_tts_v15 import main
-    monkeypatch.delenv("OMNIVOICE_MOSS_TTS_V15_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", raising=False)
     assert main._model_source() == (main._DEFAULT_REPO, main._DEFAULT_REVISION)
 
 
@@ -93,18 +93,18 @@ def test_codec_revision_matches_its_separate_central_pin():
 
 def test_custom_remote_code_is_rejected_without_explicit_opt_in(monkeypatch):
     from engines.moss_tts_v15 import main
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
-    monkeypatch.delenv("OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", raising=False)
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_REVISION", "a" * 40)
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
+    monkeypatch.delenv("ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_REVISION", "a" * 40)
     with pytest.raises(RuntimeError, match="after auditing"):
         main._model_source()
 
 
 def test_custom_remote_code_requires_immutable_revision(monkeypatch):
     from engines.moss_tts_v15 import main
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "1")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_REVISION", "main")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "1")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_REVISION", "main")
     with pytest.raises(RuntimeError, match="40-character commit SHA"):
         main._model_source()
 
@@ -112,9 +112,9 @@ def test_custom_remote_code_requires_immutable_revision(monkeypatch):
 def test_audited_custom_remote_code_requires_both_opt_ins(monkeypatch):
     from engines.moss_tts_v15 import main
     revision = "b" * 40
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "true")
-    monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_REVISION", revision)
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", "someone/custom-model")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "true")
+    monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_REVISION", revision)
     assert main._model_source() == ("someone/custom-model", revision)
 
 
@@ -129,12 +129,12 @@ def test_loader_resolves_model_and_codec_revisions_before_loading(monkeypatch, t
     repo, revision = main._DEFAULT_REPO, main._DEFAULT_REVISION
     if custom:
         repo, revision = "someone/audited-model", "b" * 40
-        monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_MODEL", repo)
-        monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "1")
-        monkeypatch.setenv("OMNIVOICE_MOSS_TTS_V15_REVISION", revision)
+        monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", repo)
+        monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_TRUST_REMOTE_CODE", "1")
+        monkeypatch.setenv("ELEVENVOICE_MOSS_TTS_V15_REVISION", revision)
     else:
-        monkeypatch.delenv("OMNIVOICE_MOSS_TTS_V15_MODEL", raising=False)
-    monkeypatch.delenv("OMNIVOICE_MOSS_TTS_V15_ATTN", raising=False)
+        monkeypatch.delenv("ELEVENVOICE_MOSS_TTS_V15_MODEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MOSS_TTS_V15_ATTN", raising=False)
 
     codec_repo = "OpenMOSS-Team/MOSS-Audio-Tokenizer"
     codec_revision = "3cd226ba2947efa357ef453bcad111b6eafba782"
@@ -205,7 +205,7 @@ def test_is_available_not_installed_is_honest(monkeypatch):
 
     ok, msg = MossTTSV15Backend.is_available()
     assert ok is False
-    assert "OMNIVOICE_MOSS_TTS_V15_DIR" in msg
+    assert "ELEVENVOICE_MOSS_TTS_V15_DIR" in msg
     assert "docs/engines/moss-tts-v15.md" in msg  # actionable pointer
     # Honesty on hardware is enforced by gpu_compat (no 'mps' entry); the
     # message is free to *disclaim* MPS ("no MPS"), which is the opposite of

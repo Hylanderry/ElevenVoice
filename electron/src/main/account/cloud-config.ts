@@ -1,5 +1,5 @@
 /**
- * VoiceStudio Cloud endpoints (vssaas docs/specs/desktop-account-client.md). One block per
+ * ElevenVoice Cloud endpoints (vssaas docs/specs/desktop-account-client.md). One block per
  * environment. Sign-in is Zitadel on its own host (vssaas ADR 0093); the app discovers the
  * endpoints from `${issuer}/.well-known/openid-configuration`.
  */
@@ -42,7 +42,7 @@ const ENVIRONMENTS: Record<
     syncApi: 'http://127.0.0.1:8090/v1/sync',
     dashboard: 'http://127.0.0.1:3000',
     // Every local stack registers its own client (vssaas `idctl app -public`): set
-    // VOICESTUDIO_CLOUD_CLIENT_ID to it.
+    // ELEVENVOICE_CLOUD_CLIENT_ID to it.
     clientId: () => '',
   },
 };
@@ -50,7 +50,7 @@ const ENVIRONMENTS: Record<
 export function resolveCloudEnvironment(opts: {
   packaged: boolean;
   requested?: string;
-  /** VOICESTUDIO_CLOUD_CLIENT_ID; honoured in developer builds only. */
+  /** ELEVENVOICE_CLOUD_CLIENT_ID; honoured in developer builds only. */
   clientId?: string;
 }): CloudEnvironment {
   const requested = opts.requested as CloudEnvName | undefined;
@@ -83,8 +83,8 @@ export function dashboardLinks(env: CloudEnvironment): { profile: string; plan: 
 }
 
 /**
- * On in developer builds; packaged builds need VOICESTUDIO_CLOUD_ACCOUNTS=1 and the production
- * client ID (VOICESTUDIO_CLOUD_CLIENT_ID) at build time, so releases ship it dark until the
+ * On in developer builds; packaged builds need ELEVENVOICE_CLOUD_ACCOUNTS=1 and the production
+ * client ID (ELEVENVOICE_CLOUD_CLIENT_ID) at build time, so releases ship it dark until the
  * vssaas production API launches.
  */
 export function cloudAccountsAvailable(packaged: boolean): boolean {

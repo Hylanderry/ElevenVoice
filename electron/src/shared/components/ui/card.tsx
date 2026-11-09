@@ -4,9 +4,9 @@ import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
 /**
- * shadcn/ui Card — new-york style, themed through the VoiceStudio token bridge
+ * shadcn/ui Card — new-york style, themed through the ElevenVoice token bridge
  * (see index.css). `bg-card`/`text-card-foreground`/`border` resolve to the
- * VoiceStudio palette. `src/ui/Panel.jsx` builds on `Card` (as the surface
+ * ElevenVoice palette. `src/ui/Panel.jsx` builds on `Card` (as the surface
  * primitive) plus its own header/body structure, layering the glass/solid/flat
  * variants + the `.ui-panel*` cross-file hooks while keeping its
  * `variant`/`padding`/`title`/`actions`/`as` prop API.

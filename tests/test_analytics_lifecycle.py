@@ -21,8 +21,8 @@ import os
 import sys
 import types
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 import pytest
 
@@ -37,9 +37,9 @@ def sent(monkeypatch, tmp_path):
     monkeypatch.setattr(prefs, "_PREFS_PATH", str(tmp_path / "prefs.json"))
     monkeypatch.setattr(config, "DATA_DIR", str(tmp_path))
     monkeypatch.delenv("POSTHOG_PROJECT_TOKEN", raising=False)
-    monkeypatch.delenv("OMNIVOICE_ANALYTICS_DISABLED", raising=False)
-    monkeypatch.delenv("OMNIVOICE_INSTALL_CHANNEL", raising=False)
-    monkeypatch.delenv("OMNIVOICE_SERVER_MODE", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_ANALYTICS_DISABLED", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_INSTALL_CHANNEL", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SERVER_MODE", raising=False)
     analytics.shutdown()
     analytics._reset_error_events_for_tests()
 

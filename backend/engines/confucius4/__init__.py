@@ -7,7 +7,7 @@ cross-lingual voice transfer, Apache-2.0 (https://github.com/netease-youdao/Conf
 Like IndexTTS / MOSS-TTS-v1.5 / dots.tts it runs in its **own subprocess venv**
 (upstream: Python 3.10 + CUDA 12.6 + its own deps), isolated from the OmniVoice
 parent. It is **opt-in** — selected in the engine picker and enabled only when
-the user points ``OMNIVOICE_CONFUCIUS4_TTS_DIR`` at a clone — so it can never
+the user points ``ELEVENVOICE_CONFUCIUS4_TTS_DIR`` at a clone — so it can never
 become a broken default on any platform (the strict default-parity rule).
 
 Status (#590): **validated end-to-end** (2026-07-02, Apple Silicon, CPU) — the
@@ -34,7 +34,7 @@ from services.subprocess_backend import SubprocessBackend
 if TYPE_CHECKING:
     import torch  # noqa: F401
 
-logger = logging.getLogger("omnivoice.confucius4")
+logger = logging.getLogger("elevenvoice.confucius4")
 
 
 class Confucius4Backend(SubprocessBackend):
@@ -52,7 +52,7 @@ class Confucius4Backend(SubprocessBackend):
 
     (Upstream ships no pyproject.toml/setup.py, so there is nothing to
     ``pip install -e`` — the sidecar sys.path-inserts the clone instead.)
-    Then set ``OMNIVOICE_CONFUCIUS4_TTS_DIR`` to the clone root and restart.
+    Then set ``ELEVENVOICE_CONFUCIUS4_TTS_DIR`` to the clone root and restart.
     License: Apache-2.0. CUDA recommended; CPU validated but ~17× realtime.
     """
 
@@ -79,15 +79,15 @@ class Confucius4Backend(SubprocessBackend):
         )
         if not is_confucius4_installed():
             return False, (
-                "Confucius4-TTS venv not found. Set OMNIVOICE_CONFUCIUS4_TTS_DIR "
+                "Confucius4-TTS venv not found. Set ELEVENVOICE_CONFUCIUS4_TTS_DIR "
                 "to your Confucius4-TTS clone (the directory containing "
-                "requirements.txt) and restart VoiceStudio. CUDA GPU recommended "
+                "requirements.txt) and restart ElevenVoice. CUDA GPU recommended "
                 "(CPU works but is slow). See docs/engines/confucius4-tts.md."
             )
         if not CONFUCIUS4_SIDECAR_SCRIPT.exists():
             return False, (
                 "Confucius4-TTS sidecar script missing at "
-                f"{CONFUCIUS4_SIDECAR_SCRIPT} — reinstall VoiceStudio."
+                f"{CONFUCIUS4_SIDECAR_SCRIPT} — reinstall ElevenVoice."
             )
         return True, "ok"
 
@@ -105,9 +105,9 @@ class Confucius4Backend(SubprocessBackend):
     def recv_timeout_s(self) -> float:
         """Receive timeout in seconds for the Confucius4 sidecar process (#2103)."""
         # Confucius4 is an LLM-based TTS (~17x realtime on CPU); synthesis legitimately
-        # outruns the 60s class default. OMNIVOICE_CONFUCIUS4_RECV_TIMEOUT_S tunes it (#2103).
+        # outruns the 60s class default. ELEVENVOICE_CONFUCIUS4_RECV_TIMEOUT_S tunes it (#2103).
         try:
-            v = float(os.environ.get("OMNIVOICE_CONFUCIUS4_RECV_TIMEOUT_S", "900"))
+            v = float(os.environ.get("ELEVENVOICE_CONFUCIUS4_RECV_TIMEOUT_S", "900"))
         except (ValueError, TypeError):
             return 900.0
         if not math.isfinite(v):

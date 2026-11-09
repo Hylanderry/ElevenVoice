@@ -102,7 +102,7 @@ def _windows_pipe_handle(reader: Any) -> Optional[int]:
 
 def arm_desktop_parent_watchdog() -> bool:
     """Use stdin EOF as an unforgeable parent-liveness signal for desktop runs."""
-    if os.environ.get("OMNIVOICE_DESKTOP_CONTAINED") != "1":
+    if os.environ.get("ELEVENVOICE_DESKTOP_CONTAINED") != "1":
         return False
     reader = getattr(sys.stdin, "buffer", None)
     if reader is None:

@@ -24,7 +24,7 @@ from core.render_trace import timed as _render_timed
 import re
 from typing import List
 
-logger = logging.getLogger("omnivoice.chunked_tts")
+logger = logging.getLogger("elevenvoice.chunked_tts")
 
 # Default chunk size in characters. 0 disables chunking entirely.
 DEFAULT_MAX_CHUNK_CHARS = 800

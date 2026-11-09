@@ -68,7 +68,7 @@ def test_reconcile_adds_the_columns_when_alembic_cannot_run(tmp_path):
 
 @pytest.fixture
 def db(tmp_path, monkeypatch):
-    path = str(tmp_path / "omnivoice.db")
+    path = str(tmp_path / "elevenvoice.db")
     monkeypatch.setattr(core_db, "DB_PATH", path)
     with sqlite3.connect(path) as conn:
         conn.executescript(core_db._BASE_SCHEMA)

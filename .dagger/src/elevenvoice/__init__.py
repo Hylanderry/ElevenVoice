@@ -1,4 +1,4 @@
-"""A generated module for Voicestudio functions
+"""A generated module for Elevenvoice functions
 
 This module has been generated via dagger init and serves as a reference to
 basic module structure as you get started with Dagger.
@@ -13,4 +13,4 @@ rest is a long description with more detail on the module's purpose or usage,
 if appropriate. All modules should have a short description.
 """
 
-from .main import Voicestudio as Voicestudio
+from .main import Elevenvoice as Elevenvoice

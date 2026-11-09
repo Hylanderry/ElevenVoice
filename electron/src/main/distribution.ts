@@ -19,7 +19,7 @@ export type UpdateUnsupportedReason = 'development' | 'store' | 'package-manager
 export function applicationUpdatesUnsupportedReason(
   packaged: boolean,
   target: DistributionTarget = CURRENT_DISTRIBUTION,
-  disabledByEnvironment = process.env.VOICESTUDIO_DISABLE_UPDATER === '1',
+  disabledByEnvironment = process.env.ELEVENVOICE_DISABLE_UPDATER === '1',
 ): UpdateUnsupportedReason | null {
   if (!packaged) return 'development';
   if (DISTRIBUTION_PROFILES[target].applicationUpdates !== 'application') return 'store';
@@ -30,7 +30,7 @@ export function applicationUpdatesUnsupportedReason(
 export function applicationUpdatesSupported(
   packaged: boolean,
   target: DistributionTarget = CURRENT_DISTRIBUTION,
-  disabledByEnvironment = process.env.VOICESTUDIO_DISABLE_UPDATER === '1',
+  disabledByEnvironment = process.env.ELEVENVOICE_DISABLE_UPDATER === '1',
 ): boolean {
   return applicationUpdatesUnsupportedReason(packaged, target, disabledByEnvironment) === null;
 }

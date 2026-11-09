@@ -1,7 +1,7 @@
 """SoniTranslate sidecar integration.
 
 Manages an isolated SoniTranslate instance that runs as a Gradio service
-on port 7860. VoiceStudio calls it via `gradio_client` for full-pipeline
+on port 7860. ElevenVoice calls it via `gradio_client` for full-pipeline
 video dubbing with access to Edge TTS, Piper, Coqui XTTS, and RVC.
 """
 
@@ -18,9 +18,9 @@ from services.ffmpeg_utils import spawn_subprocess
 from core.logging_utils import log_safe
 from core.path_security import UnsafePath, resolve_within, safe_filename
 
-logger = logging.getLogger("omnivoice.sonitranslate")
+logger = logging.getLogger("elevenvoice.sonitranslate")
 
-# Default install location — inside the VoiceStudio project tree
+# Default install location — inside the ElevenVoice project tree
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 SONI_DIR = _PROJECT_ROOT / "engines" / "sonitranslate"
 SONI_VENV = SONI_DIR / ".venv"

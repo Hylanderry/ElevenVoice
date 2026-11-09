@@ -65,7 +65,7 @@ export function asrSetupHint(engine: EngineBackend, t: TFunction) {
 const platformReason =
   "This engine doesn't run on this computer's platform. Its guide lists the platforms it supports.";
 const noMpsReason =
-  "This engine needs Apple's GPU (MPS), and this installation's PyTorch can't use it. Updating macOS or reinstalling VoiceStudio usually restores it.";
+  "This engine needs Apple's GPU (MPS), and this installation's PyTorch can't use it. Updating macOS or reinstalling ElevenVoice usually restores it.";
 
 /** Classify only exact owned API text; custom server metadata stays compatible. */
 function ownedUnavailableCategory(reason: string | null | undefined) {

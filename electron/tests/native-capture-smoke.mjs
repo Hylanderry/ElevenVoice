@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import assert from 'node:assert/strict';
 import { startHealthBackend } from './fake-health-backend.mjs';
-const profile = mkdtempSync(join(tmpdir(), 'voicestudio-capture-check-'));
-const wayland = process.platform === 'linux' && process.env.VOICESTUDIO_TEST_WAYLAND === '1';
-const packagedExecutable = process.env.VOICESTUDIO_PACKAGED_EXE;
+const profile = mkdtempSync(join(tmpdir(), 'elevenvoice-capture-check-'));
+const wayland = process.platform === 'linux' && process.env.ELEVENVOICE_TEST_WAYLAND === '1';
+const packagedExecutable = process.env.ELEVENVOICE_PACKAGED_EXE;
 const health = await startHealthBackend();
 const app = await electron.launch({
   executablePath:
@@ -25,16 +25,16 @@ const app = await electron.launch({
   env: {
     ...process.env,
     ELECTRON_RENDERER_URL: '',
-    OMNIVOICE_PORT: String(health.port),
-    VOICESTUDIO_ALLOW_MULTIPLE_INSTANCES: '1',
-    VOICESTUDIO_ELECTRON_PROXY_PORT: process.env.VOICESTUDIO_ELECTRON_PROXY_PORT || '0',
-    VOICESTUDIO_SKIP_BACKEND: '1',
+    ELEVENVOICE_PORT: String(health.port),
+    ELEVENVOICE_ALLOW_MULTIPLE_INSTANCES: '1',
+    ELEVENVOICE_ELECTRON_PROXY_PORT: process.env.ELEVENVOICE_ELECTRON_PROXY_PORT || '0',
+    ELEVENVOICE_SKIP_BACKEND: '1',
   },
   timeout: 30000,
 });
 try {
   const main = await app.firstWindow();
-  await main.waitForFunction(() => window.voicestudio?.capture);
+  await main.waitForFunction(() => window.elevenvoice?.capture);
   // Exercise the real tray callback while avoiding physical mouse/focus changes.
   await app.evaluate(({ Tray }) => {
     const original = Tray.prototype.setContextMenu;
@@ -44,8 +44,8 @@ try {
     };
   });
   await main.evaluate(() =>
-    window.voicestudio.capture.labels({
-      show: 'Show VoiceStudio',
+    window.elevenvoice.capture.labels({
+      show: 'Show ElevenVoice',
       start: 'Start dictation',
       stop: 'Stop recording',
       settings: 'Settings',
@@ -53,7 +53,7 @@ try {
     }),
   );
   await assert.rejects(
-    () => main.evaluate(() => window.voicestudio.capture.accept(1)),
+    () => main.evaluate(() => window.elevenvoice.capture.accept(1)),
     /Untrusted recorder/,
   );
   // Capture transport is the subject of this smoke, not model installation.
@@ -98,7 +98,7 @@ try {
       await widget.evaluate(() => ({
         url: location.href,
         text: document.body.innerText.slice(0, 1200),
-        bridge: typeof window.voicestudio?.capture,
+        bridge: typeof window.elevenvoice?.capture,
       })),
       errors,
     );

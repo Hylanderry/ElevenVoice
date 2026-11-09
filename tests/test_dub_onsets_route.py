@@ -13,7 +13,7 @@ import os
 import numpy as np
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 SR = 16000
 

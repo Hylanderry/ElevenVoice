@@ -107,7 +107,7 @@ it('shows the remediation of a classified failure outside Technical details', as
   mocks.generate.mockRejectedValue(
     new ApiError(500, 'internal', {
       detail:
-        'VoiceStudio hit an internal error; check the backend log for details. The disk is full …',
+        'ElevenVoice hit an internal error; check the backend log for details. The disk is full …',
       docs_topic: 'DISK_FULL',
       hint: 'The disk is full …',
     }),

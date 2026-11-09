@@ -237,7 +237,7 @@ class TestHelper:
         assert payload["missing_repo_id"] == "Systran/faster-whisper-large-v3"
 
     def test_sherpa_offline_backend_maps_to_configured_model(self):
-        """OMNIVOICE_ASR_BACKEND=sherpa-onnx-asr preflights the configured
+        """ELEVENVOICE_ASR_BACKEND=sherpa-onnx-asr preflights the configured
         (default) sherpa dictation model's repo."""
         from api.routers.setup import models as setup_models
         from services import asr_backend

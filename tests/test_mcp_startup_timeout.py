@@ -75,9 +75,9 @@ def test_none_manager_is_noop():
 
 
 def test_timeout_env_override(monkeypatch):
-    monkeypatch.setenv("OMNIVOICE_MCP_START_TIMEOUT_S", "12.5")
+    monkeypatch.setenv("ELEVENVOICE_MCP_START_TIMEOUT_S", "12.5")
     assert _mcp_start_timeout_s() == 12.5
-    monkeypatch.delenv("OMNIVOICE_MCP_START_TIMEOUT_S", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_MCP_START_TIMEOUT_S", raising=False)
     assert _mcp_start_timeout_s() == 30.0
-    monkeypatch.setenv("OMNIVOICE_MCP_START_TIMEOUT_S", "garbage")
+    monkeypatch.setenv("ELEVENVOICE_MCP_START_TIMEOUT_S", "garbage")
     assert _mcp_start_timeout_s() == 30.0  # invalid → safe default

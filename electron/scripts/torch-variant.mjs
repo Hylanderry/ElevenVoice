@@ -53,10 +53,10 @@ export async function hasNvidiaGpu({
 }
 
 export function requestedTorchVariant(env = process.env) {
-  const raw = (env.OMNIVOICE_TORCH_VARIANT || 'auto').trim().toLowerCase() || 'auto';
+  const raw = (env.ELEVENVOICE_TORCH_VARIANT || 'auto').trim().toLowerCase() || 'auto';
   const variant = raw === 'default' ? 'cuda' : raw;
   if (!['auto', 'cpu', 'cuda', 'rocm'].includes(variant)) {
-    throw new Error('OMNIVOICE_TORCH_VARIANT must be auto, cpu, cuda, or rocm.');
+    throw new Error('ELEVENVOICE_TORCH_VARIANT must be auto, cpu, cuda, or rocm.');
   }
   return variant;
 }
@@ -82,7 +82,7 @@ export async function selectTorchVariant({
   if (!cpuWheelsApply) return 'native';
   if (requested === 'cpu' || requested === 'cuda') return requested;
   if (platform === 'win32' && arch === 'arm64') return 'cpu';
-  if ((env.OMNIVOICE_DEVICE || '').trim().toLowerCase() === 'cpu') return 'cpu';
+  if ((env.ELEVENVOICE_DEVICE || '').trim().toLowerCase() === 'cpu') return 'cpu';
   return (await nvidiaAvailable()) ? 'cuda' : 'cpu';
 }
 

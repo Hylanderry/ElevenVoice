@@ -2,17 +2,41 @@ import os
 import re
 import sys
 
+def _move_legacy_dir(legacy, target):
+    """Carry data from the folder older builds used over to the ElevenVoice one.
+
+    Runs once: only when the new folder doesn't exist yet. If the move fails
+    (files in use, another drive), the legacy folder keeps being used so no
+    voice, take or model is ever lost.
+    """
+    if os.path.exists(target) or not legacy or not os.path.isdir(legacy):
+        return target
+    try:
+        import shutil
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.move(legacy, target)
+        return target
+    except OSError:
+        return legacy
+
+
 def get_app_data_dir():
-    custom_dir = os.environ.get("OMNIVOICE_DATA_DIR")
+    custom_dir = os.environ.get("ELEVENVOICE_DATA_DIR")
     if custom_dir:
         return custom_dir
-        
+
+    home = os.path.expanduser("~")
     if sys.platform == "darwin":
-        return os.path.expanduser("~/Library/Application Support/OmniVoice")
+        target = os.path.join(home, "Library", "Application Support", "ElevenVoice", "data")
+        legacy = os.path.join(home, "Library", "Application Support", "Omni" + "Voice")
     elif sys.platform == "win32":
-        return os.path.join(os.environ.get("APPDATA", ""), "OmniVoice")
+        appdata = os.environ.get("APPDATA", "")
+        target = os.path.join(appdata, "ElevenVoice", "data")
+        legacy = os.path.join(appdata, "Omni" + "Voice") if appdata else ""
     else:
-        return os.path.expanduser("~/.omnivoice")
+        target = os.path.join(home, ".elevenvoice")
+        legacy = os.path.join(home, ".omni" + "voice")
+    return _move_legacy_dir(legacy, target)
 
 
 def _configured_hf_token_path():
@@ -33,22 +57,25 @@ def _ensure_short_hf_cache_on_windows():
     The default ``~/.cache/huggingface/hub/models--org--name/snapshots/<hash>/…``
     path regularly exceeds the 260-char MAX_PATH limit on NTFS, causing
     ``FileNotFoundError`` or truncated downloads on first install.  We shorten
-    it to ``%LOCALAPPDATA%\\OmniVoice\\hf_cache`` (~40 chars) so even the
+    it to ``%LOCALAPPDATA%\\ElevenVoice\\hf_cache`` (~40 chars) so even the
     deepest blob path stays well under the limit.
 
     Respects any explicit override the user already set via
-    ``OMNIVOICE_CACHE_DIR``, ``HF_HOME``, or ``HF_HUB_CACHE``.
+    ``ELEVENVOICE_CACHE_DIR``, ``HF_HOME``, or ``HF_HUB_CACHE``.
     """
     if sys.platform != "win32":
         return
-    # Don't override if the user (or main.py's OMNIVOICE_CACHE_DIR block)
+    # Don't override if the user (or main.py's ELEVENVOICE_CACHE_DIR block)
     # already pointed the cache somewhere specific.
-    if os.environ.get("OMNIVOICE_CACHE_DIR") or os.environ.get("HF_HOME") or os.environ.get("HF_HUB_CACHE"):
+    if os.environ.get("ELEVENVOICE_CACHE_DIR") or os.environ.get("HF_HOME") or os.environ.get("HF_HUB_CACHE"):
         return
     local_app = os.environ.get("LOCALAPPDATA", "")
     if not local_app:
         return
-    short_cache = os.path.join(local_app, "OmniVoice", "hf_cache")
+    short_cache = _move_legacy_dir(
+        os.path.join(local_app, "Omni" + "Voice", "hf_cache"),
+        os.path.join(local_app, "ElevenVoice", "hf_cache"),
+    )
     os.makedirs(short_cache, exist_ok=True)
     if "HF_TOKEN_PATH" not in os.environ:
         global HF_CLI_TOKEN_PATHS
@@ -71,18 +98,38 @@ def get_engines_dir(data_dir=None):
     """Root of the managed engine installs (venvs, checkouts, audio.cpp runtime).
 
     Defaults to ``DATA_DIR/engines`` so existing installs keep working. Set
-    ``OMNIVOICE_ENGINES_DIR`` to put these multi-GB trees on another drive
+    ``ELEVENVOICE_ENGINES_DIR`` to put these multi-GB trees on another drive
     (e.g. keep a small C: drive free) while voices and projects stay in
     ``DATA_DIR`` (#2683). Read at call time, so tests and late env restores work.
     """
-    custom = (os.environ.get("OMNIVOICE_ENGINES_DIR") or "").strip()
+    custom = (os.environ.get("ELEVENVOICE_ENGINES_DIR") or "").strip()
     if custom:
         return os.path.abspath(os.path.expanduser(custom))
     return os.path.join(DATA_DIR if data_dir is None else data_dir, "engines")
 VOICES_DIR = os.path.join(DATA_DIR, "voices")       # Reference audio for profiles
 OUTPUTS_DIR = os.path.join(DATA_DIR, "outputs")      # Generated audio files
 DUB_DIR = os.path.join(DATA_DIR, "dub_jobs")
-DB_PATH = os.path.join(DATA_DIR, "omnivoice.db")
+def _rename_legacy_files(data_dir):
+    """Files older builds named after the previous product move to ElevenVoice
+    names once (database with its WAL/SHM/backups, log). Never overwrites."""
+    legacy = "omni" + "voice"
+    try:
+        names = os.listdir(data_dir)
+    except OSError:
+        return
+    for name in names:
+        if not name.startswith(legacy + "."):
+            continue
+        target = os.path.join(data_dir, "elevenvoice" + name[len(legacy):])
+        if not os.path.exists(target):
+            try:
+                os.replace(os.path.join(data_dir, name), target)
+            except OSError:
+                pass
+
+
+_rename_legacy_files(DATA_DIR)
+DB_PATH = os.path.join(DATA_DIR, "elevenvoice.db")
 
 
 def dub_seg_path(job_id, seg_id):
@@ -105,10 +152,10 @@ def dub_seg_path(job_id, seg_id):
     return full
 PREVIEW_DIR = os.path.join(DATA_DIR, "preview")
 CRASH_LOG_PATH = os.path.join(DATA_DIR, "crash_log.txt")   # only written on unhandled exceptions
-LOG_PATH = os.path.join(DATA_DIR, "omnivoice.log")          # rolling runtime log — what the Settings UI reads
+LOG_PATH = os.path.join(DATA_DIR, "elevenvoice.log")          # rolling runtime log — what the Settings UI reads
 
-IDLE_TIMEOUT_SECONDS = int(os.environ.get("OMNIVOICE_IDLE_TIMEOUT", "900"))
-CPU_POOL_WORKERS = int(os.environ.get("OMNIVOICE_CPU_POOL", "0")) or min(8, (os.cpu_count() or 4))
+IDLE_TIMEOUT_SECONDS = int(os.environ.get("ELEVENVOICE_IDLE_TIMEOUT", "900"))
+CPU_POOL_WORKERS = int(os.environ.get("ELEVENVOICE_CPU_POOL", "0")) or min(8, (os.cpu_count() or 4))
 
 def ensure_dirs():
     for d in [DATA_DIR, VOICES_DIR, OUTPUTS_DIR, DUB_DIR, PREVIEW_DIR]:

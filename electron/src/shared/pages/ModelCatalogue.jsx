@@ -34,7 +34,7 @@ import ModelStoreTab from '../components/settings/ModelStoreTab';
 import { fmtBytes } from '../components/settings/models/format';
 
 /** Persisted across visits so the workspace reopens where you left it. */
-const FAMILY_KEY = 'omnivoice.catalogue.engine-family';
+const FAMILY_KEY = 'elevenvoice.catalogue.engine-family';
 const FAMILIES = ['tts', 'asr', 'llm'];
 /** Families whose engines load catalogue weights (LLM engines bring their own). */
 const WEIGHT_FAMILIES = ['tts', 'asr'];

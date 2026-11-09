@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-const base = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const base = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 const browser = await chromium.launch({
   ...(process.env.CHROMIUM_PATH
     ? { executablePath: process.env.CHROMIUM_PATH }
@@ -113,7 +113,7 @@ async function fromTemplate(name) {
   await picker.waitFor({ state: 'detached' });
 }
 try {
-  await page.addInitScript(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+  await page.addInitScript(() => localStorage.setItem('elevenvoice.setup.complete.v1', '1'));
   await page.goto(base + '/#/workflows');
   await fromTemplate('Batch narration · Normalize audio');
   await page.getByLabel('Scripts', { exact: true }).fill('First lesson\n---\nSecond lesson');
@@ -140,7 +140,7 @@ try {
   assert.equal(generated, 2, 'resume must reuse the first generated clip');
   assert.equal(normalized, 3, 'failed step retried, then second clip normalized');
   assert.equal(await page.locator('.workflow-run-output audio').count(), 2);
-  await page.screenshot({ path: join(tmpdir(), 'voicestudio-workflow-execution.png') });
+  await page.screenshot({ path: join(tmpdir(), 'elevenvoice-workflow-execution.png') });
   const download = page.waitForEvent('download');
   await page
     .locator('.workflow-run-output')
@@ -211,7 +211,7 @@ try {
   assert.equal(transcribed, 2);
   assert.equal(translated, 1);
   assert.equal(generated, 3);
-  await page.screenshot({ path: join(tmpdir(), 'voicestudio-workflow-localization.png') });
+  await page.screenshot({ path: join(tmpdir(), 'elevenvoice-workflow-localization.png') });
   // Removing a source releases its blob only after the last duplicated reference.
   await fromTemplate('Audio to transcript');
   await page
@@ -220,14 +220,14 @@ try {
   await page.getByText('remove-me.wav', { exact: true }).waitFor();
   await page.getByLabel('Workflow name', { exact: true }).fill('Source cleanup');
   const sourceId = await page.evaluate(() => {
-    const library = JSON.parse(localStorage.getItem('voicestudio.workflows.v1'));
+    const library = JSON.parse(localStorage.getItem('elevenvoice.workflows.v1'));
     return library.documents.find((item) => item.id === library.activeId).steps[0].media[0].id;
   });
   const hasSource = (id) =>
     page.evaluate(
       (id) =>
         new Promise((resolve, reject) => {
-          const open = indexedDB.open('voicestudio.workflow-runs', 1);
+          const open = indexedDB.open('elevenvoice.workflow-runs', 1);
           open.onerror = () => reject(open.error);
           open.onsuccess = () => {
             const db = open.result;
@@ -267,7 +267,7 @@ try {
     .setInputFiles({ name: 'delete-workflow.wav', mimeType: 'audio/wav', buffer: wav });
   await page.getByText('delete-workflow.wav', { exact: true }).waitFor();
   const deletedId = await page.evaluate(() => {
-    const library = JSON.parse(localStorage.getItem('voicestudio.workflows.v1'));
+    const library = JSON.parse(localStorage.getItem('elevenvoice.workflows.v1'));
     return library.documents.find((item) => item.id === library.activeId).steps[0].media[0].id;
   });
   await page.evaluate(() => {
@@ -283,7 +283,7 @@ try {
   assert.equal(await hasSource(deletedId), true);
   assert(
     await page.evaluate(
-      () => JSON.parse(localStorage.getItem('voicestudio.workflows.v1')).cleanup.length > 0,
+      () => JSON.parse(localStorage.getItem('elevenvoice.workflows.v1')).cleanup.length > 0,
     ),
   );
   await page.reload(); // Reload restores IndexedDB and retries the persisted deletion queue.
@@ -296,7 +296,7 @@ try {
     .setInputFiles({ name: 'last.wav', mimeType: 'audio/wav', buffer: wav });
   await page.getByText('last.wav', { exact: true }).waitFor();
   const lastId = await page.evaluate(() => {
-    const library = JSON.parse(localStorage.getItem('voicestudio.workflows.v1'));
+    const library = JSON.parse(localStorage.getItem('elevenvoice.workflows.v1'));
     return library.documents.find((item) => item.id === library.activeId).steps[0].media[0].id;
   });
   await page

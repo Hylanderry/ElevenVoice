@@ -47,7 +47,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Literal, Optional
 
-logger = logging.getLogger("omnivoice.gguf.vulkan")
+logger = logging.getLogger("elevenvoice.gguf.vulkan")
 
 DeviceType = Literal["DISCRETE_GPU", "INTEGRATED_GPU"]
 

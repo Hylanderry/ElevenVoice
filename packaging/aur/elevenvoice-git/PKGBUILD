@@ -1,5 +1,5 @@
 # Maintainer: Palash Debnath <aur at palash dot dev>
-pkgname=voicestudio-git
+pkgname=elevenvoice-git
 pkgver=0.5.7.r6387.g1a29929
 pkgrel=2
 pkgdesc='Local AI voice studio: cloning, speech, dubbing and transcription (development sources)'
@@ -20,8 +20,8 @@ optdepends=(
   'libappindicator-gtk3: tray integration on compatible desktops'
   'xdg-desktop-portal: native file dialogs and desktop integration'
 )
-provides=("voicestudio=$pkgver")
-conflicts=('voicestudio')
+provides=("elevenvoice=$pkgver")
+conflicts=('elevenvoice')
 # makepkg's GCC LTO objects cannot be consumed by Rust's LLVM linker when
 # linking the locked aws-lc-sys dependency. Keep the toolchains compatible.
 options=('!strip' '!debug' '!lto')
@@ -29,14 +29,14 @@ source=('voicestudio::git+https://github.com/debpalash/VoiceStudio.git#branch=ma
 sha256sums=('SKIP')
 
 pkgver() {
-  cd "$srcdir/voicestudio"
+  cd "$srcdir/elevenvoice"
   printf '%s.r%s.g%s' \
     "$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version.replaceAll('-', '.')")" \
     "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
 }
 
 prepare() {
-  cd "$srcdir/voicestudio"
+  cd "$srcdir/elevenvoice"
   export ELECTRON_SKIP_BINARY_DOWNLOAD=1
   bun install --frozen-lockfile
   CARGO_HOME="$srcdir/cargo-home" cargo fetch --locked \
@@ -45,13 +45,13 @@ prepare() {
 }
 
 build() {
-  cd "$srcdir/voicestudio"
+  cd "$srcdir/elevenvoice"
   export CARGO_HOME="$srcdir/cargo-home"
   export CARGO_NET_OFFLINE=true
-  export VOICESTUDIO_BUNDLED_UV=/usr/bin/uv
-  export VOICESTUDIO_RUST_TARGET=x86_64-unknown-linux-gnu
-  export VOICESTUDIO_OMNIVOICE_TTS_PLATFORM=linux-x86_64
-  export OMNIVOICE_BUILD_JOBS="${OMNIVOICE_BUILD_JOBS:-2}"
+  export ELEVENVOICE_BUNDLED_UV=/usr/bin/uv
+  export ELEVENVOICE_RUST_TARGET=x86_64-unknown-linux-gnu
+  export ELEVENVOICE_ELEVENVOICE_TTS_PLATFORM=linux-x86_64
+  export ELEVENVOICE_BUILD_JOBS="${ELEVENVOICE_BUILD_JOBS:-2}"
 
   # Build the same pinned GGUF runtime as the official release, including
   # runtime-dispatched CPU variants and the optional Vulkan backend.
@@ -76,33 +76,33 @@ build() {
 }
 
 package() {
-  cd "$srcdir/voicestudio"
-  install -d "$pkgdir/opt/VoiceStudio"
-  cp -a electron/release/linux-unpacked/. "$pkgdir/opt/VoiceStudio/"
-  chmod 4755 "$pkgdir/opt/VoiceStudio/chrome-sandbox"
+  cd "$srcdir/elevenvoice"
+  install -d "$pkgdir/opt/ElevenVoice"
+  cp -a electron/release/linux-unpacked/. "$pkgdir/opt/ElevenVoice/"
+  chmod 4755 "$pkgdir/opt/ElevenVoice/chrome-sandbox"
 
   install -d "$pkgdir/usr/bin"
-  cat > "$pkgdir/usr/bin/voicestudio" <<'EOF'
+  cat > "$pkgdir/usr/bin/elevenvoice" <<'EOF'
 #!/bin/sh
-export VOICESTUDIO_DISABLE_UPDATER=1
-exec /opt/VoiceStudio/voicestudio-electron "$@"
+export ELEVENVOICE_DISABLE_UPDATER=1
+exec /opt/ElevenVoice/elevenvoice-electron "$@"
 EOF
-  chmod 755 "$pkgdir/usr/bin/voicestudio"
+  chmod 755 "$pkgdir/usr/bin/elevenvoice"
 
   install -d "$pkgdir/usr/share/applications"
-  cat > "$pkgdir/usr/share/applications/VoiceStudio.desktop" <<'EOF'
+  cat > "$pkgdir/usr/share/applications/ElevenVoice.desktop" <<'EOF'
 [Desktop Entry]
 Type=Application
-Name=VoiceStudio
+Name=ElevenVoice
 Comment=Local AI voice studio
-Exec=voicestudio %U
-Icon=voicestudio
+Exec=elevenvoice %U
+Icon=elevenvoice
 Terminal=false
 Categories=AudioVideo;Audio;
-StartupWMClass=VoiceStudio
+StartupWMClass=ElevenVoice
 EOF
   install -Dm644 docs/logo.svg \
-    "$pkgdir/usr/share/icons/hicolor/scalable/apps/voicestudio.svg"
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/elevenvoice.svg"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 LICENSE-NOTICE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE-NOTICE.md"
 }

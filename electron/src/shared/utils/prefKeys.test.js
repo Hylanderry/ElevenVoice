@@ -86,10 +86,10 @@ describe('prefKeys registry', () => {
     afterEach(() => vi.useRealTimers());
 
     it('removes every pref key and keeps data/connection keys', () => {
-      localStorage.setItem('omnivoice.app', '{"state":{}}');
-      localStorage.setItem('omnivoice.navRailSide', 'right');
-      localStorage.setItem('omnivoice.logs.collapsed', '1');
-      localStorage.setItem('omnivoice.settings.category', 'storage');
+      localStorage.setItem('elevenvoice.app', '{"state":{}}');
+      localStorage.setItem('elevenvoice.navRailSide', 'right');
+      localStorage.setItem('elevenvoice.logs.collapsed', '1');
+      localStorage.setItem('elevenvoice.settings.category', 'storage');
       localStorage.setItem('omni_capture_live_typing', '1');
       localStorage.setItem('ov_stories_global_speed', '1.2');
       localStorage.setItem('omni_ui', '{"uiScale":1.1}');
@@ -104,10 +104,10 @@ describe('prefKeys registry', () => {
       const removed = clearLocalPreferences();
 
       expect(removed).toHaveLength(8);
-      expect(localStorage.getItem('omnivoice.app')).toBeNull();
-      expect(localStorage.getItem('omnivoice.navRailSide')).toBeNull();
-      expect(localStorage.getItem('omnivoice.logs.collapsed')).toBeNull();
-      expect(localStorage.getItem('omnivoice.settings.category')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.app')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.navRailSide')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.logs.collapsed')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.settings.category')).toBeNull();
       expect(localStorage.getItem('omni_capture_live_typing')).toBeNull();
       expect(localStorage.getItem('ov_stories_global_speed')).toBeNull();
       expect(localStorage.getItem('omni_ui')).toBeNull();
@@ -119,7 +119,7 @@ describe('prefKeys registry', () => {
 
     it('preserves project data in a revisioned full fallback while resetting preferences', () => {
       localStorage.setItem(
-        'omnivoice.app',
+        'elevenvoice.app',
         JSON.stringify({
           version: 9,
           longformFallbackRevision: 3,
@@ -131,12 +131,12 @@ describe('prefKeys registry', () => {
           },
         }),
       );
-      localStorage.setItem('omnivoice.navRailSide', 'right');
+      localStorage.setItem('elevenvoice.navRailSide', 'right');
 
       const reset = clearLocalPreferences();
 
-      expect(reset).toEqual(expect.arrayContaining(['omnivoice.app', 'omnivoice.navRailSide']));
-      const fallback = JSON.parse(localStorage.getItem('omnivoice.app'));
+      expect(reset).toEqual(expect.arrayContaining(['elevenvoice.app', 'elevenvoice.navRailSide']));
+      const fallback = JSON.parse(localStorage.getItem('elevenvoice.app'));
       expect(fallback).toEqual({
         version: 9,
         longformFallbackRevision: 3,
@@ -145,12 +145,12 @@ describe('prefKeys registry', () => {
           storyProjects: [{ id: 'p_book', name: 'Book' }],
         },
       });
-      expect(localStorage.getItem('omnivoice.navRailSide')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.navRailSide')).toBeNull();
     });
 
     it('preserves an unrevisioned legacy fallback when adding its revision hit quota', () => {
       localStorage.setItem(
-        'omnivoice.app',
+        'elevenvoice.app',
         JSON.stringify({
           version: 8,
           state: {
@@ -163,7 +163,7 @@ describe('prefKeys registry', () => {
 
       clearLocalPreferences();
 
-      expect(JSON.parse(localStorage.getItem('omnivoice.app'))).toEqual({
+      expect(JSON.parse(localStorage.getItem('elevenvoice.app'))).toEqual({
         version: 8,
         state: {
           script: 'last recoverable manuscript',
@@ -174,7 +174,7 @@ describe('prefKeys registry', () => {
 
     it('preserves a pending IndexedDB-clear tombstone during a preference reset', () => {
       localStorage.setItem(
-        'omnivoice.app',
+        'elevenvoice.app',
         JSON.stringify({
           version: 9,
           longformPendingDurableClear: true,
@@ -184,7 +184,7 @@ describe('prefKeys registry', () => {
 
       clearLocalPreferences();
 
-      expect(JSON.parse(localStorage.getItem('omnivoice.app'))).toEqual({
+      expect(JSON.parse(localStorage.getItem('elevenvoice.app'))).toEqual({
         version: 9,
         longformPendingDurableClear: true,
         state: {},
@@ -193,7 +193,7 @@ describe('prefKeys registry', () => {
 
     it('preserves physical-removal intent while resetting preferences', () => {
       localStorage.setItem(
-        'omnivoice.app',
+        'elevenvoice.app',
         JSON.stringify({
           version: 9,
           longformPendingDurableClear: true,
@@ -204,7 +204,7 @@ describe('prefKeys registry', () => {
 
       clearLocalPreferences();
 
-      expect(JSON.parse(localStorage.getItem('omnivoice.app'))).toEqual({
+      expect(JSON.parse(localStorage.getItem('elevenvoice.app'))).toEqual({
         version: 9,
         longformPendingDurableClear: true,
         longformPendingStorageRemove: true,
@@ -214,22 +214,22 @@ describe('prefKeys registry', () => {
 
     it('prevents pending and post-reset writes from resurrecting preferences', () => {
       vi.useFakeTimers();
-      localStorage.setItem('omnivoice.app', '{"state":{"old":true},"version":7}');
+      localStorage.setItem('elevenvoice.app', '{"state":{"old":true},"version":7}');
       localStorage.setItem('omni_ui', '{"text":"old"}');
       const cleanupLifecycle = installPersistenceLifecycleFlush();
-      queueJsonWrite('omnivoice.app', () => ({ state: { text: 'pending' }, version: 7 }));
+      queueJsonWrite('elevenvoice.app', () => ({ state: { text: 'pending' }, version: 7 }));
       queueJsonWrite('omni_ui', () => ({ text: 'pending' }));
 
       clearLocalPreferences();
       // Store/effect activity can continue during ResetPanel's 400 ms reload
       // delay. These writes must be rejected for the rest of this document.
-      queueJsonWrite('omnivoice.app', () => ({ state: { text: 'after reset' }, version: 7 }));
+      queueJsonWrite('elevenvoice.app', () => ({ state: { text: 'after reset' }, version: 7 }));
       queueJsonWrite('omni_ui', () => ({ text: 'after reset' }));
       vi.runAllTimers();
       window.dispatchEvent(new Event('pagehide'));
       flushPendingWrites();
 
-      expect(localStorage.getItem('omnivoice.app')).toBeNull();
+      expect(localStorage.getItem('elevenvoice.app')).toBeNull();
       expect(localStorage.getItem('omni_ui')).toBeNull();
       cleanupLifecycle();
     });
@@ -244,9 +244,9 @@ describe('prefKeys registry', () => {
       };
 
       expect(() => clearLocalPreferences(failingStorage)).toThrowError(DOMException);
-      queueJsonWrite('omnivoice.app', () => ({ state: { recovered: true }, version: 7 }));
+      queueJsonWrite('elevenvoice.app', () => ({ state: { recovered: true }, version: 7 }));
       flushPendingWrites();
-      expect(JSON.parse(localStorage.getItem('omnivoice.app'))).toEqual({
+      expect(JSON.parse(localStorage.getItem('elevenvoice.app'))).toEqual({
         state: { recovered: true },
         version: 7,
       });
@@ -270,7 +270,7 @@ describe('prefKeys registry', () => {
     it('releases write suspension and propagates a removal failure', () => {
       const failingStorage = {
         length: 1,
-        key: vi.fn(() => 'omnivoice.app'),
+        key: vi.fn(() => 'elevenvoice.app'),
         removeItem: vi.fn(() => {
           throw new DOMException('private value', 'SecurityError');
         }),

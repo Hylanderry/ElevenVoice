@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
-import { VoiceStudioAgent } from './voice-studio-agent';
+import { ElevenVoiceAgent } from './elevenvoice-agent';
 import { agentConversation, receiveAgentEvent } from '@/lib/agent-conversation';
 const mocks = vi.hoisted(() => ({
   repair: {
@@ -46,7 +46,7 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 async function open() {
-  render(<VoiceStudioAgent />);
+  render(<ElevenVoiceAgent />);
   fireEvent.click(screen.getByRole('button', { name: 'repairAgent.title' }));
   await screen.findByRole('button', { name: 'Codex' });
 }
@@ -139,11 +139,11 @@ it('explains why a picked source folder was rejected and how to get one', async 
   fireEvent.click(screen.getByRole('checkbox', { name: 'agentWorkspace.source' }));
   expect(screen.getByText('repairAgent.noSource')).toBeInTheDocument();
   expect(
-    screen.getByText(/git clone https:\/\/github\.com\/debpalash\/VoiceStudio\.git/),
+    screen.getByText(/git clone https:\/\/github\.com\/Hylanderry\/ElevenVoice\.git/),
   ).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /common\.learn_more/ })).toHaveAttribute(
     'href',
-    expect.stringContaining('docs/electron-repair.md#source-checkout'),
+    expect.stringContaining('github.com/Hylanderry/ElevenVoice'),
   );
   mocks.repair.chooseWorkspace.mockResolvedValue({
     status: 'idle',
@@ -177,7 +177,7 @@ it.each([
     output: '',
     workspaceAvailable: workspace === 'source',
   });
-  render(<VoiceStudioAgent />);
+  render(<ElevenVoiceAgent />);
   act(() => openRepairAgent(report, true));
   await waitFor(() =>
     expect(mocks.repair.start).toHaveBeenCalledWith(expect.objectContaining({ workspace, report })),
@@ -187,7 +187,7 @@ it.each([
 it('keeps crash repair ready for Send until a source checkout is attached', async () => {
   const { DEFAULT_REPAIR_AGENT_KEY, openRepairAgent } = await import('@/lib/repair-agent-events');
   localStorage.setItem(DEFAULT_REPAIR_AGENT_KEY, 'codex');
-  render(<VoiceStudioAgent />);
+  render(<ElevenVoiceAgent />);
   act(() => openRepairAgent('Renderer crashed unexpectedly', true));
   const choose = await screen.findByRole('button', { name: 'settings.models_dir_choose' });
   expect(screen.getByRole('textbox')).toHaveValue('Renderer crashed unexpectedly');
@@ -222,7 +222,7 @@ it('keeps the newest CLI scan when an older one answers last', async () => {
           answerMount = resolve;
         }),
   );
-  render(<VoiceStudioAgent />);
+  render(<ElevenVoiceAgent />);
   fireEvent.click(screen.getByRole('button', { name: 'repairAgent.title' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Claude Code' })).toBeEnabled());
   // The mount scan started first but answers after the refresh: it is stale.
@@ -235,7 +235,7 @@ it('keeps the newest CLI scan when an older one answers last', async () => {
   expect(screen.getByRole('button', { name: 'Claude Code' })).toBeEnabled();
 });
 it('docks the closed launcher in the window edge instead of floating over pane content', () => {
-  render(<VoiceStudioAgent />);
+  render(<ElevenVoiceAgent />);
   const launcher = screen.getByRole('button', { name: 'repairAgent.title' });
   // The round button at right-3 covered right-pane rows (a take's Style value).
   expect(launcher.className).toMatch(/\bright-0\b/);

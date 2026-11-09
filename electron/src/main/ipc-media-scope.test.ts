@@ -14,7 +14,7 @@ const native = vi.hoisted(() => ({
   }),
 }));
 const owner = vi.hoisted(() => {
-  const mainFrame = { url: 'app://voicestudio/index.html' };
+  const mainFrame = { url: 'app://elevenvoice/index.html' };
   return { webContents: { mainFrame }, isMaximized: () => false };
 });
 vi.mock('electron', () => ({

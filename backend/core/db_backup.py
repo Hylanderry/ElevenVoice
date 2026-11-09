@@ -3,14 +3,14 @@
 Before ``alembic upgrade head`` applies *pending* migrations at startup —
 which is exactly the first launch of a new app version that changed the
 schema — the live database is snapshotted next to itself as
-``omnivoice.db.backup-<version>-<n>`` so a failed or interrupted migration
+``elevenvoice.db.backup-<version>-<n>`` so a failed or interrupted migration
 can never cost user data (voices, projects, history, settings).
 
 Design rules (owner intent: "never corrupt/erase user data on update"):
 
 - Snapshots use the SQLite online-backup API (``sqlite3.Connection.backup``),
   not a file copy — the live DB runs in WAL mode, so a plain copy could miss
-  everything still sitting in ``omnivoice.db-wal``.
+  everything still sitting in ``elevenvoice.db-wal``.
 - Only the most recent ``KEEP_BACKUPS`` snapshots are kept; older ones are
   pruned so backups can't grow without bound.
 - DBs larger than ``MAX_BACKUP_DB_BYTES`` are skipped with a log line (a
@@ -29,7 +29,7 @@ import re
 import sqlite3
 import time
 
-logger = logging.getLogger("omnivoice.db.backup")
+logger = logging.getLogger("elevenvoice.db.backup")
 
 #: Keep this many snapshots; older ones are pruned after each new snapshot.
 KEEP_BACKUPS = 3

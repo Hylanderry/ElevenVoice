@@ -29,8 +29,8 @@ try {
       { index, text },
     );
   await page.addInitScript(() => {
-    localStorage.setItem('voicestudio.setup.complete.v1', '1');
-    localStorage.setItem('voicestudio.locale', 'en');
+    localStorage.setItem('elevenvoice.setup.complete.v1', '1');
+    localStorage.setItem('elevenvoice.locale', 'en');
     globalThis.__dubAgentRequests = [];
     globalThis.__nativeSaveRequests = [];
     const bridge = {
@@ -66,22 +66,22 @@ try {
         },
       },
     };
-    Object.defineProperty(window, 'voicestudio', {
+    Object.defineProperty(window, 'elevenvoice', {
       configurable: true,
       value: bridge,
     });
-    if (sessionStorage.getItem('voicestudio.test.reset-dub') === '1') {
-      localStorage.removeItem('voicestudio.dub.session.v1');
-      sessionStorage.removeItem('voicestudio.test.reset-dub');
+    if (sessionStorage.getItem('elevenvoice.test.reset-dub') === '1') {
+      localStorage.removeItem('elevenvoice.dub.session.v1');
+      sessionStorage.removeItem('elevenvoice.test.reset-dub');
     }
-    const timelineDraft = sessionStorage.getItem('voicestudio.test.timeline-draft');
+    const timelineDraft = sessionStorage.getItem('elevenvoice.test.timeline-draft');
     if (timelineDraft) {
-      localStorage.setItem('voicestudio.dub.session.v1', timelineDraft);
-      sessionStorage.removeItem('voicestudio.test.timeline-draft');
+      localStorage.setItem('elevenvoice.dub.session.v1', timelineDraft);
+      sessionStorage.removeItem('elevenvoice.test.timeline-draft');
     }
   });
-  const video = process.env.VOICESTUDIO_TEST_VIDEO
-    ? readFileSync(process.env.VOICESTUDIO_TEST_VIDEO)
+  const video = process.env.ELEVENVOICE_TEST_VIDEO
+    ? readFileSync(process.env.ELEVENVOICE_TEST_VIDEO)
     : null;
   const errors = [];
   const vidstackWarnings = [];
@@ -141,7 +141,7 @@ try {
     route.fulfill({ json: { pairs: [] } }),
   );
   await page.route('**/api/glossary/fixture', (route) =>
-    route.fulfill({ json: [{ source: 'VoiceStudio', target: 'VoiceStudio' }] }),
+    route.fulfill({ json: [{ source: 'ElevenVoice', target: 'ElevenVoice' }] }),
   );
   await page.route('**/api/settings/llm-skills', (route) =>
     route.fulfill({
@@ -250,7 +250,7 @@ try {
     }),
   );
   await page.goto(
-    new URL('/#/dub', process.env.VOICESTUDIO_UI_URL || 'http://localhost:3902').href,
+    new URL('/#/dub', process.env.ELEVENVOICE_UI_URL || 'http://localhost:3902').href,
   );
   // Spoken language and speaker count are compact rows, open without a disclosure.
   await page.getByRole('button', { name: 'Spoken language', exact: true }).click();
@@ -415,7 +415,7 @@ try {
   // deliberate choice wins over the transcript's detected 'en' (#3442).
   assert.equal(agentRequest.sourceLanguage, 'fr');
   assert.equal(agentRequest.targetLanguage, 'Spanish');
-  assert.deepEqual(agentRequest.glossary, [{ source: 'VoiceStudio', target: 'VoiceStudio' }]);
+  assert.deepEqual(agentRequest.glossary, [{ source: 'ElevenVoice', target: 'ElevenVoice' }]);
   assert.deepEqual(agentRequest.segments, [
     {
       id: '1',
@@ -676,7 +676,7 @@ try {
   // A completed transcript longer than the virtual window must reveal cues
   // without scrolling the timeline being operated out of the workspace.
   await page.evaluate(() => {
-    const draft = JSON.parse(localStorage.getItem('voicestudio.dub.session.v1'));
+    const draft = JSON.parse(localStorage.getItem('elevenvoice.dub.session.v1'));
     draft.jobId = 'fixture';
     draft.segments = Array.from({ length: 120 }, (_, index) => ({
       id: `long-${index}`,
@@ -689,7 +689,7 @@ try {
     }));
     draft.duration = 360;
     draft.phase = 'done';
-    sessionStorage.setItem('voicestudio.test.timeline-draft', JSON.stringify(draft));
+    sessionStorage.setItem('elevenvoice.test.timeline-draft', JSON.stringify(draft));
   });
   await page.reload();
   const assertTimelineCueVisible = async (id) => {
@@ -759,13 +759,13 @@ try {
     );
     await page.waitForFunction(
       (expectedStart) => {
-        const draft = JSON.parse(localStorage.getItem('voicestudio.dub.session.v1'));
+        const draft = JSON.parse(localStorage.getItem('elevenvoice.dub.session.v1'));
         return Math.abs(draft.segments[91].start - expectedStart) < 0.0001;
       },
       273 + (index + 1) * 0.1,
     );
     const timings = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('voicestudio.dub.session.v1')).segments.map(
+      JSON.parse(localStorage.getItem('elevenvoice.dub.session.v1')).segments.map(
         ({ start, end }) => ({ start, end }),
       ),
     );
@@ -808,7 +808,7 @@ try {
   await assertTimelineCueVisible('long-0');
   generationFailure = null;
   await page.setViewportSize({ width: 1400, height: 900 });
-  await page.evaluate(() => sessionStorage.setItem('voicestudio.test.reset-dub', '1'));
+  await page.evaluate(() => sessionStorage.setItem('elevenvoice.test.reset-dub', '1'));
   await page.reload();
   failTranscription = true;
   await page.getByRole('textbox', { name: /paste a video URL/ }).fill('https://example.com/movie.mp4');
@@ -989,8 +989,8 @@ try {
   assert.deepEqual(errors, []);
   assert.deepEqual(vidstackWarnings, []);
   if (video) assert.equal(mediaHeadRequests, 0);
-  if (process.env.VOICESTUDIO_SCREENSHOT)
-    await page.screenshot({ path: process.env.VOICESTUDIO_SCREENSHOT });
+  if (process.env.ELEVENVOICE_SCREENSHOT)
+    await page.screenshot({ path: process.env.ELEVENVOICE_SCREENSHOT });
   console.log(
     'PASS: dub upload, streamed transcription, subtitle import, translate, edit, reload recovery, generate, export readiness, long virtualized timeline visibility, error-notice resizing and dismissal, and URL import',
   );

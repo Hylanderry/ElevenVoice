@@ -1316,7 +1316,7 @@
     "compute_device_auto": "Auto (अनुशंसित)",
     "device_family_xpu": "Intel GPU (XPU)",
     "compute_device_title": "कंप्यूट डिवाइस",
-    "compute_device_env_pinned": "OMNIVOICE_DEVICE पर्यावरण चर द्वारा पिन किया गया",
+    "compute_device_env_pinned": "ELEVENVOICE_DEVICE पर्यावरण चर द्वारा पिन किया गया",
     "perf_title": "प्रदर्शन",
     "generate_timeout_cpu_note": "जब जनरेशन CPU पर चलता है, तब इस्तेमाल होता है। यहाँ सेव होते ही, यह हमेशा CPU जनरेशन को नियंत्रित करता है — ऊपर के एक्सेलरेटेड बजट से स्वतंत्र।",
     "device_family_rocm": "AMD GPU (ROCm)",
@@ -1466,7 +1466,7 @@
     "audio_tools_open": "ऑडियो उपकरण खोलें",
     "remote_backend_title": "रिमोट बैकएंड",
     "remote_backend_desc": "किसी अन्य मशीन पर अनुमान चलाएँ; स्थानीय बैकएंड के लिए यूआरएल खाली छोड़ दें। सेव करने से लागू करने के लिए ऐप पुनः लोड हो जाता है।",
-    "remote_backend_hint": "<1>OMNIVOICE_API_KEY</1> सेट के साथ दूसरी मशीन पर बैकएंड शुरू करें, इसे अपने टेलनेट पर पहुंचाएं, और इस ऐप को उस पर इंगित करें।",
+    "remote_backend_hint": "<1>ELEVENVOICE_API_KEY</1> सेट के साथ दूसरी मशीन पर बैकएंड शुरू करें, इसे अपने टेलनेट पर पहुंचाएं, और इस ऐप को उस पर इंगित करें।",
     "remote_backend_url": "बैकएंड यूआरएल",
     "remote_backend_probe_ok": "ठीक - {{detail}}",
     "remote_backend_probe_fail": "विफल - {{detail}}",
@@ -1515,8 +1515,8 @@
     "gpu_report_state_kernels_missing": "{{gpu}} मिला, लेकिन यह PyTorch बिल्ड ({{torch}}) में उसकी कंप्यूट आर्किटेक्चर के लिए कोई कर्नेल नहीं है, इसलिए इंजन CPU पर चलते हैं।",
     "gpu_report_state_unknown": "GPU की स्थिति तय नहीं की जा सकी।",
     "gpu_report_option_vulkan_engines": "अपने GPU रनटाइम वाले इंजन का उपयोग करें: audio.cpp, Vulkan के ज़रिए AMD Radeon GPU पर चलता है (सेटिंग्स → मॉडल → रनटाइम इंस्टॉल करें)।",
-    "gpu_report_option_rocm_windows_manual": "समर्थित Windows 11 x64 AMD हार्डवेयर पर, OMNIVOICE_TORCH_VARIANT=rocm से ElevenVoice का ROCm 7.2.1 सेटअप चालू करें। यदि यह पहले से इंस्टॉल है, तो सेटअप दोबारा चलाएँ और AMD की ड्राइवर व हार्डवेयर संगतता तालिका जाँचें। वैकल्पिक इंजनों की अलग सीमाएँ हैं; Windows इंस्टॉल गाइड देखें।",
-    "gpu_report_option_rocm_variant_linux": "PyTorch का ROCm बिल्ड इंस्टॉल करने के लिए OMNIVOICE_TORCH_VARIANT=rocm सेट करें और सेटअप फिर से चलाएँ।",
+    "gpu_report_option_rocm_windows_manual": "समर्थित Windows 11 x64 AMD हार्डवेयर पर, ELEVENVOICE_TORCH_VARIANT=rocm से ElevenVoice का ROCm 7.2.1 सेटअप चालू करें। यदि यह पहले से इंस्टॉल है, तो सेटअप दोबारा चलाएँ और AMD की ड्राइवर व हार्डवेयर संगतता तालिका जाँचें। वैकल्पिक इंजनों की अलग सीमाएँ हैं; Windows इंस्टॉल गाइड देखें।",
+    "gpu_report_option_rocm_variant_linux": "PyTorch का ROCm बिल्ड इंस्टॉल करने के लिए ELEVENVOICE_TORCH_VARIANT=rocm सेट करें और सेटअप फिर से चलाएँ।",
     "gpu_report_option_rocm_device_access": "जाँचें कि amdgpu ड्राइवर लोड है और आपका उपयोगकर्ता /dev/kfd खोल सकता है (render और video समूह)।",
     "gpu_report_option_reinstall_cuda_torch": "रनटाइम दोबारा इंस्टॉल करें ताकि वह PyTorch का CUDA बिल्ड इंस्टॉल करे।",
     "gpu_report_option_update_nvidia_driver": "NVIDIA ड्राइवर अपडेट करें (Linux पर R525 या नया, Windows पर R528.33 या नया) और ElevenVoice फिर से शुरू करें।",
@@ -2242,7 +2242,7 @@
     "failed": "स्थानीय इंजन शुरू नहीं हो सका।",
     "idle": "स्थानीय इंजन की प्रतीक्षा है…",
     "log_label": "इंजन लॉग",
-    "port_in_use": "पोर्ट {{port}} किसी दूसरे प्रोग्राम द्वारा उपयोग किया जा रहा है। उसे बंद करें या OMNIVOICE_PORT को किसी खाली पोर्ट पर सेट करके फिर प्रयास करें।",
+    "port_in_use": "पोर्ट {{port}} किसी दूसरे प्रोग्राम द्वारा उपयोग किया जा रहा है। उसे बंद करें या ELEVENVOICE_PORT को किसी खाली पोर्ट पर सेट करके फिर प्रयास करें।",
     "elapsed": "{{seconds}} सेकंड बीते",
     "first_run_hint": "पहली बार Python वातावरण तैयार होने में कई मिनट लग सकते हैं।",
     "port_in_use_short": "पोर्ट {{port}} उपयोग में है",
@@ -3221,7 +3221,7 @@
     "sourceRejected": {
       "installed_app": "यह इंस्टॉल किया गया ऐप है, जिसे बदला नहीं जा सकता। इसके बजाय git clone चुनें।",
       "not_git": "यह फ़ोल्डर git clone नहीं है। ZIP डाउनलोड काम नहीं करेगा; git clone इस्तेमाल करें।",
-      "not_voicestudio": "इस फ़ोल्डर में ElevenVoice क्लोन नहीं मिला।",
+      "not_elevenvoice": "इस फ़ोल्डर में ElevenVoice क्लोन नहीं मिला।",
       "read_only": "ElevenVoice इस फ़ोल्डर में लिख नहीं सकता। अपना फ़ोल्डर चुनें।"
     },
     "chooseFailed": "यह फ़ोल्डर इस्तेमाल नहीं हो सका। फिर से कोशिश करें या कोई दूसरा चुनें।",
@@ -3311,10 +3311,10 @@
       "workflow": "n8n वर्कफ़्लो",
       "dockerRunPowerShell": "कंटेनर चलाएँ (Windows PowerShell)"
     },
-    "apiBearerHint": "यह बैकएंड दूरस्थ है: अपने शेल में OMNIVOICE_API_KEY को उसकी API कुंजी पर सेट करें। उदाहरण कुंजी वहीं से पढ़ते हैं और उसे कभी शामिल नहीं करते।",
+    "apiBearerHint": "यह बैकएंड दूरस्थ है: अपने शेल में ELEVENVOICE_API_KEY को उसकी API कुंजी पर सेट करें। उदाहरण कुंजी वहीं से पढ़ते हैं और उसे कभी शामिल नहीं करते।",
     "apiInsecureHint": "दूरस्थ बैकएंड पर API कुंजियों के लिए https:// ज़रूरी है। कुंजी उपयोग करने से पहले इस बैकएंड को https (जैसे Tailscale Serve) के पीछे रखें।",
     "dockerGpuHint": "GPU: NVIDIA के लिए --gpus all चाहिए (Compose में GPU डिवाइस आरक्षण)। AMD, /dev/kfd और /dev/dri के साथ :stable-rocm टैग उपयोग करता है। Docker इंस्टॉल गाइड देखें।",
-    "openaiAgentsHint": "स्पीच-टू-टेक्स्ट और टेक्स्ट-टू-स्पीच के लिए OpenAI Agents SDK की वॉइस पाइपलाइन को ElevenVoice की ओर इंगित करें। ElevenVoice चालू रखें। रिमोट बैकएंड के लिए चलाने से पहले OMNIVOICE_API_KEY सेट करें। AGENT_LLM_BASE_URL और AGENT_LLM_MODEL को उस भाषा मॉडल सर्वर पर सेट करें जिसका उपयोग आपका एजेंट करे।",
+    "openaiAgentsHint": "स्पीच-टू-टेक्स्ट और टेक्स्ट-टू-स्पीच के लिए OpenAI Agents SDK की वॉइस पाइपलाइन को ElevenVoice की ओर इंगित करें। ElevenVoice चालू रखें। रिमोट बैकएंड के लिए चलाने से पहले ELEVENVOICE_API_KEY सेट करें। AGENT_LLM_BASE_URL और AGENT_LLM_MODEL को उस भाषा मॉडल सर्वर पर सेट करें जिसका उपयोग आपका एजेंट करे।",
     "category": {
       "all": "सभी",
       "comms": "कॉलिंग और वॉइस एजेंट",
@@ -3780,7 +3780,7 @@
       "url_placeholder": "http://192.168.1.20:3900",
       "pin_label": "एक्सेस PIN",
       "api_key_label": "API कुंजी (वैकल्पिक)",
-      "api_key_help": "केवल तब ज़रूरी है जब सर्वर पर OMNIVOICE_API_KEY सेट हो। कुंजी के बदले एक सत्र मिलता है और कुंजी कभी सहेजी नहीं जाती।",
+      "api_key_help": "केवल तब ज़रूरी है जब सर्वर पर ELEVENVOICE_API_KEY सेट हो। कुंजी के बदले एक सत्र मिलता है और कुंजी कभी सहेजी नहीं जाती।",
       "connect": "कनेक्ट करें",
       "connecting": "कनेक्ट हो रहा है…",
       "connected_to": "{{host}} से कनेक्ट है",
@@ -3789,9 +3789,9 @@
       "last_seen": "आख़िरी बार देखा गया {{time}}",
       "forget": "भूल जाएँ",
       "error_unreachable": "{{host}} तक नहीं पहुँचा जा सका। जाँचें कि ElevenVoice चल रहा है, नेटवर्क शेयरिंग चालू है, और यह फ़ोन उसी नेटवर्क या Tailscale पर है।",
-      "error_not_voicestudio": "{{host}} ने जवाब दिया, लेकिन यह ElevenVoice सर्वर नहीं है। पता और पोर्ट जाँचें।",
+      "error_not_elevenvoice": "{{host}} ने जवाब दिया, लेकिन यह ElevenVoice सर्वर नहीं है। पता और पोर्ट जाँचें।",
       "error_pin": "PIN अस्वीकार कर दिया गया। शेयरिंग हर बार चालू होने पर नया PIN बनाती है — QR कोड फिर से स्कैन करें।",
-      "error_api_key": "API कुंजी अस्वीकार कर दी गई। सर्वर पर OMNIVOICE_API_KEY में सेट की गई कुंजी जाँचें।",
+      "error_api_key": "API कुंजी अस्वीकार कर दी गई। सर्वर पर ELEVENVOICE_API_KEY में सेट की गई कुंजी जाँचें।",
       "error_session_expired": "आपका सत्र समाप्त हो गया। दोबारा कनेक्ट करने के लिए API कुंजी फिर से दर्ज करें।",
       "error_insecure": "सादा http:// केवल आपके स्थानीय नेटवर्क या Tailscale के पतों के लिए मान्य है। अन्य सर्वरों के लिए https:// का उपयोग करें।",
       "error_invalid_url": "यह सर्वर का पता नहीं लगता। उदाहरण: http://192.168.1.20:3900",
@@ -4554,5 +4554,15 @@
     "clipping_issue": "{{percent}}% ऑडियो क्लिप हो रहा है",
     "duration_ok": "मूल अवधि में फिट",
     "duration_issue": "{{track_seconds}} से, मूल {{source_seconds}} से से लंबा"
+  },
+  "integrations": {
+    "agentAccess": {
+      "title": "Agent access",
+      "mcp": "Local MCP server",
+      "mcpHint": "Lets Claude, Cursor, Codex, Hermes and other agents on this computer use every ElevenVoice tool.",
+      "api": "Local API (OpenAI-compatible)",
+      "apiHint": "Lets n8n, scripts and SDKs call speech and transcription at /v1 on this computer.",
+      "error": "Could not reach the voice engine. Try again in a moment."
+    }
   }
 }

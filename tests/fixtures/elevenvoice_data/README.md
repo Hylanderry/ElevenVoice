@@ -1,4 +1,4 @@
-# tests/fixtures/omnivoice_data/
+# tests/fixtures/elevenvoice_data/
 
 **Frozen regression fixture** loaded by `tests/smoke/test_boot_smoke.py`
 on every PR (macOS / Windows / Linux). (GATE-01; the requirements doc
@@ -15,7 +15,7 @@ so re-running produces a byte-identical fixture for clean git diffs.
 
 ## Layout
 
-- `omnivoice.db` — all 8 tables created by `backend/core/db.py::init_db()`,
+- `elevenvoice.db` — all 8 tables created by `backend/core/db.py::init_db()`,
   with exactly one row in `voice_profiles` and zero rows in history tables.
 - `voices/test-voice/profile.json` — JSON mirror of the voice_profiles row.
 - `voices/test-voice/sample.wav` — 1-sec, 24 kHz, mono, 16-bit PCM silence.

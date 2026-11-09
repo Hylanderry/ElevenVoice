@@ -15,7 +15,7 @@ leveler and the peak limiter are pure numpy (#3412), so they always run.
 import logging
 import torch
 
-logger = logging.getLogger("omnivoice.dsp")
+logger = logging.getLogger("elevenvoice.dsp")
 
 # ── Effect presets ──────────────────────────────────────────────────────
 
@@ -519,7 +519,7 @@ def apply_effects_chain(audio_tensor, sample_rate: int, chain: list[dict]) -> to
 # silence stays the default.
 
 PAUSE_FILL_PREF = "pause_fill"
-PAUSE_FILL_ENV = "OMNIVOICE_PAUSE_FILL"
+PAUSE_FILL_ENV = "ELEVENVOICE_PAUSE_FILL"
 PAUSE_FILL_MODES = ("silence", "room_tone")
 _TONE_FRAME = 1024
 _TONE_FADE_S = 0.04

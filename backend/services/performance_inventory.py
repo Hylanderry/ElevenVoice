@@ -38,7 +38,7 @@ def profile_plan(choice: str, overrides: dict, selections: dict) -> dict:
     current_tts = selections["tts"]["engine"]
     from services.model_manager import resolve_omnivoice_checkpoint
     custom_checkpoint = resolve_omnivoice_checkpoint() != "k2-fsa/OmniVoice"
-    if not custom_checkpoint and not any(os.environ.get(key) for key in ("OMNIVOICE_TTS_BACKEND", "OMNIVOICE_KITTENTTS_MODEL")) and current_tts in {
+    if not custom_checkpoint and not any(os.environ.get(key) for key in ("ELEVENVOICE_TTS_BACKEND", "ELEVENVOICE_KITTENTTS_MODEL")) and current_tts in {
         "kittentts", "omnivoice", "omnivoice-subprocess",
     }:
         from api.routers.setup.models import (
@@ -63,7 +63,7 @@ def profile_plan(choice: str, overrides: dict, selections: dict) -> dict:
                 continue
             # Respect custom checkpoint overrides; this catalogue entry would
             # otherwise claim to select weights the runtime won't actually use.
-            if engine == "kittentts" and os.environ.get("OMNIVOICE_KITTENTTS_MODEL"):
+            if engine == "kittentts" and os.environ.get("ELEVENVOICE_KITTENTTS_MODEL"):
                 continue
             cls = tts_backend.get_backend_class(engine)
             if not cls.is_available()[0]:
@@ -80,7 +80,7 @@ def profile_plan(choice: str, overrides: dict, selections: dict) -> dict:
     asr_engine = current["asr"].engine if "asr" in current else None
     installed = None
     if not (
-        os.environ.get("OMNIVOICE_ASR_BACKEND")
+        os.environ.get("ELEVENVOICE_ASR_BACKEND")
         or prefs.is_env_shadowed("ASR_MODEL_FASTER")
         or (asr_engine is not None and asr_engine not in profiles.TIERED_ASR_ENGINES)
     ):
@@ -113,7 +113,7 @@ def profile_plan(choice: str, overrides: dict, selections: dict) -> dict:
                                         vram if ct2_gpu and backend != "mlx-whisper" else 0))
             inventory["asr"] = models
 
-    if os.environ.get("OMNIVOICE_SHERPA_ASR_MODEL") or not prefs.get("dictation.enabled", True):
+    if os.environ.get("ELEVENVOICE_SHERPA_ASR_MODEL") or not prefs.get("dictation.enabled", True):
         if "dictation" in current:
             fixed["dictation"] = current["dictation"]
     elif sherpa_dictation.sherpa_available()[0]:
@@ -142,7 +142,7 @@ def profile_plan(choice: str, overrides: dict, selections: dict) -> dict:
                 ("nllb", "facebook/nllb-200-distilled-600M", 4, 3, 3),
             ] if translation_engines.is_ready(engine, import_check=False)
         ]
-    if os.environ.get("OMNIVOICE_DIARIZATION_BACKEND"):
+    if os.environ.get("ELEVENVOICE_DIARIZATION_BACKEND"):
         if "diarisation" in current:
             fixed["diarisation"] = current["diarisation"]
     else:

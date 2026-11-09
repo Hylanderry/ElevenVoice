@@ -37,19 +37,19 @@ describe('GenerateBudgetPanel', () => {
   it('prefills both budgets from /system/info', async () => {
     render(<GenerateBudgetPanel />);
     await waitFor(() =>
-      expect(screen.getByTestId('generate-timeout-input-OMNIVOICE_GENERATE_TIMEOUT_S')).toHaveValue(
+      expect(screen.getByTestId('generate-timeout-input-ELEVENVOICE_GENERATE_TIMEOUT_S')).toHaveValue(
         300,
       ),
     );
     expect(
-      screen.getByTestId('generate-timeout-input-OMNIVOICE_CPU_GENERATE_TIMEOUT_S'),
+      screen.getByTestId('generate-timeout-input-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S'),
     ).toHaveValue(600);
   });
 
   it('surfaces both env var names', async () => {
     render(<GenerateBudgetPanel />);
-    await waitFor(() => screen.getByText('OMNIVOICE_GENERATE_TIMEOUT_S'));
-    expect(screen.getByText('OMNIVOICE_CPU_GENERATE_TIMEOUT_S')).toBeInTheDocument();
+    await waitFor(() => screen.getByText('ELEVENVOICE_GENERATE_TIMEOUT_S'));
+    expect(screen.getByText('ELEVENVOICE_CPU_GENERATE_TIMEOUT_S')).toBeInTheDocument();
   });
 
   it('every row carries the restart-required badge — the value is import-time captured', async () => {
@@ -60,13 +60,13 @@ describe('GenerateBudgetPanel', () => {
 
   it('saving posts the new value to /system/set-env', async () => {
     render(<GenerateBudgetPanel />);
-    const input = await screen.findByTestId('generate-timeout-input-OMNIVOICE_GENERATE_TIMEOUT_S');
+    const input = await screen.findByTestId('generate-timeout-input-ELEVENVOICE_GENERATE_TIMEOUT_S');
     fireEvent.change(input, { target: { value: '900' } });
-    fireEvent.click(screen.getByTestId('generate-timeout-save-OMNIVOICE_GENERATE_TIMEOUT_S'));
+    fireEvent.click(screen.getByTestId('generate-timeout-save-ELEVENVOICE_GENERATE_TIMEOUT_S'));
 
     await waitFor(() =>
       expect(apiPost).toHaveBeenCalledWith('/system/set-env', {
-        key: 'OMNIVOICE_GENERATE_TIMEOUT_S',
+        key: 'ELEVENVOICE_GENERATE_TIMEOUT_S',
         value: '900',
       }),
     );
@@ -76,10 +76,10 @@ describe('GenerateBudgetPanel', () => {
   it('rejects a non-positive value client-side without calling the API', async () => {
     render(<GenerateBudgetPanel />);
     const input = await screen.findByTestId(
-      'generate-timeout-input-OMNIVOICE_CPU_GENERATE_TIMEOUT_S',
+      'generate-timeout-input-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S',
     );
     fireEvent.change(input, { target: { value: '0' } });
-    fireEvent.click(screen.getByTestId('generate-timeout-save-OMNIVOICE_CPU_GENERATE_TIMEOUT_S'));
+    fireEvent.click(screen.getByTestId('generate-timeout-save-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S'));
 
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
     expect(apiPost).not.toHaveBeenCalled();
@@ -88,10 +88,10 @@ describe('GenerateBudgetPanel', () => {
   it('rejects a value above the max client-side without calling the API', async () => {
     render(<GenerateBudgetPanel />);
     const input = await screen.findByTestId(
-      'generate-timeout-input-OMNIVOICE_CPU_GENERATE_TIMEOUT_S',
+      'generate-timeout-input-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S',
     );
     fireEvent.change(input, { target: { value: '999999' } });
-    fireEvent.click(screen.getByTestId('generate-timeout-save-OMNIVOICE_CPU_GENERATE_TIMEOUT_S'));
+    fireEvent.click(screen.getByTestId('generate-timeout-save-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S'));
 
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
     expect(apiPost).not.toHaveBeenCalled();
@@ -117,11 +117,11 @@ describe('GenerateBudgetPanel — external override honesty', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByTestId('generate-timeout-shadowed-OMNIVOICE_GENERATE_TIMEOUT_S'),
+        screen.getByTestId('generate-timeout-shadowed-ELEVENVOICE_GENERATE_TIMEOUT_S'),
       ).toBeInTheDocument(),
     );
     expect(
-      screen.queryByTestId('generate-timeout-shadowed-OMNIVOICE_CPU_GENERATE_TIMEOUT_S'),
+      screen.queryByTestId('generate-timeout-shadowed-ELEVENVOICE_CPU_GENERATE_TIMEOUT_S'),
     ).not.toBeInTheDocument();
     // Only the non-shadowed row still carries the ordinary restart badge.
     expect(screen.getAllByText('Restart required')).toHaveLength(1);
@@ -134,19 +134,19 @@ describe('GenerateBudgetPanel — external override honesty', () => {
       generate_timeout_shadowed: false,
       cpu_generate_timeout_shadowed: false,
     });
-    apiPost.mockResolvedValue({ key: 'OMNIVOICE_GENERATE_TIMEOUT_S', set: true, shadowed: true });
+    apiPost.mockResolvedValue({ key: 'ELEVENVOICE_GENERATE_TIMEOUT_S', set: true, shadowed: true });
 
     render(<GenerateBudgetPanel />);
-    const input = await screen.findByTestId('generate-timeout-input-OMNIVOICE_GENERATE_TIMEOUT_S');
+    const input = await screen.findByTestId('generate-timeout-input-ELEVENVOICE_GENERATE_TIMEOUT_S');
     fireEvent.change(input, { target: { value: '900' } });
-    fireEvent.click(screen.getByTestId('generate-timeout-save-OMNIVOICE_GENERATE_TIMEOUT_S'));
+    fireEvent.click(screen.getByTestId('generate-timeout-save-ELEVENVOICE_GENERATE_TIMEOUT_S'));
 
     await waitFor(() => expect(toastFnCalledWithWarning()).toBe(true));
     expect(toast.success).not.toHaveBeenCalled();
     // The row must now reflect the override rather than "Restart required".
     await waitFor(() =>
       expect(
-        screen.getByTestId('generate-timeout-shadowed-OMNIVOICE_GENERATE_TIMEOUT_S'),
+        screen.getByTestId('generate-timeout-shadowed-ELEVENVOICE_GENERATE_TIMEOUT_S'),
       ).toBeInTheDocument(),
     );
 

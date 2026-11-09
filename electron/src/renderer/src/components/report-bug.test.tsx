@@ -134,7 +134,7 @@ it('includes setup diagnostics in a reviewable GitHub report without a working b
   expect(body).toContain('Runtime setup');
   expect(body).toContain('900 second timeout');
   expect(body).toContain("cannot decrypt peer's message");
-  expect(body).toContain('voicestudio-setup.log');
+  expect(body).toContain('elevenvoice-setup.log');
   expect(body).not.toContain('private-user');
 });
 it('navigates the reserved browser window after diagnostics resolve', async () => {
@@ -198,7 +198,7 @@ it('names the exact build, not just the version', async () => {
   await submitReport();
   await waitFor(() => expect(mock.open).toHaveBeenCalledTimes(1));
   const body = new URL(mock.open.mock.calls[0]![0]).searchParams.get('body')!;
-  expect(body).toMatch(/\*\*App:\*\* VoiceStudio \S+ \(build [0-9a-f]{9}\)/);
+  expect(body).toMatch(/\*\*App:\*\* ElevenVoice \S+ \(build [0-9a-f]{9}\)/);
 });
 it('describes the machine and runtime from the app when the backend never started (#3156)', async () => {
   mock.api.mockRejectedValue(new Error('offline'));

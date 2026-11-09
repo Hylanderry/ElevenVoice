@@ -58,13 +58,13 @@ describe('EngineQuickSwitch', () => {
     listLoadedModels.mockResolvedValue({ models: [{ engine_id: 'omnivoice' }] });
   });
 
-  it.each(['VoiceStudio', 'ElevenVoice TTS', 'ElevenVoice (k2-fsa/OmniVoice)'])(
+  it.each(['ElevenVoice', 'ElevenVoice TTS', 'ElevenVoice (k2-fsa/OmniVoice)'])(
     'formats the active name consistently for %s',
     async (name) => {
       const data = inventory();
       data.tts.backends[0].display_name = name;
       listEngines.mockResolvedValue(data);
-      const expected = name.replace('VoiceStudio', 'OmniVoice');
+      const expected = name.replace('ElevenVoice', 'OmniVoice');
       const { unmount } = renderPicker();
       const trigger = await screen.findByRole('button', {
         name: `Active TTS: ${expected}`,
@@ -72,10 +72,10 @@ describe('EngineQuickSwitch', () => {
       expect(trigger).toHaveAttribute('title', `Active TTS: ${expected}`);
       expect(trigger).toHaveTextContent(expected);
       fireEvent.click(trigger);
-      expect(screen.getByRole('dialog')).not.toHaveTextContent('VoiceStudio');
+      expect(screen.getByRole('dialog')).not.toHaveTextContent('ElevenVoice');
       unmount();
       renderPicker({ embedded: true });
-      expect(await screen.findByRole('group')).not.toHaveTextContent('VoiceStudio');
+      expect(await screen.findByRole('group')).not.toHaveTextContent('ElevenVoice');
       expect(screen.getByRole('group')).toHaveTextContent('OmniVoice');
     },
   );

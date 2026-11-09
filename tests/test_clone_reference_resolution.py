@@ -21,8 +21,8 @@ import pytest
 import soundfile as sf
 import torch
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 SR = 24_000
 PINNED = "06f233fe06e710322aca913c1bc4249a0d71fce1"
@@ -72,7 +72,7 @@ def hf_cache(tmp_path, monkeypatch):
     cache.mkdir()
     monkeypatch.setattr(constants, "HF_HUB_CACHE", str(cache))
     for name in ("HF_HUB_CACHE", "HUGGINGFACE_HUB_CACHE", "HF_HOME",
-                 "OMNIVOICE_PYTORCH_ASR_MODEL"):
+                 "ELEVENVOICE_PYTORCH_ASR_MODEL"):
         monkeypatch.delenv(name, raising=False)
     return cache
 
@@ -126,7 +126,7 @@ def test_catalogue_installed_whisper_without_a_main_ref_is_reused(
 def test_configured_pytorch_model_is_preferred(tmp_path, hf_cache, monkeypatch):
     other = _install_pinned(hf_cache, "openai/whisper-large-v3")
     chosen = _install_pinned(hf_cache, "openai/whisper-small")
-    monkeypatch.setenv("OMNIVOICE_PYTORCH_ASR_MODEL", "openai/whisper-small")
+    monkeypatch.setenv("ELEVENVOICE_PYTORCH_ASR_MODEL", "openai/whisper-small")
     model = _model()
 
     model.create_voice_clone_prompt(

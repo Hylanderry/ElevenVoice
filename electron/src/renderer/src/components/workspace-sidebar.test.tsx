@@ -44,7 +44,7 @@ describe('width', () => {
     const start = Number(handle.getAttribute('aria-valuenow'));
     fireEvent.keyDown(handle, { key: 'ArrowRight' });
     fireEvent.keyDown(handle, { key: 'ArrowRight' });
-    const stored = localStorage.getItem('voicestudio.secondary-sidebar.spacious');
+    const stored = localStorage.getItem('elevenvoice.secondary-sidebar.spacious');
     expect(stored).toBe(String(start + 40));
     first.unmount();
     render(pane({ size: 'spacious' }));

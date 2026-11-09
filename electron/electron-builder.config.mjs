@@ -21,15 +21,15 @@ const storeIdentity = storeMetadata.identity;
 const isMacAppStore = DISTRIBUTION_TARGET === 'mac-app-store';
 // Intel Macs retain their existing remote-backend UI. Never ship an arm64
 // interpreter in an x64 package (the release matrix always names its target).
-const macRuntimeArch = process.env.VOICESTUDIO_RUST_TARGET?.startsWith('x86_64')
+const macRuntimeArch = process.env.ELEVENVOICE_RUST_TARGET?.startsWith('x86_64')
   ? 'x64'
-  : process.env.VOICESTUDIO_RUST_TARGET?.startsWith('aarch64')
+  : process.env.ELEVENVOICE_RUST_TARGET?.startsWith('aarch64')
     ? 'arm64'
     : process.arch;
 const bundlesMasRuntime = isMacAppStore && macRuntimeArch === 'arm64';
-// Direct downloads are `VoiceStudio-<version>-<os>-<arch>.<ext>`; store builds
+// Direct downloads are `ElevenVoice-<version>-<os>-<arch>.<ext>`; store builds
 // keep a label so they never collide with them. Releases up to v0.5.7-beta.3
-// used `VoiceStudio-Electron-*`; the installers still resolve those names.
+// used `ElevenVoice-Electron-*`; the installers still resolve those names.
 const artifactLabel = {
   'microsoft-store': 'MicrosoftStore',
   'mac-app-store': 'MacAppStore',
@@ -41,7 +41,7 @@ const artifactPrefix = [PRODUCT_NAME.replace(/[^A-Za-z0-9]+/g, '-'), artifactLab
 // stamped by electron-release.yml). Packaging rehearsals from main are stamped
 // stable; they are review artifacts and are never published.
 const updateChannel =
-  process.env.VOICESTUDIO_UPDATE_CHANNEL || `electron-stable-${process.platform}-${process.arch}`;
+  process.env.ELEVENVOICE_UPDATE_CHANNEL || `electron-stable-${process.platform}-${process.arch}`;
 if (
   !/^electron-(?:(?:microsoft-store-)?stable|beta)-(?:win32|darwin|linux)-(?:x64|arm64)$/.test(
     updateChannel,
@@ -55,7 +55,7 @@ export function distributionPackaging(target = DISTRIBUTION_TARGET) {
   if (target === 'snap-store') {
     return {
       linuxTargets: ['snap'],
-      linuxExecutableName: 'voicestudio',
+      linuxExecutableName: 'elevenvoice',
       snapcraft: {
         // Core 22 uses electron-builder's reproducible Electron snap template;
         // strict confinement is explicit so a future default cannot weaken it.
@@ -110,10 +110,10 @@ const defaultRustTarget =
     'darwin-x64': 'x86_64-apple-darwin',
     'linux-x64': 'x86_64-unknown-linux-gnu',
   }[`${process.platform}-${process.arch}`] ?? null;
-const rustTarget = process.env.VOICESTUDIO_RUST_TARGET || defaultRustTarget;
+const rustTarget = process.env.ELEVENVOICE_RUST_TARGET || defaultRustTarget;
 const uvExtension = rustTarget?.includes('windows') ? '.exe' : '';
-const uvSource = process.env.VOICESTUDIO_BUNDLED_UV
-  ? resolve(process.env.VOICESTUDIO_BUNDLED_UV)
+const uvSource = process.env.ELEVENVOICE_BUNDLED_UV
+  ? resolve(process.env.ELEVENVOICE_BUNDLED_UV)
   : rustTarget
     ? resolve(here, `build/uv/uv-${rustTarget}${uvExtension}`)
     : null;
@@ -148,8 +148,8 @@ export default {
     version,
     productName: PRODUCT_NAME,
     desktopName: PRODUCT_NAME,
-    voicestudioDistribution: DISTRIBUTION_TARGET,
-    voicestudioUpdateOwner: DISTRIBUTION_PROFILE.applicationUpdates,
+    elevenvoiceDistribution: DISTRIBUTION_TARGET,
+    elevenvoiceUpdateOwner: DISTRIBUTION_PROFILE.applicationUpdates,
     ...(DISTRIBUTION_TARGET === 'microsoft-store'
       ? { author: { name: storeIdentity.publisherLegalName, email: 'hi@voicestudio.sh' } }
       : {}),
@@ -273,8 +273,8 @@ export default {
   mas: {
     entitlements: 'build/entitlements.mas.plist',
     entitlementsInherit: 'build/entitlements.mas.inherit.plist',
-    ...(process.env.VOICESTUDIO_MAS_PROVISIONING_PROFILE
-      ? { provisioningProfile: process.env.VOICESTUDIO_MAS_PROVISIONING_PROFILE }
+    ...(process.env.ELEVENVOICE_MAS_PROVISIONING_PROFILE
+      ? { provisioningProfile: process.env.ELEVENVOICE_MAS_PROVISIONING_PROFILE }
       : {}),
   },
   linux: {

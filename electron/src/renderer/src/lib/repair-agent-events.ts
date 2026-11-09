@@ -1,5 +1,5 @@
-export const REPAIR_AGENT_OPEN_EVENT = 'voicestudio:repair-agent-open';
-export const DEFAULT_REPAIR_AGENT_KEY = 'voicestudio.defaultRepairAgent';
+export const REPAIR_AGENT_OPEN_EVENT = 'elevenvoice:repair-agent-open';
+export const DEFAULT_REPAIR_AGENT_KEY = 'elevenvoice.defaultRepairAgent';
 
 export interface RepairAgentRequest {
   report?: string;

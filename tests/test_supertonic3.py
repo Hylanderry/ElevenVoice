@@ -1,7 +1,7 @@
 """Tests for Supertonic-3 engine (Phase 3 Plan 03-01).
 
 Covers TTS-01..06 from REQUIREMENTS.md. The 3-language smoke test
-(TTS-06) is gated on ``OMNIVOICE_SMOKE=1`` because it downloads ~400 MB
+(TTS-06) is gated on ``ELEVENVOICE_SMOKE=1`` because it downloads ~400 MB
 of model weights from HuggingFace. All other tests run on every CI
 invocation and never touch the network.
 """
@@ -21,7 +21,7 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SUPERTONIC_SMOKE = os.environ.get("OMNIVOICE_SMOKE") == "1"
+SUPERTONIC_SMOKE = os.environ.get("ELEVENVOICE_SMOKE") == "1"
 
 # The license-gate / CPU-honesty tests exercise logic that only runs once the
 # optional `supertonic` package is importable (is_available() short-circuits
@@ -96,7 +96,7 @@ def test_pinned_sha_format():
 
 @pytest.mark.skipif(
     not SUPERTONIC_SMOKE,
-    reason="network test; set OMNIVOICE_SMOKE=1 to run",
+    reason="network test; set ELEVENVOICE_SMOKE=1 to run",
 )
 def test_sha_resolves():
     """``PINNED_REVISION_SHA`` exists on the actual HuggingFace commit log.
@@ -263,7 +263,7 @@ def test_optional_dep_missing(monkeypatch, mock_settings_store):
 
 @pytest.mark.skipif(
     not SUPERTONIC_SMOKE,
-    reason="network + 400 MB model download; set OMNIVOICE_SMOKE=1 to run",
+    reason="network + 400 MB model download; set ELEVENVOICE_SMOKE=1 to run",
 )
 def test_smoke_3langs_3sec(mock_settings_store):
     """Synthesize 3 sec of audio in 3 languages; assert shape + dtype.
@@ -321,7 +321,7 @@ def test_smoke_3langs_3sec(mock_settings_store):
 
 @pytest.mark.skipif(
     not SUPERTONIC_SMOKE,
-    reason="network test; set OMNIVOICE_SMOKE=1 to run",
+    reason="network test; set ELEVENVOICE_SMOKE=1 to run",
 )
 def test_sidecar_selftest():
     """``python -m engines.supertonic3.sidecar --selftest`` exits 0."""
@@ -392,14 +392,14 @@ def test_prefers_the_venv_its_one_click_install_made(monkeypatch, tmp_path, mock
     from services.sidecar_install import _INSTALL_COMPLETE_MARKER, _venv_python
 
     mock_settings_store["supertonic3"] = True
-    monkeypatch.delenv("OMNIVOICE_SUPERTONIC3_DIR", raising=False)
+    monkeypatch.delenv("ELEVENVOICE_SUPERTONIC3_DIR", raising=False)
     assert Supertonic3Backend.venv_python() == Path(sys.executable)
 
     py = _venv_python(tmp_path / ".venv")
     py.parent.mkdir(parents=True)
     py.write_text("#!fake\n")
     (tmp_path / _INSTALL_COMPLETE_MARKER).write_text("x\n", encoding="utf-8")
-    monkeypatch.setenv("OMNIVOICE_SUPERTONIC3_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_SUPERTONIC3_DIR", str(tmp_path))
     assert Supertonic3Backend.venv_python() == py
     # Available without supertonic importable in the app's own environment.
     monkeypatch.setitem(sys.modules, "supertonic", None)

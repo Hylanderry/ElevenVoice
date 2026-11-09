@@ -81,8 +81,8 @@ def test_required_folder_can_use_its_valid_scope_even_when_an_unrelated_grant_is
     file.write_text(json.dumps([{'id': 'a' * 64, 'bookmark': 'valid'}, {'id': 'b' * 64, 'bookmark': 'stale'}]))
     monkeypatch.setattr(source, '_grants', grants)
     monkeypatch.setattr(source.sys, 'platform', 'darwin')
-    monkeypatch.setenv('VOICESTUDIO_BUNDLED_CODE_ONLY', '1')
-    monkeypatch.setenv('VOICESTUDIO_SANDBOX_BOOKMARKS', str(file))
+    monkeypatch.setenv('ELEVENVOICE_BUNDLED_CODE_ONLY', '1')
+    monkeypatch.setenv('ELEVENVOICE_SANDBOX_BOOKMARKS', str(file))
     try:
         assert source.restore(str(tmp_path / 'chosen/weights'))
         assert source.restore(str(private / 'models'))

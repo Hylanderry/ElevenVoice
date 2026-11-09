@@ -30,12 +30,12 @@ beforeEach(async () => {
   Object.defineProperty(process, 'resourcesPath', { configurable: true, value: host.data });
   vi.spyOn(process, 'platform', 'get').mockReturnValue('win32');
   vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-  vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'cpu');
-  vi.stubEnv('OMNIVOICE_BACKEND_CMD', '');
-  vi.stubEnv('VOICESTUDIO_SKIP_BACKEND', '');
+  vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'cpu');
+  vi.stubEnv('ELEVENVOICE_BACKEND_CMD', '');
+  vi.stubEnv('ELEVENVOICE_SKIP_BACKEND', '');
   vi.stubEnv('LOCALAPPDATA', join(host.data, 'legacy'));
   vi.stubEnv('APPDATA', '');
-  vi.stubEnv('OMNIVOICE_PORT', '18234');
+  vi.stubEnv('ELEVENVOICE_PORT', '18234');
   vi.mocked(runtimeReady).mockResolvedValue(true);
   vi.mocked(runtimeCompatible).mockResolvedValue(false);
 });
@@ -154,7 +154,7 @@ function candidateProbes(ready: string[], refused: string[]) {
 function runtimeCandidates() {
   return {
     own: join(host.data, 'runtime', 'project'),
-    legacy: join(host.data, 'legacy', 'com.debpalash.omnivoice-studio', 'project'),
+    legacy: join(host.data, 'legacy', 'com.hylanderry.elevenvoice', 'project'),
   };
 }
 
@@ -191,7 +191,7 @@ it('reuses a healthy legacy runtime after the default interpreter refuses to lau
     expect.any(Number),
   );
   expect(value.status.runtimePath).toBe(
-    join(host.data, 'legacy', 'com.debpalash.omnivoice-studio'),
+    join(host.data, 'legacy', 'com.hylanderry.elevenvoice'),
   );
   expect(repair).not.toHaveBeenCalled();
 });

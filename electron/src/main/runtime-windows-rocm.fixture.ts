@@ -30,7 +30,7 @@ export const report = JSON.stringify({
 beforeEach(() => {
   vi.spyOn(process, 'platform', 'get').mockReturnValue('win32');
   vi.spyOn(process, 'arch', 'get').mockReturnValue('x64');
-  vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
+  vi.stubEnv('ELEVENVOICE_TORCH_VARIANT', 'rocm');
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => ({ ok: true })),

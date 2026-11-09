@@ -1,5 +1,5 @@
 [package]
-name = "voicestudio-desktop-bridge"
+name = "elevenvoice-desktop-bridge"
 version = "0.0.0"
 edition = "2021"
 publish = false

@@ -34,11 +34,11 @@ def test_first_run_boot(probe_report):
 def test_boot_does_not_pollute_parent():
     """The subprocess boot must leave the parent session's env and module table
     untouched — the property that makes L5 safe to run alongside the suite."""
-    before_env = os.environ.get("OMNIVOICE_DATA_DIR")
+    before_env = os.environ.get("ELEVENVOICE_DATA_DIR")
     before_main = "main" in sys.modules
     with env.fresh_data_dir() as d:
         env.capture_first_run(d)
-    assert os.environ.get("OMNIVOICE_DATA_DIR") == before_env
+    assert os.environ.get("ELEVENVOICE_DATA_DIR") == before_env
     assert ("main" in sys.modules) == before_main
 
 

@@ -5,11 +5,11 @@
 // In dev, concurrently's --kill-others-on-fail used to tear the whole stack
 // down the moment uvicorn exited, and the only trace of WHY was whatever
 // scrolled past in the terminal — the browser tab just showed "Can't reach
-// the local VoiceStudio backend". This wrapper launches uvicorn directly,
+// the local ElevenVoice backend". This wrapper launches uvicorn directly,
 // owns Python source reloads, restarts isolated crashes with a bounded backoff,
 // and prints a boxed banner with:
 //   - the exit code / signal,
-//   - the last 20 lines of omnivoice.log (resolved like
+//   - the last 20 lines of elevenvoice.log (resolved like
 //     backend/core/config.py::get_app_data_dir),
 //   - an OOM-check hint on Linux (journalctl -k), and
 //   - a pointer to the crash notice the run sentinel will raise on the next
@@ -31,19 +31,19 @@ import { DEFAULT_BACKEND_PORT } from "../config/app-config.mjs";
 
 export { DEFAULT_BACKEND_PORT };
 
-/** The port Vite proxies to (OMNIVOICE_PORT or config/app.json). */
+/** The port Vite proxies to (ELEVENVOICE_PORT or config/app.json). */
 export function backendPort(env = process.env) {
-  const port = Number.parseInt(String(env.OMNIVOICE_PORT ?? "").trim(), 10);
+  const port = Number.parseInt(String(env.ELEVENVOICE_PORT ?? "").trim(), 10);
   return Number.isInteger(port) && port > 0 && port < 65536 ? port : DEFAULT_BACKEND_PORT;
 }
 
 /**
  * Loopback by default, like backend/main.py: the API ships unauthenticated on
- * loopback, so `dev:api` must not publish it to the LAN. OMNIVOICE_BIND_HOST
+ * loopback, so `dev:api` must not publish it to the LAN. ELEVENVOICE_BIND_HOST
  * opts in to another interface, the same knob the backend honours.
  */
 export function bindHost(env = process.env) {
-  return String(env.OMNIVOICE_BIND_HOST ?? "").trim() || "127.0.0.1";
+  return String(env.ELEVENVOICE_BIND_HOST ?? "").trim() || "127.0.0.1";
 }
 
 // The wrapper owns Python source reloads so uvicorn's reload parent cannot stay
@@ -89,9 +89,9 @@ export function isBackendSourceChange(filename) {
 }
 
 /** Mirror backend/core/config.py::get_app_data_dir() so the banner reads the
- *  same omnivoice.log the backend writes. Pure — testable with fake inputs. */
+ *  same elevenvoice.log the backend writes. Pure — testable with fake inputs. */
 export function resolveDataDir(env = process.env, platform = process.platform, home = homedir()) {
-  if (env.OMNIVOICE_DATA_DIR) return env.OMNIVOICE_DATA_DIR;
+  if (env.ELEVENVOICE_DATA_DIR) return env.ELEVENVOICE_DATA_DIR;
   if (platform === "darwin") return path.join(home, "Library/Application Support/OmniVoice");
   if (platform === "win32") return path.join(env.APPDATA || "", "OmniVoice");
   return path.join(home, ".omnivoice");
@@ -125,7 +125,7 @@ export function buildExitBanner({ code, signal, logTail, logPath, platform = pro
     lines.push(`Last 20 lines of ${logPath}:`, "─".repeat(76), logTail, "─".repeat(76), "");
   } else {
     lines.push(
-      `(no omnivoice.log found at ${logPath} — the backend may have died before logging)`,
+      `(no elevenvoice.log found at ${logPath} — the backend may have died before logging)`,
       "",
     );
   }
@@ -291,7 +291,7 @@ export function createBackendSupervisor({
       }
 
       const dir = dataDir();
-      const logPath = path.join(dir, "omnivoice.log");
+      const logPath = path.join(dir, "elevenvoice.log");
       report(buildExitBanner({ code, signal, logTail: tailFile(logPath, 20), logPath }));
 
       const timestamp = now();

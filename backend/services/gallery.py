@@ -67,7 +67,7 @@ from core.path_security import UnsafePath, resolve_within, safe_filename
 def _now(value: float | None = None) -> float:
     return time.time() if value is None else float(value)
 
-logger = logging.getLogger("omnivoice.preview_gallery")
+logger = logging.getLogger("elevenvoice.preview_gallery")
 
 #: Manifest schema this client understands. A manifest declaring anything else
 #: is ignored rather than guessed at — an old build must not act on a layout it
@@ -324,7 +324,7 @@ def load_manifest() -> Optional[dict]:
     """The stored manifest, re-verified against the pubkey. ``None`` if absent.
 
     Re-verifying on every load (rather than trusting the file because it was
-    verified when written) means tampering with ``omnivoice_data`` after the
+    verified when written) means tampering with ``elevenvoice_data`` after the
     fact buys nothing, and costs one Ed25519 check per call.
     """
     root = gallery_root()
@@ -351,7 +351,7 @@ def _store_manifest(raw: bytes, signature: str) -> None:
 
 def base_url() -> str:
     """Where previews are published. Overridable for self-hosting and tests."""
-    return (os.environ.get("OMNIVOICE_GALLERY_URL") or _DEFAULT_BASE_URL).rstrip("/")
+    return (os.environ.get("ELEVENVOICE_GALLERY_URL") or _DEFAULT_BASE_URL).rstrip("/")
 
 
 def _client(client=None):

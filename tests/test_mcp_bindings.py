@@ -10,8 +10,8 @@ import sys
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
-os.environ.setdefault("OMNIVOICE_DISABLE_FILE_LOG", "1")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_DISABLE_FILE_LOG", "1")
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def db(tmp_path, monkeypatch):
     from backend_module_state import purge, restore, snapshot
 
     before = snapshot()
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     purge()
     try:
         importlib.import_module("core.db").init_db()
@@ -232,7 +232,7 @@ def client(tmp_path, monkeypatch):
     from backend_module_state import purge, restore, snapshot
 
     before = snapshot()
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     purge()
     try:
         importlib.import_module("core.db").init_db()
@@ -258,8 +258,8 @@ def test_rest_crud_roundtrip(client):
 def test_server_mode_binding_mutations_require_api_key(client, monkeypatch):
     from fastapi.testclient import TestClient
 
-    monkeypatch.setenv("OMNIVOICE_SERVER_MODE", "1")
-    monkeypatch.delenv("OMNIVOICE_API_KEY", raising=False)
+    monkeypatch.setenv("ELEVENVOICE_SERVER_MODE", "1")
+    monkeypatch.delenv("ELEVENVOICE_API_KEY", raising=False)
     remote = TestClient(client.app, client=("172.17.0.1", 50000))
 
     assert remote.get("/api/mcp/bindings").status_code == 200

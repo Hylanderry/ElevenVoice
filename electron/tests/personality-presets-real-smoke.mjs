@@ -8,20 +8,20 @@ try {
   await page.getByRole('button', { name: 'Narrator', exact: true }).click();
   await page.waitForFunction(
     () =>
-      JSON.parse(localStorage.getItem('voicestudio.design.v1') || '{}').attrs?.Pitch ===
+      JSON.parse(localStorage.getItem('elevenvoice.design.v1') || '{}').attrs?.Pitch ===
       'low pitch',
   );
   const before = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem('voicestudio.design.v1')),
+    JSON.parse(localStorage.getItem('elevenvoice.design.v1')),
   );
   await page.getByRole('button', { name: 'News Anchor', exact: true }).click();
   await page.waitForFunction(
     () =>
-      JSON.parse(localStorage.getItem('voicestudio.design.v1') || '{}').attrs?.EnglishAccent ===
+      JSON.parse(localStorage.getItem('elevenvoice.design.v1') || '{}').attrs?.EnglishAccent ===
       'american accent',
   );
   const after = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem('voicestudio.design.v1')),
+    JSON.parse(localStorage.getItem('elevenvoice.design.v1')),
   );
   assert.equal(after.attrs.Pitch, 'Medium');
   assert.equal(after.attrs.Gender, 'Auto');

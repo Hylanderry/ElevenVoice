@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const base = process.env.VOICESTUDIO_UI_URL || 'http://localhost:3912';
+const base = process.env.ELEVENVOICE_UI_URL || 'http://localhost:3912';
 const routes = [
   '/',
   '/clone',
@@ -48,7 +48,7 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const cdp = await page.context().newCDPSession(page);
-await page.addInitScript(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+await page.addInitScript(() => localStorage.setItem('elevenvoice.setup.complete.v1', '1'));
 const findings = [];
 const viewports = [
   { width: 1440, height: 900 },

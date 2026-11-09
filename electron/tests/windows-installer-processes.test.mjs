@@ -18,15 +18,15 @@ assert.match(template, /System::Call 'kernel32::SetEnvironmentVariableW\(w "ELEC
 const powershell = process.platform === 'win32' ? 'powershell.exe' : 'pwsh';
 const available = spawnSync(powershell, ['-NoProfile', '-Command', 'exit 0']);
 
-for (const root of ['E:\\NN\\VoiceStudio', 'E:\\NN\\VoiceStudio\\', "E:\\O'Brien\\VoiceStudio", 'E:\\']) {
+for (const root of ['E:\\NN\\ElevenVoice', 'E:\\NN\\ElevenVoice\\', "E:\\O'Brien\\ElevenVoice", 'E:\\']) {
   test(`installer only matches processes inside ${root}`, {
     skip: process.platform !== 'win32' && available.error?.code === 'ENOENT',
   }, () => {
     const clean = root.replace(/\\+$/, '');
     const processes = [
-      { ProcessId: 1, ExecutablePath: `${clean}\\VoiceStudio.exe` },
+      { ProcessId: 1, ExecutablePath: `${clean}\\ElevenVoice.exe` },
       { ProcessId: 2, ExecutablePath: `${clean.toLowerCase()}\\resources\\python.exe` },
-      { ProcessId: 3, ExecutablePath: `${clean}-old\\VoiceStudio.exe` },
+      { ProcessId: 3, ExecutablePath: `${clean}-old\\ElevenVoice.exe` },
       { ProcessId: 4, ExecutablePath: `${clean}-0.5.7-setup.exe` },
       { ProcessId: 4242, ExecutablePath: `${clean}\\setup.exe` },
       { ProcessId: 5, ExecutablePath: null },

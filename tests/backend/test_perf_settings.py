@@ -23,7 +23,7 @@ def fresh_app(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGING_FACE_HUB_TOKEN", raising=False)
 
@@ -105,7 +105,7 @@ def test_env_injection_when_enabled_on_windows(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in list(sys.modules):
         if mod == "core" or mod.startswith("core.") or mod == "services" or mod.startswith("services."):
             del sys.modules[mod]
@@ -129,7 +129,7 @@ def test_env_injection_when_enabled_on_other_platforms(monkeypatch, tmp_path, pl
     from huggingface_hub import constants
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in list(sys.modules):
         if mod == "core" or mod.startswith("core.") or mod == "services" or mod.startswith("services."):
             del sys.modules[mod]
@@ -146,7 +146,7 @@ def test_parent_compile_opt_out_propagates(monkeypatch, tmp_path):
     from huggingface_hub import constants
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     monkeypatch.setenv("TORCH_COMPILE_DISABLE", "1")
     for mod in list(sys.modules):
         if mod == "core" or mod.startswith("core.") or mod == "services" or mod.startswith("services."):
@@ -166,7 +166,7 @@ def test_no_env_injection_when_disabled(monkeypatch, tmp_path):
     monkeypatch.setattr(constants, "HF_TOKEN_PATH", str(tmp_path / "hf-token"))
     monkeypatch.setattr(constants, "HF_STORED_TOKENS_PATH", str(tmp_path / "stored_tokens"))
     monkeypatch.setenv("HF_TOKEN_PATH", str(tmp_path / "hf-token"))
-    monkeypatch.setenv("OMNIVOICE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("ELEVENVOICE_DATA_DIR", str(tmp_path))
     for mod in list(sys.modules):
         if mod == "core" or mod.startswith("core.") or mod == "services" or mod.startswith("services."):
             del sys.modules[mod]

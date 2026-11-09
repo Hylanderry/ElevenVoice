@@ -26,7 +26,7 @@ import subprocess
 import sys
 import threading
 
-logger = logging.getLogger("omnivoice.translation_engines")
+logger = logging.getLogger("elevenvoice.translation_engines")
 
 _NLLB_REPO_ID = "facebook/nllb-200-distilled-600M"
 _ARGOS_INSTALL_LOCK = threading.Lock()
@@ -146,7 +146,7 @@ def is_frozen() -> bool:
     In that case the Python site-packages is read-only and signed, so we
     refuse install/uninstall requests instead of corrupting the bundle.
     """
-    return bool(getattr(sys, "frozen", False) or os.environ.get("OMNIVOICE_FROZEN"))
+    return bool(getattr(sys, "frozen", False) or os.environ.get("ELEVENVOICE_FROZEN"))
 
 
 def _nllb_weights_probe() -> tuple[bool, str | None]:
@@ -294,7 +294,7 @@ def _normalize(name: str) -> str:
 
 @functools.lru_cache(maxsize=1)
 def _app_dependency_names() -> frozenset[str]:
-    """Distribution names VoiceStudio itself requires, normalized.
+    """Distribution names ElevenVoice itself requires, normalized.
 
     Read from the installed package metadata, so it follows the lockfile with
     no second list to keep in step. Without metadata this guards nothing
@@ -317,7 +317,7 @@ def _app_dependency_names() -> frozenset[str]:
 def uninstall_blocker(engine_id: str) -> "tuple[int, str] | None":
     """Why removing this engine's package would break something, or None.
 
-    `pip uninstall` acts on the app's own environment. A package VoiceStudio
+    `pip uninstall` acts on the app's own environment. A package ElevenVoice
     depends on (openai, argostranslate) would break the app, and a package
     other translation engines share (deep_translator backs four) would break
     those engines too.
@@ -328,7 +328,7 @@ def uninstall_blocker(engine_id: str) -> "tuple[int, str] | None":
         return None
     if entry.get("builtin") or _normalize(pkg) in _app_dependency_names():
         return 400, (
-            f"{entry['display_name']} uses {pkg}, which VoiceStudio itself "
+            f"{entry['display_name']} uses {pkg}, which ElevenVoice itself "
             "depends on. Uninstalling it would break the app."
         )
     sharing = [
@@ -400,7 +400,7 @@ def argos_lang_code(value: str) -> str:
 
 
 def _configure_argos_cache() -> None:
-    cache_dir = os.environ.get("OMNIVOICE_CACHE_DIR")
+    cache_dir = os.environ.get("ELEVENVOICE_CACHE_DIR")
     if not cache_dir:
         return
     argos_cache = os.path.join(cache_dir, "argos-translate")

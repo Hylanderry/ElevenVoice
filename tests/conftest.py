@@ -1,4 +1,6 @@
 import importlib.abc
+import os as _os_licences
+_os_licences.environ.setdefault("ELEVENVOICE_LICENCES_ACCEPTED_BY_DEFAULT", "0")  # tests exercise the per-model gate
 import importlib.machinery
 import os
 import sys
@@ -14,60 +16,60 @@ if _BACKEND not in sys.path:
 # ── Hermetic app state (issue #878) ────────────────────────────────────────
 # Tests must never read or write the developer's real app state. Without
 # this, `core.config.DATA_DIR` resolves to the real per-user data dir
-# (~/Library/Application Support/OmniVoice, %APPDATA%\OmniVoice, ~/.omnivoice)
-# so prefs.json / omnivoice.db writes made by tests land in — and leak from —
+# (~/Library/Application Support/OmniVoice, %APPDATA%\OmniVoice, ~/.elevenvoice)
+# so prefs.json / elevenvoice.db writes made by tests land in — and leak from —
 # the developer's actual install, and a dev who used the app sees LLM tests
 # fail that pass on clean CI. Redirecting here (before pytest imports any
 # test module, which is what freezes DATA_DIR at `core.config` import time)
 # makes every local run behave like a clean CI runner. `setdefault` semantics:
-# an explicitly exported OMNIVOICE_DATA_DIR still wins.
+# an explicitly exported ELEVENVOICE_DATA_DIR still wins.
 #
 # pytest-xdist: the controller imports this file first and exports the dir it
 # made; every worker then inherits it, so all workers shared ONE prefs.json /
-# omnivoice.db / user-env and one worker's `llm_backend=off` flipped another's
-# "ready" assertion. A dir WE created (tracked in _OMNIVOICE_TEST_AUTO_DATA_DIR)
+# elevenvoice.db / user-env and one worker's `llm_backend=off` flipped another's
+# "ready" assertion. A dir WE created (tracked in _ELEVENVOICE_TEST_AUTO_DATA_DIR)
 # is therefore re-made per worker; an explicitly exported one is still honored.
-_AUTO_DATA_DIR = "_OMNIVOICE_TEST_AUTO_DATA_DIR"
-_inherited_auto_dir = os.environ.get("OMNIVOICE_DATA_DIR") if (
+_AUTO_DATA_DIR = "_ELEVENVOICE_TEST_AUTO_DATA_DIR"
+_inherited_auto_dir = os.environ.get("ELEVENVOICE_DATA_DIR") if (
     os.environ.get("PYTEST_XDIST_WORKER")
-    and os.environ.get("OMNIVOICE_DATA_DIR") == os.environ.get(_AUTO_DATA_DIR)
+    and os.environ.get("ELEVENVOICE_DATA_DIR") == os.environ.get(_AUTO_DATA_DIR)
 ) else None
 if _inherited_auto_dir:
-    _env_file = os.environ.get("OMNIVOICE_ENV_FILE", "")
+    _env_file = os.environ.get("ELEVENVOICE_ENV_FILE", "")
     if _env_file.startswith(_inherited_auto_dir):
-        del os.environ["OMNIVOICE_ENV_FILE"]  # re-derived below from the worker's dir
-if not os.environ.get("OMNIVOICE_DATA_DIR") or _inherited_auto_dir:
-    os.environ["OMNIVOICE_DATA_DIR"] = tempfile.mkdtemp(prefix="omnivoice-test-data-")
-    os.environ[_AUTO_DATA_DIR] = os.environ["OMNIVOICE_DATA_DIR"]
+        del os.environ["ELEVENVOICE_ENV_FILE"]  # re-derived below from the worker's dir
+if not os.environ.get("ELEVENVOICE_DATA_DIR") or _inherited_auto_dir:
+    os.environ["ELEVENVOICE_DATA_DIR"] = tempfile.mkdtemp(prefix="omnivoice-test-data-")
+    os.environ[_AUTO_DATA_DIR] = os.environ["ELEVENVOICE_DATA_DIR"]
 # Same story for the durable per-user env file (~/.config/omnivoice/env):
 # `main.py` loads it with override=True at import, so a TestClient importing
 # the app mid-suite would inject the developer's real TRANSLATE_* / key vars
-# into this process. `core.user_env` resolves OMNIVOICE_ENV_FILE at call
+# into this process. `core.user_env` resolves ELEVENVOICE_ENV_FILE at call
 # time, so pointing it into the throwaway data dir neutralizes both the
 # load and any test that writes user-env without stubbing.
-if not os.environ.get("OMNIVOICE_ENV_FILE"):
-    os.environ["OMNIVOICE_ENV_FILE"] = os.path.join(
-        os.environ["OMNIVOICE_DATA_DIR"], "user-env"
+if not os.environ.get("ELEVENVOICE_ENV_FILE"):
+    os.environ["ELEVENVOICE_ENV_FILE"] = os.path.join(
+        os.environ["ELEVENVOICE_DATA_DIR"], "user-env"
     )
 # The TTS checkpoint sentinel, suite-wide. Individual modules used to opt in
-# (`OMNIVOICE_MODEL=test`), but any module that boots the real app lifespan
+# (`ELEVENVOICE_MODEL=test`), but any module that boots the real app lifespan
 # (`with TestClient(main.app)`) without it lets `preload_model()` resolve the
 # real k2-fsa/OmniVoice checkpoint — on a networked machine with an empty HF
 # cache that meant a silent multi-GB background download mid-suite. The
 # sentinel is honored verbatim by `resolve_omnivoice_checkpoint()` (never
 # self-healed to the real default), so no test can trigger a real model
-# download/load without explicitly overriding OMNIVOICE_MODEL. Unconditional
+# download/load without explicitly overriding ELEVENVOICE_MODEL. Unconditional
 # on purpose (#1175 review): a `setdefault` preserved an ambient
-# OMNIVOICE_MODEL from the dev's shell, silently re-enabling exactly the
+# ELEVENVOICE_MODEL from the dev's shell, silently re-enabling exactly the
 # real-checkpoint resolution this sentinel exists to prevent; tests that
 # need a different value monkeypatch it explicitly.
-os.environ["OMNIVOICE_MODEL"] = "test"
+os.environ["ELEVENVOICE_MODEL"] = "test"
 
 # Starlette's TestClient addresses the app as "http://testserver". The backend
 # refuses unrecognized Host names (DNS-rebinding guard, core.browser_guard),
 # so the suite registers that name the way a deployment registers its own.
 # Tests of the host check itself clear this with monkeypatch.
-os.environ.setdefault("OMNIVOICE_ALLOWED_HOSTS", "testserver")
+os.environ.setdefault("ELEVENVOICE_ALLOWED_HOSTS", "testserver")
 
 # Background warm-ups must not fire mid-suite: many tests boot the app
 # lifespan via TestClient, and any that exits without a lifespan shutdown
@@ -76,13 +78,13 @@ os.environ.setdefault("OMNIVOICE_ALLOWED_HOSTS", "testserver")
 # under whatever test happens to be running (seen as a CI-only flake in the
 # prefetch cold-start tests). Unconditional: a stray export from the runner
 # shell must not re-enable it; a test that wants the warm-up monkeypatches.
-os.environ["OMNIVOICE_PRELOAD_WATERMARK"] = "0"
+os.environ["ELEVENVOICE_PRELOAD_WATERMARK"] = "0"
 
 # Physical-GPU inventory (core.gpu_inventory) reads the OS registry / sysfs. A
 # developer's own AMD/NVIDIA card must not change what a routing or probe test
 # resolves, so the suite sees a GPU-less inventory; the inventory's own tests
 # call its readers directly with fakes.
-os.environ["OMNIVOICE_DISABLE_GPU_INVENTORY"] = "1"
+os.environ["ELEVENVOICE_DISABLE_GPU_INVENTORY"] = "1"
 
 
 # ── Test fixtures ──────────────────────────────────────────────────────────
@@ -107,8 +109,8 @@ import warnings as _warnings
 # here, not read from `core.prefs`, so a test that re-imports or repoints the
 # module cannot move the store this guard protects.
 _PERSISTED_SETTINGS_FILES = (
-    os.path.join(os.environ["OMNIVOICE_DATA_DIR"], "prefs.json"),
-    os.environ["OMNIVOICE_ENV_FILE"],
+    os.path.join(os.environ["ELEVENVOICE_DATA_DIR"], "prefs.json"),
+    os.environ["ELEVENVOICE_ENV_FILE"],
 )
 
 
@@ -125,7 +127,7 @@ def _settings_files_snapshot() -> dict:
 
 def _settings_files_restore(snapshot: dict) -> None:
     # `core.prefs` freezes its path at first import. When that first import
-    # happens inside a test that aimed OMNIVOICE_DATA_DIR at its tmp_path
+    # happens inside a test that aimed ELEVENVOICE_DATA_DIR at its tmp_path
     # (the reload-fixture shape), the rest of the session would read and
     # write prefs in that test's directory, out of this guard's reach. Test
     # monkeypatches are already undone here, so any other value is a leak.
@@ -404,8 +406,8 @@ def offline_model_manager(fresh_model_manager, monkeypatch):
     manager = fresh_model_manager()
     for name in ("_torch", "_OmniVoice", "model"):
         monkeypatch.setattr(manager, name, None)
-    monkeypatch.setenv("OMNIVOICE_MODEL", _MODEL_MANAGER_TEST_REPO)
-    for name in ("OMNIVOICE_PRELOAD_TTS_ASR", "HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE"):
+    monkeypatch.setenv("ELEVENVOICE_MODEL", _MODEL_MANAGER_TEST_REPO)
+    for name in ("ELEVENVOICE_PRELOAD_TTS_ASR", "HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE"):
         monkeypatch.delenv(name, raising=False)
     fake_torch = type("TestTorch", (), {"float16": object(), "float32": object()})()
     monkeypatch.setattr(manager, "_lazy_torch", lambda: fake_torch)
@@ -476,8 +478,8 @@ def torch_dtype_isolation(request):
 # translation resolution.
 _LLM_ENV_EXTRAS = (
     "LLM_DEFAULT_PROVIDER",    # llm_providers.active_provider_id() override
-    "OMNIVOICE_LLM_BACKEND",   # llm_backend.active_backend_id() override
-    "OMNIVOICE_LLM_TIMEOUT",
+    "ELEVENVOICE_LLM_BACKEND",   # llm_backend.active_backend_id() override
+    "ELEVENVOICE_LLM_TIMEOUT",
     "TRANSLATE_PROVIDER",      # dub translate default provider
     "TRANSLATE_BASE_URL",
     "TRANSLATE_API_KEY",
@@ -646,7 +648,7 @@ def mock_settings_store(monkeypatch):
 
 # ── #1269: config drift from importlib.reload leaks across suites ────────────
 #
-# Ten test modules share a fixture shape: monkeypatch OMNIVOICE_DATA_DIR to a
+# Ten test modules share a fixture shape: monkeypatch ELEVENVOICE_DATA_DIR to a
 # tmp_path, then importlib.reload(core.config) (plus core.db, a router, main)
 # so the app rebinds its paths under the temp dir. monkeypatch faithfully
 # restores the ENV VAR at teardown — and nothing reloads the modules back, so
@@ -657,7 +659,7 @@ def mock_settings_store(monkeypatch):
 # backend/tests/` run this produced three different answers to "where is the
 # voices directory":
 #
-#   OMNIVOICE_DATA_DIR      .../omnivoice-test-data-vna0ywre        (correct)
+#   ELEVENVOICE_DATA_DIR      .../omnivoice-test-data-vna0ywre        (correct)
 #   core.config.VOICES_DIR  .../test_fitted_srt_last_cue_withi0/…   (leaked)
 #   profiles.VOICES_DIR     .../test_clone_profile_save_saniti0/…   (leaked)
 #
@@ -700,7 +702,7 @@ def _restore_config_paths_after_reload():
         # and then the empty-snapshot guard below skips restoration entirely,
         # so the very module most likely to reload config is the one least
         # protected (Greptile P1). Importing is cheap and idempotent, and
-        # tests/conftest.py has already pointed OMNIVOICE_DATA_DIR at a
+        # tests/conftest.py has already pointed ELEVENVOICE_DATA_DIR at a
         # throwaway dir by the time any fixture runs, so the values are right.
         try:
             import core.config as cfg  # noqa: PLC0415

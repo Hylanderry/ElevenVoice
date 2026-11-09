@@ -56,7 +56,7 @@ import {
 import { isTauri, askConfirm } from '../components/settings/native';
 
 // Persist the last-opened category so re-opening Settings lands where you left.
-const LS_CATEGORY = 'omnivoice.settings.category';
+const LS_CATEGORY = 'elevenvoice.settings.category';
 
 /**
  * Settings — a sidebar-nav + content-pane hub (macOS System Settings / VS Code
@@ -220,7 +220,7 @@ export default function Settings() {
     })();
     const fmtGB = (v) => (typeof v === 'number' ? `${v.toFixed(2)} GB` : '—');
     const lines = [
-      '### VoiceStudio diagnostics',
+      '### ElevenVoice diagnostics',
       '',
       `- **App version:** ${resolveAboutVersion(appVersion, info)}`,
       `- **Tauri runtime:** ${tauriVersion || (isTauri() ? '—' : 'web preview')}`,
@@ -241,7 +241,7 @@ export default function Settings() {
       `- **Outputs directory:** ${info?.outputs_dir || '—'}`,
       `- **Crash log:** ${info?.crash_log_path || '—'}`,
       `- **Update channel:** ${updateChannel}`,
-      `- **Update endpoint:** https://github.com/debpalash/VoiceStudio/releases/latest/download/latest.json`,
+      `- **Update endpoint:** https://github.com/Hylanderry/ElevenVoice/releases/latest/download/latest.json`,
       `- **User agent:** ${ua}`,
     ];
     try {

@@ -6,7 +6,7 @@ import uuid
 
 import pytest
 
-os.environ.setdefault("OMNIVOICE_MODEL", "test")
+os.environ.setdefault("ELEVENVOICE_MODEL", "test")
 
 STORED = [
     {"id": "0", "start": 0.0, "end": 2.0, "text": "Stored one.", "text_original": "Stored one."},

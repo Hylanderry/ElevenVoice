@@ -1,9 +1,9 @@
-# Request for packaging: VoiceStudio
+# Request for packaging: ElevenVoice
 
 This is a packaging-assistance request, not a claim that the current build has
 passed F-Droid's source-build checks. The publisher authorizes inclusion.
 
-- Application ID: `sh.voicestudio.mobile`
+- Application ID: `sh.elevenvoice.mobile`
 - Source: https://github.com/debpalash/VoiceStudio
 - Licence: AGPL-3.0-only
 - Android source: `mobile/android/`
@@ -15,9 +15,9 @@ passed F-Droid's source-build checks. The publisher authorizes inclusion.
 - Issue tracker/contact: https://github.com/debpalash/VoiceStudio/issues
 - Privacy policy: https://voicestudio.sh/privacy
 
-VoiceStudio runs speech synthesis, voice cloning with consent, transcription
+ElevenVoice runs speech synthesis, voice cloning with consent, transcription
 and dubbing on the phone after explicit model downloads. It can also pair with
-the user's own VoiceStudio computer. No account is required for local use.
+the user's own ElevenVoice computer. No account is required for local use.
 Models and results work offline after downloads. A user can explicitly send a
 content report to the developer; phone analytics does not transmit events in
 the current implementation.
@@ -39,15 +39,15 @@ A relevant accepted pattern is [Ramblr's F-Droid source-build work](https://gitl
 source-build the pinned Sherpa-ONNX code and its native source dependencies,
 use an accepted Maven ONNX Runtime dependency, and provide all CMake
 FetchContent sources before entering the network-isolated build. This has not
-yet been implemented or verified for VoiceStudio's pinned runtime versions.
-The VoiceStudio native libraries must preserve the full current model/API
+yet been implemented or verified for ElevenVoice's pinned runtime versions.
+The ElevenVoice native libraries must preserve the full current model/API
 coverage and the two isolated GGML engines; removing engines to make a build
 pass is not intended.
 
 The build uses JDK 21, Android SDK 36, NDK `27.1.12297006` and CMake `3.22.1`.
 The canonical version comes from the root `package.json`; the maintained
 release workflow supplies a monotonically increasing
-`VOICESTUDIO_ANDROID_VERSION_CODE`. A catalogue recipe must set a matching
+`ELEVENVOICE_ANDROID_VERSION_CODE`. A catalogue recipe must set a matching
 version code rather than assume the local fallback code matches the published
 APK. Developer-signature reproduction has not been established.
 

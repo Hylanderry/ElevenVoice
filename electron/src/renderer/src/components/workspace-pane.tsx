@@ -27,7 +27,7 @@ export function WorkspacePane({
   const { t } = useTranslation();
   const editor = layout === 'editor';
   const { host, width, separatorProps } = usePaneResize({
-    storageKey: editor ? 'voicestudio.editor-width' : 'voicestudio.inspector-width',
+    storageKey: editor ? 'elevenvoice.editor-width' : 'elevenvoice.inspector-width',
     side: 'right',
     minimum: editor ? 380 : 304,
     initial: editor ? 540 : 400,

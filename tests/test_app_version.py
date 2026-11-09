@@ -73,6 +73,6 @@ def test_ios_app_reads_the_full_version():
     # CFBundleShortVersionString is X.Y.Z only; About and licence receipts must show
     # the root version like Android's versionName (AppVersion.full).
     from pathlib import Path
-    sources = (Path(__file__).resolve().parents[1] / "mobile/ios/VoiceStudio").rglob("*.swift")
+    sources = (Path(__file__).resolve().parents[1] / "mobile/ios/ElevenVoice").rglob("*.swift")
     offenders = [p.name for p in sources if "CFBundleShortVersionString" in p.read_text(encoding="utf-8")]
     assert not offenders

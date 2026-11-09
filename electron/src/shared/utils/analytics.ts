@@ -7,7 +7,7 @@
  *
  * That is wrong for this app, twice over, and the reasons are not theoretical:
  *
- * 1. **It would track everyone immediately, before consent.** VoiceStudio's whole
+ * 1. **It would track everyone immediately, before consent.** ElevenVoice's whole
  *    promise is that a default install sends nothing (Settings → Privacy is OFF
  *    until you turn it on; see backend/core/analytics.py). Initialising at load
  *    would make the app's own README a lie. So init happens ONLY after the user
@@ -172,9 +172,9 @@ export function sanitizeException(error: unknown): Error {
     )
     .slice(0, MAX_STACK_LINES)
     .map((line) => line.slice(0, MAX_STACK_LINE_LENGTH));
-  const safe = new Error('VoiceStudio renderer error');
+  const safe = new Error('ElevenVoice renderer error');
   safe.name = errorClass;
-  safe.stack = [`${errorClass}: VoiceStudio renderer error`, ...frames].join('\n');
+  safe.stack = [`${errorClass}: ElevenVoice renderer error`, ...frames].join('\n');
   return safe;
 }
 
