@@ -471,7 +471,13 @@ def get_license_accepted(engine_id: str) -> bool:
     callsite (``Supertonic3Backend.is_available()``) defaults to safe.
     """
     key = _license_key(engine_id)
-    raw = get_text(key, default="0")
+    raw = get_text(key, default=None)
+    if raw is None:
+        # Never answered: the first-launch agreement covers every model
+        # licence unless that default is switched off. An explicit "0"
+        # (withdrawn) always wins.
+        from services.model_acceptance import accepted_by_default
+        return accepted_by_default()
     return raw == "1"
 
 
