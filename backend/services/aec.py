@@ -12,7 +12,7 @@ everywhere, so it is the local-first, platform-neutral choice.
 
 This is an NLMS (normalised least-mean-squares) time-domain adaptive filter
 with a Geigel double-talk detector. It is a clean-room-grade *port* of
-Patter's ``getpatter/audio/aec.py`` (MIT) — see docs/competitive-analysis.md,
+Patter's ``getpatter/audio/aec.py`` (MIT) — see HELP.md#competitive-analysis,
 Action 8. It is NOT production-grade DSP (WebRTC AEC3 / Speex AEC are); it is
 a dependency-free, good-enough canceller that removes the steady-state echo
 the ASR would otherwise hallucinate on.

@@ -28,7 +28,7 @@ EXPECTED_SLUG = {
     ("win32", "x64"): "windows-x86_64",
     ("win32", "arm64"): "windows-x86_64",
     ("darwin", "arm64"): "darwin-arm64",
-    # Intel Macs cannot run the local backend (docs/install/macos.md).
+    # Intel Macs cannot run the local backend (HELP.md#macos).
     ("darwin", "x64"): "",
 }
 

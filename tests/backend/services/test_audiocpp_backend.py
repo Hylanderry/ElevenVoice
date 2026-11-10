@@ -670,7 +670,7 @@ def test_resolve_server_binary_missing_gives_install_hint(
     # a source checkout, so this must fail with guidance, not a bare error.
     monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_BIN", str(tmp_path / "nope"))
     monkeypatch.setenv("ELEVENVOICE_AUDIOCPP_DIR", str(tmp_path / "nodir"))
-    with pytest.raises(RuntimeError, match="docs/engines/audio-cpp.md") as exc:
+    with pytest.raises(RuntimeError, match="HELP.md#audio-cpp") as exc:
         bootstrap.resolve_server_binary()
     assert bootstrap.default_asset()[1] in str(exc.value)
 
@@ -934,7 +934,7 @@ def test_is_available_false_without_binary_gives_reason(app_modules):
     if ok:
         pytest.skip("audiocpp_server installed on this host")
     assert "audiocpp_server" in msg
-    assert "audio-cpp.md" in msg
+    assert "HELP.md#audio-cpp" in msg
 
 
 def test_is_available_requires_explicitly_installed_model(

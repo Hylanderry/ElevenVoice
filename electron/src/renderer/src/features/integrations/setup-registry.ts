@@ -68,7 +68,7 @@ export interface IntegrationSetup {
   panel?: ComponentType<IntegrationPanelProps>;
 }
 
-const REPO_DOCS = 'https://github.com/Hylanderry/ElevenVoice/blob/main/docs';
+const REPO_DOCS = 'https://github.com/Hylanderry/ElevenVoice/blob/main/HELP.md';
 const DOCKER_HUB_IMAGE = 'palashdeb/elevenvoice';
 const GHCR_IMAGE = 'ghcr.io/hylanderry/elevenvoice';
 // Published images keep this stable even when a desktop build chooses another local default.
@@ -190,7 +190,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
   'model-context-protocol': {
     capabilities: ['mcp'],
     taglineKey: 'integrationCatalog.tagline.mcp',
-    docs: `${REPO_DOCS}/mcp.md`,
+    docs: `${REPO_DOCS}#mcp`,
     voiceBindings: true,
     blocks: (baseUrl) => {
       const url = backendEndpoint(baseUrl, MCP_ENDPOINT);
@@ -244,7 +244,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
   'elevenvoice-api': {
     capabilities: ['speechApi', 'transcriptionApi'],
     taglineKey: 'integrationCatalog.tagline.api',
-    docs: `${REPO_DOCS}/api-auth.md`,
+    docs: `${REPO_DOCS}#api-auth`,
     blocks: (baseUrl) => {
       const base = backendEndpoint(baseUrl, '');
       if (!base) return null;
@@ -322,14 +322,14 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
       ];
     },
   },
-  docker: container(DOCKER_HUB_IMAGE, `${REPO_DOCS}/install/docker.md`),
-  'github-container-registry': container(GHCR_IMAGE, `${REPO_DOCS}/install/docker.md`),
+  docker: container(DOCKER_HUB_IMAGE, `${REPO_DOCS}#docker`),
+  'github-container-registry': container(GHCR_IMAGE, `${REPO_DOCS}#docker`),
   'openai-agents': {
     // ElevenVoice serves the pipeline's speech-to-text and text-to-speech; the
     // agent's language model is a local OpenAI-compatible server of the user's.
     capabilities: ['speechApi', 'transcriptionApi', 'localLlm'],
     taglineKey: 'integrationCatalog.tagline.openaiAgents',
-    docs: `${REPO_DOCS}/agentic-voice.md#openai-agents-sdk`,
+    docs: `${REPO_DOCS}#openai-agents-sdk`,
     blocks: (baseUrl) => {
       const setup = openaiAgentsSetup('openai-agents', baseUrl);
       if (!setup) return null;
@@ -359,7 +359,7 @@ export const INTEGRATION_SETUPS: Record<string, IntegrationSetup> = {
   n8n: {
     capabilities: ['workflow', 'speechApi'],
     taglineKey: 'integrationCatalog.tagline.n8n',
-    docs: `${REPO_DOCS}/integrations/n8n.md`,
+    docs: `${REPO_DOCS}#n8n`,
     blocks: (baseUrl) => {
       const setup = n8nSetup('n8n', baseUrl);
       if (!setup) return null;

@@ -11,7 +11,7 @@
  * hasn't passed a connection test asks for confirmation first.
  *
  * Pairs with the backend's ELEVENVOICE_API_KEY bearer gate; full recipe in
- * docs/remote-gpu.md.
+ * HELP.md#remote-gpu.
  */
 import React, { useState } from 'react';
 import { Server } from 'lucide-react';

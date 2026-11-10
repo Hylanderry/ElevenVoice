@@ -10,7 +10,7 @@ from __future__ import annotations
 def test_known_class_returns_url():
     from core import error_docs_map
     url = error_docs_map.lookup("GATEKEEPER_QUARANTINE")
-    assert "docs/install/macos.md#gatekeeper-quarantine" in url
+    assert "HELP.md#gatekeeper-quarantine" in url
 
 
 def test_unknown_class_returns_default():
@@ -90,12 +90,12 @@ def test_pyannote_license_class_points_at_diarization_docs():
     license on huggingface.co."""
     from core import error_docs_map
     url = error_docs_map.lookup("PYANNOTE_LICENSE_REQUIRED")
-    assert "docs/features/diarization.md" in url
+    assert "HELP.md#license-acceptance-flow" in url
     assert "license-acceptance-flow" in url
 
 
 def test_pockettts_gate_points_at_pockettts_instructions():
     from core import error_docs_map
     url = error_docs_map.lookup("POCKETTTS_GATED_WEIGHTS")
-    assert "docs/install/troubleshooting.md" in url
+    assert "HELP.md#pockettts-gated-weights" in url
     assert "pockettts-gated-weights" in url

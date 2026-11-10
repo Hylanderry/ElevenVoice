@@ -376,7 +376,7 @@ def test_preflight_names_the_cpu_build_and_the_rocm_opt_in(monkeypatch, platform
     assert "ELEVENVOICE_TORCH_VARIANT=rocm" in note
     assert "no ROCm build" not in note
     if platform_ == "win32":
-        assert "docs/install/windows-rocm.md" in note
+        assert "HELP.md#windows-rocm" in note
 
 
 def test_preflight_rocm_build_without_kernels_for_the_card_is_not_ready(monkeypatch, tmp_path):

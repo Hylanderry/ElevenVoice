@@ -547,7 +547,7 @@ export async function requestWebSocketTicket(
   const session = getAdminSession(base, { storage, now });
   if (!session) throw new AuthSessionError(401);
   // Deliberately no plaintext (`ws:`) refusal: the documented remote-GPU setup
-  // is plain HTTP over a Tailscale/WireGuard tailnet (docs/remote-gpu.md), and
+  // is plain HTTP over a Tailscale/WireGuard tailnet (HELP.md#remote-gpu), and
   // the bearer session that mints this ticket already crossed that same
   // transport. A one-use, 30 s, path-bound ticket adds no exposure the session
   // lacks; refusing it would only cut /ws/events and /ws/transcribe off for

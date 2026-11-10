@@ -459,7 +459,12 @@ async def check_for_updates(
         # works: previews render locally.
         _report_rejected_download(exc, "Voice gallery update")
         state["last_checked"] = ts
-        state["last_error"] = str(exc)
+        if "HTTP 404" in str(exc):
+            # Nothing is published at the gallery address: that is "no gallery
+            # yet", not a rejected update, so the screen shows no error.
+            state.pop("last_error", None)
+        else:
+            state["last_error"] = str(exc)
         _save_state(state)
         return status(now=now)
     except Exception as exc:  # offline, DNS, TLS, timeout — all expected

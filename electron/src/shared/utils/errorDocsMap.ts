@@ -16,55 +16,55 @@ import { openExternal } from '../api/external';
 const BASE = 'https://github.com/Hylanderry/ElevenVoice/blob/main';
 
 export const ERROR_DOCS: Record<string, string> = {
-  GPU_ARCH_UNSUPPORTED: `${BASE}/docs/install/troubleshooting.md#generation-failure-diagnosis`,
+  GPU_ARCH_UNSUPPORTED: `${BASE}/HELP.md#generation-failure-diagnosis`,
   // #2462 — the host ran out of system RAM (the only memory class a
   // CPU-only machine can produce).
-  HOST_MEMORY_EXHAUSTED: `${BASE}/docs/install/troubleshooting.md#generation-failure-diagnosis`,
+  HOST_MEMORY_EXHAUSTED: `${BASE}/HELP.md#generation-failure-diagnosis`,
   // The volume holding data / model cache / temp is full (ENOSPC, EDQUOT,
   // WinError 112/39).
-  DISK_FULL: `${BASE}/docs/install/troubleshooting.md#generation-failure-diagnosis`,
-  WINDOWS_APP_CONTROL_BLOCKED: `${BASE}/docs/install/troubleshooting.md#generation-failure-diagnosis`,
-  AUDIO_IO_FAILED: `${BASE}/docs/install/troubleshooting.md#generation-failure-diagnosis`,
-  INVALID_MEDIA_FILE: `${BASE}/docs/electron-dubbing.md#unreadable-source-file`,
+  DISK_FULL: `${BASE}/HELP.md#generation-failure-diagnosis`,
+  WINDOWS_APP_CONTROL_BLOCKED: `${BASE}/HELP.md#generation-failure-diagnosis`,
+  AUDIO_IO_FAILED: `${BASE}/HELP.md#generation-failure-diagnosis`,
+  INVALID_MEDIA_FILE: `${BASE}/HELP.md#unreadable-source-file`,
 
-  DIARIZATION_LOAD_FAILED: `${BASE}/docs/features/diarization.md#troubleshooting`,
-  DIARIZATION_MODEL_MISSING: `${BASE}/docs/features/diarization.md#local-installation-and-repair`,
-  GATEKEEPER_QUARANTINE: `${BASE}/docs/install/macos.md#gatekeeper-quarantine`,
-  APPIMAGE_WEBKIT_WHITESCREEN: `${BASE}/docs/install/linux.md#appimage-white-screen-on-fedora-44--ubuntu-2404`,
-  PKG_RESOURCES_MISSING: `${BASE}/docs/install/troubleshooting.md#pkg_resources-missing`,
-  HF_AUTH_FAILED: `${BASE}/docs/setup/huggingface-token.md`,
+  DIARIZATION_LOAD_FAILED: `${BASE}/HELP.md#troubleshooting`,
+  DIARIZATION_MODEL_MISSING: `${BASE}/HELP.md#local-installation-and-repair`,
+  GATEKEEPER_QUARANTINE: `${BASE}/HELP.md#gatekeeper-quarantine`,
+  APPIMAGE_WEBKIT_WHITESCREEN: `${BASE}/HELP.md#appimage-white-screen-on-fedora-44--ubuntu-2404`,
+  PKG_RESOURCES_MISSING: `${BASE}/HELP.md#pkg_resources-missing`,
+  HF_AUTH_FAILED: `${BASE}/HELP.md#huggingface-token`,
   // Issue #78 — pyannote gated-model license not accepted on HF.
   // Distinct from HF_AUTH_FAILED (which is a missing/invalid token).
-  PYANNOTE_LICENSE_REQUIRED: `${BASE}/docs/features/diarization.md#license-acceptance-flow`,
-  POCKETTTS_GATED_WEIGHTS: `${BASE}/docs/install/troubleshooting.md#pockettts-gated-weights`,
+  PYANNOTE_LICENSE_REQUIRED: `${BASE}/HELP.md#license-acceptance-flow`,
+  POCKETTTS_GATED_WEIGHTS: `${BASE}/HELP.md#pockettts-gated-weights`,
   // Install failure codes (installFailure.ts).
-  ANTIVIRUS_BLOCKED: `${BASE}/docs/install/troubleshooting.md#antivirus_blocked`,
-  EXEC_REFUSED: `${BASE}/docs/install/troubleshooting.md#exec_refused`,
-  EXEC_NOEXEC_MOUNT: `${BASE}/docs/install/troubleshooting.md#exec_noexec_mount`,
-  RUNTIME_DOWNLOAD_STALLED: `${BASE}/docs/install/troubleshooting.md#runtime_download_stalled`,
-  RUNTIME_DOWNLOAD_INTERRUPTED: `${BASE}/docs/install/troubleshooting.md#runtime_download_interrupted`,
-  RUNTIME_FOLDER_DENIED: `${BASE}/docs/install/troubleshooting.md#runtime_folder_denied`,
-  RUNTIME_FILES_LOCKED: `${BASE}/docs/install/troubleshooting.md#runtime_files_locked`,
-  RUNTIME_IN_SYNCED_FOLDER: `${BASE}/docs/install/troubleshooting.md#runtime_in_synced_folder`,
-  SYSTEM_LIBRARY_PROBLEM: `${BASE}/docs/install/troubleshooting.md#system_library_problem`,
-  UNSUPPORTED_PLATFORM: `${BASE}/docs/install/troubleshooting.md#unsupported_platform`,
-  SOURCE_ENV_INCOMPLETE: `${BASE}/docs/install/troubleshooting.md#source_env_incomplete`,
-  BROKEN_VENV: `${BASE}/docs/install/troubleshooting.md#broken_venv`,
-  NATIVE_ACCESS_VIOLATION: `${BASE}/docs/install/troubleshooting.md#native_access_violation`,
-  NATIVE_ILLEGAL_INSTRUCTION: `${BASE}/docs/install/troubleshooting.md#native_illegal_instruction`,
-  NATIVE_CRASH: `${BASE}/docs/install/troubleshooting.md#native_crash`,
-  STARTUP_TIMEOUT_SILENT: `${BASE}/docs/install/troubleshooting.md#startup_timeout_silent`,
-  STARTUP_TIMEOUT_OUTPUT: `${BASE}/docs/install/troubleshooting.md#startup_timeout_output`,
-  BACKEND_STARTUP_FAILED: `${BASE}/docs/install/troubleshooting.md#backend_startup_failed`,
-  PORT_IN_USE: `${BASE}/docs/install/troubleshooting.md#port_in_use`,
-  ROCM_NOT_CONFIGURED: `${BASE}/docs/install/troubleshooting.md#rocm_not_configured`,
+  ANTIVIRUS_BLOCKED: `${BASE}/HELP.md#antivirus_blocked`,
+  EXEC_REFUSED: `${BASE}/HELP.md#exec_refused`,
+  EXEC_NOEXEC_MOUNT: `${BASE}/HELP.md#exec_noexec_mount`,
+  RUNTIME_DOWNLOAD_STALLED: `${BASE}/HELP.md#runtime_download_stalled`,
+  RUNTIME_DOWNLOAD_INTERRUPTED: `${BASE}/HELP.md#runtime_download_interrupted`,
+  RUNTIME_FOLDER_DENIED: `${BASE}/HELP.md#runtime_folder_denied`,
+  RUNTIME_FILES_LOCKED: `${BASE}/HELP.md#runtime_files_locked`,
+  RUNTIME_IN_SYNCED_FOLDER: `${BASE}/HELP.md#runtime_in_synced_folder`,
+  SYSTEM_LIBRARY_PROBLEM: `${BASE}/HELP.md#system_library_problem`,
+  UNSUPPORTED_PLATFORM: `${BASE}/HELP.md#unsupported_platform`,
+  SOURCE_ENV_INCOMPLETE: `${BASE}/HELP.md#source_env_incomplete`,
+  BROKEN_VENV: `${BASE}/HELP.md#broken_venv`,
+  NATIVE_ACCESS_VIOLATION: `${BASE}/HELP.md#native_access_violation`,
+  NATIVE_ILLEGAL_INSTRUCTION: `${BASE}/HELP.md#native_illegal_instruction`,
+  NATIVE_CRASH: `${BASE}/HELP.md#native_crash`,
+  STARTUP_TIMEOUT_SILENT: `${BASE}/HELP.md#startup_timeout_silent`,
+  STARTUP_TIMEOUT_OUTPUT: `${BASE}/HELP.md#startup_timeout_output`,
+  BACKEND_STARTUP_FAILED: `${BASE}/HELP.md#backend_startup_failed`,
+  PORT_IN_USE: `${BASE}/HELP.md#port_in_use`,
+  ROCM_NOT_CONFIGURED: `${BASE}/HELP.md#rocm_not_configured`,
 };
 
-export const DEFAULT_DOCS = `${BASE}/docs/install/troubleshooting.md`;
+export const DEFAULT_DOCS = `${BASE}/HELP.md#troubleshooting`;
 
 // Deep-link for the Dub tab's "needs install" translation-engine popover.
 // Reuses BASE so it can't drift from the other GitHub-blob links above.
-export const TRANSLATION_ENGINES_DOCS = `${BASE}/docs/dubbing/translation-engines.md#installing-optional-translation-engines-from-source-vs-packaged-build`;
+export const TRANSLATION_ENGINES_DOCS = `${BASE}/HELP.md#installing-optional-translation-engines-from-source-vs-packaged-build`;
 
 // Locked taxonomy keys — Phase 5 bug reporter consumes this exact set.
 // Adding a class is a contract change; update the Python map at the

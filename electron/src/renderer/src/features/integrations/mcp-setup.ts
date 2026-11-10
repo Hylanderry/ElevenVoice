@@ -43,7 +43,7 @@ export const API_KEY_ENV = 'ELEVENVOICE_API_KEY';
  * - `none`: loopback, which the backend never challenges.
  * - `bearer`: a remote https backend; exports reference `$ELEVENVOICE_API_KEY`.
  * - `insecure`: a remote plain-http backend; no key is exported, because it
- *   would cross the network in clear text (see docs/api-auth.md).
+ *   would cross the network in clear text (see HELP.md#api-auth).
  */
 export function remoteAuth(baseUrl: string): 'none' | 'bearer' | 'insecure' {
   const url = new URL(baseUrl);

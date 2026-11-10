@@ -165,7 +165,7 @@ def resolve_indextts_venv() -> Path:
             "IndexTTS 2.5 is not installed. Set the ELEVENVOICE_INDEXTTS_DIR "
             "environment variable to your IndexTTS clone (the directory "
             "that contains checkpoints/ and pyproject.toml), then restart "
-            "ElevenVoice. See docs/engines/indextts.md for the full install "
+            "ElevenVoice. See HELP.md#indextts for the full install "
             "walk-through."
         )
 
@@ -293,7 +293,7 @@ def _bootstrap_engines_venv(indextts_clone: Path) -> Path:
             f"module imports from {python_path}. Verify that "
             f"{indextts_clone} is a valid IndexTTS clone (contains "
             "pyproject.toml with the indextts package). See "
-            "docs/engines/indextts.md."
+            "HELP.md#indextts."
         )
 
     logger.info("IndexTTS venv bootstrap successful: %s", python_path)

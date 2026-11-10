@@ -162,7 +162,7 @@ def require_loopback(request: Request) -> None:
       and ``/api/settings/*``). The 6-digit share PIN is a consumption credential
       too and does not gate admin, so a PIN-only deployment keeps admin
       loopback-only; remote admin requires the long API key. See
-      docs/api-auth.md (#1213).
+      HELP.md#api-auth (#1213).
     """
     host = request.client.host if request.client else None
     if is_loopback(host):

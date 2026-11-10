@@ -8,7 +8,7 @@
  * State persists via the zustand longformSlice (IndexedDB, with bounded prefs
  * and ids in the root localStorage envelope).
  *
- * Spec: docs/superpowers/specs/2026-05-30-stories-editor-studio-design.md
+ * Spec: HELP.md#2026-05-30-stories-editor-studio-design
  */
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import {

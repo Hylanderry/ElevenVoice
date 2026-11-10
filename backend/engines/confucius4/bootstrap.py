@@ -134,7 +134,7 @@ def resolve_confucius4_venv() -> Path:
             "Confucius4-TTS is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your Confucius4-TTS clone "
             "(the directory that contains requirements.txt), then restart "
-            "ElevenVoice. See docs/engines/confucius4-tts.md."
+            "ElevenVoice. See HELP.md#confucius4-tts."
         )
 
     cand = _bootstrap_engines_venv(Path(clone_dir))
@@ -235,7 +235,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
             "uv pip install failed during Confucius4 bootstrap "
             f"({clone_dir}): "
             f"{exc.stderr.decode('utf-8', errors='replace') if exc.stderr else exc}. "
-            "See docs/engines/confucius4-tts.md."
+            "See HELP.md#confucius4-tts."
         ) from exc
 
     # Only a *proven* failure is fatal: a bootstrap that installed correctly
@@ -245,7 +245,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
         raise RuntimeError(
             f"Confucius4 bootstrap completed but `import {_IMPORT_PROBE}` still "
             f"fails from {python_path}. Verify {clone_dir} is a valid clone. "
-            "See docs/engines/confucius4-tts.md."
+            "See HELP.md#confucius4-tts."
         )
 
     logger.info("Confucius4 venv bootstrap successful: %s", python_path)

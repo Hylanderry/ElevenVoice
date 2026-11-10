@@ -35,7 +35,7 @@ _LOOPBACK = "127.0.0.1"
 def gateway_host() -> str:
     """Loopback by default. A Docker deployment whose tunnel runs in another
     container may set ELEVENVOICE_TWILIO_HOST to a specific IP deliberately
-    (docs/integrations/twilio.md). Only IP literals are accepted; anything
+    (HELP.md#twilio). Only IP literals are accepted; anything
     else — including an empty value — falls back to loopback, never to
     "all interfaces"."""
     raw = (os.environ.get("ELEVENVOICE_TWILIO_HOST") or _LOOPBACK).strip()

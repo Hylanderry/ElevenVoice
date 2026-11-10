@@ -177,7 +177,7 @@ def _amd_unusable_note(torch=None) -> str:
             "x64 with a GPU in AMD's ROCm 7.2.1 support matrix (including the "
             "RX 9000 and RX 7000 series), set ELEVENVOICE_TORCH_VARIANT=rocm and "
             "run setup again to install the native ROCm build "
-            "(docs/install/windows-rocm.md). audio.cpp (Vulkan) engines can "
+            "(HELP.md#windows-rocm). audio.cpp (Vulkan) engines can "
             "use the GPU either way - see Settings > Performance for the "
             "per-engine list."
         )
@@ -185,7 +185,7 @@ def _amd_unusable_note(torch=None) -> str:
         f"AMD GPU detected, but this install's PyTorch is {build}, which "
         "cannot drive it. Set ELEVENVOICE_TORCH_VARIANT=rocm and re-run setup "
         "to install the ROCm build of PyTorch "
-        "(docs/install/linux.md#amd-gpu-rocm)."
+        "(HELP.md#amd-gpu-rocm)."
     )
 
 
@@ -619,7 +619,7 @@ def preflight():
             "fix": (
                 "Use a remote backend hosted on Apple Silicon, an NVIDIA system, "
                 "or CPU-only Linux/Windows. Local setup is disabled here; "
-                "docs/install/macos.md explains the supported paths."
+                "HELP.md#macos explains the supported paths."
             ),
         }
         checks.append(platform_failure)

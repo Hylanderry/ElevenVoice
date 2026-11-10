@@ -3,7 +3,7 @@
   "version": "0.0.0-electron",
   "private": true,
   "description": "ElevenVoice desktop shell (Electron) - local voice cloning, no cloud.",
-  "homepage": "https://github.com/debpalash/VoiceStudio",
+  "homepage": "https://github.com/Hylanderry/ElevenVoice",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "ElevenVoice contributors",

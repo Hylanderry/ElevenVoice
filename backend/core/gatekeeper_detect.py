@@ -6,7 +6,7 @@ macOS Gatekeeper attaches an `com.apple.quarantine` extended attribute to the
 the bundle, and Gatekeeper refuses to exec any of them. The user sees
 "ElevenVoice can't be opened" or the app crashes silently — both bad UX.
 
-The fix is documented in Phase 1 Wave 2's `docs/install/macos-gatekeeper.md`
+The fix is documented in Phase 1 Wave 2's `HELP.md#macos-gatekeeper`
 (shipped by Plan 01-02 — Wave 2 scope) and reachable via the React
 ErrorBoundary's deeplink button when this module flags the bundle as
 quarantined.

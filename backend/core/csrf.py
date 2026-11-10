@@ -19,7 +19,7 @@ def effective_scheme(connection) -> str:
     """Scheme of the client-facing hop: the resolved scope, TLS-upgraded by proxy evidence.
 
     Behind a TLS-terminating proxy (Tailscale Serve — the flagship remote-GPU
-    deployment in docs/remote-gpu.md — nginx, Caddy, ...) the browser talks
+    deployment in HELP.md#remote-gpu — nginx, Caddy, ...) the browser talks
     ``https`` while the backend hop is plain ``http``. uvicorn's
     ProxyHeadersMiddleware (on by default in both launch paths: ``uvicorn.run``
     in backend/main.py and the Docker ``python -m uvicorn`` entrypoint) already

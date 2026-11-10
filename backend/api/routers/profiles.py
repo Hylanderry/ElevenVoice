@@ -135,7 +135,7 @@ async def create_profile(
     engine: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
 ):
-    """Create a voice profile (spec: docs/specs/elevenvoice-unification.md §5).
+    """Create a voice profile (spec: HELP.md#elevenvoice-unification §5).
 
     kind='clone'  — requires `ref_audio` (the user's reference recording).
     kind='design' — requires `vd_states` (JSON of category picks); the server
@@ -1214,7 +1214,7 @@ async def unlock_profile(profile_id: str):
 # A profile becomes "verified own voice" when its owner records themselves
 # reading a consent statement. The recording is provenance, not a voiceprint
 # check — agentic features and gallery sharing gate on the flag; plain local
-# synthesis never does. Spec: docs/competitive-analysis.md Action 22.
+# synthesis never does. Spec: HELP.md#competitive-analysis Action 22.
 
 _MIN_CONSENT_AUDIO_BYTES = 1000  # same floor as the frontend recorder
 

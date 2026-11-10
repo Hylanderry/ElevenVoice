@@ -112,7 +112,26 @@ def _is_closed_client_error(e) -> bool:
     return False
 
 
-def _retry_once_with_fresh_hf_client(loader, what: str):
+def _module_present(name: str) -> bool:
+    """Whether a package is installed, WITHOUT importing it.
+
+    Availability checks run on the event loop (engine lists, health); importing
+    torch-sized packages there froze the engine for seconds (loop-stall warnings,
+    "/health cannot answer"). A broken install still fails loudly at load time.
+    """
+    import importlib.util
+    import sys as _sys
+
+    top = name.split(".")[0]
+    if top in _sys.modules:
+        return _sys.modules[top] is not None
+    try:
+        return importlib.util.find_spec(top) is not None
+    except (ImportError, ValueError):
+        return False
+
+
+def _retry_once_with_fresh_hf_client(loader, what: str, repo_id: str | None = None):
     """Run ``loader()`` — a model constructor that may download from the HF
     Hub on first use — retrying transient download failures.
 
@@ -134,6 +153,18 @@ def _retry_once_with_fresh_hf_client(loader, what: str):
     classifier labels it.
     """
     from core.failure import is_hf_connectivity_error
+
+    if repo_id and "/" in str(repo_id):
+        # First-use downloads report progress under this model, so the download
+        # panel shows it instead of a bar that seems frozen (multi-GB weights).
+        from utils import hf_progress
+
+        if hf_progress.current_repo_id.get() is None:
+            token = hf_progress.current_repo_id.set(str(repo_id))
+            try:
+                return _retry_once_with_fresh_hf_client(loader, what)
+            finally:
+                hf_progress.current_repo_id.reset(token)
 
     attempts = max(1, _int_env("ELEVENVOICE_MODEL_LOAD_RETRIES", 3))
     backoff = max(0.0, _float_env("ELEVENVOICE_MODEL_LOAD_BACKOFF_S", 2.0))
@@ -1826,7 +1857,8 @@ class OmniVoiceBackend(TTSBackend):
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
         try:
-            import omnivoice.models.omnivoice  # noqa: F401
+            if not _module_present("omnivoice.models.omnivoice"):
+                raise ImportError("omnivoice.models.omnivoice is not installed")
             return True, "ready"
         except Exception as e:
             return False, f"omnivoice package missing: {e}"
@@ -2188,6 +2220,10 @@ class VoxCPM2Backend(TTSBackend):
 
     id = "voxcpm2"
     display_name = "VoxCPM2 (30 langs, studio 48 kHz, voice design)"
+    # ~5 GB of weights plus activations: below 8 GB the card pages to system
+    # memory or the engine falls back to the CPU (minutes per sentence). The
+    # floor makes the app say so before the user waits (see min_vram_gb).
+    min_vram_gb = 8.0
     supports_voice_design = True
     # Controllable cloning: instruct becomes the "(control)text" prefix.
     instruct_directs_delivery = True
@@ -2203,7 +2239,8 @@ class VoxCPM2Backend(TTSBackend):
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
         try:
-            import voxcpm  # noqa: F401
+            if not _module_present("voxcpm"):
+                raise ImportError("voxcpm is not installed")
         except ImportError:
             return False, (
                 "voxcpm package not installed. Install with "
@@ -2258,6 +2295,7 @@ class VoxCPM2Backend(TTSBackend):
                 checkpoint, load_denoiser=False, optimize=False
             ),
             "VoxCPM2",
+            repo_id=checkpoint,
         )
 
     def generate(self, text, **kw) -> torch.Tensor:
@@ -2350,7 +2388,8 @@ class MossTTSNanoBackend(TTSBackend):
         # (`pip install -e` of github.com/OpenMOSS/MOSS-TTS-Nano) or we load
         # the HF weights with `trust_remote_code=True`.
         try:
-            import transformers  # noqa: F401
+            if not _module_present("transformers"):
+                raise ImportError("transformers is not installed")
         except ImportError:
             return False, "transformers not installed"
         try:
@@ -2411,6 +2450,7 @@ class MossTTSNanoBackend(TTSBackend):
         self._model = _retry_once_with_fresh_hf_client(
             lambda: model_cls.from_pretrained(checkpoint, trust_remote_code=True),
             "MOSS-TTS-Nano",
+            repo_id=checkpoint,
         )
 
     def generate(self, text, **kw) -> torch.Tensor:
@@ -2479,7 +2519,8 @@ class KittenTTSBackend(TTSBackend):
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
         try:
-            import kittentts  # noqa: F401
+            if not _module_present("kittentts"):
+                raise ImportError("kittentts is not installed")
             return True, "ready"
         except ImportError as e:
             return False, f"kittentts not installed: {e}"
@@ -2513,7 +2554,7 @@ class KittenTTSBackend(TTSBackend):
         # mid-lifecycle, retry once with a fresh client instead of failing
         # the whole generation.
         self._model = _retry_once_with_fresh_hf_client(
-            lambda: KittenTTS(checkpoint), what="KittenTTS"
+            lambda: KittenTTS(checkpoint), what="KittenTTS", repo_id=checkpoint
         )
 
     # #1173: the shipped ONNX graph's BERT front-end has a hard 512-token
@@ -3297,7 +3338,8 @@ class CosyVoiceBackend(TTSBackend):
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
         try:
-            from cosyvoice.cli.cosyvoice import AutoModel  # noqa: F401
+            if not _module_present("cosyvoice.cli.cosyvoice"):
+                raise ImportError("cosyvoice.cli.cosyvoice is not installed")
             return True, "ready"
         except ImportError:
             return False, (
@@ -3681,7 +3723,8 @@ class SherpaOnnxBackend(TTSBackend):
     @classmethod
     def is_available(cls) -> tuple[bool, str]:
         try:
-            import sherpa_onnx  # noqa: F401
+            if not _module_present("sherpa_onnx"):
+                raise ImportError("sherpa_onnx is not installed")
         except ImportError as e:
             return False, (
                 f"sherpa-onnx not installed: {e}. "
@@ -3929,7 +3972,7 @@ _INSTALL_HINTS: dict[str, str] = {
     "indextts2":     "git clone --branch indextts-2.5 https://github.com/index-tts/index-tts.git && cd index-tts && uv venv .venv && uv pip install --python .venv/bin/python -e .  (Windows: .venv\\Scripts\\python.exe; NOT uv sync --all-extras)",
     "gpt-sovits":    "External API server — start api_v2.py on port 9880",
     "sherpa-onnx":   "pip install sherpa-onnx  (universal ONNX runtime, WASM-ready)",
-    "omnivoice-gguf":"Bundled — runs the C++ omnivoice-tts binary in bin/. An installed quant pair is reused; a missing one downloads from Serveurperso/OmniVoice-GGUF (pinned revision) on first generate. Offline hosts: see docs/engines/omnivoice-gguf.md.",
+    "omnivoice-gguf":"Bundled — runs the C++ omnivoice-tts binary in bin/. An installed quant pair is reused; a missing one downloads from Serveurperso/OmniVoice-GGUF (pinned revision) on first generate. Offline hosts: see HELP.md#omnivoice-gguf.",
     "supertonic3":   "uv sync --extra supertonic  (CPU-only ONNX, 31 langs, ~400 MB model on first use; OpenRAIL-M model license)",
     "pockettts":     "uv sync --extra pockettts  (Kyutai, CPU-only, ~100 MB model on first use; MIT code + CC-BY-4.0 weights; HF-gated, review terms and set HF_TOKEN)",
     "moss-tts-v15":  "git clone OpenMOSS/MOSS-TTS + set ELEVENVOICE_MOSS_TTS_V15_DIR  (own venv, transformers==5.0; 8B, ~16 GB weights; CUDA/ROCm/XPU/NPU/CPU, no MPS; Apache-2.0)",
@@ -3968,25 +4011,25 @@ _SETUP_SNIPPETS: dict[str, str] = {
 # Keyed on the engine id, so it stays correct when the doc filename does not
 # match the id (indextts2 → indextts.md).
 _ENGINE_DOCS: dict[str, str] = {
-    "omnivoice":            "docs/engines/omnivoice.md",
-    "omnivoice-subprocess": "docs/engines/omnivoice-subprocess.md",
-    "omnivoice-gguf":       "docs/engines/omnivoice-gguf.md",
-    "cosyvoice":            "docs/engines/cosyvoice.md",
-    "kittentts":            "docs/engines/kittentts.md",
-    "mlx-audio":            "docs/engines/mlx-audio.md",
-    "voxcpm2":              "docs/engines/voxcpm2.md",
-    "moss-tts-nano":        "docs/engines/moss-tts-nano.md",
-    "moss-tts-v15":         "docs/engines/moss-tts-v15.md",
-    "dots-tts":             "docs/engines/dots-tts.md",
-    "confucius4-tts":       "docs/engines/confucius4-tts.md",
-    "indextts2":            "docs/engines/indextts.md",
-    "gpt-sovits":           "docs/engines/gpt-sovits.md",
-    "sherpa-onnx":          "docs/engines/sherpa-onnx.md",
-    "supertonic3":          "docs/engines/supertonic3.md",
-    "pockettts":            "docs/engines/pockettts.md",
-    "audiocpp":             "docs/engines/audio-cpp.md",
-    "audiocpp-dots":        "docs/engines/audio-cpp.md",
-    "cosyvoice-gguf":       "docs/engines/cosyvoice-gguf.md",
+    "omnivoice":            "HELP.md#omnivoice",
+    "omnivoice-subprocess": "HELP.md#omnivoice-subprocess",
+    "omnivoice-gguf":       "HELP.md#omnivoice-gguf",
+    "cosyvoice":            "HELP.md#cosyvoice",
+    "kittentts":            "HELP.md#kittentts",
+    "mlx-audio":            "HELP.md#mlx-audio",
+    "voxcpm2":              "HELP.md#voxcpm2",
+    "moss-tts-nano":        "HELP.md#moss-tts-nano",
+    "moss-tts-v15":         "HELP.md#moss-tts-v15",
+    "dots-tts":             "HELP.md#dots-tts",
+    "confucius4-tts":       "HELP.md#confucius4-tts",
+    "indextts2":            "HELP.md#indextts",
+    "gpt-sovits":           "HELP.md#gpt-sovits",
+    "sherpa-onnx":          "HELP.md#sherpa-onnx",
+    "supertonic3":          "HELP.md#supertonic3",
+    "pockettts":            "HELP.md#pockettts",
+    "audiocpp":             "HELP.md#audio-cpp",
+    "audiocpp-dots":        "HELP.md#audio-cpp",
+    "cosyvoice-gguf":       "HELP.md#cosyvoice-gguf",
 }
 
 

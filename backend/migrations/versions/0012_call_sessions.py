@@ -4,7 +4,7 @@ Revision ID: 0012_call_sessions
 Revises: 0011_remote_attempt_deadlines
 Create Date: 2026-09-23 00:00:00.000000
 
-Adds ``call_sessions`` (docs/integrations/calls.md): one row per call the agent
+Adds ``call_sessions`` (HELP.md#calls): one row per call the agent
 placed or answered — direction, numbers (full, local only; plus a masked copy
 for the API), brief, voice, disclosure, status timeline, transcript, outcome,
 summary and an optional local recording path.

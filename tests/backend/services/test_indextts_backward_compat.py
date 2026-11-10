@@ -241,7 +241,7 @@ def test_venv_probe_raises_clear_error_when_no_install_possible(
         bootstrap.resolve_indextts_venv()
     message = str(excinfo.value)
     assert "ELEVENVOICE_INDEXTTS_DIR" in message
-    assert "docs/engines/indextts.md" in message
+    assert "HELP.md#indextts" in message
 
 
 # ── ENGINE-07: cache & spawn discipline ────────────────────────────────────

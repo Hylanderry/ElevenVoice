@@ -1,5 +1,5 @@
 /**
- * ElevenVoice Cloud endpoints (vssaas docs/specs/desktop-account-client.md). One block per
+ * ElevenVoice Cloud endpoints (vssaas HELP.md#desktop-account-client). One block per
  * environment. Sign-in is Zitadel on its own host (vssaas ADR 0093); the app discovers the
  * endpoints from `${issuer}/.well-known/openid-configuration`.
  */

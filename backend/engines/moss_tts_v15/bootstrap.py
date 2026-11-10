@@ -18,7 +18,7 @@ Probe order (priority — existing power-user installs win, zero migration):
        "${DIR}[torch-runtime]"``. Requires ``ELEVENVOICE_MOSS_TTS_V15_DIR``.
        The upstream ``torch-runtime`` extra is CUDA (``+cu128``), so the
        auto-bootstrap targets CUDA hosts; non-CUDA (CPU/Mac) users set up
-       their own venv per docs/engines/moss-tts-v15.md (Probe 1).
+       their own venv per HELP.md#moss-tts-v15 (Probe 1).
 
 Caching: resolution is memoised after the first successful call. Tests
 reset via :func:`invalidate`.
@@ -166,7 +166,7 @@ def resolve_moss_tts_v15_venv() -> Path:
             "MOSS-TTS-v1.5 is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your MOSS-TTS clone "
             "(the directory that contains pyproject.toml), then restart "
-            "ElevenVoice. See docs/engines/moss-tts-v15.md for the full "
+            "ElevenVoice. See HELP.md#moss-tts-v15 for the full "
             "install walk-through."
         )
 
@@ -296,7 +296,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
             "uv pip install -e failed during MOSS-TTS-v1.5 bootstrap "
             # uv's own error names what failed; the PyTorch index is always
             # supplied now, so a guess about the host would only mislead.
-            f"({clone_dir}). See docs/engines/moss-tts-v15.md for the manual "
+            f"({clone_dir}). See HELP.md#moss-tts-v15 for the manual "
             "install. Error: "
             f"{exc.stderr.decode('utf-8', errors='replace') if exc.stderr else exc}"
         ) from exc
@@ -308,7 +308,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
         raise RuntimeError(
             "MOSS-TTS-v1.5 bootstrap completed but the transformers/torch "
             f"import still fails from {python_path}. Verify that {clone_dir} "
-            "is a valid MOSS-TTS clone. See docs/engines/moss-tts-v15.md."
+            "is a valid MOSS-TTS clone. See HELP.md#moss-tts-v15."
         )
 
     logger.info("MOSS-TTS-v1.5 venv bootstrap successful: %s", python_path)

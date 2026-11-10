@@ -7,7 +7,7 @@
  * answer and the raw message is always kept beside it.
  *
  * Adding a code: add it here, give it guidance, add the matching
- * `### CODE` section to docs/install/troubleshooting.md and the mirror entries
+ * `### CODE` section to HELP.md#troubleshooting and the mirror entries
  * in backend/core/error_docs_map.py and errorDocsMap.ts, then add a real report
  * to installFailure.corpus.test.ts. installFailure.test.ts fails on any gap.
  */
@@ -294,7 +294,7 @@ export function failureGuidance(
   return guidance;
 }
 
-/** Docs anchor of a code's section in docs/install/troubleshooting.md. */
+/** Docs anchor of a code's section in HELP.md#troubleshooting. */
 export function failureDocsAnchor(code: InstallFailureCode): string {
   return code.toLowerCase();
 }

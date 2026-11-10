@@ -126,7 +126,7 @@ class SidecarSpec:
     # predating #1611 were only usable after hand-renaming it to
     # config_v2_5.yaml, and those must keep working without a reinstall.
     weights_config_names: tuple[str, ...] = ("config.yaml",)
-    docs_path: str = "docs/engines"         # where the manual-install fallback lives
+    docs_path: str = "HELP.md#engines"         # where the manual-install fallback lives
     required_bytes: int = 12 * _GIB    # conservative source+venv+weights estimate for preflight
     weights_bytes: Optional[int] = None
     dependency_bytes: Optional[int] = None
@@ -440,7 +440,7 @@ SPECS: dict[str, SidecarSpec] = {
         weights_revision="d0aa86e75bb6f3437f3831e95056fa72842d89ef",
         weights_subdir="checkpoints",
         weights_config_names=("config.yaml", "config_v2_5.yaml"),
-        docs_path="docs/engines/indextts.md",
+        docs_path="HELP.md#indextts",
         # ~0.1 GB source + up to ~6 GB venv (torch + transformers<5) +
         # ~6 GB weights. Deliberately conservative; the preflight subtracts
         # whatever a partial install already put on disk.
@@ -483,7 +483,7 @@ SPECS: dict[str, SidecarSpec] = {
         install_revision="cpu-decoder-v1",
         uses_cuda_index=True,
         host_supported=_moss_host,
-        docs_path="docs/engines/moss-tts-v15.md",
+        docs_path="HELP.md#moss-tts-v15",
         # ~7 GB CUDA torch venv now, ~16 GB of weights on first synthesis.
         required_bytes=24 * _GIB,
         dependency_bytes=8 * _GIB,
@@ -515,7 +515,7 @@ SPECS: dict[str, SidecarSpec] = {
         # torch==2.7.0: CPU-only from PyPI on Windows; the CUDA index supplies
         # 2.7.0+cu128, which satisfies the same pin.
         uses_cuda_index=True,
-        docs_path="docs/engines/confucius4-tts.md",
+        docs_path="HELP.md#confucius4-tts",
         # ~7 GB venv now, ~5 GB of weights on first synthesis.
         required_bytes=14 * _GIB,
         dependency_bytes=8 * _GIB,
@@ -541,7 +541,7 @@ SPECS: dict[str, SidecarSpec] = {
         venv_args=("--python", "3.11"),
         install_args=("-e", "{checkout}", "-c", "{checkout_uri}/constraints/recommended.txt"),
         host_supported=_dots_host,
-        docs_path="docs/engines/dots-tts.md",
+        docs_path="HELP.md#dots-tts",
         # ~7 GB venv now, ~9 GB checkpoint on first synthesis.
         required_bytes=18 * _GIB,
         dependency_bytes=8 * _GIB,
@@ -565,7 +565,7 @@ SPECS: dict[str, SidecarSpec] = {
         has_source=False,
         venv_args=("--python", "3.11"),
         install_args=("supertonic==1.3.1",),
-        docs_path="docs/engines/supertonic3.md",
+        docs_path="HELP.md#supertonic3",
         # onnxruntime + numpy + huggingface_hub, no torch. The ~400 MB of
         # weights download on first synthesis into the shared HF cache.
         required_bytes=1 * _GIB,
@@ -583,7 +583,7 @@ SPECS: dict[str, SidecarSpec] = {
         venv_args=("--python", "3.11"),
         install_args=("pocket-tts==2.1.0",),
         cpu_torch_index=True,
-        docs_path="docs/engines/pockettts.md",
+        docs_path="HELP.md#pockettts",
         # CPU torch + scipy. The gated weights download on first use.
         required_bytes=3 * _GIB,
         installed_probe=_in_app_env("pocket_tts"),
@@ -607,7 +607,7 @@ SPECS: dict[str, SidecarSpec] = {
         venv_args=("--python", "3.11"),
         install_args=("voxcpm==2.0.3",),
         torch_pins=("torch==2.11.0", "torchaudio==2.11.0"),
-        docs_path="docs/engines/voxcpm2.md",
+        docs_path="HELP.md#voxcpm2",
         # CUDA torch (~5 GB unpacked) + transformers.
         required_bytes=10 * _GIB,
         installed_probe=_in_app_env("voxcpm"),
@@ -637,7 +637,7 @@ SPECS: dict[str, SidecarSpec] = {
         ),
         source_revision="8b7bcc9341b3b4ef3a3a58ba1338a7d85ff133eb",
         source_required_path="moss_tts_nano_runtime.py",
-        docs_path="docs/engines/moss-tts-nano.md",
+        docs_path="HELP.md#moss-tts-nano",
         venv_args=("--python", "3.11"),
         # Upstream's pyproject pins torchaudio==2.7.0 but ships no I/O backend
         # — torchaudio 2.7 dispatches load/save to soundfile/torchcodec, and
@@ -718,7 +718,7 @@ SPECS: dict[str, SidecarSpec] = {
             "campplus.onnx", "speech_tokenizer_v3.onnx",
             "llm.pt", "flow.pt", "hift.pt", "CosyVoice-BlankEN/*",
         ),
-        docs_path="docs/engines/cosyvoice.md",
+        docs_path="HELP.md#cosyvoice",
         # ~0.1 GB source + ~7 GB venv (CUDA torch) + ~5.4 GB weights.
         required_bytes=14 * _GIB,
         weights_bytes=6 * _GIB,
@@ -1747,7 +1747,7 @@ def _step_install_deps(spec: SidecarSpec, job: dict) -> None:
                 "If the log mentions pynini or fst/util.h, install OpenFst and a "
                 "C++ compiler first (macOS: brew install openfst; Debian/Ubuntu: "
                 "sudo apt install libfst-dev libfst-tools build-essential), then "
-                "retry. See docs/engines/dots-tts.md for include/library paths. "
+                "retry. See HELP.md#dots-tts for include/library paths. "
             ) + hint
         if sys.platform == "win32":
             # Packages built from source (openai-whisper, for CosyVoice) nest

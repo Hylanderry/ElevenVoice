@@ -115,8 +115,8 @@ def test_indextts_unavailable_message_is_actionable():
         # Must point at the env-var-driven install path OR the docs.
         msg_lower = msg.lower()
         assert (
-            "omnivoice_indextts_dir" in msg_lower
-            or "docs/engines/indextts.md" in msg_lower
+            "elevenvoice_indextts_dir" in msg_lower
+            or "HELP.md#indextts" in msg_lower
             or "uv pip install" in msg_lower
             or "git clone" in msg_lower
             or "conflict" in msg_lower

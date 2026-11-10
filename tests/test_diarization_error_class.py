@@ -193,7 +193,7 @@ class TestErrorDocsDeeplink:
     def test_pyannote_license_required_deeplinks_to_diarization_section(self):
         from core import error_docs_map
         url = error_docs_map.lookup("PYANNOTE_LICENSE_REQUIRED")
-        assert "docs/features/diarization.md" in url
+        assert "HELP.md#license-acceptance-flow" in url
         assert "license-acceptance-flow" in url
 
     def test_pyannote_license_required_is_in_locked_taxonomy(self):

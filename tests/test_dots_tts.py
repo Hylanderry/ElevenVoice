@@ -98,7 +98,7 @@ def test_is_available_not_installed_is_honest(monkeypatch):
     ok, msg = DotsTTSBackend.is_available()
     assert ok is False
     assert "ELEVENVOICE_DOTS_TTS_DIR" in msg
-    assert "docs/engines/dots-tts.md" in msg  # actionable pointer
+    assert "HELP.md#dots-tts" in msg  # actionable pointer
     # No-MPS honesty is enforced by gpu_compat; the message may disclaim MPS.
 
 

@@ -3,7 +3,7 @@
  *
  * Bind an MCP client id (the X-ElevenVoice-Client-Id an agent sends) to a voice
  * profile, so "Claude Code speaks in Morgan, Cursor in Scarlett". The MCP
- * server is mounted at /mcp on the backend; see docs/mcp.md.
+ * server is mounted at /mcp on the backend; see HELP.md#mcp.
  *
  * Endpoints (loopback-only):
  *   GET    /api/mcp/bindings
@@ -11,7 +11,7 @@
  *   DELETE /api/mcp/bindings/{client_id}
  *
  * The API's `default_engine` field is intentionally NOT editable here — it is
- * an MCP-side capability (agents can request an engine per docs/mcp.md); the
+ * an MCP-side capability (agents can request an engine per HELP.md#mcp); the
  * panel only manages the voice routing a user actually reasons about.
  */
 import React, { useCallback, useEffect, useState } from 'react';

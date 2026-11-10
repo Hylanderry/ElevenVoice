@@ -88,7 +88,7 @@ class DotsTTSBackend(SubprocessBackend):
                 "dots.tts is not supported on Windows — upstream targets "
                 "Linux and macOS only. Use the audio.cpp dots.tts engine "
                 "(audiocpp-dots), which runs natively on Windows. See "
-                "docs/engines/audio-cpp.md."
+                "HELP.md#audio-cpp."
             )
 
         # Do NOT import dots_tts here: it pins transformers==4.57, which can't
@@ -105,7 +105,7 @@ class DotsTTSBackend(SubprocessBackend):
                 "dots.tts venv not found. Set ELEVENVOICE_DOTS_TTS_DIR to your "
                 "dots.tts clone (the directory containing pyproject.toml) and "
                 "restart ElevenVoice. CUDA or CPU only (no MPS). See "
-                "docs/engines/dots-tts.md for the full install walk-through."
+                "HELP.md#dots-tts for the full install walk-through."
             )
         if not DOTS_TTS_SIDECAR_SCRIPT.exists():
             return False, (

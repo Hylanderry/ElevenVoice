@@ -48,7 +48,7 @@ export const TWILIO_DOCS =
 const STATE_PATH = '/api/integrations/twilio/state';
 const QUERY_KEY = ['integrations', 'twilio'] as const;
 /**
- * Calls backend (docs/integrations/calls.md), feature-detected: a 404 means
+ * Calls backend (HELP.md#calls), feature-detected: a 404 means
  * "not in this build". `/calls/settings` carries `from_number`,
  * `inbound_mode` and `disclosure_template`; `/calls/readiness` returns
  * `[{ id, ok, detail }]`.

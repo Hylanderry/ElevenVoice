@@ -655,7 +655,7 @@ def _make_backend_class():
                         f"macOS Gatekeeper. Run:\n\n"
                         f"    xattr -cr '/Applications/ElevenVoice.app'\n\n"
                         f"This clears the quarantine on the .app and its "
-                        f"bundled binaries. See docs/install/macos.md."
+                        f"bundled binaries. See HELP.md#macos."
                     )
                 # Execute bit (issue #437). A `git clone` / zip extract on POSIX
                 # can drop +x, which only surfaces at spawn time as

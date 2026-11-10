@@ -21,7 +21,7 @@ audio.cpp GGUF repack) are RESEARCH AND NON-COMMERCIAL ONLY
 (``BreezeBlue Research and Non-Commercial License``); only the audio.cpp
 code is Apache-2.0. There is no in-tree acceptance dialog for this engine
 yet (settings ``/license`` allow-list), so the restriction is surfaced in
-the display name, the install hint, and ``docs/engines/audio-cpp.md`` —
+the display name, the install hint, and ``HELP.md#audio-cpp`` —
 not silently.
 """
 from __future__ import annotations

@@ -21,7 +21,7 @@ def pipeline_error(device=None):
         "on Windows ROCm (MIOpen Unicode-path/SDK-header compatibility). "
         "Select CPU in Settings > Performance (ELEVENVOICE_DEVICE=cpu) for these "
         "pipelines, or use faster-whisper for basic ASR. Main runtime readiness "
-        "does not certify these optional pipelines. See docs/install/windows-rocm.md."
+        "does not certify these optional pipelines. See HELP.md#windows-rocm."
     )
 
 

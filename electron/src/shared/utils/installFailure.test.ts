@@ -17,7 +17,7 @@ import {
 import { composeBugReportUrl } from './bugReportDocument';
 
 const repo = resolve(__dirname, '../../../..');
-const docs = readFileSync(resolve(repo, 'docs/install/troubleshooting.md'), 'utf8');
+const docs = readFileSync(resolve(repo, 'HELP.md#troubleshooting'), 'utf8');
 const english = JSON.parse(
   readFileSync(resolve(repo, 'electron/src/renderer/src/i18n/locales/en.json'), 'utf8'),
 ) as { backend: Record<string, string> };

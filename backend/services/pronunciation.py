@@ -383,7 +383,7 @@ def inert_entries_for_language(entries, language: str | None) -> list[dict]:
     term that does match, which is not a degraded answer but a wrong one, and
     it sent the user off to re-type an entry that was already correct (#1949).
 
-    docs/specs/01-expressive-tts.md asked for exactly the opposite — such
+    HELP.md#01-expressive-tts asked for exactly the opposite — such
     entries "passed through and flagged 'phoneme not honored on this
     engine' (parity-rule: visible degradation)". This is that flag: the
     caller can now say WHY nothing happened instead of implying nothing

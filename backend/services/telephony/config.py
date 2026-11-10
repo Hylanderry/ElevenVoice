@@ -157,7 +157,7 @@ def missing_for_enable(cfg: TwilioConfig, token_present: bool, inbound_mode: str
     return missing
 
 
-# ── Call agent settings (docs/integrations/calls.md) ────────────────────────
+# ── Call agent settings (HELP.md#calls) ────────────────────────
 
 _CALLS_PREFIX = "integrations.twilio.calls."
 MAX_DISCLOSURE_CHARS = 500

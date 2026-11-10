@@ -82,7 +82,7 @@ class Confucius4Backend(SubprocessBackend):
                 "Confucius4-TTS venv not found. Set ELEVENVOICE_CONFUCIUS4_TTS_DIR "
                 "to your Confucius4-TTS clone (the directory containing "
                 "requirements.txt) and restart ElevenVoice. CUDA GPU recommended "
-                "(CPU works but is slow). See docs/engines/confucius4-tts.md."
+                "(CPU works but is slow). See HELP.md#confucius4-tts."
             )
         if not CONFUCIUS4_SIDECAR_SCRIPT.exists():
             return False, (

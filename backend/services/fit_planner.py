@@ -8,7 +8,7 @@ mild per-segment video slow-down.
 
 Clean-room note: this is a reimplementation from a *published description*
 of the audio-speedup + video-slowdown fitting approach (see
-docs/competitive-analysis.md, "Dub-length fitting"). No GPL source was
+HELP.md#competitive-analysis, "Dub-length fitting"). No GPL source was
 consulted.
 
 Algorithm per segment (defaults in :class:`FitParams`):

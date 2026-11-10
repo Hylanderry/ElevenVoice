@@ -1906,7 +1906,7 @@ class BearerKeyMiddleware:
 
     Inert when the env var is unset (the default). Pure ASGI for the same
     no-buffering reason as NetworkAccessMiddleware above. Plain-HTTP caveat
-    is documented in docs/remote-gpu.md: the key is sniffable outside a
+    is documented in HELP.md#remote-gpu: the key is sniffable outside a
     WireGuard (Tailscale) or TLS (tailscale serve) transport.
     """
 

@@ -5,7 +5,7 @@ Revises: 0003_voice_profile_consent
 Create Date: 2026-06-12 00:00:00.000000
 
 Adds the ``mcp_client_bindings`` table backing per-agent voice binding
-(docs/competitive-analysis.md Spec 2): each MCP client (identified by the
+(HELP.md#competitive-analysis Spec 2): each MCP client (identified by the
 ``X-ElevenVoice-Client-Id`` header it sends) can be bound to a default voice
 profile / engine, so "Claude Code speaks in Morgan, Cursor in Scarlett".
 

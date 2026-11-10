@@ -43,6 +43,8 @@ _ALLOWED_FILES = {
     "mobile/contract/tts/zipvoice-lexicon.txt",  # Pinned multilingual pronunciation data, not UI copy.
     "electron/src/main/blank-window-guard.ts",  # Matches localized window text.
     "README.md",  # Presents translated project copy.
+    "website/index.html",  # Language names in their own scripts (marquee and language picker).
+    "website/main.js",  # Native names in the language picker.
     "docs/data_preparation.md",  # Includes multilingual data examples.
     "docs/voice-design.md",  # Documents multilingual voice prompts.
     "docs/engines/omnivoice.md",  # Documents engine vocabulary.

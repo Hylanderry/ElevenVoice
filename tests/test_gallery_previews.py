@@ -732,3 +732,12 @@ def test_featured_tarball_is_byte_deterministic(tmp_path):
 
     assert (tmp_path / "featured.tar.gz").read_bytes() == first_bytes
     assert second["sha256"] == first["sha256"]
+
+
+@pytest.mark.asyncio
+async def test_an_unpublished_gallery_is_not_an_error(sandbox):
+    """A 404 on the manifest means nothing is published, not a rejected update."""
+    gallery.set_enabled(True)
+    client = httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(404)))
+    status = await gallery.check_for_updates(force=True, client=client)
+    assert status["available"] is False and status.get("last_error") is None

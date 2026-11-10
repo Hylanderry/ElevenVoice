@@ -96,7 +96,7 @@ def availability_status():
     if not hip_ct2_available():
         return False, (
             "Windows HIP CTranslate2 verification failed. Rerun ROCm setup or "
-            "select CPU in Settings > Performance. See docs/install/windows-rocm.md."
+            "select CPU in Settings > Performance. See HELP.md#windows-rocm."
         )
     return True, "Windows HIP CT2 discovery verified; local ASR inference is a separate check"
 

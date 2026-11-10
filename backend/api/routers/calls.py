@@ -1,4 +1,4 @@
-"""Phone call agent API (docs/integrations/calls.md).
+"""Phone call agent API (HELP.md#calls).
 
 Local API only (admin-guarded, main backend). The public telephony gateway
 serves only Twilio's webhooks and media streams; nothing here is reachable

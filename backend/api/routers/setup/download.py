@@ -119,7 +119,7 @@ def _download_endpoint(gated: bool = False) -> "str | None":
     nothing was chosen, the automatic endpoint selection's cached pick applies
     (services.endpoint_race — probe-based, cached, never probes here). A
     mirror routes through the classic LFS path (no Xet) — documented in
-    docs/downloading-models.md. A gated repository needs the token, so it
+    HELP.md#downloading-models. A gated repository needs the token, so it
     ignores an automatically picked mirror (only an explicit one applies)."""
     from services import endpoint_race
     return endpoint_race.download_endpoint(gated=gated)

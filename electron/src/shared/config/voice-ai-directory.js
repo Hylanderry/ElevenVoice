@@ -2,7 +2,7 @@
 // Capabilities are not declared here: the Electron setup registry
 // (electron/src/renderer/src/features/integrations/setup-registry.ts) is the
 // only place that claims what an entry actually does with ElevenVoice.
-// Official icon sources and verification links: docs/integration-directory.md.
+// Official icon sources and verification links: HELP.md#integration-directory.
 import genericLogo from '../assets/integrations/integration-generic.svg';
 import twilioLogo from '../assets/integrations/twilio.png';
 import plivoLogo from '../assets/integrations/plivo.svg';

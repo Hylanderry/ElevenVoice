@@ -186,7 +186,7 @@ _BASE_SCHEMA = """
     );
     CREATE INDEX IF NOT EXISTS idx_pron_lang ON pronunciation_entries(language);
 
-    -- Phone call agent (docs/integrations/calls.md): one row per call placed
+    -- Phone call agent (HELP.md#calls): one row per call placed
     -- or answered by the agent. Full numbers stay in this local DB; the API
     -- returns only remote_masked. Existing DBs get it via alembic
     -- 0012_call_sessions (dual-path discipline).

@@ -16,7 +16,7 @@
  *
  * After the purge the app quits: the Python environment it runs on is gone, so
  * there is nothing to return to. Removing the app *binary* is a per-platform
- * step we link out to (docs/install/uninstall.md).
+ * step we link out to (HELP.md#uninstall).
  *
  * Outside the Tauri shell (browser/Docker) there is no local install to remove,
  * so this renders nothing.

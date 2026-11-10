@@ -28,7 +28,7 @@ timestamp on a VFR stream lands on unpredictable frames.
 
 Clean-room note: like ``services.fit_planner`` this is implemented from a
 published description of the audio-speedup + video-slowdown fitting
-approach only (docs/competitive-analysis.md, "Dub-length fitting"). No GPL
+approach only (HELP.md#competitive-analysis, "Dub-length fitting"). No GPL
 source was consulted.
 """
 from __future__ import annotations

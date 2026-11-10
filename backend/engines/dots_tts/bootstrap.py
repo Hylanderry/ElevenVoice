@@ -138,7 +138,7 @@ def resolve_dots_tts_venv() -> Path:
             "dots.tts is not installed. Set the "
             f"{_CLONE_DIR_ENV} environment variable to your dots.tts clone "
             "(the directory that contains pyproject.toml and constraints/), "
-            "then restart ElevenVoice. See docs/engines/dots-tts.md for the "
+            "then restart ElevenVoice. See HELP.md#dots-tts for the "
             "full install walk-through."
         )
 
@@ -239,7 +239,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
             f"({clone_dir}): "
             f"{exc.stderr.decode('utf-8', errors='replace') if exc.stderr else exc}. "
             "If pynini reports missing fst/util.h, install OpenFst and a C++ "
-            "compiler first. See docs/engines/dots-tts.md for platform steps."
+            "compiler first. See HELP.md#dots-tts for platform steps."
         ) from exc
 
     # Only a *proven* failure is fatal: a bootstrap that installed correctly
@@ -249,7 +249,7 @@ def _bootstrap_engines_venv(clone_dir: Path) -> Path:
         raise RuntimeError(
             "dots.tts bootstrap completed but `import dots_tts.runtime` still "
             f"fails from {python_path}. Verify that {clone_dir} is a valid "
-            "dots.tts clone. See docs/engines/dots-tts.md."
+            "dots.tts clone. See HELP.md#dots-tts."
         )
 
     logger.info("dots.tts venv bootstrap successful: %s", python_path)

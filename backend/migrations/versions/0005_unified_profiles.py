@@ -7,7 +7,7 @@ Create Date: 2026-06-13 00:00:00.000000
 Adds two additive columns to ``voice_profiles`` so a *designed* voice
 (category sliders + instruct, no user reference audio) is a first-class
 profile rather than a transient UI state
-(docs/specs/elevenvoice-unification.md §3):
+(HELP.md#elevenvoice-unification §3):
 
   * ``kind TEXT DEFAULT 'clone'`` — ``'clone'`` (user reference audio) or
     ``'design'`` (rendered sample + stored design params). Replaces the

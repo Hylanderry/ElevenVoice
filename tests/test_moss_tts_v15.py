@@ -206,7 +206,7 @@ def test_is_available_not_installed_is_honest(monkeypatch):
     ok, msg = MossTTSV15Backend.is_available()
     assert ok is False
     assert "ELEVENVOICE_MOSS_TTS_V15_DIR" in msg
-    assert "docs/engines/moss-tts-v15.md" in msg  # actionable pointer
+    assert "HELP.md#moss-tts-v15" in msg  # actionable pointer
     # Honesty on hardware is enforced by gpu_compat (no 'mps' entry); the
     # message is free to *disclaim* MPS ("no MPS"), which is the opposite of
     # claiming it.
@@ -443,4 +443,4 @@ def test_bootstrap_install_failure_reports_uvs_error_not_a_host_guess(monkeypatc
     message = str(err.value)
     assert "resolver: no wheel for torchcodec" in message
     assert "non-CUDA" not in message
-    assert "docs/engines/moss-tts-v15.md" in message
+    assert "HELP.md#moss-tts-v15" in message

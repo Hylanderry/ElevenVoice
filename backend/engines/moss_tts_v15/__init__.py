@@ -110,7 +110,7 @@ class MossTTSV15Backend(SubprocessBackend):
                 "MOSS-TTS-v1.5 venv not found. Set ELEVENVOICE_MOSS_TTS_V15_DIR "
                 "to your MOSS-TTS clone (the directory containing pyproject.toml) "
                 "and restart ElevenVoice. Install the matching PyTorch runtime. See "
-                "docs/engines/moss-tts-v15.md for the full install walk-through."
+                "HELP.md#moss-tts-v15 for the full install walk-through."
             )
         if not MOSS_TTS_V15_SIDECAR_SCRIPT.exists():
             return False, (

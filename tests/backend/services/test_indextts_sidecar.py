@@ -145,7 +145,7 @@ def test_is_available_no_venv(monkeypatch):
     ok, msg = IndexTTS2Backend.is_available()
     assert ok is False
     assert "ELEVENVOICE_INDEXTTS_DIR" in msg
-    assert "docs/engines/indextts.md" in msg
+    assert "HELP.md#indextts" in msg
 
 
 # ── registry integration ──────────────────────────────────────────────────

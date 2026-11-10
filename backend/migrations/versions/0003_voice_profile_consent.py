@@ -5,7 +5,7 @@ Revises: 0002_voice_profile_demo_fields
 Create Date: 2026-06-12 00:00:00.000000
 
 Adds four additive columns to ``voice_profiles`` backing the
-``verified_own_voice`` consent lock (docs/competitive-analysis.md Action 22 /
+``verified_own_voice`` consent lock (HELP.md#competitive-analysis Action 22 /
 parity program Wave 0.2). A profile becomes "verified" when its owner records
 a spoken consent statement; agentic features and gallery sharing will require
 the flag — plain local synthesis never does.
